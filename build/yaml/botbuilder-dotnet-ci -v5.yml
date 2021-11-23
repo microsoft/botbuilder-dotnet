@@ -30,6 +30,7 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
+  displayName: 'Execute Unit Tests'
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
