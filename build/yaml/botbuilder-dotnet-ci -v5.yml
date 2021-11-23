@@ -30,7 +30,20 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
-  displayName: 'Run unit tests'
   inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*Tests.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+      !**\*.FunctionalTests.dll
+      !**\Microsoft.Bot.Builder.Adapters.*.dll
+      !**\AdaptiveExpressions*.dll
+      !**\Microsoft.Bot.Builder.Dialogs.Adaptive.*.dll
+      !**\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.dll
+      !**\Microsoft.Bot.Builder.Parsers.LU.dll
+      !**\*.WebApi.Tests.dll
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    codeCoverageEnabled: true
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
