@@ -5,6 +5,9 @@
 trigger:
 - v5
 
+pr:
+- v5
+
 pool:
   vmImage: 'macos-latest'
 
