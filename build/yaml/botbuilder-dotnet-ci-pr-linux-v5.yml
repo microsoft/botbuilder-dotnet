@@ -17,26 +17,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build Microsoft.Bot.Builder.sln $(buildConfiguration)'
   inputs:
-    restoreSolution: '$(solution)'
+    command: 'build'
+    projects: '$(solution)'
 
-- task: VSBuild@1
-  displayName: 'Build solution Microsoft.Bot.Builder.sln'
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: -p:SignAssembly=false -p:delaySign=false
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  displayName: 'Execute Unit Tests'
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
+    command: 'test'
+    projects: |
       **\*Tests.dll
       !**\*TestAdapter.dll
       !**\obj\**
@@ -50,7 +41,4 @@ steps:
       !**\Microsoft.Bot.Builder.Parsers.LU.Tests.dll
       !**\Microsoft.Bot.Configuration.Tests.dll
       !**\*.WebApi.Tests.dll
-    searchFolder: '$(System.DefaultWorkingDirectory)'
-    codeCoverageEnabled: true
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore'
