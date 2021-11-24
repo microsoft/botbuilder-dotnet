@@ -1,5 +1,5 @@
 #
-# Pipeline: BotBuilder-Dotnet-CI-v5
+# Pipeline: BotBuilder-Dotnet-PR-Windows-v5
 #
 
 trigger:

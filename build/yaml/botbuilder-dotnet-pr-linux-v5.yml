@@ -1,12 +1,12 @@
 #
-# Pipeline: BotBuilder-Dotnet-CI-v5
+# Pipeline: BotBuilder-Dotnet-PR-Linux-v5
 #
 
 trigger:
 - v5
 
 pool:
-  vmImage: 'macos-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
   solution: '**/Microsoft.Bot.Builder.sln'
