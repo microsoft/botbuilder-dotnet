@@ -28,14 +28,14 @@ steps:
   inputs:
     command: 'test'
     projects: |
-      **\*Tests.csproj
-      !**\tests\***FunctionalTests.csproj
-      !**\tests\**\AdaptiveExpressions.Tests.csproj
-      !**\tests\**\Microsoft.Bot.Builder.Dialogs.Adaptive.*.csproj
-      !**\tests\**\Microsoft.Bot.Builder.Dialogs.Debugging.Tests.csproj
-      !**\tests\**\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj
-      !**\tests\**\Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
-      !**\tests\**\Microsoft.Bot.Builder.Parsers.LU.Tests.csproj
-      !**\tests\**\Microsoft.Bot.Configuration.Tests.csproj
-      !**\tests\**\*.WebApi.Tests.csproj
+      **/*Tests.csproj
+      !**/tests/***FunctionalTests.csproj
+      !**/tests/**/AdaptiveExpressions.Tests.csproj
+      !**/tests/**/Microsoft.Bot.Builder.Dialogs.Adaptive.*.csproj
+      !**/tests/**/Microsoft.Bot.Builder.Dialogs.Debugging.Tests.csproj
+      !**/tests/**/Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj
+      !**/tests/**/Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
+      !**/tests/**/Microsoft.Bot.Builder.Parsers.LU.Tests.csproj
+      !**/tests/**/Microsoft.Bot.Configuration.Tests.csproj
+      !**/tests/**/*.WebApi.Tests.csproj
     arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore'
