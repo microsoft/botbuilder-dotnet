@@ -6,6 +6,7 @@ using Xunit;
 namespace Microsoft.Bot.Integration.ApplicationInsights.WebApi.Tests
 {
     [Trait("TestCategory", "ApplicationInsights")]
+    [Trait("TestCategory", "IgnoreInAutomatedBuild")]
     public class ServiceResolutionTests
         {
             /// <summary>

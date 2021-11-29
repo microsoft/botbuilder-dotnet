@@ -20,6 +20,7 @@ using Xunit;
 namespace Microsoft.Bot.ApplicationInsights.WebApi.Tests
 {
     [Trait("TestCategory", "ApplicationInsights")]
+    [Trait("TestCategory", "IgnoreInAutomatedBuild")]
     public class TelemetryInitializerTests
     {
         [Fact]

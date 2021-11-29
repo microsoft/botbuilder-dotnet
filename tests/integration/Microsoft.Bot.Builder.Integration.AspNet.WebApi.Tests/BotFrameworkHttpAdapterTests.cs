@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
 {
+    [Trait("TestCategory", "IgnoreInAutomatedBuild")]
     public class BotFrameworkHttpAdapterTests
     {
         [Fact]
