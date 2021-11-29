@@ -38,4 +38,4 @@ steps:
       !tests/**/Microsoft.Bot.Builder.Parsers.LU.Tests.csproj
       !tests/**/Microsoft.Bot.Configuration.Tests.csproj
       !tests/**/*.WebApi.Tests.csproj
-    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore'
+    arguments: '-v n  --configuration $(BuildConfiguration)'
