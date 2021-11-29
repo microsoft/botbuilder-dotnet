@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Initializes a new instance of the <see cref="LuisApplication"/> class.
         /// </summary>
         /// <param name="service">LUIS configuration.</param>
+        [Obsolete("The LuisService class is obsolete and it will be removed in a future version of the framework, use LuisApplication(string applicationId, string endpointKey, string endpoint) instead.", false)]
         public LuisApplication(LuisService service)
             : this((service.AppId, service.SubscriptionKey, service.GetEndpoint()))
         {
