@@ -29,5 +29,5 @@ steps:
     projects: |
      Tests/**/*Tests.csproj
      
-    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
+    arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
 
