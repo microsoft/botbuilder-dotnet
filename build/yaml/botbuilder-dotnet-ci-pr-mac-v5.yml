@@ -18,24 +18,16 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet build Microsoft.Bot.Builder.sln $(buildConfiguration)'
+  displayName: 'dotnet build'
   inputs:
-    command: 'build'
-    projects: '$(solution)'
+    projects: Microsoft.Bot.Builder.sln
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
-    command: 'test'
+    command: test
     projects: |
-      tests/**/*Tests.csproj
-      !tests/***FunctionalTests.csproj
-      !tests/**/AdaptiveExpressions.Tests.csproj
-      !tests/**/Microsoft.Bot.Builder.Dialogs.Adaptive.*.csproj
-      !tests/**/Microsoft.Bot.Builder.Dialogs.Debugging.Tests.csproj
-      !tests/**/Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj
-      !tests/**/Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
-      !tests/**/Microsoft.Bot.Builder.Parsers.LU.Tests.csproj
-      !tests/**/Microsoft.Bot.Configuration.Tests.csproj
-      !tests/**/*.WebApi.Tests.csproj
-    arguments: '-v n  --configuration $(BuildConfiguration)'
+     Tests/**/*Tests.csproj
+     
+    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
+
