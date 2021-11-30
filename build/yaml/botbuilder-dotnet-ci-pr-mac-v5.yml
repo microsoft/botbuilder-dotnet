@@ -33,6 +33,8 @@ steps:
     command: test
     projects: |
      Tests/**/*Tests.csproj
+     !Tests/**/Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj
      
     arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
 
