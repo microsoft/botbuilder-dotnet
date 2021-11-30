@@ -1,8 +1,0 @@
-steps:
-- task: ComponentGovernanceComponentDetection@0
-  displayName: Component Detection
-  inputs:
-    scanType: "Register"
-    verbosity: "Verbose"
-    alertWarningLevel: "High"
-    failOnAlert: true
