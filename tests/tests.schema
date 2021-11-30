@@ -402,12 +402,6 @@
     },
     {
       "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-    },
-    {
-      "$ref": "#/definitions/Testbot.JavascriptAction"
-    },
-    {
-      "$ref": "#/definitions/Testbot.Multiply"
     }
   ],
   "definitions": {
@@ -4071,12 +4065,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Testbot.JavascriptAction"
-        },
-        {
-          "$ref": "#/definitions/Testbot.Multiply"
         },
         {
           "type": "string",
@@ -10505,118 +10493,6 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "test"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Testbot.JavascriptAction": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Javascript Action",
-      "description": "This gives you the ability to execute javascript to manipulate memory",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "script": {
-          "type": "string",
-          "title": "Script",
-          "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
-        },
-        "options": {
-          "$ref": "#/definitions/objectExpression",
-          "title": "Options",
-          "description": "One or more options that are passed to the function as args.",
-          "additionalProperties": {
-            "type": "string",
-            "title": "Options",
-            "description": "Options for action."
-          }
-        },
-        "resultProperty": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Property",
-          "description": "Property to store any value returned by the javascript function.",
-          "examples": [
-            "dialog.userName"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Testbot.JavascriptAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Testbot.Multiply": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Multiply",
-      "description": "This will return the result of arg1*arg2",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "arg1": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Arg1",
-          "description": "Value from callers memory to use as arg 1"
-        },
-        "arg2": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Arg2",
-          "description": "Value from callers memory to use as arg 2"
-        },
-        "result": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Result",
-          "description": "Property to store the result in"
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Testbot.Multiply"
         },
         "$designer": {
           "title": "Designer information",
