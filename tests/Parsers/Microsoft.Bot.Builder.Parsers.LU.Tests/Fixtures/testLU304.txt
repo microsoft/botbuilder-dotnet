@@ -1,2 +1,0 @@
-$location:seattle= role=fromCity
-- seattle

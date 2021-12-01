@@ -1,8 +1,0 @@
-
-$location:seattle= roles=[fromCity]
-    - seattle
-
-# test
-- test intent
-
-$location:new york= roles=[toCity]

@@ -1,3 +1,0 @@
-
-@ patternany p1
-@ composite c1 usesFeature p1

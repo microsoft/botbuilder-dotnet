@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Newtonsoft.Json;
@@ -100,19 +99,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
         public LuisRecognizer(LuisApplication application, IBotTelemetryClient telemetryClient, bool logPersonalInformation, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
         : this(BuildLuisRecognizerOptionsV2(application, predictionOptions, includeApiResults), clientHandler)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
-        /// </summary>
-        /// <param name="service">The LUIS service from configuration.</param>
-        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
-        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
-        [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
-        public LuisRecognizer(LuisService service, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler)
         {
         }
 

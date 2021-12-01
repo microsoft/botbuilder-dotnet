@@ -1,3 +1,0 @@
-
-    @regex entity1 r1
-    @regex entity2 r1

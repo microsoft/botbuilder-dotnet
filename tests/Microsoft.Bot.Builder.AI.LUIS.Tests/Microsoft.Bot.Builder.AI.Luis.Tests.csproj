@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\TestUtils.cs" Link="TestUtils.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />

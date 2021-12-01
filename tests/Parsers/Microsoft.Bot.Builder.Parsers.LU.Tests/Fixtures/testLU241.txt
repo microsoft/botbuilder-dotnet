@@ -1,4 +1,0 @@
-# test
-- I want to {productOrder = buy a {product = shirt}} please
-
-$ productOrder : [product]

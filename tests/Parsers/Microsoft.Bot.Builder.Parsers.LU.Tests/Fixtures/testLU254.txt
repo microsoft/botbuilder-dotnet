@@ -1,4 +1,0 @@
-
-# test
-- no, i already have meeting {FromTime=3pm} {FromDate=tomorrow} afternoon
-- no, i already have meeting {FromTime=3pm} {FromDate=tomorrow} afternoon

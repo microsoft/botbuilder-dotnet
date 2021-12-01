@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -40,26 +39,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.Equal(model.ApplicationId, deserialized.ApplicationId);
             Assert.Equal(model.EndpointKey, deserialized.EndpointKey);
             Assert.Equal(model.Endpoint, deserialized.Endpoint);
-        }
-
-        [Fact]
-        public void LuisApplication_Configuration()
-        {
-            // Arrange
-            var service = new LuisService
-            {
-                AppId = Guid.NewGuid().ToString(),
-                SubscriptionKey = Guid.NewGuid().ToString(),
-                Region = "westus",
-            };
-
-            // Act
-            var model = new LuisApplication(service);
-
-            // Assert
-            Assert.Equal(service.AppId, model.ApplicationId);
-            Assert.Equal(service.SubscriptionKey, model.EndpointKey);
-            Assert.Equal(service.GetEndpoint(), model.Endpoint);
         }
 
         [Fact]

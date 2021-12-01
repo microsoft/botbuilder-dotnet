@@ -33,16 +33,8 @@ steps:
     command: test
     projects: |
      Tests/**/*Tests.csproj
-     !Tests/**/AdaptiveExpressions.Tests.csproj
-     !Tests/**/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling.csproj
-     !Tests/**/Microsoft.Bot.Builder.Dialogs.Adaptive.*.Tests.csproj
-     !Tests/**/Microsoft.Bot.Builder.Dialogs.Debugging.Tests.csproj
-     !Tests/**/Microsoft.Bot.Builder.Dialogs.Declarative.Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
-     !Tests/**/Microsoft.Bot.Builder.Parsers.LU.Tests.csproj
-     !Tests/**/Microsoft.Bot.Configuration.Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.Streaming.Tests.csproj
-     !Tests/**/*WebApi.Tests.csproj
      
     arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
 

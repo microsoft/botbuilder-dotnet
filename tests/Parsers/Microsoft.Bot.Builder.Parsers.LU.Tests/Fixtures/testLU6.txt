@@ -1,7 +1,0 @@
-> !# @parser.OnAmbiguousLabels = takeLongestLabel
-
-# test
-- {@cuisineEntity=chinese cuisine}
-
-# test
-- {@cuisineEntity=chinese} cuisine

@@ -1,9 +1,0 @@
-
-
-$project : simple
-
-$project:phraseList
-    - a, b, c
-
-# Test
-- this is a test {project=foo} utterance

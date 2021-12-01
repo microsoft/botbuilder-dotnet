@@ -1,3 +1,0 @@
-
-@ patternany p1
-@ ml s1 usesFeature p1

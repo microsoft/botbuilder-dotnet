@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -12,25 +10,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerEndpoint
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMakerEndpoint"/> class.
-        /// </summary>
-        public QnAMakerEndpoint()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMakerEndpoint"/> class.
-        /// </summary>
-        /// <param name="service">QnA service details from configuration.</param>
-        [Obsolete("This constructor is obsolete, the QnAMakerService class is obsolete and will be removed in a future version of the framework.")]
-        public QnAMakerEndpoint(QnAMakerService service)
-        {
-            KnowledgeBaseId = service.KbId;
-            EndpointKey = service.EndpointKey;
-            Host = service.Hostname;
-        }
-
         /// <summary>
         /// Gets or sets the knowledge base ID.
         /// </summary>
