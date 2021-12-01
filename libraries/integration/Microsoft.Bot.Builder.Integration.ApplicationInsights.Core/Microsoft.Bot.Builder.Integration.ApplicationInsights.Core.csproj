@@ -37,13 +37,10 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj" />
   </ItemGroup>
 </Project>

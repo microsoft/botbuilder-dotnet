@@ -1,3 +1,0 @@
-$three : test :: a = Roles=[from,to]
-- foo
-- bar

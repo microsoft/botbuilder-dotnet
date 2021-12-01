@@ -1,4 +1,0 @@
-
-# test
-- one 
-@ intent test usesFeature test

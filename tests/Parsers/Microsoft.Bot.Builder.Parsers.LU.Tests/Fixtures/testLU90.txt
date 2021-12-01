@@ -1,4 +1,0 @@
-
-@ ml fooBar r1
-@ patternany p1
-@ fooBar usesFeature p1

@@ -1,2 +1,0 @@
-$deviceTemperature : [p1; child2]
-    $deviceTemperature:simple

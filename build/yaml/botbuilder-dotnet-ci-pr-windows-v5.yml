@@ -41,15 +41,7 @@ steps:
       !**\*TestAdapter.dll
       !**\obj\**
       !**\FunctionalTests\**\*Tests.dll
-      !**\Microsoft.Bot.Builder.Adapters.*.dll
-      !**\AdaptiveExpressions*.dll
-      !**\Microsoft.Bot.Builder.Dialogs.Adaptive.*.dll
-      !**\Microsoft.Bot.Builder.Dialogs.Debugging.Tests.dll
-      !**\Microsoft.Bot.Builder.Dialogs.Declarative.Tests.dll
       !**\Microsoft.Bot.Builder.LanguageGeneration.Tests.dll
-      !**\Microsoft.Bot.Builder.Parsers.LU.Tests.dll
-      !**\Microsoft.Bot.Configuration.Tests.dll
-      !**\*.WebApi.Tests.dll
     searchFolder: '$(System.DefaultWorkingDirectory)'
     codeCoverageEnabled: true
     platform: '$(buildPlatform)'

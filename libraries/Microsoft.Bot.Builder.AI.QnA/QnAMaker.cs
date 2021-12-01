@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -100,38 +99,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             : this(endpoint, options, httpClient, null)
         {
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
-        /// </summary>
-        /// <param name="service">QnA service details from configuration.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
-        /// If null, a default client is used for this instance.</param>
-        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
-        [Obsolete("Constructor is deprecated, please use QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient).")]
-#pragma warning disable CS0618 // Type or member is obsolete, this is here only for backward compat and should be removed when QnAMakerService is removed.
-        public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
-            : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
-        {
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
-        /// </summary>
-        /// <param name="service">QnA service details from configuration.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
-        /// If null, a default client is used for this instance.</param>
-        [Obsolete("Constructor is deprecated, please use QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient).")]
-#pragma warning disable CS0618 // Type or member is obsolete, this is here only for backward compat and should be removed when QnAMakerService is removed.
-        public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null)
-            : this(new QnAMakerEndpoint(service), options, httpClient, null)
-        {
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Gets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.

@@ -18,7 +18,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
@@ -455,36 +454,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
             feedbackRecords.Records = new FeedbackRecord[] { feedback1, feedback2 };
 
             await qna.CallTrainAsync(feedbackRecords);
-        }
-
-        [Fact]
-        [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswer_Configuration()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-
-            var service = new QnAMakerService
-            {
-                KbId = _knowledgeBaseId,
-                EndpointKey = _endpointKey,
-                Hostname = _hostname,
-            };
-
-            var options = new QnAMakerOptions
-            {
-                Top = 1,
-            };
-
-            var client = new HttpClient(mockHttp);
-            var qna = new QnAMaker(service, options, client);
-
-            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-            Assert.NotNull(results);
-            Assert.Single(results);
-            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
         }
 
         [Fact]
