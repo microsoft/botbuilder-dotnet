@@ -5,19 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Microsoft.Bot.Schema;
 using Xunit;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
 // More info: https://docs.microsoft.com/azure/storage/common/storage-use-emulator
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
 {
     /// <summary>
     /// Base tests for <seealso cref="BlobsStorageTests"/> and <seealso cref="AzureBlobStorageTests"/>.
     /// </summary>
-    public abstract class BlobStorageBaseTests : StorageBaseTests
+    public abstract class BlobStorageBaseTests : StorageTestsBase
     {
         protected const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
 

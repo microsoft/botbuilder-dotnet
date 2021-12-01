@@ -11,7 +11,7 @@ using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Azure.CosmosDb 
+namespace Microsoft.Bot.Builder.Azure.Cosmos
 {
     /// <summary>
     /// Implements an CosmosDB based storage provider using partitioning for a bot.

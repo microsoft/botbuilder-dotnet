@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-    <ProjectReference Include="..\Storage\Microsoft.Bot.Builder.Azure.Tests.Common\Microsoft.Bot.Builder.Azure.Tests.Common.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Tests.Common\Microsoft.Bot.Builder.Tests.Common.csproj" />
   </ItemGroup>
   
   <ItemGroup>

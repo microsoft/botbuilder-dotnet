@@ -5,13 +5,13 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
-using Microsoft.Bot.Builder.Azure.Blobs;
+using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
 {
     public class BlobsStorageTests : BlobStorageBaseTests, IAsyncLifetime
     {

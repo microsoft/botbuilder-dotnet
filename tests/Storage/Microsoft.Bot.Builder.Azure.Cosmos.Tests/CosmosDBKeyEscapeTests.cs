@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Azure.CosmosDb;
+using Microsoft.Bot.Builder.Azure.Cosmos;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB")]
