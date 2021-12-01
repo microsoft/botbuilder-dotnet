@@ -32,7 +32,7 @@ jobs:
           title: |
             port to v5: ${{ github.event.inputs.prTitle }} (#${{ github.event.inputs.prNumber }})
           labels: |
-            ["parity with v5", "needs-triage", "ExemptFromDailyDRIReport"]
+            ["needs-triage", "ExemptFromDailyDRIReport"]
           body: |
              The changes in PR [${{ github.event.inputs.prTitle }} (#${{ github.event.inputs.prNumber }})](https://github.com/${{ github.event.inputs.sourceRepo }}/pull/${{ github.event.inputs.prNumber }}), merged to `main`, may need to be ported to the `v5` branch to maintain parity.
 
