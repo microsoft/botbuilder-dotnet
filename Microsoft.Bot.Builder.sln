@@ -18,10 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.csproj", "{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Tests", "tests\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{E325A0E2-716A-49E0-9767-5087CF05727C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.QnA.Tests", "tests\Microsoft.Bot.Builder.AI.QnA.Tests\Microsoft.Bot.Builder.AI.QnA.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj", "{6462DA5D-27DC-4CD5-9467-5EFB998FD838}"
@@ -137,8 +133,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Or
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Blobs", "libraries\Storage\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj", "{8EDAA935-DAA1-4E00-9596-7E40D8C0F58C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Queues", "libraries\Microsoft.Bot.Builder.Azure.Queues\Microsoft.Bot.Builder.Azure.Queues.csproj", "{36641924-DE75-4EA9-B139-87F5330D4A09}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Shared", "tests\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj", "{92F88315-B33B-4D8C-AD8E-9E94CADC867F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming", "libraries\Microsoft.Bot.Connector.Streaming\Microsoft.Bot.Connector.Streaming.csproj", "{80FA0E50-8F81-4C60-B265-1039391C1CEE}"
@@ -179,14 +173,6 @@ Global
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -585,8 +571,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{E325A0E2-716A-49E0-9767-5087CF05727C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
@@ -630,7 +614,6 @@ Global
 		{85463C41-8D08-4A9D-A475-68A83730431C} = {1024840D-8B5A-4E39-8F6D-F7430DD3749E}
 		{19CE18FD-3F99-4994-B88E-7D32F9303547} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{8EDAA935-DAA1-4E00-9596-7E40D8C0F58C} = {F5C116C6-8DE2-41E3-BFF2-8578EAF6B2FE}
-		{36641924-DE75-4EA9-B139-87F5330D4A09} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{92F88315-B33B-4D8C-AD8E-9E94CADC867F} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{80FA0E50-8F81-4C60-B265-1039391C1CEE} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{9EBA6EDB-7D67-4BC5-9F94-E0162A538CC7} = {EBFEF03F-9ACE-4312-89D7-2C8A147CDF9C}
