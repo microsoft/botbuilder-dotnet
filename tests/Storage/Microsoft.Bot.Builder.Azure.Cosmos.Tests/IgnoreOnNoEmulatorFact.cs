@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 {
     public sealed class IgnoreOnNoEmulatorFact : FactAttribute
     {

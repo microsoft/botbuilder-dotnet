@@ -3,12 +3,13 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public class MemoryStorageTests : StorageBaseTests, IDisposable
+    public class MemoryStorageTests : StorageTestsBase, IDisposable
     {
         private IStorage storage;
 

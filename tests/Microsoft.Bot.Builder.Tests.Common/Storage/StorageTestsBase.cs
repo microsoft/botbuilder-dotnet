@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Tests.Common.Storage
 {
-    public class StorageBaseTests 
+    public abstract class StorageTestsBase
     {
         protected async Task ReadUnknownTest(IStorage storage)
         {

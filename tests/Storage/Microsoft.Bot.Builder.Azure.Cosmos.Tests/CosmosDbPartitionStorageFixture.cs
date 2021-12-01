@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 {
     public class CosmosDbPartitionStorageFixture : IAsyncLifetime
     {
