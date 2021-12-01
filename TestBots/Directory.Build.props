@@ -1,4 +1,4 @@
-<!-- Contains common properties that apply to projects under the Tests folder -->
+<!-- Contains common properties that apply to projects under the testbots folder -->
 <Project>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
