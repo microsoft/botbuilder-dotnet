@@ -722,7 +722,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (value is JToken || value is JObject || value is JArray)
                 {
-                    val = Clone((JToken)value);
+                    val = ((JToken)value).DeepClone();
                 }
                 else if (value == null)
                 {
