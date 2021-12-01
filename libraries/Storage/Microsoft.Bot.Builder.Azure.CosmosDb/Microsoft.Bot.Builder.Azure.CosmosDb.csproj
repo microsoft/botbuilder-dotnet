@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>Classes for using Azure Storage CosmosDb with the Microsoft Bot Builder SDK</Description>
+    <Description>Classes for using Azure CosmosDb with the Microsoft Bot Builder SDK</Description>
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
@@ -20,9 +20,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="C:\Users\erdahlva\.nuget\packages\microsoft.azure.cosmos\3.23.0\contentFiles\any\netstandard2.0\ThirdPartyNotice.txt" />
-  </ItemGroup>
 
   <ItemGroup>
     <!-- Force System.Text.Encodings.Web to a safe version. -->
@@ -37,6 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
 </Project>

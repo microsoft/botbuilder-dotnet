@@ -66,8 +66,8 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Azure.CosmosDb\Microsoft.Bot.Builder.Azure.CosmosDb.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj" />
+    <ProjectReference Include="..\Storage\Microsoft.Bot.Builder.Azure.CosmosDb\Microsoft.Bot.Builder.Azure.CosmosDb.csproj" />
+    <ProjectReference Include="..\Storage\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
   </ItemGroup>
 

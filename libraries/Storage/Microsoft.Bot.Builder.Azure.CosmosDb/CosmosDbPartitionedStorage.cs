@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Azure.CosmosDb
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
-        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
