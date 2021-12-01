@@ -1,6 +1,0 @@
-> !# @app.settings.NormalizeDiacritics = true
-> !# @app.settings.NormalizePunctuation = True
-> !# @app.settings.UseAllTrainingData = true
-
-# test
-- one

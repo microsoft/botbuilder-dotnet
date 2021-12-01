@@ -1,7 +1,0 @@
-
-# test intent
-- foo
-
-@ ml bar
-
-@ intent "test intent" usesFeature bar

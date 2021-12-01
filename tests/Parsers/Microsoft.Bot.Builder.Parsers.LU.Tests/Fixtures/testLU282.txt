@@ -1,5 +1,0 @@
-
-$HRF-number:/hrf-[0-9]{6}/
-
-# testIntent
-- book a flight to {HRF-number=redmond}

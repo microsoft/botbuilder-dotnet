@@ -1,7 +1,0 @@
-
-$flightBooking : [From, To]
-$From:simple
-$To:simple
-
-# test
-- book a flight {flightBooking:fromCity={From=london}}

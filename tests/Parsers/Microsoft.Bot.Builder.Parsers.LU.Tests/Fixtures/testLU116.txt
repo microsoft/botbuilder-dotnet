@@ -1,7 +1,0 @@
-
-@ml 1
-@prebuilt number
-@list list1
-@1 =
-- @ number from
-- @ list1 myList

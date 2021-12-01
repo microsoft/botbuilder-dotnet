@@ -1,2 +1,0 @@
-﻿> You can include references to other .lu files
-[All LU files](./all.lu)

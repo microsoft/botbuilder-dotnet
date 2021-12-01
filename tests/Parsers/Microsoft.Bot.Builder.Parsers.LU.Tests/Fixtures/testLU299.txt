@@ -1,3 +1,0 @@
-$temperatureUnit : [device, temperature] roles=from, to
-$device : simple
-$PREBUILT : temperature

@@ -3,12 +3,14 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
+    /// <summary>
+    /// Calls services.AddBotApplicationInsights() passing configuration (the most common scenario).
+    /// </summary>
     internal class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -26,8 +28,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var botConfig = BotConfiguration.Load("testbot.bot", null);
-            services.AddBotApplicationInsights(botConfig);
+            services.AddBotApplicationInsights(Configuration);
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.

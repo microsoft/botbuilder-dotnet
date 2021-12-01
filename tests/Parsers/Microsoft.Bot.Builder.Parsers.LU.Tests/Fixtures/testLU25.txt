@@ -1,5 +1,0 @@
-
-# Test
-- zero {foo = one {one = two} three} four
-
-$ foo : [one]

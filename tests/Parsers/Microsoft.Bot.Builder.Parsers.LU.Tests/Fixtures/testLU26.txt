@@ -1,6 +1,0 @@
-
-## Repros
-- when I use the {@outer=same {@inner=text} twice in nested ML entity text}
-
-@ ml outer 
-    - @ ml inner

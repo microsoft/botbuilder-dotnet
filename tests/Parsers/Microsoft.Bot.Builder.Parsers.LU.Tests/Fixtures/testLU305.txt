@@ -1,1 +1,0 @@
-$temperatureUnit : [device, temperature] roles=from

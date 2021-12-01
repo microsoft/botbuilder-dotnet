@@ -1,7 +1,0 @@
-
-
-$product : phraseList
-- one
-- two
-
-$product : simple

@@ -1,2 +1,0 @@
-# test
-- I want a {foodType =tomato} and {foodType =orange}

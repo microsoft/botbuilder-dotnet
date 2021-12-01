@@ -1,6 +1,0 @@
-# test 2
-- this is a {test}
-
-# test
-- this is a test of {test:fromTime = 7AM}
-

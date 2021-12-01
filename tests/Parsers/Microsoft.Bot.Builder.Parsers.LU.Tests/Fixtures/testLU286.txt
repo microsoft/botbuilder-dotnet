@@ -1,4 +1,0 @@
-# foo
-- this is {taskcontent = bar}
-- this is a {taskcontent.any}
-- this is {taskcontent = orange}     

@@ -1,7 +1,0 @@
-## None
-- here's an utterance avalue with a role in it
-
-$aListEntity:some value= Roles=ThisIsARole
-- avalue
-
-$MyComposite:[aListEntity:ThisIsARole]

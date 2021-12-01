@@ -1,6 +1,0 @@
-
-    @ phraselist city disabled
-    @ city =
-        - Seattle
-        - SEATAC
-        - SEA
