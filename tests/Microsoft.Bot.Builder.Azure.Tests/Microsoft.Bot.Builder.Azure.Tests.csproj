@@ -17,8 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure.CosmosDb\Microsoft.Bot.Builder.Azure.CosmosDb.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj" />
+<<<<<<< HEAD
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
+=======
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure.Queues\Microsoft.Bot.Builder.Azure.Queues.csproj" />
+>>>>>>> 522ec1e66... Remove  Bot.Builder.Azure and add Bot.Builder.Azure.CosmosDb
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />

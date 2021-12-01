@@ -11,7 +11,7 @@ using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Azure
+namespace Microsoft.Bot.Builder.Azure.CosmosDb 
 {
     /// <summary>
     /// Implements an CosmosDB based storage provider using partitioning for a bot.
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Azure
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
-        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;

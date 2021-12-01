@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Azure.CosmosDb;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;

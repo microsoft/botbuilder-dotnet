@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Azure.CosmosDb;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests

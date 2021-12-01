@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Bot.Builder.Azure
+namespace Microsoft.Bot.Builder.Azure.CosmosDb
 {
     /// <summary>
     /// Helper methods for escaping keys used for Cosmos DB.

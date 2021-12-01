@@ -3,7 +3,7 @@
 
 using Microsoft.Azure.Cosmos;
 
-namespace Microsoft.Bot.Builder.Azure
+namespace Microsoft.Bot.Builder.Azure.CosmosDb
 {
     /// <summary>
     /// Cosmos DB Partitioned Storage Options.

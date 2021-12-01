@@ -17,10 +17,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
         {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
-            {
-                return false;
-            }
+            //if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
+            //{
+            //    return false;
+            //}
 
             if (File.Exists(EmulatorPath))
             {
