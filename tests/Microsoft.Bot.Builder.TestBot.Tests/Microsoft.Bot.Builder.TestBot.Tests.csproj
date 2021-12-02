@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj" />
+    <ProjectReference Include="..\..\testbots\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
