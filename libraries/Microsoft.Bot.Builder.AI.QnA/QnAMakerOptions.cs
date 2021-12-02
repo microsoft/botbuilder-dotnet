@@ -113,12 +113,38 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets <see cref="StrictFilters"/> join operator.
+        /// Gets or sets a value for join operator on metadata strict filters
         /// </summary>
-        /// <value>
-        /// A value used for join operation of StrictFilters <see cref="StrictFilters"/>.
-        /// </value>
+        /// <value> AND or OR.</value>
+        [Obsolete("This property is no longer used and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether enable Precise Answer.
+        /// </summary>
+        /// <value>
+        /// To enable Precise Answer or not.
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public bool EnablePreciseAnswer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public Models.Filters Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether - Query over Unstructured Sources be enabled or not.
+        /// </summary>
+        /// <value>
+        /// boolean true or false.
+        /// </value>
+        [JsonProperty("includeUnstructuredSources")]
+        public bool IncludeUnstructuredSources { get; set; } = true;
     }
 }

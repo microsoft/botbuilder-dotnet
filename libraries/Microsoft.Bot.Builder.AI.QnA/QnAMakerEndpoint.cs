@@ -41,6 +41,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string KnowledgeBaseId { get; set; }
 
         /// <summary>
+        /// Gets or sets the QnAServiceType.
+        /// </summary>
+        /// <value>
+        /// QnAServiceType V2 or language.
+        /// </value>
+        [JsonProperty("qnAServiceType")]
+        public string QnAServiceType { get; set; }
+
+        /// <summary>
         /// Gets or sets the endpoint key for the knowledge base.
         /// </summary>
         /// <value>

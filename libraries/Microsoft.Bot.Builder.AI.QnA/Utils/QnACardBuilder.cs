@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 throw new ArgumentNullException(nameof(cardNoMatchText));
             }
-
+            
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = cardTitle;
             var buttonList = new List<CardAction>();
@@ -77,48 +77,82 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get active learning suggestions card.
+        /// Get Card for MultiTurn scenario. (Can be deprected from 4.10.0 release of sdk).
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
         {
+            return GetQnADefaultResponse(result, true);
+        }
+
+        /// <summary>
+        /// Get Card for Default QnA Maker scenario.
+        /// </summary>
+        /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="displayPreciseAnswerOnly">renderingchoice.</param>
+        /// <returns>IMessageActivity.</returns>
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
+        {
             if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
-
-            if (cardNoMatchText == null)
-            {
-                throw new ArgumentNullException(nameof(cardNoMatchText));
-            }
-
+            
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = result.Answer;
-            var buttonList = new List<CardAction>();
-
-            // Add all prompt
-            foreach (var prompt in result.Context.Prompts)
+            
+            List<CardAction> buttonList = null;
+            if (result?.Context?.Prompts != null &&
+                result.Context.Prompts.Any())
             {
-                buttonList.Add(
-                    new CardAction()
-                    {
-                        Value = prompt.DisplayText,
-                        Type = "imBack",
-                        Title = prompt.DisplayText,
-                    });
+                buttonList = new List<CardAction>();
+
+                // Add all prompt
+                foreach (var prompt in result.Context.Prompts)
+                {
+                    buttonList.Add(
+                        new CardAction()
+                        {
+                            Value = prompt.DisplayText,
+                            Type = "imBack",
+                            Title = prompt.DisplayText,
+                        });
+                }
             }
 
-            var plCard = new HeroCard()
+            string heroCardText = null;
+            if (!string.IsNullOrWhiteSpace(result?.AnswerSpan?.Text))
             {
-                Buttons = buttonList
-            };
+                chatActivity.Text = result.AnswerSpan.Text;
 
-            // Create the attachment.
-            var attachment = plCard.ToAttachment();
+                // For content choice Precise only
+                if (!displayPreciseAnswerOnly)
+                {
+                    heroCardText = result.Answer;
+                }
+            }
 
-            chatActivity.Attachments.Add(attachment);
+            if (buttonList != null || !string.IsNullOrWhiteSpace(heroCardText))
+            {
+                var plCard = new HeroCard();
+
+                if (buttonList != null)
+                {
+                    plCard.Buttons = buttonList;
+                }
+
+                if (!string.IsNullOrWhiteSpace(heroCardText))
+                {
+                    plCard.Text = heroCardText;
+                }
+
+                // Create the attachment.
+                var attachment = plCard.ToAttachment();
+
+                chatActivity.Attachments.Add(attachment);
+            }
 
             return chatActivity;
         }

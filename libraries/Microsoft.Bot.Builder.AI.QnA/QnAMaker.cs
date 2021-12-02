@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private readonly GenerateAnswerUtils _generateAnswerHelper;
         private readonly TrainUtils _activeLearningTrainHelper;
+        private readonly LanguageServiceUtils _languageServiceHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
@@ -85,8 +86,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
 
-            this._generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
-            this._activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
+            if (string.Equals(endpoint.QnAServiceType, "language", StringComparison.OrdinalIgnoreCase))
+            {
+                this._languageServiceHelper = new LanguageServiceUtils(TelemetryClient, _httpClient, endpoint, options);
+            }
+            else
+            {
+                this._generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
+                this._activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
+            }
         }
 
         /// <summary>
@@ -219,11 +227,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var result = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            QueryResults results;
 
-            await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+            if (string.Equals(_endpoint.QnAServiceType, "language", StringComparison.OrdinalIgnoreCase))
+            {
+                results = await this._languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            }
+            else
+            {
+                results = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            }
 
-            return result;
+            await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+
+            return results;
         }
 
         /// <summary>
@@ -243,7 +260,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            await this._activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            if (string.Equals(_endpoint.QnAServiceType, "language", StringComparison.OrdinalIgnoreCase))
+            {
+                await this._languageServiceHelper.UpdateActiveLearningFeedbackAsync(feedbackRecords).ConfigureAwait(false);
+            }
+            else
+            { 
+                await this._activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            } 
         }
 
         /// <summary>

@@ -148,6 +148,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public IntExpression QnAId { get; set; } = 0;
 
         /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public ObjectExpression<Models.Filters> Filters { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
         /// </summary>
         /// <value>
@@ -190,6 +199,17 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             var filters = new List<Metadata>();
+            var newFilters = new Models.Filters
+            {
+                MetadataFilter = new Models.MetadataFilter
+                {
+                    Metadata = new List<KeyValuePair<string, string>>(),
+                    LogicalOperation = JoinOperator.AND.ToString()
+                },
+                SourceFilter = new List<string>(),
+                LogicalOperation = JoinOperator.OR.ToString()                
+            };
+
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
                 filters.Add(new Metadata
@@ -197,13 +217,26 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Name = "dialogName",
                     Value = dialogContext.ActiveDialog.Id
                 });
+
+                // add any additional metadata in the new filters format as well
+                newFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("dialogName", dialogContext.ActiveDialog.Id));
             }
 
             // if there is $qna.metadata set add to filters
             var externalMetadata = Metadata?.GetValue(dialogContext.State);
+            var externalFilters = Filters?.GetValue(dialogContext.State);
+
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
+            }
+
+            if (externalFilters != null)
+            {
+                externalFilters.MetadataFilter?.Metadata.ToList().ForEach(kv => newFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>(kv.Key, kv.Value)));
+                newFilters.MetadataFilter.LogicalOperation = externalFilters.MetadataFilter?.LogicalOperation;
+                newFilters.SourceFilter.AddRange(externalFilters.SourceFilter);
+                newFilters.LogicalOperation = externalFilters.LogicalOperation;
             }
 
             // Calling QnAMaker to get response.
@@ -219,7 +252,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     QnAId = QnAId.GetValue(dialogContext.State),
                     RankerType = RankerType.GetValue(dialogContext.State),
                     IsTest = IsTest,
-                    StrictFiltersJoinOperator = StrictFiltersJoinOperator
+                    StrictFiltersJoinOperator = StrictFiltersJoinOperator, // set new filters if user does not have legacy metadata in the dialog context
+                    Filters = externalMetadata == null ? newFilters : null,
                 },
                 null).ConfigureAwait(false);
 
@@ -341,6 +375,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             return properties;
-        } 
+        }
     }
 }
