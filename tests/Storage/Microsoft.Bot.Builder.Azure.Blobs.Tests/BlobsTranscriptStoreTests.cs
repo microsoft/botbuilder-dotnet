@@ -6,9 +6,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
-using Microsoft.Bot.Builder.Azure.Blobs;
+using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,7 +16,7 @@ using Xunit.Sdk;
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
 // More info: https://docs.microsoft.com/azure/storage/common/storage-use-emulator
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - BlobsTranscriptStore")]

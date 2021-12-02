@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB Partitioned")]
-    public class CosmosDbPartitionStorageTests : StorageBaseTests, IAsyncLifetime, IClassFixture<CosmosDbPartitionStorageFixture>
+    public class CosmosDbPartitionStorageTests : StorageTestsBase, IAsyncLifetime, IClassFixture<CosmosDbPartitionStorageFixture>
     {
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";

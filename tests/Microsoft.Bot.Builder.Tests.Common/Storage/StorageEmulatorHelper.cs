@@ -9,7 +9,7 @@ using System.Text;
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
 // More info: https://docs.microsoft.com/azure/storage/common/storage-use-emulator
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.Tests.Common.Storage
 {
     public static class StorageEmulatorHelper
     {
