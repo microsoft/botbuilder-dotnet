@@ -205,6 +205,8 @@ namespace Microsoft.Bot.Builder
                 { TelemetryConstants.LocaleProperty, activity.Locale },
                 { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
                 { TelemetryConstants.RecipientNameProperty, activity.Recipient?.Name },
+                { TelemetryConstants.TextProperty, activity.Recipient?.Name },
+                { TelemetryConstants.ActivityTypeProperty, activity.Type },
             };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
@@ -260,6 +262,7 @@ namespace Microsoft.Bot.Builder
                     { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
+                    { TelemetryConstants.ActivityTypeProperty, activity.Type },
                 };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
@@ -317,6 +320,7 @@ namespace Microsoft.Bot.Builder
                     { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
+                    { TelemetryConstants.ActivityTypeProperty, activity.Type },
                 };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text is a common example
@@ -356,6 +360,7 @@ namespace Microsoft.Bot.Builder
                     { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
                     { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
+                    { TelemetryConstants.ActivityTypeProperty, activity.Type },
                 };
 
             // Additional Properties can override "stock" properties.
