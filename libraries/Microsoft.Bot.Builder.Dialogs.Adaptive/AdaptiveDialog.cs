@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     { "DialogId", Id },
                     { "Kind", Kind }
                 };
-            TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.DialogStartEvent, properties);
             TelemetryClient.TrackDialogView(Id);
 
             await OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
@@ -291,11 +291,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (reason == DialogReason.CancelCalled)
             {
-                TelemetryClient.TrackEvent("AdaptiveDialogCancel", properties);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.DialogCancelEvent, properties);
             }
             else if (reason == DialogReason.EndCalled)
             {
-                TelemetryClient.TrackEvent("AdaptiveDialogComplete", properties);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.CompleteEvent, properties);
             }
 
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
@@ -999,7 +999,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     { "Kind", $"Microsoft.{condition.GetType().Name}" },
                     { "ConditionId", condition.Id },
                 };
-                TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.TriggerEvent, properties);
 
                 var changes = await condition.ExecuteAsync(actionContext).ConfigureAwait(false);
 

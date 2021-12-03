@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 { "template", JsonConvert.SerializeObject(Activity) },
                 { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
             };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.UpdateActivityResultEvent, properties);
 
             var (result, error) = this.ActivityId.TryGetValue(dc.State);
             if (error != null)
