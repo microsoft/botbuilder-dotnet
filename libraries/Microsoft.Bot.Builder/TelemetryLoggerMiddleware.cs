@@ -205,7 +205,6 @@ namespace Microsoft.Bot.Builder
                 { TelemetryConstants.LocaleProperty, activity.Locale },
                 { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
                 { TelemetryConstants.RecipientNameProperty, activity.Recipient?.Name },
-                { TelemetryConstants.TextProperty, activity.Recipient?.Name },
                 { TelemetryConstants.ActivityTypeProperty, activity.Type },
             };
 
