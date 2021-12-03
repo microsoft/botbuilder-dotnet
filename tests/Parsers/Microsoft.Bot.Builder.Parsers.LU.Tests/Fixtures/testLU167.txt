@@ -1,3 +1,0 @@
-
-    @prebuilt number
-    @number hasRole age

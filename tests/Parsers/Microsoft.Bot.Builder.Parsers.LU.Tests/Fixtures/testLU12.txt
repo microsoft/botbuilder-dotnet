@@ -1,3 +1,0 @@
-
-@composite "foo bar"
-@composite 'a b'

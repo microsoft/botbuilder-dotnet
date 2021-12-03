@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json.Linq;

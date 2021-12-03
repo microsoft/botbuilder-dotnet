@@ -1,0 +1,40 @@
+#
+# Pipeline: BotBuilder-Dotnet-PR-MacOS-v5
+#
+
+trigger:
+- v5
+
+pr:
+- v5
+
+pool:
+  vmImage: 'macos-latest'
+
+variables:
+  solution: '**/Microsoft.Bot.Builder.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .Net Core sdk 3.1.101'
+  inputs:
+    version: 3.1.101
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    projects: Microsoft.Bot.Builder.sln
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.Streaming.Tests.csproj
+     
+    arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
+

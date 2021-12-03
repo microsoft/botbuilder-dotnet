@@ -1,1 +1,0 @@
-$name:simple roles=[firstname, lastname]

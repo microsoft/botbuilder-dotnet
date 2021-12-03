@@ -1,3 +1,0 @@
-
-    @phraselist xyz(interchangeable)
-    @xyz hasRoles r1

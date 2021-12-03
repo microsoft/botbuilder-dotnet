@@ -1,5 +1,0 @@
-
-    @phraselist xyz = 
-        - one, two
-    @phraselist xyz = 
-        - three, four

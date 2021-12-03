@@ -1,2 +1,0 @@
-
-@ ml "entity 1" hasRoles "role 1", "role 2"

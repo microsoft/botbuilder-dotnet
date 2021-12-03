@@ -1,1 +1,0 @@
-{"query":"Chris","prediction":{"topIntent":"sandwich","intents":{"sandwich":{"score":0.983874857}},"entities":{"personName":["Chris"],"$instance":{"personName":[{"type":"builtin.personName","text":"Chris","startIndex":0,"length":5,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

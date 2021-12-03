@@ -1,2 +1,0 @@
-
-    @patternany p1 hasRoles r1, r2

@@ -1,1 +1,0 @@
-$deviceTemperature : [p1; child2]

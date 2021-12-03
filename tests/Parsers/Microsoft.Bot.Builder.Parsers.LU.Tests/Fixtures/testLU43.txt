@@ -1,2 +1,0 @@
-
-@ intent xyz hasRoles r1

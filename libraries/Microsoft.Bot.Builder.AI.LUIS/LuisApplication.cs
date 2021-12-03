@@ -3,7 +3,6 @@
 
 using System;
 using System.Web;
-using Microsoft.Bot.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -27,15 +26,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="endpoint">LUIS endpoint to use like https://westus.api.cognitive.microsoft.com.</param>
         public LuisApplication(string applicationId, string endpointKey, string endpoint)
             : this((applicationId, endpointKey, endpoint))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuisApplication"/> class.
-        /// </summary>
-        /// <param name="service">LUIS configuration.</param>
-        public LuisApplication(LuisService service)
-            : this((service.AppId, service.SubscriptionKey, service.GetEndpoint()))
         {
         }
 

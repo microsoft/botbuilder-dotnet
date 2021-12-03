@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -31,7 +30,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            BotConfiguration.Load("testbot.bot", null);
             services.AddBotApplicationInsights(_telemClient.Object);
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be

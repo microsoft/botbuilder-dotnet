@@ -1,8 +1,0 @@
-
-    # test
-    - this is a {@r1} from {@list1}
-    
-    @ml test r1
-    @list list1 r2 =
-        - one:
-            - uno

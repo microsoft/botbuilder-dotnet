@@ -596,22 +596,6 @@
       ]
     }
   },
-  "Microsoft.FacebookAdapter": {
-    "form": {
-      "description": "Connects a bot to Facebook.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Facebook",
-      "hidden": [
-        "type"
-      ],
-      "label": "Facebook connection.",
-      "order": [
-        "FacebookVerifyToken",
-        "FacebookAppSecret",
-        "FacebookAccessToken",
-        "*"
-      ]
-    }
-  },
   "Microsoft.Foreach": {
     "flow": {
       "loop": {
@@ -1567,22 +1551,6 @@
       ]
     }
   },
-  "Microsoft.SlackAdapter": {
-    "form": {
-      "description": "Connects a bot to Slack.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
-      "hidden": [
-        "type"
-      ],
-      "label": "Slack connection.",
-      "order": [
-        "SlackVerificationToken",
-        "SlackBotToken",
-        "SlackClientSigningSecret",
-        "*"
-      ]
-    }
-  },
   "Microsoft.SwitchCondition": {
     "flow": {
       "judgement": {
@@ -1714,23 +1682,6 @@
       ]
     }
   },
-  "Microsoft.TwilioAdapter": {
-    "form": {
-      "description": "Connects a bot to Twilio.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Twilio",
-      "hidden": [
-        "type"
-      ],
-      "label": "Twilio connection.",
-      "order": [
-        "TwilioNumber",
-        "TwilioAccountSid",
-        "TwilioAuthToken",
-        "TwilioValidationUrl",
-        "*"
-      ]
-    }
-  },
   "Microsoft.UpdateActivity": {
     "flow": {
       "body": {
@@ -1756,23 +1707,6 @@
       "label": "Update an activity",
       "submenu": [
         "Manage properties"
-      ]
-    }
-  },
-  "Microsoft.WebexAdapter": {
-    "form": {
-      "description": "Connects a bot to Webex.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Webex",
-      "hidden": [
-        "type"
-      ],
-      "label": "Webex connection.",
-      "order": [
-        "WebexAccessToken",
-        "WebexPublicAddress",
-        "WebexSecret",
-        "WebexWebhookName",
-        "*"
       ]
     }
   }

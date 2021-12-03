@@ -1,5 +1,0 @@
-
-@ ml fooBar
-# intent1
-- test
-@fooBar usesFeature intent1

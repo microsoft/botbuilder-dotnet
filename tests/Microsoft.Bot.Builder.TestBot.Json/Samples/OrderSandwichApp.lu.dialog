@@ -1,8 +1,0 @@
-{
-    "$schema": "../testbot.schema",
-    "$kind": "Microsoft.MultiLanguageRecognizer",
-    "recognizers": {
-        "en-us": "OrderSandwichApp.en-us.lu",
-        "": "OrderSandwichApp.en-us.lu"
-    }
-}
