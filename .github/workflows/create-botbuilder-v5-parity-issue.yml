@@ -47,7 +47,7 @@ jobs:
 
     strategy:
       matrix:
-        repo: [BruceHaley/botbuilder-dotnet]
+        repo: [microsoft/botbuilder-dotnet]
 
     steps:
       - uses: joshgummersall/dispatch-workflow@main
