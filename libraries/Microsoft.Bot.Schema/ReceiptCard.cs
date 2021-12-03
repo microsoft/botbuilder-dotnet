@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -35,7 +33,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="vat">Total amount of VAT paid (or to be paid).</param>
         /// <param name="buttons">Set of actions applicable to the current
         /// card.</param>
-        public ReceiptCard(string title = default(string), IList<Fact> facts = default(IList<Fact>), IList<ReceiptItem> items = default(IList<ReceiptItem>), CardAction tap = default(CardAction), string total = default(string), string tax = default(string), string vat = default(string), IList<CardAction> buttons = default(IList<CardAction>))
+        public ReceiptCard(string title = default, IList<Fact> facts = default, IList<ReceiptItem> items = default, CardAction tap = default, string total = default, string tax = default, string vat = default, IList<CardAction> buttons = default)
         {
             Title = title;
             Facts = facts;

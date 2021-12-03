@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="amount">Monetary amount for the item.</param>
         /// <param name="pending">When set to true this flag means that the
         /// amount field is not final.</param>
-        public PaymentItem(string label = default(string), PaymentCurrencyAmount amount = default(PaymentCurrencyAmount), bool? pending = default(bool?))
+        public PaymentItem(string label = default, PaymentCurrencyAmount amount = default, bool? pending = default)
         {
             Label = label;
             Amount = amount;

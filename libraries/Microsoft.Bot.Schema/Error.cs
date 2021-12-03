@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="code">Error code.</param>
         /// <param name="message">Error message.</param>
         /// <param name="innerHttpError">Error from inner http call.</param>
-        public Error(string code = default(string), string message = default(string), InnerHttpError innerHttpError = default(InnerHttpError))
+        public Error(string code = default, string message = default, InnerHttpError innerHttpError = default)
         {
             Code = code;
             Message = message;

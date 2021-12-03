@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="type">The type of the thing.</param>
         /// <param name="name">The name of the thing.</param>
-        public Thing(string type = default(string), string name = default(string))
+        public Thing(string type = default, string name = default)
         {
             Type = type;
             Name = name;

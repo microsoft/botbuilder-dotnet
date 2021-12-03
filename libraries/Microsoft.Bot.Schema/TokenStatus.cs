@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -30,7 +29,7 @@ namespace Microsoft.Bot.Schema
         /// ConnectionName.</param>
         /// <param name="serviceProviderDisplayName">The display name of the
         /// service provider for which this Token belongs to.</param>
-        public TokenStatus(string channelId = default(string), string connectionName = default(string), bool? hasToken = default(bool?), string serviceProviderDisplayName = default(string))
+        public TokenStatus(string channelId = default, string connectionName = default, bool? hasToken = default, string serviceProviderDisplayName = default)
         {
             ChannelId = channelId;
             ConnectionName = connectionName;

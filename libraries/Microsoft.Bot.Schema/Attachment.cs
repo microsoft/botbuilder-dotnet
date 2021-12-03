@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">(OPTIONAL) The name of the attachment.</param>
         /// <param name="thumbnailUrl">(OPTIONAL) Thumbnail associated with
         /// attachment.</param>
-        public Attachment(string contentType = default(string), string contentUrl = default(string), object content = default(object), string name = default(string), string thumbnailUrl = default(string))
+        public Attachment(string contentType = default, string contentUrl = default, object content = default, string name = default, string thumbnailUrl = default)
         {
             ContentType = contentType;
             ContentUrl = contentUrl;
