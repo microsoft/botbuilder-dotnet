@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             await dialogContext.Context.TraceActivityAsync(nameof(RegexRecognizer), JObject.FromObject(recognizerResult), "RecognizerResult", "Regex RecognizerResult", cancellationToken).ConfigureAwait(false);
 
-            TrackRecognizerResult(dialogContext, "RegexRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, TelemetryLoggerConstants.RegexRecognizerResultEvent, FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
             return recognizerResult;
         }
