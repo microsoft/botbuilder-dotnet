@@ -9,6 +9,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public static class TelemetryLoggerConstants
     {
         /// <summary>
+        /// The generic name of the event when an binding completes. When this event is logged, the context property will contain a more descriptive constant.
+        /// </summary>
+        public static readonly string GeneratorResultEvent = "GeneratorResult";
+
+        /// <summary>
         /// The name of the event when an adaptive dialog trigger occurs.
         /// </summary>
         public static readonly string TriggerEvent = "AdaptiveDialogTrigger";
