@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     QnAId = QnAId.GetValue(dialogContext.State),
                     RankerType = RankerType.GetValue(dialogContext.State),
                     IsTest = IsTest,
-                    StrictFiltersJoinOperator = StrictFiltersJoinOperator, // set new filters if user does not have legacy metadata in the dialog context
+                    StrictFiltersJoinOperator = StrictFiltersJoinOperator, 
                     Filters = externalMetadata == null ? newFilters : null,
                 },
                 null).ConfigureAwait(false);

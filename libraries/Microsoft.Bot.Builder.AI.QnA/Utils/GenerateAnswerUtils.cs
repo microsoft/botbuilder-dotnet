@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     queryOptions.Filters = LanguageServiceUtils.GetFilters(queryOptions.StrictFilters, queryOptions.StrictFiltersJoinOperator.ToString());
                 }
 
-                if (queryOptions.Filters?.MetadataFilter?.Metadata != null)
+                if (queryOptions.Filters?.MetadataFilter?.Metadata != null || queryOptions.Filters?.SourceFilter != null)
                 {
                     hydratedOptions.Filters = queryOptions.Filters;
                 }
@@ -199,12 +199,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
-            AnswerSpanRequest answerSpanRequest = null;
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
+            AnswerSpanRequest answerSpanRequest = new AnswerSpanRequest();
+            answerSpanRequest.Enable = options.EnablePreciseAnswer;
 
             var jsonRequest = JsonConvert.SerializeObject(
                 new
@@ -232,13 +228,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            AnswerSpanRequest answerSpanRequest = null;
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
+            AnswerSpanRequest answerSpanRequest = new AnswerSpanRequest();
+            answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = messageActivity,

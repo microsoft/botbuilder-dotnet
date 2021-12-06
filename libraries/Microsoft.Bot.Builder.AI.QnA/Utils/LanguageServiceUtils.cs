@@ -299,13 +299,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>An object of <see cref="Task"/>Asyncronous task.</returns>
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            AnswerSpanRequest answerSpanRequest = null;
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
+            AnswerSpanRequest answerSpanRequest = new AnswerSpanRequest();
+            answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = messageActivity,
