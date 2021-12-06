@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task UpdateFeedbackAsync(FeedbackRecords feedbackRecords)
         {
             var requestUrl = $"{_endpoint.Host}/language/query-knowledgebases/projects/{_endpoint.KnowledgeBaseId}/feedback?{ApiVersionQueryParam}";
-            var jsonRequest = JsonConvert.SerializeObject(new FeedbackRequest { Records = feedbackRecords.Records.ToList() }, Formatting.None);
+            var jsonRequest = JsonConvert.SerializeObject(new FeedbackRequest(feedbackRecords.Records.ToList()), Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="messageActivity">messageActivity.</param>
         /// <param name="result">result.</param>
         /// <param name="options">options.</param>
-        /// <returns>An object of <see cref="Task"/></returns>
+        /// <returns>An object of <see cref="Task"/>Asyncronous task.</returns>
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
             AnswerSpanRequest answerSpanRequest = null;

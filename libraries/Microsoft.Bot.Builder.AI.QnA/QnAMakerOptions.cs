@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets a value for join operator on metadata strict filters
+        /// Gets or sets a value for join operator on metadata strict filters.
         /// </summary>
         /// <value> AND or OR.</value>
         [Obsolete("This property is no longer used and will be ignored. Use filters object instead.")]

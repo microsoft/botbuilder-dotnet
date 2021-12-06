@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// AnswerSpanRequest - model to enable precise answer
+    /// AnswerSpanRequest - model to enable precise answer.
     /// </summary>
     public class AnswerSpanRequest
     {

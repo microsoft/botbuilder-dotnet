@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// on an active learning card.</param>
         /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
-        /// <param name="filters">filters - for metadata and sources</param>
-	    /// <param name="qnAServiceType">Optional qna Service type empty/v2/language</param>
+        /// <param name="filters">filters - for metadata and sources.</param>
+        /// <param name="qnAServiceType">Optional qna Service type empty/v2/language.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
             Models.Filters filters = null,
-			string qnAServiceType = "",
+            string qnAServiceType = "",
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
             this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
             this.Filters = filters;
-			this.QnAServiceType = qnAServiceType;
+            this.QnAServiceType = qnAServiceType;
             this.HttpClient = httpClient;
 
             // add waterfall steps
@@ -160,8 +160,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// on an active learning card.</param>
         /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
-        /// <param name="filters">Filters that include metadata and sources</param>
-		/// <param name="qnAServiceType">QnA Service type empty/v2/language</param>
+        /// <param name="filters">Filters that include metadata and sources.</param>
+        /// <param name="qnAServiceType">QnA Service type empty/v2/language.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -397,6 +397,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// Gets or sets qna service type.
         /// </summary>
+        /// <value>
+        /// Qna service type.
+        /// </value>
         [JsonProperty("qnAServiceType")]
         public StringExpression QnAServiceType { get; set; }
 
@@ -691,7 +694,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
                     {
-                        if (qna.Questions.Length > 0) // for unstructured sources questions will be empty
+                        // for unstructured sources questions will be empty
+                        if (qna.Questions.Length > 0)
                         {
                             suggestedQuestions.Add(qna.Questions[0]);
                         }
@@ -723,7 +727,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
         }
-
  
         private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {

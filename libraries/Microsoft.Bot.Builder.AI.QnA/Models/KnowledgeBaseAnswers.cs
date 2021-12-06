@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class KnowledgeBaseAnswers
     {
         /// <summary>
-        /// Gets or sets the answers for a user query,
+        /// Gets the answers for a user query,
         /// sorted in decreasing order of ranking score.
         /// </summary>
         /// <value>
@@ -20,6 +20,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// sorted in decreasing order of ranking score.
         /// </value>
         [JsonProperty("answers")]
-        public List<KnowledgeBaseAnswer> Answers { get; set; }
+        public List<KnowledgeBaseAnswer> Answers { get; }
     }
 }

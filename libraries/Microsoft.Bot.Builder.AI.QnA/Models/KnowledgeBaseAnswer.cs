@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
@@ -18,7 +18,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<string> Questions { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the answer text.
@@ -29,9 +31,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("answer")]
         public string Answer { get; set; }
 
-        /// <summary> Metadata associated with the answer, useful to categorize or filter question answers. </summary>
+        /// <summary> Gets or sets metadata associated with the answer, useful to categorize or filter question answers. </summary>
+        /// <value>
+        ///  A value of Metadata associated with the answer, useful to categorize or filter question answers.
+        /// </value>
         [JsonProperty(PropertyName = "metadata")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public Dictionary<string, string> Metadata { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the answer's score, from 0.0 (least confidence) to

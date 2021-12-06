@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
+    /// <summary>
+    /// KnowledgeBaseAnswerSpan - Answer Span in Knowledge base answer.
+    /// </summary>
     public class KnowledgeBaseAnswerSpan
     {
         /// <summary>

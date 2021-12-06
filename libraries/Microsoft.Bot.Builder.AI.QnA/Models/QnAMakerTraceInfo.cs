@@ -141,8 +141,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public AnswerSpanRequest AnswerSpanRequest { get; set; }
 
         /// <summary>
-        /// (Optional) Flag to enable Query over Unstructured Sources.
+        /// Gets or sets a value indicating whether to enable Query over Unstructured Sources.
         /// </summary>
+        /// <value>
+        /// (Optional) Flag to enable Query over Unstructured Sources.
+        /// </value>
         [JsonProperty("includeUnstructuredSources")]
         public bool IncludeUnstructuredSources { get; set; }
     }

@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
+    /// <summary>
+    /// AnswerSpanResponse - Short Answer span from the longer answer and its properties.
+    /// </summary>
     public class AnswerSpanResponse
     {
         /// <summary>
