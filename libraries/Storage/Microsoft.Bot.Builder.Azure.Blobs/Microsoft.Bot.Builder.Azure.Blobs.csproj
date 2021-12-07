@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(ReleasePackageVersion)' == '' ">$(LocalPackageVersion)</Version>
-    <Version Condition=" '$(ReleasePackageVersion)' != '' ">$(ReleasePackageVersion)</Version>
-    <PackageVersion Condition=" '$(ReleasePackageVersion)' == '' ">$(LocalPackageVersion)</PackageVersion>
-    <PackageVersion Condition=" '$(ReleasePackageVersion)' != '' ">$(ReleasePackageVersion)</PackageVersion>
+    <Version Condition=" '$(PreviewPackageVersion)' == '' ">$(LocalPackageVersion)</Version>
+    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">$(LocalPackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Azure.Blobs.xml</DocumentationFile>
   </PropertyGroup>
@@ -27,8 +27,8 @@
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.21" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
