@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    [Obsolete("Use ForEachIterative instead.")]
+    [Obsolete("Use ForEachElement instead.")]
     public class Foreach : ActionScope
     {
         /// <summary>
