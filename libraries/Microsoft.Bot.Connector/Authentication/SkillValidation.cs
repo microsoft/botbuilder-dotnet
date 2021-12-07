@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 
@@ -14,29 +13,6 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public static class SkillValidation
     {
-        /// <summary>
-        /// Determines if a given Auth header is from from a skill to bot or bot to skill request.
-        /// </summary>
-        /// <param name="authHeader">Bearer Token, in the "Bearer [Long String]" Format.</param>
-        /// <returns>True, if the token was issued for a skill to bot communication. Otherwise, false.</returns>
-        public static bool IsSkillToken(string authHeader)
-        {
-            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
-            {
-                return false;
-            }
-
-            // We know is a valid token, split it and work with it:
-            // [0] = "Bearer"
-            // [1] = "[Big Long String]"
-            var bearerToken = authHeader.Split(' ')[1];
-
-            // Parse the Big Long String into an actual token.
-            var token = new JwtSecurityToken(bearerToken);
-
-            return IsSkillClaim(token.Claims);
-        }
-
         /// <summary>
         /// Checks if the given list of claims represents a skill.
         /// </summary>
@@ -86,15 +62,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Skill claims must contain and app ID and the AppID must be different than the audience.
             return appId != audience;
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ClaimsIdentity"/> for an anonymous (unauthenticated) skill. 
-        /// </summary>
-        /// <returns>A <see cref="ClaimsIdentity"/> instance with authentication type set to <see cref="AuthenticationConstants.AnonymousAuthType"/> and a reserved <see cref="AuthenticationConstants.AnonymousSkillAppId"/> claim.</returns>
-        public static ClaimsIdentity CreateAnonymousSkillClaim()
-        {
-            return new ClaimsIdentity(new List<Claim> { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, AuthenticationConstants.AnonymousAuthType);
         }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -147,7 +148,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
                 {
                     // Return an anonymous claim with an anonymous skill AppId
-                    return SkillValidation.CreateAnonymousSkillClaim();
+                    var anonymousClaim = new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId);
+                    return new ClaimsIdentity(new List<Claim> { anonymousClaim }, AuthenticationConstants.AnonymousAuthType);
                 }
 
                 // In the scenario where Auth is disabled, we still want to have the
@@ -186,12 +188,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, string channelId, string serviceUrl, CancellationToken cancellationToken)
         {
-            if (SkillValidation.IsSkillToken(authHeader))
+            if (IsTokenFromSkill(authHeader))
             {
                 return await AuthenticateSkillTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
             }
 
-            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
+            if (IsTokenFromEmulator(authHeader))
             {
                 return await AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
             }
@@ -285,27 +287,28 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
+        private bool IsTokenFromSkill(string authHeader)
+        {
+            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
+            {
+                return false;
+            }
+
+            // We know is a valid token, split it and work with it:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var bearerToken = authHeader.Split(' ')[1];
+
+            // Parse the Big Long String into an actual token.
+            var token = new JwtSecurityToken(bearerToken);
+
+            return SkillValidation.IsSkillClaim(token.Claims);
+        }
+
         // The following code is based on EmulatorValidation.AuthenticateEmulatorToken
         private async Task<ClaimsIdentity> AuthenticateEmulatorTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
         {
-            var emulatorTokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuers = new[]
-                {
-                    // TODO: presumably this table should also come from configuration
-                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
-                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
-                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
-                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
-                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
-                },
-                ValidateAudience = false, // Audience validation takes place manually in code.
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(5),
-                RequireSignedTokens = true,
-            };
+            var emulatorTokenValidationParameters = GetEmulatorTokenValidationParameters();
 
             // Add allowed token issuers from configuration (if present)
             if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
@@ -386,6 +389,62 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return identity;
+        }
+
+        private bool IsTokenFromEmulator(string authHeader)
+        {
+            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
+            {
+                return false;
+            }
+
+            // We know is a valid token, split it and work with it:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var bearerToken = authHeader.Split(' ')[1];
+
+            // Parse the Big Long String into an actual token.
+            var token = new JwtSecurityToken(bearerToken);
+
+            // Is there an Issuer?
+            if (string.IsNullOrWhiteSpace(token.Issuer))
+            {
+                // No Issuer, means it's not from the Emulator.
+                return false;
+            }
+
+            // Is the token issued by a source we consider to be the emulator?
+            var emulatorTokenValidationParameters = GetEmulatorTokenValidationParameters();
+            if (!emulatorTokenValidationParameters.ValidIssuers.Contains(token.Issuer))
+            {
+                // Not a Valid Issuer. This is NOT a Bot Framework Emulator Token.
+                return false;
+            }
+
+            // The Token is from the Bot Framework Emulator. Success!
+            return true;
+        }
+
+        private TokenValidationParameters GetEmulatorTokenValidationParameters()
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuers = new[]
+                {
+                    // TODO: presumably this table should also come from configuration
+                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
+                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
+                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
+                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                },
+                ValidateAudience = false, // Audience validation takes place manually in code.
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(5),
+                RequireSignedTokens = true,
+            };
         }
 
         // The following code is based on GovernmentChannelValidation.AuthenticateChannelToken
