@@ -1,0 +1,54 @@
+#
+# Used in BotBuilder-DotNet-Signed-daily-v5.
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Date:yyyyMMdd).$(Build.BuildId)
+
+pool:
+  vmImage: 'windows-latest' # or 'windows-2019'
+  demands:
+  - msbuild
+  - visualstudio
+
+trigger: none # ci trigger is set in ADO
+pr: none # pr trigger is set in ADO
+
+variables:
+  BuildConfiguration: Release-Windows
+  TestConfiguration: Release
+  BuildPlatform: any cpu
+  MSBuildArguments: -p:PublishRepositoryUrl=true -p:GeneratePackages=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-preview-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
+#  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
+
+jobs:
+- job: Build_and_Sign
+  steps:
+  - powershell: |
+     # Replace {DateStamp} and {CommitHash} tokens with the actual values in vars ReleasePackageVersion and PreviewPackageVersion
+     $dateStamp = (Get-Date -format "yyyyMMdd");
+     $commitHash = "$(Build.SourceVersion)".SubString(0,7);
+
+     "Raw ReleasePackageVersion = $(ReleasePackageVersion)";
+     $v = "$(ReleasePackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     Write-Host "##vso[task.setvariable variable=ReleasePackageVersion;]$v";
+     "Resolved ReleasePackageVersion = $v";
+
+     "Raw PreviewPackageVersion = $(PreviewPackageVersion)";
+     $ppv = "$(PreviewPackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     Write-Host "##vso[task.setvariable variable=PreviewPackageVersion;]$ppv";
+     "Resolved PreviewPackageVersion = $ppv";
+    displayName: 'Resolve package version variables'
+
+  - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
+    displayName: 'Tag build with release and preview versions'
+    inputs:
+      tags: |
+       Release: $(ReleasePackageVersion)
+       Preview: $(PreviewPackageVersion)
+    continueOnError: true
+
+  - template: ci-build-steps.yml
+  - template: sign-steps.yml
