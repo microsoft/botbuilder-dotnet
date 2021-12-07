@@ -3,6 +3,7 @@
 
 using System;
 using System.Net.Http;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -66,50 +67,43 @@ namespace Microsoft.Bot.Connector.Authentication
             IHttpClientFactory httpClientFactory,
             ILogger logger)
         {
-            if (
-                !string.IsNullOrEmpty(toChannelFromBotLoginUrl) || 
-                !string.IsNullOrEmpty(toChannelFromBotOAuthScope) || 
-                !string.IsNullOrEmpty(toBotFromChannelTokenIssuer) || 
-                !string.IsNullOrEmpty(oAuthUrl) ||
-                !string.IsNullOrEmpty(toBotFromChannelOpenIdMetadataUrl) ||
-                !string.IsNullOrEmpty(toBotFromEmulatorOpenIdMetadataUrl) ||
-                !string.IsNullOrEmpty(callerId))
+            if (string.IsNullOrWhiteSpace(channelService))
             {
-                // if we have any of the 'parameterized' properties defined we'll assume this is the parameterized code
-
+                // Public cloud - Allow parameters to be overridden by configuration
                 return new ParameterizedBotFrameworkAuthentication(
                     validateAuthority,
-                    toChannelFromBotLoginUrl,
-                    toChannelFromBotOAuthScope,
-                    toBotFromChannelTokenIssuer,
-                    oAuthUrl,
-                    toBotFromChannelOpenIdMetadataUrl,
-                    toBotFromEmulatorOpenIdMetadataUrl,
-                    callerId,
+                    string.IsNullOrWhiteSpace(toChannelFromBotLoginUrl) ? AuthenticationConstants.ToChannelFromBotLoginUrlTemplate : toChannelFromBotLoginUrl,
+                    string.IsNullOrWhiteSpace(toChannelFromBotOAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : toChannelFromBotOAuthScope,
+                    string.IsNullOrWhiteSpace(toBotFromChannelTokenIssuer) ? AuthenticationConstants.ToBotFromChannelTokenIssuer : toBotFromChannelTokenIssuer,
+                    string.IsNullOrWhiteSpace(oAuthUrl) ? AuthenticationConstants.OAuthUrl : oAuthUrl,
+                    string.IsNullOrWhiteSpace(toBotFromChannelOpenIdMetadataUrl) ? AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl : toBotFromChannelOpenIdMetadataUrl,
+                    string.IsNullOrWhiteSpace(toBotFromEmulatorOpenIdMetadataUrl) ? AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl : toBotFromEmulatorOpenIdMetadataUrl,
+                    string.IsNullOrWhiteSpace(callerId) ? CallerIdConstants.PublicAzureChannel : callerId,
                     credentialFactory,
                     authConfiguration,
                     httpClientFactory,
                     logger);
             }
-            else
+
+            if (channelService == GovernmentAuthenticationConstants.ChannelService)
             {
-                // else apply the built in default behavior, which is either the public cloud or the gov cloud depending on whether we have a channelService value present 
-
-                if (string.IsNullOrEmpty(channelService))
-                {
-                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
-                }
-                else if (channelService == GovernmentAuthenticationConstants.ChannelService)
-                {
-                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
-                }
-                else
-                {
-                    // The ChannelService value is used an indicator of which built in set of constants to use. If it is not recognized, a full configuration is expected.
-
-                    throw new ArgumentException("The provided ChannelService value is not supported.");
-                }
+                // US Government cloud
+                return new ParameterizedBotFrameworkAuthentication(
+                    validateAuthority,
+                    GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
+                    GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
+                    GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer,
+                    GovernmentAuthenticationConstants.OAuthUrlGov,
+                    GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
+                    GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
+                    CallerIdConstants.USGovChannel,
+                    credentialFactory,
+                    authConfiguration,
+                    httpClientFactory,
+                    logger);
             }
+
+            throw new ArgumentException("The provided ChannelService value is not supported.");
         }
     }
 }

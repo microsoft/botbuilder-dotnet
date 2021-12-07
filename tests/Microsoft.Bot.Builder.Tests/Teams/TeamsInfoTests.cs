@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
             };
 
-            var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: customHttpClient), activity);
+            var turnContext = new TurnContext(new TestCreateConversationAdapter(activity.Id, activity.Conversation.Id), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
             turnContext.Activity.ServiceUrl = "https://test.coffee";
             var handler = new TestTeamsActivityHandler();

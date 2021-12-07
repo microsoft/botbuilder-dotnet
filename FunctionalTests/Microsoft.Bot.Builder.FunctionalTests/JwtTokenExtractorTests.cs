@@ -27,9 +27,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         public JwtTokenExtractorTests()
         {
-            ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
-            ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateIssuer = false;
-
             client = new HttpClient
             {
                 BaseAddress = new Uri("https://webchat.botframework.com/"),

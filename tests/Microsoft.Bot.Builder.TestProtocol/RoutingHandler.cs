@@ -10,22 +10,17 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Schema.Teams;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.TestProtocol
 {
-    public class RoutingHandler : ChannelServiceHandler
+    public class RoutingHandler : CloudChannelServiceHandler
     {
         private readonly SkillConversationIdFactoryBase _factory;
         private readonly ServiceClientCredentials _credentials;
 
-        public RoutingHandler(
-            SkillConversationIdFactoryBase factory,
-            ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfiguration,
-            IChannelProvider channelProvider = null)
-            : base(credentialProvider, authConfiguration, channelProvider)
+        public RoutingHandler(BotFrameworkAuthentication authentication, SkillConversationIdFactoryBase factory)
+            : base(authentication)
         {
             _factory = factory;
             _credentials = MicrosoftAppCredentials.Empty;

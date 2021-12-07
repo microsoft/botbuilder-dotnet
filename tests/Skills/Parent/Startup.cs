@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
@@ -32,9 +31,8 @@ namespace Microsoft.BotBuilderSamples
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+            services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-            services.AddHttpClient<BotFrameworkHttpClient>();
             services.AddSingleton<IStorage, MemoryStorage>();
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();

@@ -384,7 +384,7 @@ namespace Microsoft.Bot.Builder
                         // is not being sent through the adapter, where it would be added to TurnState.
                         if (activity.Type == ActivityTypesEx.InvokeResponse)
                         {
-                            TurnState.Add(BotFrameworkAdapter.InvokeResponseKey, activity);
+                            TurnState.Add(BotAdapter.InvokeResponseKey, activity);
                         }
 
                         responses[index] = new ResourceResponse();

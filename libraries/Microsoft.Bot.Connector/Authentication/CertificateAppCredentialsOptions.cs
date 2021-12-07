@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// CertificateAppCredentials Options.
     /// </summary>
-    public class CertificateAppCredentialsOptions
+    internal class CertificateAppCredentialsOptions
     {
         /// <summary>
         /// Gets or sets the X509Certificate2 ClientCertificate.

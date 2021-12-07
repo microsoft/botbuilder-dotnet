@@ -9,16 +9,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Integration;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Rest.Serialization;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -48,7 +42,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), namedPipe, audience);
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, namedPipe, audience);
 
             // Assert
             Assert.NotNull(handler);
@@ -64,7 +58,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new BotFrameworkHttpAdapter(), socket: null);
+                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new Mock<IStreamingActivityProcessor>().Object, socket: null);
             }
             catch (Exception ex)
             {
@@ -84,7 +78,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), string.Empty);
+                var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, string.Empty);
             }
             catch (Exception ex)
             {
@@ -103,7 +97,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange 
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), socket, audience);
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, socket, audience);
 
             // Assert
             Assert.NotNull(handler);
@@ -114,7 +108,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -151,7 +145,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void DoesNotThrowExceptionIfReceiveRequestIsNull()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             ReceiveRequest testRequest = null;
 
             // Act
@@ -165,7 +159,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void DoesNotThrowExceptionIfReceiveRequestHasNoActivity()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             
             var payload = new MemoryStream();
             var fakeContentStreamId = Guid.NewGuid();
@@ -187,8 +181,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRemembersConversations()
         {
             // Arrange
-            var adapter = new BotFrameworkHttpAdapter();
-            var handler = new StreamingRequestHandler(new MockBot(), adapter, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -225,7 +218,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerForgetsConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -263,7 +256,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             const string serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
             var membersAdded = new List<ChannelAccount>();
@@ -305,7 +298,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var expectation = new Regex("{\"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\s.*BotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
             var activity = new Schema.Activity()
             {
                 Type = "message",
@@ -329,58 +322,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
             // Assert
             Assert.Matches(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
-        }
-
-        [Fact]
-        public async void CallStreamingRequestHandlerOverrides()
-        {
-            var activity = new Activity()
-            {
-                Type = "message",
-                Text = "received from bot",
-                ServiceUrl = "http://localhost",
-                ChannelId = "ChannelId",
-                From = new Schema.ChannelAccount()
-                {
-                    Id = "bot",
-                    Name = "bot",
-                },
-                Conversation = new Schema.ConversationAccount(null, null, Guid.NewGuid().ToString(), null, null, null, null),
-            };
-
-            // Arrange
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
-            var httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(r => r.Body).Returns(CreateStream(activity));
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
-            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Get);
-            httpRequestMock.Setup(r => r.HttpContext.WebSockets.IsWebSocketRequest).Returns(true);
-
-            var httpResponseMock = new Mock<HttpResponse>();
-
-            var botMock = new Mock<IBot>();
-            botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-
-            // Act
-            var methodCalls = new List<string>();
-            var adapter = new BotFrameworkHttpAdapterSub(methodCalls);
-            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
-
-            Assert.Contains("ListenAsync()", methodCalls);
-            Assert.Contains("ServerDisconnected()", methodCalls);
-        }
-
-        private static Stream CreateStream(Activity activity)
-        {
-            string json = SafeJsonConvert.SerializeObject(activity, MessageSerializerSettings.Create());
-            var stream = new MemoryStream();
-            var textWriter = new StreamWriter(stream);
-            textWriter.Write(json);
-            textWriter.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
         }
 
         public class FauxSock : WebSocket
@@ -445,52 +386,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             public int? Length { get; set; }
 
             public Stream Stream { get; set; }
-        }
-
-        private class BotFrameworkHttpAdapterSub : BotFrameworkHttpAdapter
-        {
-            private List<string> _methodCalls;
-
-            public BotFrameworkHttpAdapterSub(List<string> methodCalls)
-            : base()
-            {
-                _methodCalls = methodCalls;
-            }
-
-            public override StreamingRequestHandler CreateStreamingRequestHandler(IBot bot, WebSocket socket, string audience)
-            {
-                var socketMock = new Mock<WebSocket>();
-                return new StreamingRequestHandlerSub(bot, this, socketMock.Object, audience, Logger, _methodCalls);
-            }
-        }
-
-        private class StreamingRequestHandlerSub : StreamingRequestHandler
-        {
-            private List<string> _methodCalls;
-
-            public StreamingRequestHandlerSub(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience, ILogger logger = null, List<string> methodCalls = null)
-                : base(bot, activityProcessor, socket, audience, logger)
-            {
-                _methodCalls = methodCalls;
-            }
-
-            public override async Task ListenAsync()
-            {
-                _methodCalls.Add("ListenAsync()");
-                await base.ListenAsync();
-            }
-
-            public override Task ListenAsync(CancellationToken cancellationToken)
-            {
-                _methodCalls.Add("ListenAsync()");
-                return base.ListenAsync(cancellationToken);
-            }
-
-            protected override void ServerDisconnected(object sender, DisconnectedEventArgs e)
-            {
-                _methodCalls.Add("ServerDisconnected()");
-                base.ServerDisconnected(sender, e);
-            }
         }
     }
 }

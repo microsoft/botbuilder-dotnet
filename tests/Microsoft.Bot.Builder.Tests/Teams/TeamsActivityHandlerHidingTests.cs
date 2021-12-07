@@ -432,7 +432,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Arrange
             var turnContextMock = new Mock<ITurnContext>();
             turnContextMock.Setup(tc => tc.Activity).Returns(new Activity { Type = ActivityTypes.Message });
-            turnContextMock.Setup(tc => tc.Adapter).Returns(new BotFrameworkAdapter(new SimpleCredentialProvider()));
+            turnContextMock.Setup(tc => tc.Adapter).Returns(new NotImplementedAdapter());
             turnContextMock.Setup(tc => tc.TurnState).Returns(new TurnContextStateCollection());
             turnContextMock.Setup(tc => tc.Responded).Returns(false);
             turnContextMock.Setup(tc => tc.OnDeleteActivity(It.IsAny<DeleteActivityHandler>()));

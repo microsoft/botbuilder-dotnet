@@ -22,7 +22,7 @@ namespace Microsoft.BotBuilderSamples
 {
     public class ParentBot : ActivityHandler
     {
-        private BotFrameworkHttpClient _client;
+        private BotFrameworkAuthentication _authentication;
         private readonly Dialog _dialog;
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
@@ -33,9 +33,9 @@ namespace Microsoft.BotBuilderSamples
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
-        public ParentBot(BotFrameworkHttpClient client, IConfiguration configuration, MainDialog dialog, ConversationState conversationState, UserState userState)
+        public ParentBot(BotFrameworkAuthentication authentication, IConfiguration configuration, MainDialog dialog, ConversationState conversationState, UserState userState)
         {
-            _client = client;
+            _authentication = authentication;
             _dialog = dialog;
             _conversationState = conversationState;
             _userState = userState;
@@ -77,21 +77,25 @@ namespace Microsoft.BotBuilderSamples
                     var cloneActivity = MessageFactory.Text(turnContext.Activity.Text);
                     cloneActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
                     cloneActivity.DeliveryMode = DeliveryModes.ExpectReplies;
-                    var response1 = await _client.PostActivityAsync<ExpectedReplies>(
-                        _fromBotId,
-                        _toBotId,
-                        new Uri("http://localhost:2303/api/messages"),
-                        new Uri("http://tempuri.org/whatever"),
-                        turnContext.Activity.Conversation.Id,
-                        cloneActivity,
-                        cancellationToken);
 
-                    if (response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
+                    using (var client = _authentication.CreateBotFrameworkClient())
                     {
-                        var activities = response1.Body.Activities.ToArray();
-                        if (!(await InterceptOAuthCards(activities, turnContext, cancellationToken)))
+                        var response1 = await client.PostActivityAsync<ExpectedReplies>(
+                            _fromBotId,
+                            _toBotId,
+                            new Uri("http://localhost:2303/api/messages"),
+                            new Uri("http://tempuri.org/whatever"),
+                            turnContext.Activity.Conversation.Id,
+                            cloneActivity,
+                            cancellationToken);
+
+                        if (response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
                         {
-                            await turnContext.SendActivitiesAsync(activities, cancellationToken);
+                            var activities = response1.Body.Activities.ToArray();
+                            if (!(await InterceptOAuthCards(activities, turnContext, cancellationToken)))
+                            {
+                                await turnContext.SendActivitiesAsync(activities, cancellationToken);
+                            }
                         }
                     }
                 }
@@ -105,18 +109,21 @@ namespace Microsoft.BotBuilderSamples
             activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
             activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
-            var response = await _client.PostActivityAsync<ExpectedReplies>(
-                _fromBotId,
-                _toBotId,
-                new Uri("http://localhost:2303/api/messages"),
-                new Uri("http://tempuri.org/whatever"),
-                Guid.NewGuid().ToString(),
-                activity,
-                cancellationToken);
-
-            if (response.Status == (int)HttpStatusCode.OK)
+            using (var client = _authentication.CreateBotFrameworkClient())
             {
-                await turnContext.SendActivitiesAsync(response.Body?.Activities?.ToArray(), cancellationToken);
+                var response = await client.PostActivityAsync<ExpectedReplies>(
+                    _fromBotId,
+                    _toBotId,
+                    new Uri("http://localhost:2303/api/messages"),
+                    new Uri("http://tempuri.org/whatever"),
+                    Guid.NewGuid().ToString(),
+                    activity,
+                    cancellationToken);
+
+                if (response.Status == (int)HttpStatusCode.OK)
+                {
+                    await turnContext.SendActivitiesAsync(response.Body?.Activities?.ToArray(), cancellationToken);
+                }
             }
 
             await turnContext.SendActivityAsync(MessageFactory.Text("parent: after child"), cancellationToken);
@@ -170,27 +177,30 @@ namespace Microsoft.BotBuilderSamples
             };
 
             // route the activity to the skill
-            var response = await _client.PostActivityAsync(
-                _fromBotId,
-                _toBotId,
-                new Uri("http://localhost:2303/api/messages"),
-                new Uri("http://tempuri.org/whatever"),
-                incomingActivity.Conversation.Id,
-                activity,
-                cancellationToken);
-
-            // Check response status: true if success, false if failure
-            var success = IsSucessStatusCode(response.Status);
-            if (success)
+            using (var client = _authentication.CreateBotFrameworkClient())
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange successful"), cancellationToken);
-            }
-            else
-            {
-                await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange failed"), cancellationToken);
-            }
+                var response = await client.PostActivityAsync(
+                    _fromBotId,
+                    _toBotId,
+                    new Uri("http://localhost:2303/api/messages"),
+                    new Uri("http://tempuri.org/whatever"),
+                    incomingActivity.Conversation.Id,
+                    activity,
+                    cancellationToken);
 
-            return success;
+                // Check response status: true if success, false if failure
+                var success = IsSucessStatusCode(response.Status);
+                if (success)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange successful"), cancellationToken);
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Skill token exchange failed"), cancellationToken);
+                }
+
+                return success;
+            }
         }
 
         private bool IsSucessStatusCode(int statusCode)

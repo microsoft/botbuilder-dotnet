@@ -1,9 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -135,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void ShouldReturnChannelIdFromContextActivity()
         {
             var testActivity = new Schema.Activity() { ChannelId = Channels.Facebook };
-            var testContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider()), testActivity);
+            var testContext = new TurnContext(new ChoicesChannelTestBotAdapter(new ChoicesChannelTestBotFrameworkAuthentication()), testActivity);
             var channelId = Channel.GetChannelId(testContext);
             Assert.Equal(Channels.Facebook, channelId);
         }
@@ -144,9 +149,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void ShouldReturnEmptyFromContextActivityMissingChannel()
         {
             var testActivity = new Schema.Activity() { ChannelId = null };
-            var testContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider()), testActivity);
+            var testContext = new TurnContext(new ChoicesChannelTestBotAdapter(new ChoicesChannelTestBotFrameworkAuthentication()), testActivity);
             var channelId = Channel.GetChannelId(testContext);
             Assert.Equal(channelId, string.Empty);
+        }
+
+        private class ChoicesChannelTestBotAdapter : CloudAdapterBase
+        {
+            public ChoicesChannelTestBotAdapter(BotFrameworkAuthentication botFrameworkAuthentication, ILogger logger = null)
+                : base(botFrameworkAuthentication, logger)
+            {
+            }
+        }
+
+        private class ChoicesChannelTestBotFrameworkAuthentication : BotFrameworkAuthentication
+        {
+            public override Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public override Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+            {
+                throw new System.NotImplementedException();
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder
     public class ActivityHandler : IBot
     {
         /// <summary>
-        /// Called by the adapter (for example, a <see cref="BotFrameworkAdapter"/>)
+        /// Called by the adapter (for example, a <see cref="BotAdapter"/>)
         /// at runtime in order to process an inbound <see cref="Activity"/>.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder
                     var invokeResponse = await OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken).ConfigureAwait(false);
 
                     // If OnInvokeActivityAsync has already sent an InvokeResponse, do not send another one.
-                    if (invokeResponse != null && turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey) == null)
+                    if (invokeResponse != null && turnContext.TurnState.Get<Activity>(BotAdapter.InvokeResponseKey) == null)
                     {
                         await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
                     }

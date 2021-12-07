@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// CertificateAppCredentials auth implementation and cache.
     /// </summary>
-    public class CertificateAppCredentials : AppCredentials
+    internal class CertificateAppCredentials : AppCredentials
     {
         private readonly ClientAssertionCertificate clientCertificate;
         private readonly bool sendX5c;

@@ -246,10 +246,11 @@ namespace Microsoft.Bot.Builder.Teams
                 Activity = (Activity)activity,
             };
 
-            await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
+            await turnContext.Adapter.CreateConversationAsync(
+                credentials.MicrosoftAppId,
                 teamsChannelId,
                 serviceUrl,
-                credentials,
+                credentials.OAuthScope,
                 conversationParameters,
                 (t, ct) =>
                 {

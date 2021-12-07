@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // EoC Activities returned by skills are bounced back to the bot by SkillHandler.
                 // In those cases we will have a SkillConversationReference instance in state.
-                var skillConversationReference = turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey);
+                var skillConversationReference = turnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey);
                 if (skillConversationReference != null)
                 {
                     // If the skillConversationReference.OAuthScope is for one of the supported channels, we are at the root and we should not send an EoC.
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static bool IsFromParentToSkill(ITurnContext turnContext)
         {
-            if (turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey) != null)
+            if (turnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey) != null)
             {
                 return false;
             }

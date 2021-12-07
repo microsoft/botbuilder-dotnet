@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -24,15 +22,22 @@ namespace Bot1
         private readonly IStatePropertyAccessor<BotFrameworkSkill> _activeSkillProperty;
         private readonly string _botId;
         private readonly ConversationState _conversationState;
-        private readonly SkillHttpClient _skillClient;
         private readonly SkillsConfiguration _skillsConfig;
+        private readonly BotFrameworkAuthentication _authentication;
+        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
         private readonly BotFrameworkSkill _targetSkill;
 
-        public Bot1(ConversationState conversationState, SkillsConfiguration skillsConfig, SkillHttpClient skillClient, IConfiguration configuration)
+        public Bot1(
+            ConversationState conversationState,
+            SkillsConfiguration skillsConfig,
+            BotFrameworkAuthentication authentication,
+            SkillConversationIdFactoryBase conversationIdFactory,
+            IConfiguration configuration)
         {
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             _skillsConfig = skillsConfig ?? throw new ArgumentNullException(nameof(skillsConfig));
-            _skillClient = skillClient ?? throw new ArgumentNullException(nameof(skillsConfig));
+            _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
+            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
@@ -141,12 +146,32 @@ namespace Bot1
             await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
             // route the activity to the skill
-            var response = await _skillClient.PostActivityAsync(_botId, targetSkill, _skillsConfig.SkillHostEndpoint, turnContext.Activity, cancellationToken);
-
-            // Check response status
-            if (!response.IsSuccessStatusCode())
+            using (var skillClient = _authentication.CreateBotFrameworkClient())
             {
-                throw new HttpRequestException($"Error invoking the skill id: \"{targetSkill.Id}\" at \"{targetSkill.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
+                var skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(
+                    new SkillConversationIdFactoryOptions
+                    {
+                        FromBotOAuthScope = _authentication.GetOriginatingAudience(),
+                        FromBotId = _botId,
+                        Activity = turnContext.Activity,
+                        BotFrameworkSkill = targetSkill
+                    },
+                    cancellationToken);
+
+                var response = await skillClient.PostActivityAsync(
+                    _botId,
+                    targetSkill.AppId,
+                    targetSkill.SkillEndpoint,
+                    _skillsConfig.SkillHostEndpoint,
+                    skillConversationId,
+                    turnContext.Activity,
+                    cancellationToken);
+
+                // Check response status
+                if (!response.IsSuccessStatusCode())
+                {
+                    throw new HttpRequestException($"Error invoking the skill id: \"{targetSkill.Id}\" at \"{targetSkill.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
+                }
             }
         }
     }
