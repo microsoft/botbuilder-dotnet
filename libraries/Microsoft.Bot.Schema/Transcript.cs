@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="activities">A collection of Activities that conforms
         /// to the Transcript schema.</param>
-        public Transcript(IList<Activity> activities = default(IList<Activity>))
+        public Transcript(IList<Activity> activities = default)
         {
             Activities = activities;
             CustomInit();
