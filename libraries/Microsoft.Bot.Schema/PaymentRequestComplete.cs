@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="paymentRequest">Initial payment request.</param>
         /// <param name="paymentResponse">Corresponding payment
         /// response.</param>
-        public PaymentRequestComplete(string id = default(string), PaymentRequest paymentRequest = default(PaymentRequest), PaymentResponse paymentResponse = default(PaymentResponse))
+        public PaymentRequestComplete(string id = default, PaymentRequest paymentRequest = default, PaymentResponse paymentResponse = default)
         {
             Id = id;
             PaymentRequest = paymentRequest;

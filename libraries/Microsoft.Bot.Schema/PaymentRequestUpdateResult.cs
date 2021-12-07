@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the <see cref="PaymentRequestUpdateResult"/> class.
         /// </summary>
         /// <param name="details">Update payment details.</param>
-        public PaymentRequestUpdateResult(PaymentDetails details = default(PaymentDetails))
+        public PaymentRequestUpdateResult(PaymentDetails details = default)
         {
             Details = details;
             CustomInit();

@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -19,7 +18,7 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>Initializes a new instance of the <see cref="ErrorResponse"/> class.</summary>
         /// <param name="error">Error message.</param>
-        public ErrorResponse(Error error = default(Error))
+        public ErrorResponse(Error error = default)
         {
             Error = error;
             CustomInit();

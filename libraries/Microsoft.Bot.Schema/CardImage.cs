@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="url">URL thumbnail image for major content property.</param>
         /// <param name="alt">Image description intended for screen readers.</param>
         /// <param name="tap">Action assigned to specific Attachment.</param>
-        public CardImage(string url = default(string), string alt = default(string), CardAction tap = default(CardAction))
+        public CardImage(string url = default, string alt = default, CardAction tap = default)
         {
             Url = url;
             Alt = alt;
