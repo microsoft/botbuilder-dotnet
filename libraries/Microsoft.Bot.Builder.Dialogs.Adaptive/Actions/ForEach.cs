@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class Foreach : ActionScope
+#pragma warning disable SA1649 // File name should match first type name
+    public class Foreach : Dialog, IDialogDependencies
+#pragma warning restore SA1649 // File name should match first type name
     {
         /// <summary>
         /// Class identifier.
@@ -25,20 +29,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private const string IterationKey = "index";
         private const string IterationValue = "value";
+        private const string ActionScopeState = "this.actionScopeState";
+        private const string ForeachIndex = "dialog.foreachIndex";
 
-        private int index;
+        private readonly ActionScope _scope;
+
+        private List<Dialog> _actions = new List<Dialog>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Foreach"/> class.
         /// </summary>
-        /// <param name="sourceFilePath">Optional, full path of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">optional, line number in the source file at which the method is called.</param>
-        [JsonConstructor]
-        public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
+        /// <param name="actions">The actions to execute.</param>
+        public Foreach(IEnumerable<Dialog> actions = null)
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            if (actions != null)
+            {
+                _actions = new List<Dialog>(actions);
+            }
+
+            _scope = new ActionScope(actions);
         }
+
+        /// <summary>
+        /// Gets or sets the actions to execute.
+        /// </summary>
+        /// <value>The actions to execute.</value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        public List<Dialog> Actions
+        {
+            get
+            {
+                return this._actions;
+            }
+
+            set
+            {
+                this._actions = value ?? new List<Dialog>();
+            }
+        }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -50,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets property path expression to the collection of items.
@@ -99,79 +128,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            index = -1;
-            return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
+            dc.State.SetValue(ForeachIndex, 0);
+            return await RunItemsAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        {
+            return await RunItemsAsync(dc, beginDialog: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        {
+            var res = await base.ResumeDialogAsync(dc, reason, result, cancellationToken).ConfigureAwait(false);
+            return res;
         }
 
         /// <summary>
-        /// Called when a returning control to this dialog with an <see cref="ActionScopeResult"/>
-        /// with the property ActionCommand set to <c>BreakLoop</c>.
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
         /// </summary>
-        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="actionScopeResult">Contains the actions scope result.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
+        /// <returns>Dialog enumeration.</returns>
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
-            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Called when a returning control to this dialog with an <see cref="ActionScopeResult"/>
-        /// with the property ActionCommand set to <c>ContinueLoop</c>.
-        /// </summary>
-        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="actionScopeResult">Contains the actions scope result.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
-        {
-            return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Called when the dialog's action ends.
-        /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
-        /// <param name="result">Optional, value returned from the dialog that was called. The type
-        /// of the value returned is dependent on the child dialog.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
-        {
-            return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Calls the next item in the stack.
-        /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
-        {
-            // Get list information
-            var result = dc.State.GetValue<object>(this.ItemsProperty.GetValue(dc.State));
-            var list = ConvertToList(result);
-
-            // Next item
-            if (list != null && ++index < list.Count)
+            foreach (var action in Actions)
             {
-                // Persist index and value
-                dc.State.SetValue(Value.GetValue(dc.State), list[index][IterationValue]);
-                dc.State.SetValue(Index.GetValue(dc.State), list[index][IterationKey]);
-
-                // Start loop
-                return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                // End of list has been reached, or the list is null
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                yield return action;
             }
         }
 
@@ -179,6 +161,97 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{GetType().Name}({this.ItemsProperty?.ToString()})";
+        }
+
+        private async Task<DialogTurnResult> RunItemsAsync(DialogContext dc, bool beginDialog = true, CancellationToken cancellationToken = default)
+        {
+            // Get list information
+            var result = dc.State.GetValue<object>(this.ItemsProperty.GetValue(dc.State));
+            var list = ConvertToList(result);
+
+            var index = dc.State.GetIntValue(ForeachIndex, 0);
+
+            // Next item
+            while (list != null && index < list.Count)
+            {
+                Trace.TraceError($"STACK FRAME {new StackTrace().FrameCount}");
+                var childDialogState = GetActionScopeState(dc);
+                var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
+                childDc.Parent = dc.Parent;
+
+                dc.State.SetValue(Value.GetValue(dc.State), list[index][IterationValue]);
+                dc.State.SetValue(Index.GetValue(dc.State), list[index][IterationKey]);
+
+                var options = new Dictionary<string, object>()
+                {
+                    { Value.GetValue(dc.State), list[index][IterationValue] },
+                    { Index.GetValue(dc.State), list[index][IterationKey] },
+                };
+
+                DialogTurnResult turnResult;
+
+                if (beginDialog)
+                {
+                    turnResult = await childDc.BeginDialogAsync(_scope.Id, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    turnResult = await childDc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                }
+
+                if (turnResult.Status == DialogTurnStatus.Waiting)
+                {
+                    UpdateActionScopeState(dc, childDialogState);
+                    return turnResult;
+                }
+
+                index++;
+                dc.State.SetValue(ForeachIndex, index);
+
+                if (turnResult.Status == DialogTurnStatus.CompleteAndWait)
+                {
+                    // Child dialog completed, but wants us to wait for a new activity
+                    turnResult.Status = DialogTurnStatus.Waiting;
+                    UpdateActionScopeState(dc, childDialogState);
+                    return turnResult;
+                }
+
+                beginDialog = true;
+                UpdateActionScopeState(dc, new DialogState());
+            }
+
+            // End of list has been reached, or the list is null
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        private void UpdateActionScopeState(DialogContext dc, DialogState state)
+        {
+            var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
+
+            if (activeDialogState != null)
+            {
+                activeDialogState[ActionScopeState] = state;
+            }
+        }
+
+        private DialogState GetActionScopeState(DialogContext dc)
+        {
+            DialogState state = null;
+            var activeDialogState = dc.ActiveDialog?.State as Dictionary<string, object>;
+
+            if (activeDialogState != null && activeDialogState.TryGetValue(ActionScopeState, out var currentState))
+            {
+                state = currentState as DialogState;
+            }
+
+            if (state == null)
+            {
+                state = new DialogState();
+            }
+
+            activeDialogState[ActionScopeState] = state;
+
+            return state;
         }
 
         private JArray ConvertToList(object instance)
