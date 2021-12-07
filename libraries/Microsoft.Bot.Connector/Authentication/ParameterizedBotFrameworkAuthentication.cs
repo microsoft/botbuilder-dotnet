@@ -132,6 +132,34 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
+        private static bool IsValidTokenFormat(string authHeader)
+        {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                // No token, not valid.
+                return false;
+            }
+
+            var parts = authHeader.Split(' ');
+            if (parts.Length != 2)
+            {
+                // Tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not a valid token
+                return false;
+            }
+
+            // We now have an array that should be:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var authScheme = parts[0];
+            if (!authScheme.Equals("Bearer", StringComparison.OrdinalIgnoreCase))
+            {
+                // The scheme MUST be "Bearer"
+                return false;
+            }
+
+            return true;
+        }
+
         // The following code is based on JwtTokenValidation.AuthenticateRequest
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
@@ -289,7 +317,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private bool IsTokenFromSkill(string authHeader)
         {
-            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
+            if (!IsValidTokenFormat(authHeader))
             {
                 return false;
             }
@@ -393,7 +421,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private bool IsTokenFromEmulator(string authHeader)
         {
-            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
+            if (!IsValidTokenFormat(authHeader))
             {
                 return false;
             }

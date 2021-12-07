@@ -53,38 +53,5 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return appId;
         }
-
-        /// <summary>
-        /// Internal helper to check if the token has the shape we expect "Bearer [big long string]".
-        /// </summary>
-        /// <param name="authHeader">A string containing the token header.</param>
-        /// <returns>True if the token is valid, false if not.</returns>
-        internal static bool IsValidTokenFormat(string authHeader)
-        {
-            if (string.IsNullOrWhiteSpace(authHeader))
-            {
-                // No token, not valid.
-                return false;
-            }
-
-            var parts = authHeader.Split(' ');
-            if (parts.Length != 2)
-            {
-                // Tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not a valid token
-                return false;
-            }
-
-            // We now have an array that should be:
-            // [0] = "Bearer"
-            // [1] = "[Big Long String]"
-            var authScheme = parts[0];
-            if (!authScheme.Equals("Bearer", StringComparison.OrdinalIgnoreCase))
-            {
-                // The scheme MUST be "Bearer"
-                return false;
-            }
-
-            return true;
-        }
     }
 }
