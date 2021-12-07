@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<EmitEvent>(EmitEvent.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<EndDialog>(EndDialog.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<EndTurn>(EndTurn.Kind));
-            services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<Foreach>(Foreach.Kind));
+            services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<ForEachElement>(ForEachElement.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<ForeachPage>(ForeachPage.Kind));
 
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<HttpRequest>(HttpRequest.Kind));
