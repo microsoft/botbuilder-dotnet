@@ -250,25 +250,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public async Task TestForeachWithPromptInConversationUpdate()
-        {
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-
-            var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation("TestForeachWithPromptInConversationUpdate"))
-                .Use(new RegisterClassMiddleware<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection().Build()))
-                .UseStorage(storage)
-                .UseBotState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
-                .Use(new SetTestOptionsMiddleware());
-
-            adapter.OnTurnError += (context, err) => { throw err; };
-
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapter: adapter);
-        }
-
-        [Fact]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
