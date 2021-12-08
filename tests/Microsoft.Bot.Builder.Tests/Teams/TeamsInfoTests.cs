@@ -12,6 +12,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -45,7 +46,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
             };
 
-            var turnContext = new TurnContext(new TestCreateConversationAdapter(activity.Id, activity.Conversation.Id), activity);
+            var auth = BotFrameworkAuthenticationFactory.Create(
+                null, true, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), new TestHttpClientFactory(customHttpClient), null);
+            var turnContext = new TurnContext(new TestCloudAdapter(auth), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
             turnContext.Activity.ServiceUrl = "https://test.coffee";
             var handler = new TestTeamsActivityHandler();
@@ -695,6 +698,29 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        private class TestCloudAdapter : CloudAdapterBase
+        {
+            public TestCloudAdapter(BotFrameworkAuthentication botFrameworkAuthentication, ILogger logger = null)
+                : base(botFrameworkAuthentication, logger)
+            {
+            }
+        }
+
+        private class TestHttpClientFactory : IHttpClientFactory
+        {
+            private readonly HttpClient _customHttpClient;
+
+            public TestHttpClientFactory(HttpClient customHttpClient)
+            {
+                _customHttpClient = customHttpClient ?? throw new ArgumentNullException(nameof(customHttpClient));
+            }
+
+            public HttpClient CreateClient(string name)
+            {
+                return _customHttpClient;
             }
         }
     }

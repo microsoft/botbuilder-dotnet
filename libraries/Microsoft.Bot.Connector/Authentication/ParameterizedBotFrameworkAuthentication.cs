@@ -69,6 +69,23 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                var isAuthDisabled = await _credentialsFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
+                if (!isAuthDisabled)
+                {
+                    // No auth header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
+                }
+
+                // In the scenario where auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity.
+                // To do this requires adding in an empty claim.
+                // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
+                var anonymousSkillClaim = new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId);
+                return new ClaimsIdentity(new List<Claim> { anonymousSkillClaim }, AuthenticationConstants.AnonymousAuthType);
+            }
+
             return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
         }
 
@@ -176,8 +193,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
                 {
                     // Return an anonymous claim with an anonymous skill AppId
-                    var anonymousClaim = new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId);
-                    return new ClaimsIdentity(new List<Claim> { anonymousClaim }, AuthenticationConstants.AnonymousAuthType);
+                    var anonymousSkillClaim = new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId);
+                    return new ClaimsIdentity(new List<Claim> { anonymousSkillClaim }, AuthenticationConstants.AnonymousAuthType);
                 }
 
                 // In the scenario where Auth is disabled, we still want to have the

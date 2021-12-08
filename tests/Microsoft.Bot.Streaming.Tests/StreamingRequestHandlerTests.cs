@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, namedPipe, audience);
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), namedPipe, audience);
 
             // Assert
             Assert.NotNull(handler);
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new Mock<IStreamingActivityProcessor>().Object, socket: null);
+                var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), socket: null);
             }
             catch (Exception ex)
             {
@@ -78,7 +79,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, string.Empty);
+                var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), string.Empty);
             }
             catch (Exception ex)
             {
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange 
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, socket, audience);
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), socket, audience);
 
             // Assert
             Assert.NotNull(handler);
@@ -108,7 +109,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -145,7 +146,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void DoesNotThrowExceptionIfReceiveRequestIsNull()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             ReceiveRequest testRequest = null;
 
             // Act
@@ -159,7 +160,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void DoesNotThrowExceptionIfReceiveRequestHasNoActivity()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             
             var payload = new MemoryStream();
             var fakeContentStreamId = Guid.NewGuid();
@@ -181,7 +182,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerRemembersConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -218,7 +219,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerForgetsConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -256,7 +257,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async void RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             const string serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
             var membersAdded = new List<ChannelAccount>();
@@ -298,7 +299,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var expectation = new Regex("{\"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\s.*BotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new Mock<IStreamingActivityProcessor>().Object, Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), Guid.NewGuid().ToString());
             var activity = new Schema.Activity()
             {
                 Type = "message",
@@ -386,6 +387,20 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             public int? Length { get; set; }
 
             public Stream Stream { get; set; }
+        }
+
+        private class FakeCloudAdapter : CloudAdapterBase, IStreamingActivityProcessor
+        {
+            public FakeCloudAdapter()
+                : base(BotFrameworkAuthenticationFactory.Create())
+            {
+            }
+
+            public Task<InvokeResponse> ProcessStreamingActivityAsync(Activity activity, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken = default)
+            {
+                var authResult = new AuthenticateRequestResult();
+                return ProcessActivityAsync(authResult, activity, botCallbackHandler, cancellationToken);
+            }
         }
     }
 }
