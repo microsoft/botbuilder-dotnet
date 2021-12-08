@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Skills
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
                 turnContext.Activity.Id = activityId;
-                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{claimsIdentity.Claims.GetAppIdFromClaims()}";
                 resourceResponse = await turnContext.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             });
 
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Skills
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
                 turnContext.Activity.Id = replyToActivityId;
-                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{claimsIdentity.Claims.GetAppIdFromClaims()}";
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:

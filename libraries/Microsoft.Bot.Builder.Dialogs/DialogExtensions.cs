@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         private static async Task SendStateSnapshotTraceAsync(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var traceLabel = dialogContext.Context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims)
+            var traceLabel = dialogContext.Context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim()
                 ? "Skill State"
                 : "Bot State";
 
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         private static bool SendEoCToParent(ITurnContext turnContext)
         {
-            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim())
             {
                 // EoC Activities returned by skills are bounced back to the bot by SkillHandler.
                 // In those cases we will have a SkillConversationReference instance in state.
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
-            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims);
+            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim();
         }
 
         // Recursively walk up the DC stack to find the active DC.

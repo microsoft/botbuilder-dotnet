@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 //   bot is a skill or
                 //   an extra OAuthAppCredentials is being passed in
                 if (turnContext.Activity.IsFromStreamingConnection() ||
-                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims)) ||
+                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && botIdentity.Claims.IsSkillClaim()) ||
                     settings.OAuthAppCredentials != null)
                 {
                     if (turnContext.Activity.ChannelId == Channels.Emulator)
@@ -557,12 +557,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static CallerInfo CreateCallerInfo(ITurnContext turnContext)
         {
-            if (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
+            if (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && botIdentity.Claims.IsSkillClaim())
             {
                 return new CallerInfo
                 {
                     CallerServiceUrl = turnContext.Activity.ServiceUrl,
-                    Scope = JwtTokenValidation.GetAppIdFromClaims(botIdentity.Claims),
+                    Scope = botIdentity.Claims.GetAppIdFromClaims(),
                 };
             }
 

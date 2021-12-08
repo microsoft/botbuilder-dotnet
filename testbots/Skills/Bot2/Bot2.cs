@@ -162,9 +162,9 @@ namespace Bot2
 
                 var fromBotId = _botId;
                 if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity &&
-                    SkillValidation.IsSkillClaim(claimIdentity.Claims))
+                    claimIdentity.Claims.IsSkillClaim())
                 {
-                    fromBotId = JwtTokenValidation.GetAppIdFromClaims(claimIdentity.Claims);
+                    fromBotId = claimIdentity.Claims.GetAppIdFromClaims();
                 }
 
                 var response = await skillClient.PostActivityAsync(

@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
 
-            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+            var outboundAudience = claimsIdentity.Claims.IsSkillClaim() ? claimsIdentity.Claims.GetAppIdFromClaims() : _toChannelFromBotOAuthScope;
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, channelIdHeader, null, cancellationToken).ConfigureAwait(false);
 
-            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+            var outboundAudience = claimsIdentity.Claims.IsSkillClaim() ? claimsIdentity.Claims.GetAppIdFromClaims() : _toChannelFromBotOAuthScope;
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 var claimsList = claims as IList<Claim> ?? claims.ToList();
                 await _authConfiguration.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
             }
-            else if (SkillValidation.IsSkillClaim(claims))
+            else if (claims.IsSkillClaim())
             {
                 throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
             }
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException("Invalid audience.");
             }
 
-            var appId = JwtTokenValidation.GetAppIdFromClaims(identity.Claims);
+            var appId = identity.Claims.GetAppIdFromClaims();
             if (string.IsNullOrWhiteSpace(appId))
             {
                 // Invalid appId
@@ -347,7 +347,7 @@ namespace Microsoft.Bot.Connector.Authentication
             // Parse the Big Long String into an actual token.
             var token = new JwtSecurityToken(bearerToken);
 
-            return SkillValidation.IsSkillClaim(token.Claims);
+            return token.Claims.IsSkillClaim();
         }
 
         // The following code is based on EmulatorValidation.AuthenticateEmulatorToken
