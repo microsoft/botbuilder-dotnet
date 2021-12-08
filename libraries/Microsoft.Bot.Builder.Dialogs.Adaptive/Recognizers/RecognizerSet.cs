@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // merge intents
             var result = MergeResults(results);
 
-            TrackRecognizerResult(dialogContext, "RecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, TelemetryLoggerConstants.RecognizerSetResultEvent, FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }

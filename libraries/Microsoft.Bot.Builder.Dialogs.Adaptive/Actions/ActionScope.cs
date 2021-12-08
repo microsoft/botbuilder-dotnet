@@ -330,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 { "Kind", $"Microsoft.{actionName}" },
                 { "ActionId", $"Microsoft.{action.Id}" },
             };
-            TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.DialogActionEvent, properties);
 
             // begin Action dialog
             return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
