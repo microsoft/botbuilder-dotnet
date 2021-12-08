@@ -163,6 +163,23 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
+        public void ProcessSingleMessageShouldReturnActivityWithReferral()
+        {
+            var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithReferral.json");
+            var facebookResponse = JsonConvert.DeserializeObject<FacebookResponseEvent>(facebookMessageJson);
+
+            var payload = new List<FacebookMessage>();
+
+            payload = facebookResponse.Entry[0].Messaging;
+
+            var activity = FacebookHelper.ProcessSingleMessage(payload[0]);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Recipient.Id, activity.Recipient.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Sender.Id, activity.Conversation.Id);
+            Assert.Equal(facebookResponse.Entry[0].Messaging[0].Referral.Ref, activity.Value);
+        }
+
+        [Fact]
         public async Task WriteAsyncShouldFailWithNullResponse()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
