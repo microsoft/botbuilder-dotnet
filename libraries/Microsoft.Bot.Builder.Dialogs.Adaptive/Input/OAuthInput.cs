@@ -251,8 +251,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             {
                                 { "template", JsonConvert.SerializeObject(this.DefaultValueResponse) },
                                 { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                                { "context", TelemetryLoggerConstants.OAuthInputResultEvent }
                             };
-                            TelemetryClient.TrackEvent("GeneratorResult", properties);
+                            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
                             await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
                         }
 

@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var result = ProcessResults(results);
 
-            TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, TelemetryLoggerConstants.CrossTrainedRecognizerSetResultEvent, FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }
