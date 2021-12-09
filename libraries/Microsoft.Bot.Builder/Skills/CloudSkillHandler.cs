@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <param name="adapter">An instance of the <see cref="BotAdapter"/> that will handle the request.</param>
         /// <param name="bot">The <see cref="IBot"/> instance.</param>
         /// <param name="conversationIdFactory">A <see cref="SkillConversationIdFactoryBase"/> to unpack the conversation ID and map it to the calling bot.</param>
-        /// <param name="auth">auth.</param>
+        /// <param name="auth">The BotFrameworkAuthentication object used to authenticate skills requests.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudSkillHandler(
             BotAdapter adapter,
@@ -53,58 +53,13 @@ namespace Microsoft.Bot.Builder.Skills
             _logger = logger ?? NullLogger.Instance;
         }
 
-        /// <summary>
-        /// SendToConversation() API for Skill.
-        /// </summary>
-        /// <remarks>
-        /// This method allows you to send an activity to the end of a conversation.
-        ///
-        /// This is slightly different from ReplyToActivity().
-        /// * SendToConversation(conversationId) - will append the activity to the end
-        /// of the conversation according to the timestamp or semantics of the channel.
-        /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
-        /// to another activity, if the channel supports it. If the channel does not
-        /// support nested replies, ReplyToActivity falls back to SendToConversation.
-        ///
-        /// Use ReplyToActivity when replying to a specific activity in the
-        /// conversation.
-        ///
-        /// Use SendToConversation in all other cases.
-        /// </remarks>
-        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>conversationId.</param> 
-        /// <param name='activity'>Activity to send.</param>
-        /// <param name='cancellationToken'>The cancellation token.</param>
-        /// <returns>task for a resource response.</returns>
+        /// <inheritdoc />
         protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             return await ProcessActivityAsync(claimsIdentity, conversationId, null, activity, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// ReplyToActivity() API for Skill.
-        /// </summary>
-        /// <remarks>
-        /// This method allows you to reply to an activity.
-        ///
-        /// This is slightly different from SendToConversation().
-        /// * SendToConversation(conversationId) - will append the activity to the end
-        /// of the conversation according to the timestamp or semantics of the channel.
-        /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
-        /// to another activity, if the channel supports it. If the channel does not
-        /// support nested replies, ReplyToActivity falls back to SendToConversation.
-        ///
-        /// Use ReplyToActivity when replying to a specific activity in the
-        /// conversation.
-        ///
-        /// Use SendToConversation in all other cases.
-        /// </remarks>
-        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
-        /// <param name='conversationId'>Conversation ID.</param>
-        /// <param name='activityId'>activityId the reply is to (OPTIONAL).</param>
-        /// <param name='activity'>Activity to send.</param>
-        /// <param name='cancellationToken'>The cancellation token.</param>
-        /// <returns>task for a resource response.</returns>
+        /// <inheritdoc />
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
             return await ProcessActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
@@ -118,7 +73,7 @@ namespace Microsoft.Bot.Builder.Skills
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
-                await turnContext.DeleteActivityAsync(activityId, cancellationToken).ConfigureAwait(false);
+                await turnContext.DeleteActivityAsync(activityId, ct).ConfigureAwait(false);
             });
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
@@ -136,7 +91,7 @@ namespace Microsoft.Bot.Builder.Skills
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
                 turnContext.Activity.Id = activityId;
                 turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{claimsIdentity.Claims.GetAppIdFromClaims()}";
-                resourceResponse = await turnContext.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                resourceResponse = await turnContext.UpdateActivityAsync(activity, ct).ConfigureAwait(false);
             });
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
