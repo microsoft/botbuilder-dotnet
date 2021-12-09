@@ -19,6 +19,7 @@ variables:
   TestConfiguration: Release
   BuildPlatform: any cpu
   MSBuildArguments: -p:PublishRepositoryUrl=true -p:GeneratePackages=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+  Packaging.EnableSBOMSigning: true
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-preview-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
 #  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
