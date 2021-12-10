@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 }
             }
 
-            TrackRecognizerResult(dialogContext, "ValueRecognizerResult", FillRecognizerResultTelemetryProperties(recognized, telemetryProperties, dialogContext), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, TelemetryLoggerConstants.ValueRecognizerResultEvent, FillRecognizerResultTelemetryProperties(recognized, telemetryProperties, dialogContext), telemetryMetrics);
 
             return Task.FromResult(recognized);
         }

@@ -63,8 +63,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            if (this.Actions.Any())
+            if (Actions.Any())
             {
+                if (options != null && options is Dictionary<string, object> dict)
+                {
+                    foreach (var kv in dict)
+                    {
+                        dc.State.SetValue(kv.Key, kv.Value);
+                    }
+                }
+
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -322,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 { "Kind", $"Microsoft.{actionName}" },
                 { "ActionId", $"Microsoft.{action.Id}" },
             };
-            TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.DialogActionEvent, properties);
 
             // begin Action dialog
             return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);

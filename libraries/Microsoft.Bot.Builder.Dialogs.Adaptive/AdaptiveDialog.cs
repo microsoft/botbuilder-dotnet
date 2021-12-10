@@ -214,9 +214,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Kind", Kind }
+                    { "Kind", Kind },
+                    { "context", TelemetryLoggerConstants.DialogStartEvent }
                 };
-            TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
             TelemetryClient.TrackDialogView(Id);
 
             await OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
@@ -291,11 +292,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (reason == DialogReason.CancelCalled)
             {
-                TelemetryClient.TrackEvent("AdaptiveDialogCancel", properties);
+                properties.Add("context", TelemetryLoggerConstants.DialogCancelEvent);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
             }
             else if (reason == DialogReason.EndCalled)
             {
-                TelemetryClient.TrackEvent("AdaptiveDialogComplete", properties);
+                properties.Add("context", TelemetryLoggerConstants.CompleteEvent);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
             }
 
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
@@ -998,8 +1001,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     { "Expression", condition.GetExpression().ToString() },
                     { "Kind", $"Microsoft.{condition.GetType().Name}" },
                     { "ConditionId", condition.Id },
+                    { "context", TelemetryLoggerConstants.TriggerEvent }
                 };
-                TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
 
                 var changes = await condition.ExecuteAsync(actionContext).ConfigureAwait(false);
 
