@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         private static async Task SendStateSnapshotTraceAsync(DialogContext dialogContext, CancellationToken cancellationToken)
         {
-            var traceLabel = dialogContext.Context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims)
+            var traceLabel = dialogContext.Context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim()
                 ? "Skill State"
                 : "Bot State";
 
@@ -170,11 +170,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         private static bool SendEoCToParent(ITurnContext turnContext)
         {
-            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim())
             {
                 // EoC Activities returned by skills are bounced back to the bot by SkillHandler.
                 // In those cases we will have a SkillConversationReference instance in state.
-                var skillConversationReference = turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey);
+                var skillConversationReference = turnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey);
                 if (skillConversationReference != null)
                 {
                     // If the skillConversationReference.OAuthScope is for one of the supported channels, we are at the root and we should not send an EoC.
@@ -189,12 +189,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static bool IsFromParentToSkill(ITurnContext turnContext)
         {
-            if (turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey) != null)
+            if (turnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey) != null)
             {
                 return false;
             }
 
-            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims);
+            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim();
         }
 
         // Recursively walk up the DC stack to find the active DC.

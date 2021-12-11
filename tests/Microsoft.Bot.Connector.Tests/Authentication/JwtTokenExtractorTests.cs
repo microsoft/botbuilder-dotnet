@@ -10,10 +10,8 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -24,32 +22,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         private const int NTEBADKEYSET = unchecked((int)0x80090016);
 
         private static readonly HttpClient Client = new HttpClient();
-
-        public JwtTokenExtractorTests()
-        {
-            // Disable TokenLifetime validation
-            EmulatorValidation.ToBotFromEmulatorTokenValidationParameters.ValidateLifetime = false;
-            ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
-            GovernmentChannelValidation.ToBotFromGovernmentChannelTokenValidationParameters.ValidateLifetime = false;
-        }
-
-        [Fact]
-        public void JwtTokenExtractor_GovernmentValidationParameters_ShouldValidateSigningKey()
-        {
-            Assert.True(GovernmentChannelValidation.ToBotFromGovernmentChannelTokenValidationParameters.ValidateIssuerSigningKey);
-        }
-
-        [Fact]
-        public void JwtTokenExtractor_ChannelValidationParameters_ShouldValidateSigningKey()
-        {
-            Assert.True(ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateIssuerSigningKey);
-        }
-
-        [Fact]
-        public void JwtTokenExtractor_EnterpriseChannelValidationParameters_ShouldValidateSigningKey()
-        {
-            Assert.True(EnterpriseChannelValidation.ToBotFromEnterpriseChannelTokenValidationParameters.ValidateIssuerSigningKey);
-        }
 
         [Fact]
         [Trait("TestCategory", "WindowsOnly")]

@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.TestProtocol.Controllers
     [ApiController]
     public class BackwardController : ChannelServiceController
     {
-        public BackwardController(ChannelServiceHandler handler)
+        public BackwardController(ChannelServiceHandlerBase handler)
             : base(handler)
         {
         }

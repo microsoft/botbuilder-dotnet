@@ -20,6 +20,30 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         private static readonly string TestSkillId = Guid.NewGuid().ToString("N");
         private static readonly string TestAuthHeader = string.Empty; // Empty since claims extraction is being mocked
 
+        [Fact]
+        public void ConstructorTests()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _ = new CloudSkillHandler(null, new Mock<IBot>().Object, new TestSkillConversationIdFactory(), BotFrameworkAuthenticationFactory.Create());
+            });
+
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _ = new CloudSkillHandler(new Mock<BotAdapter>().Object, null, new TestSkillConversationIdFactory(), BotFrameworkAuthenticationFactory.Create());
+            });
+
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _ = new CloudSkillHandler(new Mock<BotAdapter>().Object, new Mock<IBot>().Object, null, BotFrameworkAuthenticationFactory.Create());
+            });
+
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _ = new CloudSkillHandler(new Mock<BotAdapter>().Object, new Mock<IBot>().Object, new TestSkillConversationIdFactory(), null);
+            });
+        }
+
         [Theory]
         [InlineData(ActivityTypes.Message, null)]
         [InlineData(ActivityTypes.Message, "replyToId")]

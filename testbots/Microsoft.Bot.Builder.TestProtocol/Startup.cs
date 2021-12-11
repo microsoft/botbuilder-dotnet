@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -27,8 +26,8 @@ namespace Microsoft.Bot.Builder.TestProtocol
         {
             services.AddControllers().AddNewtonsoftJson();
 
-            // Configure credentials
-            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+            // Configure authentication
+            services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
             // Conversation Id factory
             services.AddSingleton<SkillConversationIdFactoryBase, MyConversationIdFactory>();
@@ -36,11 +35,8 @@ namespace Microsoft.Bot.Builder.TestProtocol
             // AuthConfiguration to enable custom claim validation
             services.AddSingleton<AuthenticationConfiguration>();
 
-            // The HttpClient used for forward activities
-            services.AddHttpClient<BotFrameworkHttpClient>();
-
             // The Channel Service implementation for backward responses
-            services.AddTransient<ChannelServiceHandler, RoutingHandler>();
+            services.AddTransient<ChannelServiceHandlerBase, RoutingHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

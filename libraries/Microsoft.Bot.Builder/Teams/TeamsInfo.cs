@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="credentials"> Microsoft app credentials. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <returns>Team Details.</returns>
-        public static async Task<Tuple<ConversationReference, string>> SendMessageToTeamsChannelAsync(ITurnContext turnContext, IActivity activity, string teamsChannelId, MicrosoftAppCredentials credentials, CancellationToken cancellationToken = default)
+        public static async Task<Tuple<ConversationReference, string>> SendMessageToTeamsChannelAsync(ITurnContext turnContext, IActivity activity, string teamsChannelId, AppCredentials credentials, CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
             {
@@ -246,10 +246,11 @@ namespace Microsoft.Bot.Builder.Teams
                 Activity = (Activity)activity,
             };
 
-            await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
+            await turnContext.Adapter.CreateConversationAsync(
+                credentials.MicrosoftAppId,
                 teamsChannelId,
                 serviceUrl,
-                credentials,
+                credentials.OAuthScope,
                 conversationParameters,
                 (t, ct) =>
                 {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -68,6 +69,23 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                var isAuthDisabled = await _credentialsFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
+                if (!isAuthDisabled)
+                {
+                    // No auth header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
+                }
+
+                // In the scenario where auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity.
+                // To do this requires adding in an empty claim.
+                // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
+                var anonymousSkillClaim = new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId);
+                return new ClaimsIdentity(new List<Claim> { anonymousSkillClaim }, AuthenticationConstants.AnonymousAuthType);
+            }
+
             return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
         }
 
@@ -75,11 +93,11 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
 
-            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+            var outboundAudience = claimsIdentity.Claims.IsSkillClaim() ? claimsIdentity.Claims.GetAppIdFromClaims() : _toChannelFromBotOAuthScope;
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
-            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
+            var connectorFactory = new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
@@ -93,7 +111,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, channelIdHeader, null, cancellationToken).ConfigureAwait(false);
 
-            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+            var outboundAudience = claimsIdentity.Claims.IsSkillClaim() ? claimsIdentity.Claims.GetAppIdFromClaims() : _toChannelFromBotOAuthScope;
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
@@ -102,12 +120,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
+            return new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
         }
 
         public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
-            var appId = BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity);
+            var appId = GetAppId(claimsIdentity);
 
             var credentials = await _credentialsFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
@@ -117,6 +135,46 @@ namespace Microsoft.Bot.Connector.Authentication
         public override BotFrameworkClient CreateBotFrameworkClient()
         {
             return new BotFrameworkClientImpl(_credentialsFactory, _httpClientFactory, _toChannelFromBotLoginUrl, _logger);
+        }
+
+        private static string GetAppId(ClaimsIdentity claimsIdentity)
+        {
+            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
+            // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
+            // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
+            var botAppIdClaim =
+                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) ??
+                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
+
+            return botAppIdClaim?.Value;
+        }
+
+        private static bool IsValidTokenFormat(string authHeader)
+        {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                // No token, not valid.
+                return false;
+            }
+
+            var parts = authHeader.Split(' ');
+            if (parts.Length != 2)
+            {
+                // Tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not a valid token
+                return false;
+            }
+
+            // We now have an array that should be:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var authScheme = parts[0];
+            if (!authScheme.Equals("Bearer", StringComparison.OrdinalIgnoreCase))
+            {
+                // The scheme MUST be "Bearer"
+                return false;
+            }
+
+            return true;
         }
 
         // The following code is based on JwtTokenValidation.AuthenticateRequest
@@ -135,7 +193,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
                 {
                     // Return an anonymous claim with an anonymous skill AppId
-                    return SkillValidation.CreateAnonymousSkillClaim();
+                    var anonymousSkillClaim = new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId);
+                    return new ClaimsIdentity(new List<Claim> { anonymousSkillClaim }, AuthenticationConstants.AnonymousAuthType);
                 }
 
                 // In the scenario where Auth is disabled, we still want to have the
@@ -166,7 +225,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 var claimsList = claims as IList<Claim> ?? claims.ToList();
                 await _authConfiguration.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
             }
-            else if (SkillValidation.IsSkillClaim(claims))
+            else if (claims.IsSkillClaim())
             {
                 throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
             }
@@ -174,28 +233,27 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, string channelId, string serviceUrl, CancellationToken cancellationToken)
         {
-            if (SkillValidation.IsSkillToken(authHeader))
+            if (IsTokenFromSkill(authHeader))
             {
-                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+                return await AuthenticateSkillTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
             }
 
-            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
+            if (IsTokenFromEmulator(authHeader))
             {
-                return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+                return await AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
             }
 
-            return await GovernmentChannelValidation_AuthenticateChannelTokenAsync(authHeader, serviceUrl, channelId, cancellationToken).ConfigureAwait(false);
+            return await AuthenticateChannelTokenAsync(authHeader, serviceUrl, channelId, cancellationToken).ConfigureAwait(false);
         }
 
         // The following code is based on SkillValidation.AuthenticateChannelToken
-        private async Task<ClaimsIdentity> SkillValidation_AuthenticateChannelTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
+        private async Task<ClaimsIdentity> AuthenticateSkillTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
         {
-            var tokenValidationParameters =
-                new TokenValidationParameters
+            var skillTokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuers = new[]
                 {
-                    ValidateIssuer = true,
-                    ValidIssuers = new[]
-                    {
                     // TODO: presumably this table should also come from configuration
                     "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
                     "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
@@ -203,36 +261,35 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
                     "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
-                    },
-                    ValidateAudience = false, // Audience validation takes place manually in code.
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(5),
-                    RequireSignedTokens = true
-                };
+                },
+                ValidateAudience = false, // Audience validation takes place manually in code.
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(5),
+                RequireSignedTokens = true
+            };
 
             // Add allowed token issuers from configuration (if present)
             if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
             {
-                var validIssuers = tokenValidationParameters.ValidIssuers.ToList();
+                var validIssuers = skillTokenValidationParameters.ValidIssuers.ToList();
                 validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
-                tokenValidationParameters.ValidIssuers = validIssuers;
+                skillTokenValidationParameters.ValidIssuers = validIssuers;
             }
 
-            // TODO: what should the openIdMetadataUrl be here?
             var tokenExtractor = new JwtTokenExtractor(
                 _authHttpClient,
-                tokenValidationParameters,
+                skillTokenValidationParameters,
                 _toBotFromEmulatorOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
 
-            await SkillValidation_ValidateIdentityAsync(identity, cancellationToken).ConfigureAwait(false);
+            await ValidateSkillIdentityAsync(identity, cancellationToken).ConfigureAwait(false);
 
             return identity;
         }
 
-        private async Task SkillValidation_ValidateIdentityAsync(ClaimsIdentity identity, CancellationToken cancellationToken)
+        private async Task ValidateSkillIdentityAsync(ClaimsIdentity identity, CancellationToken cancellationToken)
         {
             if (identity == null)
             {
@@ -267,7 +324,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException("Invalid audience.");
             }
 
-            var appId = JwtTokenValidation.GetAppIdFromClaims(identity.Claims);
+            var appId = identity.Claims.GetAppIdFromClaims();
             if (string.IsNullOrWhiteSpace(appId))
             {
                 // Invalid appId
@@ -275,42 +332,42 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
-        // The following code is based on EmulatorValidation.AuthenticateEmulatorToken
-        private async Task<ClaimsIdentity> EmulatorValidation_AuthenticateEmulatorTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
+        private bool IsTokenFromSkill(string authHeader)
         {
-            var toBotFromEmulatorTokenValidationParameters =
-                new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidIssuers = new[]
-                    {
-                    // TODO: presumably this table should also come from configuration
-                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
-                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
-                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
-                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",      // Auth v3.2, 2.0 token
-                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/",                    // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
-                    },
-                    ValidateAudience = false,   // Audience validation takes place manually in code.
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(5),
-                    RequireSignedTokens = true,
-                };
+            if (!IsValidTokenFormat(authHeader))
+            {
+                return false;
+            }
+
+            // We know is a valid token, split it and work with it:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var bearerToken = authHeader.Split(' ')[1];
+
+            // Parse the Big Long String into an actual token.
+            var token = new JwtSecurityToken(bearerToken);
+
+            return token.Claims.IsSkillClaim();
+        }
+
+        // The following code is based on EmulatorValidation.AuthenticateEmulatorToken
+        private async Task<ClaimsIdentity> AuthenticateEmulatorTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
+        {
+            var emulatorTokenValidationParameters = GetEmulatorTokenValidationParameters();
 
             // Add allowed token issuers from configuration (if present)
             if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
             {
-                var validIssuers = toBotFromEmulatorTokenValidationParameters.ValidIssuers.ToList();
+                var validIssuers = emulatorTokenValidationParameters.ValidIssuers.ToList();
                 validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
-                toBotFromEmulatorTokenValidationParameters.ValidIssuers = validIssuers;
+                emulatorTokenValidationParameters.ValidIssuers = validIssuers;
             }
 
             var tokenExtractor = new JwtTokenExtractor(
-                    _authHttpClient,
-                    toBotFromEmulatorTokenValidationParameters,
-                    _toBotFromEmulatorOpenIdMetadataUrl,
-                    AuthenticationConstants.AllowedSigningAlgorithms);
+                _authHttpClient,
+                emulatorTokenValidationParameters,
+                _toBotFromEmulatorOpenIdMetadataUrl,
+                AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
             if (identity == null)
@@ -329,14 +386,14 @@ namespace Microsoft.Bot.Connector.Authentication
             // what we're looking for. Note that in a multi-tenant bot, this value
             // comes from developer code that may be reaching out to a service, hence the
             // Async validation.
-            Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
+            var versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
             if (versionClaim == null)
             {
                 throw new UnauthorizedAccessException("'ver' claim is required on Emulator Tokens.");
             }
 
-            string tokenVersion = versionClaim.Value;
-            string appID = string.Empty;
+            var tokenVersion = versionClaim.Value;
+            string appId;
 
             // The Emulator, depending on Version, sends the AppId via either the
             // appid claim (Version 1) or the Authorized Party claim (Version 2).
@@ -344,26 +401,26 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // either no Version or a version of "1.0" means we should look for
                 // the claim in the "appid" claim.
-                Claim appIdClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
+                var appIdClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
                 if (appIdClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
                     throw new UnauthorizedAccessException("'appid' claim is required on Emulator Token version '1.0'.");
                 }
 
-                appID = appIdClaim.Value;
+                appId = appIdClaim.Value;
             }
             else if (tokenVersion == "2.0")
             {
                 // Emulator, "2.0" puts the AppId in the "azp" claim.
-                Claim appZClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
+                var appZClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
                 if (appZClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
                     throw new UnauthorizedAccessException("'azp' claim is required on Emulator Token version '2.0'.");
                 }
 
-                appID = appZClaim.Value;
+                appId = appZClaim.Value;
             }
             else
             {
@@ -371,50 +428,106 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Unknown Emulator Token version '{tokenVersion}'.");
             }
 
-            if (!await _credentialsFactory.IsValidAppIdAsync(appID, cancellationToken).ConfigureAwait(false))
+            if (!await _credentialsFactory.IsValidAppIdAsync(appId, cancellationToken).ConfigureAwait(false))
             {
-                throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appID}");
+                throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appId}");
             }
 
             return identity;
         }
 
-        // The following code is based on GovernmentChannelValidation.AuthenticateChannelToken
-
-        private async Task<ClaimsIdentity> GovernmentChannelValidation_AuthenticateChannelTokenAsync(string authHeader, string serviceUrl, string channelId, CancellationToken cancellationToken)
+        private bool IsTokenFromEmulator(string authHeader)
         {
-            var tokenValidationParameters = GovernmentChannelValidation_GetTokenValidationParameters();
+            if (!IsValidTokenFormat(authHeader))
+            {
+                return false;
+            }
 
-            var tokenExtractor = new JwtTokenExtractor(
-                _authHttpClient,
-                tokenValidationParameters,
-                _toBotFromChannelOpenIdMetadataUrl,
-                AuthenticationConstants.AllowedSigningAlgorithms);
+            // We know is a valid token, split it and work with it:
+            // [0] = "Bearer"
+            // [1] = "[Big Long String]"
+            var bearerToken = authHeader.Split(' ')[1];
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
+            // Parse the Big Long String into an actual token.
+            var token = new JwtSecurityToken(bearerToken);
 
-            await GovernmentChannelValidation_ValidateIdentityAsync(identity, serviceUrl, cancellationToken).ConfigureAwait(false);
+            // Is there an Issuer?
+            if (string.IsNullOrWhiteSpace(token.Issuer))
+            {
+                // No Issuer, means it's not from the Emulator.
+                return false;
+            }
 
-            return identity;
+            // Is the token issued by a source we consider to be the emulator?
+            var emulatorTokenValidationParameters = GetEmulatorTokenValidationParameters();
+            if (!emulatorTokenValidationParameters.ValidIssuers.Contains(token.Issuer))
+            {
+                // Not a Valid Issuer. This is NOT a Bot Framework Emulator Token.
+                return false;
+            }
+
+            // The Token is from the Bot Framework Emulator. Success!
+            return true;
         }
 
-        private TokenValidationParameters GovernmentChannelValidation_GetTokenValidationParameters()
+        private TokenValidationParameters GetEmulatorTokenValidationParameters()
         {
-            return new TokenValidationParameters()
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuers = new[]
+                {
+                    // TODO: presumably this table should also come from configuration
+                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
+                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
+                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
+                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                },
+                ValidateAudience = false, // Audience validation takes place manually in code.
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(5),
+                RequireSignedTokens = true,
+            };
+        }
+
+        // The following code is based on GovernmentChannelValidation.AuthenticateChannelToken
+        private async Task<ClaimsIdentity> AuthenticateChannelTokenAsync(string authHeader, string serviceUrl, string channelId, CancellationToken cancellationToken)
+        {
+            var channelTokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidIssuers = new[] { _toBotFromChannelTokenIssuer },
-
-                // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false,
+                ValidateAudience = false, // Audience validation takes place in JwtTokenExtractor
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
                 ValidateIssuerSigningKey = true,
             };
+
+            // Add allowed token issuers from configuration (if present)
+            if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
+            {
+                var validIssuers = channelTokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
+                channelTokenValidationParameters.ValidIssuers = validIssuers;
+            }
+
+            var tokenExtractor = new JwtTokenExtractor(
+                _authHttpClient,
+                channelTokenValidationParameters,
+                _toBotFromChannelOpenIdMetadataUrl,
+                AuthenticationConstants.AllowedSigningAlgorithms);
+
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
+
+            await ValidateChannelIdentityAsync(identity, serviceUrl, cancellationToken).ConfigureAwait(false);
+
+            return identity;
         }
 
-        private async Task GovernmentChannelValidation_ValidateIdentityAsync(ClaimsIdentity identity, string serviceUrl, CancellationToken cancellationToken)
+        private async Task ValidateChannelIdentityAsync(ClaimsIdentity identity, string serviceUrl, CancellationToken cancellationToken)
         {
             if (identity == null)
             {

@@ -3,11 +3,15 @@
 
 using System;
 using System.IO.Pipes;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Streaming;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests
@@ -21,9 +25,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var writeStream = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
-            new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), pipeName);
             var reader = new NamedPipeClient(pipeName);
-            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName));
+            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), pipeName));
 
             try
             {
@@ -84,7 +88,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public void NamedPipeServer_IsConnected()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), pipeName);
             var pipe = new NamedPipeServer(pipeName, requestHandler);
 
             Assert.False(pipe.IsConnected);
@@ -94,7 +98,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public void NamedPipeServer_ctor_With_Empty_BaseName()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), pipeName);
             Assert.Throws<ArgumentNullException>(() => new NamedPipeServer(string.Empty, requestHandler));
         }
 
@@ -109,7 +113,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async void NamedPipeServer_SendAsync_With_No_Message()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), pipeName);
             var pipe = new NamedPipeServer(pipeName, requestHandler);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => pipe.SendAsync(null));
@@ -119,11 +123,25 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async void NamedPipeServer_SendAsync_With_No_Connected_Client()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), pipeName);
             var pipe = new NamedPipeServer(pipeName, requestHandler);
             var message = new StreamingRequest();
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => pipe.SendAsync(message));
+        }
+
+        private class FakeCloudAdapter : CloudAdapterBase, IStreamingActivityProcessor
+        {
+            public FakeCloudAdapter()
+                : base(BotFrameworkAuthenticationFactory.Create())
+            {
+            }
+
+            public Task<InvokeResponse> ProcessStreamingActivityAsync(Activity activity, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken = default)
+            {
+                var authResult = new AuthenticateRequestResult();
+                return ProcessActivityAsync(authResult, activity, botCallbackHandler, cancellationToken);
+            }
         }
     }
 }

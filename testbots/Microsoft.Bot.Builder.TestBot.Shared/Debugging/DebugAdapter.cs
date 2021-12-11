@@ -2,7 +2,7 @@
 
 namespace Microsoft.Bot.Builder.TestBot.Shared.Debugging
 {
-    public class DebugAdapter : BotFrameworkHttpAdapter
+    public class DebugAdapter : CloudAdapter
     {
     }
 }

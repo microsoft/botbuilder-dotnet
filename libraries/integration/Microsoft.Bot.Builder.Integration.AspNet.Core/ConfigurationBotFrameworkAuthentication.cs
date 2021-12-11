@@ -36,8 +36,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var toChannelFromBotOAuthScope = configuration.GetSection("ToChannelFromBotOAuthScope")?.Value;
             var toBotFromChannelTokenIssuer = configuration.GetSection("ToBotFromChannelTokenIssuer")?.Value;
             var oAuthUrl = configuration.GetSection("OAuthUrl")?.Value;
-            var toBotFromChannelOpenIdMetadataUrl = configuration.GetSection("ToBotFromChannelOpenIdMetadataUrl")?.Value;
-            var toBotFromEmulatorOpenIdMetadataUrl = configuration.GetSection("ToBotFromEmulatorOpenIdMetadataUrl")?.Value;
+            var toBotFromChannelOpenIdMetadataUrl = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
+            var toBotFromEmulatorOpenIdMetadataUrl = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
             var callerId = configuration.GetSection("CallerId")?.Value;
 
             _inner = BotFrameworkAuthenticationFactory.Create(

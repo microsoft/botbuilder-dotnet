@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelServiceController"/> class.
         /// </summary>
-        /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
+        /// <param name="handler">A <see cref="ChannelServiceHandlerBase"/> that will handle the incoming request.</param>
         protected ChannelServiceController(ChannelServiceHandlerBase handler)
         {
             _handler = handler;

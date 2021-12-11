@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder
         private static bool IsSkillBot(ITurnContext turnContext)
         {
             return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity
-                && SkillValidation.IsSkillClaim(claimIdentity.Claims);
+                && claimIdentity.Claims.IsSkillClaim();
         }
 
         private static async Task SendTypingAsync(ITurnContext turnContext, TimeSpan delay, TimeSpan period, CancellationToken cancellationToken)

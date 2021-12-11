@@ -4,14 +4,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.BotBuilderSamples;
 using Microsoft.BotBuilderSamples.SimpleRootBot;
-using Microsoft.BotBuilderSamples.SimpleRootBot.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,8 +28,8 @@ namespace Bot1
         {
             services.AddControllers().AddNewtonsoftJson();
 
-            // Configure credentials
-            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+            // Configure authentication
+            services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
             // Register the skills configuration class
             services.AddSingleton<SkillsConfiguration>();
@@ -42,14 +39,14 @@ namespace Bot1
 
             // Register the Bot Framework Adapter with error handling enabled.
             // Note: some classes use the base BotAdapter so we add an extra registration that pulls the same instance.
-            services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<AdapterWithErrorHandler>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<AdapterWithErrorHandler>());
 
-            services.AddSingleton<BotAdapter>(sp => (BotFrameworkAdapter)sp.GetService<IBotFrameworkHttpAdapter>());
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<AdapterWithErrorHandler>());
 
-            // Register the skills client and skills request handler.
+            // Register the skills request handler.
             services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
-            services.AddHttpClient<SkillHttpClient>();
-            services.AddSingleton<ChannelServiceHandler, SkillHandler>();
+            services.AddSingleton<ChannelServiceHandlerBase, CloudSkillHandler>();
 
             // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();

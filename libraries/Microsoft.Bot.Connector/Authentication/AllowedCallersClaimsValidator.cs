@@ -38,11 +38,11 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             // If _allowedCallers contains an "*", allow all callers.
-            if (SkillValidation.IsSkillClaim(claims) &&
+            if (claims.IsSkillClaim() &&
                 !_allowedCallers.Contains("*"))
             {
                 // Check that the appId claim in the skill request is in the list of callers configured for this bot.
-                var applicationId = JwtTokenValidation.GetAppIdFromClaims(claims);
+                var applicationId = claims.GetAppIdFromClaims();
                 if (!_allowedCallers.Contains(applicationId))
                 {
                     throw new UnauthorizedAccessException(

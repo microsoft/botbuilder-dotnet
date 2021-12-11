@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         {
             if (useLegacyServer)
             {
-                return new BotFrameworkHttpAdapter();
+                return new CloudAdapterWithLegacyStreamingConnection(new StreamingTestBotFrameworkAuthentication(), logger);
             }
             else
             {
@@ -533,6 +533,19 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 
                 serverRunning.Wait();
                 Assert.True(serverRunning.IsCompletedSuccessfully);
+            }
+        }
+
+        private class CloudAdapterWithLegacyStreamingConnection : CloudAdapter
+        {
+            public CloudAdapterWithLegacyStreamingConnection(BotFrameworkAuthentication authentication, ILogger logger)
+                : base(authentication, logger)
+            {
+            }
+
+            protected override StreamingConnection CreateWebSocketConnection(WebSocket socket, ILogger logger)
+            {
+                return new LegacyStreamingConnection(socket, logger);
             }
         }
 

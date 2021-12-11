@@ -31,10 +31,10 @@ namespace Microsoft.BotBuilderSamples.SimpleRootBot.Authentication
 
         public override Task ValidateClaimsAsync(IList<Claim> claims)
         {
-            if (SkillValidation.IsSkillClaim(claims))
+            if (claims.IsSkillClaim())
             {
                 // Check that the appId claim in the skill request is in the list of skills configured for this bot.
-                var appId = JwtTokenValidation.GetAppIdFromClaims(claims);
+                var appId = claims.GetAppIdFromClaims();
                 if (!_allowedSkills.Contains(appId))
                 {
                     throw new UnauthorizedAccessException($"Received a request from an application with an appID of \"{appId}\". To enable requests from this skill, add the skill to your configuration file.");

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
             await sut.HandleReplyToActivityAsync(null, "123", "456", new Activity(), CancellationToken.None);
 
             Assert.Equal(AuthenticationConstants.AnonymousAuthType, sut.ClaimsIdentity.AuthenticationType);
-            Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, JwtTokenValidation.GetAppIdFromClaims(sut.ClaimsIdentity.Claims));
+            Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, sut.ClaimsIdentity.Claims.GetAppIdFromClaims());
         }
 
         private class TestCloudChannelServiceHandler : CloudChannelServiceHandler
