@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private const string IterationValue = "value";
         private const string ActionScopeState = "this.actionScopeState";
         private const string ForeachIndex = "dialog.foreachIndex";
+        private const string CachedItemsProperty = "dialog._cachedItems";
 
         private readonly ActionScope _scope;
 
@@ -125,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             dc.State.SetValue(ForeachIndex, 0);
-            return await RunItemsAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await RunItemsAsync(dc, beginDialog: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -162,8 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private async Task<DialogTurnResult> RunItemsAsync(DialogContext dc, bool beginDialog = true, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var result = dc.State.GetValue<object>(this.ItemsProperty.GetValue(dc.State));
-            var list = ConvertToList(result);
+            var list = GetItemsProperty(dc.State, beginDialog);
 
             var index = dc.State.GetIntValue(ForeachIndex, 0);
 
@@ -256,8 +256,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return state;
         }
 
-        private JArray ConvertToList(object instance)
+        private JArray GetItemsProperty(Memory.DialogStateManager state, bool beginDialog)
         {
+            var instance = state.GetValue<object>(this.ItemsProperty.GetValue(state));
             var result = new JArray();
             if (FunctionUtils.TryParseList(instance, out var list))
             {
@@ -277,6 +278,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             else if (ConvertToJToken(instance) is JObject jobject)
             {
                 result = Object2List(jobject);
+            }
+
+            if (beginDialog)
+            {
+                state.SetValue(CachedItemsProperty, result);
+            }
+            else if (result == null || result.Count == 0)
+            {
+                if (state.TryGetValue<JArray>(CachedItemsProperty, out JArray cached))
+                {
+                    result = cached;
+                }
             }
 
             return result;
