@@ -173,6 +173,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var childDialogState = GetActionScopeState(dc);
                 var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
                 childDc.Parent = dc.Parent;
+                if (dc.Services != null)
+                {
+                    foreach (var service in dc.Services)
+                    {
+                        childDc.Services[service.Key] = service.Value;
+                    }
+                }
 
                 dc.State.SetValue(Value.GetValue(dc.State), list[index][IterationValue]);
                 dc.State.SetValue(Index.GetValue(dc.State), list[index][IterationKey]);

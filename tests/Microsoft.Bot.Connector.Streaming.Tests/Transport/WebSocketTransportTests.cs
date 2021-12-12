@@ -116,9 +116,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     feature.Client.SendAbort();
 
                     // Wait for the transport
-                    await processTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await processTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
-                    await clientTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await clientTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
                 }
             }
         }
@@ -142,13 +142,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                     // Fail in the app
                     pair.Transport.Output.Complete(new InvalidOperationException("Catastrophic failure."));
-                    var clientSummary = await clientTask.TimeoutAfter<WebSocketConnectionSummary>(TimeSpan.FromSeconds(5));
+                    var clientSummary = await clientTask.TimeoutAfterAsync<WebSocketConnectionSummary>(TimeSpan.FromSeconds(5));
                     Assert.Equal(WebSocketCloseStatus.InternalServerError, clientSummary.CloseResult.CloseStatus);
 
                     // Close from the client
                     await feature.Client.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
 
-                    await processTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await processTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
                 }
             }
         }
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     // End the app
                     pair.Transport.Output.Complete();
 
-                    await processTask.TimeoutAfter(TimeSpan.FromSeconds(10));
+                    await processTask.TimeoutAfterAsync(TimeSpan.FromSeconds(10));
 
                     // Now we're closed
                     Assert.Equal(WebSocketState.Aborted, serverSocket.State);
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     // fail the client to server channel
                     pair.Transport.Output.Complete(new Exception());
 
-                    await processTask.TimeoutAfter(TimeSpan.FromSeconds(10));
+                    await processTask.TimeoutAfterAsync(TimeSpan.FromSeconds(10));
 
                     Assert.Equal(WebSocketState.Aborted, serverSocket.State);
                 }
@@ -233,11 +233,11 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     // close the client to server channel
                     pair.Transport.Output.Complete();
 
-                    _ = await clientTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    _ = await clientTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
-                    await feature.Client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None).TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await feature.Client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None).TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
-                    await processTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await processTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
                     Assert.Equal(WebSocketCloseStatus.NormalClosure, serverSocket.CloseStatus);
                 }
@@ -262,14 +262,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
 
-                    await feature.Client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None).TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await feature.Client.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None).TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
                     // close the client to server channel
                     pair.Transport.Output.Complete();
 
-                    _ = await clientTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    _ = await clientTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
-                    await processTask.TimeoutAfter(TimeSpan.FromSeconds(5));
+                    await processTask.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
 
                     Assert.Equal(WebSocketCloseStatus.NormalClosure, serverSocket.CloseStatus);
                 }
@@ -300,7 +300,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                 await serverSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
 
-                var messages = await client.TimeoutAfter(TimeSpan.FromSeconds(5));
+                var messages = await client.TimeoutAfterAsync(TimeSpan.FromSeconds(5));
                 Assert.Equal(2, messages.Received.Count);
 
                 // First message: 1 byte, endOfMessage false
@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
+                var serverTransportRunning = sut.ConnectAsync(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), CancellationToken.None);
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo"), Encoding.UTF8.GetBytes("bar") };
                 SendBinaryAsync(client, messages).Wait();
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
+                var serverTransportRunning = sut.ConnectAsync(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), CancellationToken.None);
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
                 WriteAsync(toTransport.Writer, messages).Wait();

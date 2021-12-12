@@ -293,10 +293,7 @@ namespace Microsoft.Bot.Builder.Streaming
                     {
                         foreach (var handler in RequestHandlers)
                         {
-                            if (handler is IDisposable disposable)
-                            {
-                                handler.Dispose();
-                            }
+                            handler.Dispose();
                         }
                     }
                 }

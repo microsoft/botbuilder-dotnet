@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="signInLink">Sign-in link.</param>
         /// <param name="tokenExchangeResource">Token exchange resource.</param>
-        public SignInResource(string signInLink = default(string), TokenExchangeResource tokenExchangeResource = default(TokenExchangeResource))
+        public SignInResource(string signInLink = default, TokenExchangeResource tokenExchangeResource = default)
         {
             SignInLink = signInLink;
             TokenExchangeResource = tokenExchangeResource;

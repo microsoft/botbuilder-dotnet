@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>Audio card.</summary>
@@ -34,7 +32,7 @@ namespace Microsoft.Bot.Schema
         /// Describes the length of the media content without requiring a receiver to open the content. Formatted as an ISO 8601 Duration field.
         /// </param>
         /// <param name="value">Supplementary parameter for this card.</param>
-        public AudioCard(string title = default(string), string subtitle = default(string), string text = default(string), ThumbnailUrl image = default(ThumbnailUrl), IList<MediaUrl> media = default(IList<MediaUrl>), IList<CardAction> buttons = default(IList<CardAction>), bool? shareable = default(bool?), bool? autoloop = default(bool?), bool? autostart = default(bool?), string aspect = default(string), object value = default(object), string duration = default(string))
+        public AudioCard(string title = default, string subtitle = default, string text = default, ThumbnailUrl image = default, IList<MediaUrl> media = default, IList<CardAction> buttons = default, bool? shareable = default, bool? autoloop = default, bool? autostart = default, string aspect = default, object value = default, string duration = default)
         {
             Title = title;
             Subtitle = subtitle;

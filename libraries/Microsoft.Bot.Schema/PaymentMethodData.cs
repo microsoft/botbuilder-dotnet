@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="data">A JSON-serializable object that provides
         /// optional information that might be needed by the supported payment
         /// methods.</param>
-        public PaymentMethodData(IList<string> supportedMethods = default(IList<string>), object data = default(object))
+        public PaymentMethodData(IList<string> supportedMethods = default, object data = default)
         {
             SupportedMethods = supportedMethods;
             Data = data;

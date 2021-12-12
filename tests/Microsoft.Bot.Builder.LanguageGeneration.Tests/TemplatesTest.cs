@@ -1818,6 +1818,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void TestFileOperation()
         {
+            Templates.EnableFromFile = true;
+
             var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
             var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
             Assert.Equal("hi ${name}", evaluated);
@@ -1830,6 +1832,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaluated = templates.Evaluate("FromFileBinary");
             Assert.Equal("hi ${name}", evaluated);
+        }
+
+        [Fact]
+        public void TestFileOperationDisabled()
+        {
+            Templates.EnableFromFile = false;
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+                var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            });
         }
 
         public class LoopClass

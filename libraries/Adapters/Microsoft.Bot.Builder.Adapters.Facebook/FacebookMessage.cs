@@ -149,5 +149,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// See https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reads. </value>.
         [JsonProperty(PropertyName = "read")]
         public FacebookRead Reads { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the referral property in an messaging_referrals event.
+        /// </summary>
+        /// <value>See https://developers.facebook.com/docs/messenger-platform/discovery/m-me-links/#reading_parameter. </value>
+        [JsonProperty(PropertyName = "referral")]
+        public FacebookReferral Referral { get; set; }
     }
 }

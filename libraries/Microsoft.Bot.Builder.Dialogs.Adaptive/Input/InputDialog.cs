@@ -278,8 +278,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         {
                             { "template", JsonConvert.SerializeObject(DefaultValueResponse) },
                             { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                            { "context", TelemetryLoggerConstants.InputDialogResultEvent }
                         };
-                        TelemetryClient.TrackEvent("GeneratorResult", properties);
+                        TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
                         if (response != null)
                         {
                             await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
@@ -490,8 +491,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 { "template", JsonConvert.SerializeObject(template) },
                 { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                { "context", TelemetryLoggerConstants.InputDialogResultEvent }
             };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
 
             return msg;
         }

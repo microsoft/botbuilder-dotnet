@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             if (httpRequest.Method == HttpMethods.Get)
             {
-                await ConnectWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
+                await ConnectWebSocketAsync(bot, httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -207,30 +207,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             return new StreamingRequestHandler(bot, this, socket, audience, Logger);
         }
 
-        /// <summary>
-        /// Create the <see cref="StreamingRequestHandler"/> for processing for a new Web Socket connection request.
-        /// </summary>
-        /// <param name="bot">The <see cref="IBot"/> implementation which will process the request.</param>
-        /// <param name="context">The <see cref="HttpContext"/> instance on which to accept the web socket.</param>
-        /// <param name="audience">The authorized audience of the incoming connection request.</param>
-        /// <returns>Returns a new <see cref="StreamingRequestHandler"/> implementation.</returns>
-        protected virtual async Task<StreamingRequestHandler> CreateStreamingRequestHandlerAsync(IBot bot, HttpContext context, string audience)
-        {
-            if (bot == null)
-            {
-                throw new ArgumentNullException(nameof(bot));
-            }
-
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            var socket = await context.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-
-            return CreateStreamingRequestHandler(bot, socket, audience);
-        }
-
         private static async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -243,8 +219,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="bot">The <see cref="IBot"/> instance.</param>
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Returns on task completion.</returns>
-        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
             {
@@ -280,7 +257,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // Set ClaimsIdentity on Adapter to enable Skills and User OAuth in WebSocket-based streaming scenarios.
                 var audience = GetAudience(claimsIdentity);
 
-                var requestHandler = await CreateStreamingRequestHandlerAsync(bot, httpRequest.HttpContext, audience).ConfigureAwait(false);
+                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                var requestHandler = CreateStreamingRequestHandler(bot, socket, audience);
 
                 if (RequestHandlers == null)
                 {
@@ -290,7 +268,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 RequestHandlers.Add(requestHandler);
 
                 Log.WebSocketConnectionStarted(Logger);
-                await requestHandler.ListenAsync().ConfigureAwait(false);
+                await requestHandler.ListenAsync(cancellationToken).ConfigureAwait(false);
                 Log.WebSocketConnectionCompleted(Logger);
             }
             catch (Exception ex)

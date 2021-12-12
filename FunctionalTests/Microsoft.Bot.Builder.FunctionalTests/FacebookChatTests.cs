@@ -29,16 +29,22 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             GetEnvironmentVars();
 
+            // Clear the message queue in case of an old message.
+            await ReceiveMessageAsync();
+
             var echoGuid = Guid.NewGuid().ToString();
             await SendMessageAsync(echoGuid);
 
             var response = await ReceiveMessageAsync();
 
-            Assert.AreEqual($"Echo: {echoGuid}", response);
+            //Accept response from either primary or secondary test bot.
+            Assert.IsTrue(
+                response.Equals($"Echo: {echoGuid}") || response.Equals($"Echo Secondary: {echoGuid}"),
+                $"Expected:<Echo...{echoGuid}>. Actual:<{response}>.");
         }
 
         private async Task SendMessageAsync(string echoGuid)
-        {            
+        {
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
@@ -52,7 +58,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 request.RequestUri = new Uri(_botEndpoint);
 
                 await client.SendAsync(request);
-            }            
+            }
         }
 
         private async Task<string> ReceiveMessageAsync()

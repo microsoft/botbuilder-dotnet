@@ -30,6 +30,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             echoGuid = Guid.NewGuid().ToString();
             input += echoGuid;
 
+            // "Prime" the bot. Running StartBotConversationAsync() twice succeeds the second time.
+            await StartBotConversationAsync();
+
             var botAnswer = await StartBotConversationAsync();
 
             Assert.AreEqual($"Echo: {input}", botAnswer);
