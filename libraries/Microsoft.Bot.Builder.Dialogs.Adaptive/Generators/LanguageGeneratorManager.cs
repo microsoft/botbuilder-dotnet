@@ -44,6 +44,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             _multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer); // new Dictionary<string, IList<Resource>>();
 
+            // Legacy path: legacy constructor calls will load the content synchronously in the constructor as before to 
+            // maintain backward compatibility. New path through adaptive runtime will call LoadAsync separately in an asynchronous manner.
             if (loadOnConstruction)
             {
                 LoadAsync().GetAwaiter().GetResult();

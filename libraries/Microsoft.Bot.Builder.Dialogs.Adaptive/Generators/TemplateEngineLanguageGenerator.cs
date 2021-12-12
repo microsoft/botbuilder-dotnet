@@ -99,9 +99,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             Id = resource.Id;
             _lg = new Lazy<Task<LanguageGeneration.Templates>>(() => CreateTemplatesAsync(resource, resourceMapping));
 
+            // Legacy path: legacy constructor calls will load the content synchronously in the constructor as before to 
+            // maintain backward compatibility. New path through adaptive runtime will call LoadAsync separately in an asynchronous manner.
             if (loadOnConstruction)
             {
-                // Legacy constructor forces lazy loading for backward compatible behavior.
                 _ = _lg.Value.GetAwaiter().GetResult();
             }
         }
