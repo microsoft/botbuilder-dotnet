@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private const string IterationKey = "index";
         private const string IterationValue = "value";
         private const string ActionScopeState = "this.actionScopeState";
-        private const string ForeachIndex = "dialog.foreachIndex";
+        private const string CachedItemsProperty = "this.cachedItems";
 
         private readonly ActionScope _scope;
 
@@ -124,8 +124,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            dc.State.SetValue(ForeachIndex, 0);
-            return await RunItemsAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var indexProperty = Index.GetValue(dc.State);
+            dc.State.SetValue(indexProperty, 0);
+            return await RunItemsAsync(dc, beginDialog: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -162,10 +163,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private async Task<DialogTurnResult> RunItemsAsync(DialogContext dc, bool beginDialog = true, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var result = dc.State.GetValue<object>(this.ItemsProperty.GetValue(dc.State));
-            var list = ConvertToList(result);
+            var list = GetItemsProperty(dc.State, beginDialog);
 
-            var index = dc.State.GetIntValue(ForeachIndex, 0);
+            var indexProperty = Index.GetValue(dc.State);
+            var index = dc.State.GetIntValue(indexProperty, 0);
 
             // Next item
             while (list != null && index < list.Count)
@@ -181,13 +182,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                 }
 
-                dc.State.SetValue(Value.GetValue(dc.State), list[index][IterationValue]);
-                dc.State.SetValue(Index.GetValue(dc.State), list[index][IterationKey]);
+                var valueProperty = Value.GetValue(dc.State);
+                dc.State.SetValue(valueProperty, list[index][IterationValue]);
+                dc.State.SetValue(indexProperty, list[index][IterationKey]);
 
                 var options = new Dictionary<string, object>()
                 {
-                    { Value.GetValue(dc.State), list[index][IterationValue] },
-                    { Index.GetValue(dc.State), list[index][IterationKey] },
+                    { valueProperty, list[index][IterationValue] },
+                    { indexProperty, list[index][IterationKey] },
                 };
 
                 DialogTurnResult turnResult;
@@ -208,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 index++;
-                dc.State.SetValue(ForeachIndex, index);
+                dc.State.SetValue(indexProperty, index);
 
                 if (turnResult.Status == DialogTurnStatus.CompleteAndWait)
                 {
@@ -256,8 +258,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return state;
         }
 
-        private JArray ConvertToList(object instance)
+        private JArray GetItemsProperty(Memory.DialogStateManager state, bool beginDialog)
         {
+            var instance = state.GetValue<object>(this.ItemsProperty.GetValue(state));
             var result = new JArray();
             if (FunctionUtils.TryParseList(instance, out var list))
             {
@@ -277,6 +280,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             else if (ConvertToJToken(instance) is JObject jobject)
             {
                 result = Object2List(jobject);
+            }
+
+            if (beginDialog)
+            {
+                state.SetValue(CachedItemsProperty, result);
+            }
+            else if (result == null || result.Count == 0)
+            {
+                if (state.TryGetValue<JArray>(CachedItemsProperty, out JArray cached))
+                {
+                    result = cached;
+                }
             }
 
             return result;
