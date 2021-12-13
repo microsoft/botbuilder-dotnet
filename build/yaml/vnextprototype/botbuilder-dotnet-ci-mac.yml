@@ -6,7 +6,7 @@
 name: $(Build.BuildId)
 
 pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-latest'
 
 trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
