@@ -24,8 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialogBot : IBot
     {
-        private static readonly ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
-
         private readonly string _adaptiveDialogId;
         private readonly string _languageGeneratorId;
         private readonly ResourceExplorer _resourceExplorer;
@@ -41,6 +39,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly ILogger _logger;
 
         private readonly Lazy<Task<Dialog>> _lazyRootDialog;
+        private readonly Lazy<LanguageGenerator> _lazyLanguageGenerator;
+        private readonly Lazy<Task<LanguageGeneratorManager>> _lazyLanguageGeneratorManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
@@ -88,6 +88,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
 
             _lazyRootDialog = new Lazy<Task<Dialog>>(CreateDialogAsync);
+            _lazyLanguageGenerator = new Lazy<LanguageGenerator>(CreateLanguageGenerator);
+            _lazyLanguageGeneratorManager = new Lazy<Task<LanguageGeneratorManager>>(CreateLanguageGeneratorManagerAsync);
         }
 
         /// <inheritdoc/>
@@ -121,8 +123,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_resourceExplorer);
             turnContext.TurnState.Add(_memoryScopes);
             turnContext.TurnState.Add(_pathResolvers);
-            turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
-            turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
+            turnContext.TurnState.Add(_lazyLanguageGenerator.Value);
+            turnContext.TurnState.Add<LanguageGeneratorManager>(await _lazyLanguageGeneratorManager.Value.ConfigureAwait(false));
             turnContext.TurnState.Add(_languagePolicy);
             turnContext.TurnState.Add(_telemetryClient);
 
@@ -141,7 +143,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
 
-            // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
+            // Register the BotCallbackHandler in the TurnState using Set as opposed to Add
+            // because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
@@ -163,6 +166,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return adaptiveDialog;
+        }
+
+        private LanguageGenerator CreateLanguageGenerator()
+        {
+            return _resourceExplorer.TryGetResource(_languageGeneratorId, out var resource)
+                ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId)
+                : new TemplateEngineLanguageGenerator();
+        }
+
+        private async Task<LanguageGeneratorManager> CreateLanguageGeneratorManagerAsync()
+        {
+            var lgManager = new LanguageGeneratorManager(_resourceExplorer, false);
+            await lgManager.LoadAsync().ConfigureAwait(false);
+            return lgManager;
         }
     }
 }
