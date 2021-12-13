@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "generator": {
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnConversationUpdateActivity",
+        "actions": [
+          {
+            "$kind": "Microsoft.Foreach",
+            "itemsProperty": "turn.Activity.membersAdded",
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "Hello."
+              }
+            ],
+            "value": "dialog.foreach.value"
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertNoActivity"
+    }
+  ]
+}
