@@ -29,13 +29,14 @@
               {
                 "$kind": "Microsoft.Foreach",
                 "itemsProperty": "turn.Activity.Value",
-                "value": "dialog.foreach.value",
+                "value": "dialog.foreach2.value",
+                "index": "dialog.foreach2.index",
                 "actions": [
                   {
                     "$kind": "Microsoft.TextInput",
                     "alwaysPrompt": true,
                     "property": "$answer2",
-                    "prompt": "Hi ${dialog.foreach.value}. Do you have any feedback?"
+                    "prompt": "Hi ${dialog.foreach2.value}. Do you have any feedback?"
                   },
                   {
                     "$kind": "Microsoft.SendActivity",
