@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private const string IterationKey = "index";
         private const string IterationValue = "value";
         private const string ActionScopeState = "this.actionScopeState";
-        private const string ForeachIndex = "dialog.foreachIndex";
-        private const string CachedItemsProperty = "dialog._cachedItems";
+        private const string ForeachIndex = "this.foreachIndex";
+        private const string CachedItemsProperty = "this.cachedItems";
 
         private readonly ActionScope _scope;
 

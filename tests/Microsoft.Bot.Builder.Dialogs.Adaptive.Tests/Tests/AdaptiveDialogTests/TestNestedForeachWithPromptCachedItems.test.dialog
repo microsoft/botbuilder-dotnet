@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "generator": {
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnConversationUpdateActivity",
+        "actions": [
+          {
+            "$kind": "Microsoft.Foreach",
+            "itemsProperty": "turn.Activity.membersAdded",
+            "value": "dialog.foreach.value",
+            "actions": [
+              {
+                "$kind": "Microsoft.TextInput",
+                "alwaysPrompt": true,
+                "property": "$answer",
+                "prompt": "Hello, how are you ${dialog.foreach.value.id}?"
+              },
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "You said '${$answer}'."
+              },
+              {
+                "$kind": "Microsoft.Foreach",
+                "itemsProperty": "turn.Activity.Value",
+                "value": "dialog.foreach.value",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.TextInput",
+                    "alwaysPrompt": true,
+                    "property": "$answer2",
+                    "prompt": "Hi ${dialog.foreach.value}. Do you have any feedback?"
+                  },
+                  {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "You said '${$answer2}'."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Done."
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello, how are you Bot?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserActivity",
+      "activity": {
+        "text": "Great!",
+        "value": [
+          "Bot1",
+          "User1",
+          "Another User1"
+        ]
+      }
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'Great!'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi Bot1. Do you have any feedback?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Yes"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'Yes'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi User1. Do you have any feedback?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "No"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'No'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi Another User1. Do you have any feedback?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Maybe"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'Maybe'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello, how are you User?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserActivity",
+      "activity": {
+        "text": "Good",
+        "value": [
+          "Bot2",
+          "User2",
+          "Another User2"
+        ]
+      }
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'Good'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi Bot2. Do you have any feedback?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Yes"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'Yes'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi User2. Do you have any feedback?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "No"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'No'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hi Another User2. Do you have any feedback?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Maybe"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'Maybe'."
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Done."
+    }
+  ]
+}
