@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>Stream for accesssing the content of the resource.</returns>
         public override async Task<Stream> OpenStreamAsync()
         {
-            return await Task.FromResult(new FileStream(FullName, FileMode.Open)).ConfigureAwait(false);
+            return await Task.FromResult(new FileStream(FullName, FileMode.Open, FileAccess.Read)).ConfigureAwait(false);
         }
 
         /// <summary>
