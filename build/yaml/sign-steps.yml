@@ -137,6 +137,13 @@ steps:
      !*.symbols.nupkg
     TargetFolder: '$(Build.ArtifactStagingDirectory)\publish'
 
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: 'Generate Software Bill of Materials (SBOM)'
+  inputs:
+    BuildDropPath: '$(System.ArtifactsDirectory)\publish'
+    PackageName: 'Microsoft Bot Framework SDK for DotNet'
+    PackageVersion: $(ReleasePackageVersion)
+
 - task: PublishBuildArtifacts@1
   displayName: 'Push *.nupkg,*.snupkg files to Artifacts Packages'
   inputs:
