@@ -8,7 +8,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
-    public class MyTurnContext : ITurnContext
+    internal class MyTurnContext : ITurnContext
     {
         public MyTurnContext(BotAdapter adapter, Activity activity)
         {

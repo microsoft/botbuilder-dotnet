@@ -1,2 +1,0 @@
-﻿# template1
-- hi ${if(name==null, 'friend', name)}

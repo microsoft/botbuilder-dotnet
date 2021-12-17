@@ -1,14 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
-    public class QnAMakerCardEqualityComparer : IEqualityComparer<IActivity>
+    internal class QnAMakerCardEqualityComparer : IEqualityComparer<IActivity>
     {
         public bool Equals(IActivity x, IActivity y)
         {

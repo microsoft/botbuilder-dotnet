@@ -16,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78
 		tests\updateTranscripts.cmd = tests\updateTranscripts.cmd
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.QnA.Tests", "tests\Microsoft.Bot.Builder.AI.QnA.Tests\Microsoft.Bot.Builder.AI.QnA.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj", "{6462DA5D-27DC-4CD5-9467-5EFB998FD838}"
@@ -75,14 +73,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Tests", "tests\Microsoft.Bot.Builder.TestBot.Tests\Microsoft.Bot.Builder.TestBot.Tests.csproj", "{76391566-9F22-4994-8B0F-02EFC0E9E228}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative", "libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj", "{1BC05915-044E-4776-8956-B44BBEFF2F84}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveExpressions", "libraries\AdaptiveExpressions\AdaptiveExpressions.csproj", "{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration", "libraries\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj", "{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Tests\Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj", "{72EE26E2-E8BE-4169-82AD-93E021539C34}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B6AFE9D-6FA5-4699-B0EB-62335FD431C8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -105,8 +95,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Streaming.Tes
 	ProjectSection(ProjectDependencies) = postProject
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {ADA8AB8B-2066-4193-B8F7-985669B23E00}
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{D921D320-0450-455F-8DF2-70EDAC5CCE68}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Orchestrator", "libraries\Microsoft.Bot.Builder.AI.Orchestrator\Microsoft.Bot.Builder.AI.Orchestrator.csproj", "{19CE18FD-3F99-4994-B88E-7D32F9303547}"
 EndProject
@@ -172,14 +160,6 @@ Global
 		Release-Windows|Any CPU = Release-Windows|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -364,38 +344,6 @@ Global
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{72EE26E2-E8BE-4169-82AD-93E021539C34}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -428,14 +376,6 @@ Global
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{19CE18FD-3F99-4994-B88E-7D32F9303547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19CE18FD-3F99-4994-B88E-7D32F9303547}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19CE18FD-3F99-4994-B88E-7D32F9303547}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -585,7 +525,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3CF175CF-1AF4-4109-96CB-221684DCED7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
@@ -612,15 +551,10 @@ Global
 		{060F070A-BBFA-490E-BE89-3844C857B771} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{E4E13301-9193-4106-B0E3-41276B478E7C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{76391566-9F22-4994-8B0F-02EFC0E9E228} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{1BC05915-044E-4776-8956-B44BBEFF2F84} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{72EE26E2-E8BE-4169-82AD-93E021539C34} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{685271A8-6C69-46E4-9B11-89AF9761CE0A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{4C82FD14-418F-43E4-AC59-3D926B55CEA3} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{D243AC2D-7823-4177-9D8A-23FDFDA274D2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{D921D320-0450-455F-8DF2-70EDAC5CCE68} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{19CE18FD-3F99-4994-B88E-7D32F9303547} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{F0033458-4C9D-4D66-B58D-F49ABABE8030} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{80FA0E50-8F81-4C60-B265-1039391C1CEE} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}

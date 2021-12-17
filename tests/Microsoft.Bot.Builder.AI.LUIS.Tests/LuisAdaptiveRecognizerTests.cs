@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public void DeserializeLuisAdaptiveRecognizer()
         {
             var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(RecognizerJson, new ArrayExpressionConverter<DynamicList>());
-            var dl = recognizer.DynamicLists.GetValue(null);
+            var dl = recognizer.DynamicLists;
             Assert.Equal(2, dl.Count);
             Assert.Equal("alphaEntity", dl[0].Entity);
             Assert.Equal(2, dl[0].List.Count);

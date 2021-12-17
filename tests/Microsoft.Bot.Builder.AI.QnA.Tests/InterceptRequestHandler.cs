@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
-    public class InterceptRequestHandler : DelegatingHandler
+    internal class InterceptRequestHandler : DelegatingHandler
     {
         public InterceptRequestHandler(HttpMessageHandler handler)
             : base(handler)

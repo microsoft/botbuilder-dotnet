@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -39,28 +38,28 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value>Application ID.</value>
         [JsonProperty("applicationId")]
-        public StringExpression ApplicationId { get; set; }
+        public string ApplicationId { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS version.
         /// </summary>
         /// <value>application version.</value>
         [JsonProperty("version")]
-        public StringExpression Version { get; set; }
+        public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS endpoint like https://westus.api.cognitive.microsoft.com to query.
         /// </summary>
         /// <value>LUIS Endpoint.</value>
         [JsonProperty("endpoint")]
-        public StringExpression Endpoint { get; set; }
+        public string Endpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the key used to talk to a LUIS endpoint.
         /// </summary>
         /// <value>Endpoint key.</value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; }
+        public string EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets an external entity recognizer.
@@ -71,11 +70,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public Recognizer ExternalEntityRecognizer { get; set; }
 
         /// <summary>
-        /// Gets or sets an expression or constant LUIS dynamic list.
+        /// Gets an expression or constant LUIS dynamic list.
         /// </summary>
         /// <value>Dynamic lists.</value>
         [JsonProperty("dynamicLists")]
-        public ArrayExpression<Luis.DynamicList> DynamicLists { get; set; }
+        public List<Luis.DynamicList> DynamicLists { get; } = new List<Luis.DynamicList>();
 
         /// <summary>
         /// Gets or sets LUIS prediction options.
@@ -100,18 +99,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public HttpClientHandler HttpClient { get; set; }
 
         /// <summary>
-        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// Gets or sets a value indicating whether personal information should be logged in telemetry.
         /// </summary>
         /// <value>
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
         [JsonProperty("logPersonalInformation")]
-        public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
+        public bool LogPersonalInformation { get; set; }
 
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            var recognizer = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
+            var recognizer = new LuisRecognizer(RecognizerOptions(), HttpClient);
 
             RecognizerResult result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
 
@@ -123,9 +122,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Construct V3 recognizer options from the current dialog context.
         /// </summary>
-        /// <param name="dialogContext">Context.</param>
         /// <returns>LUIS Recognizer options.</returns>
-        public LuisRecognizerOptionsV3 RecognizerOptions(DialogContext dialogContext)
+        public LuisRecognizerOptionsV3 RecognizerOptions()
         {
             AI.LuisV3.LuisPredictionOptions options = new LuisV3.LuisPredictionOptions();
             if (this.PredictionOptions != null)
@@ -134,25 +132,25 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
             else if (this.Options != null)
             {
-                options.DateTimeReference = this.Options.DateTimeReference?.GetValue(dialogContext);
-                options.ExternalEntities = this.Options.ExternalEntities?.GetValue(dialogContext);
-                options.IncludeAllIntents = this.Options.IncludeAllIntents?.GetValue(dialogContext) ?? false;
-                options.IncludeInstanceData = this.Options.IncludeInstanceData?.GetValue(dialogContext) ?? true;
-                options.IncludeAPIResults = this.Options.IncludeAPIResults?.GetValue(dialogContext) ?? false;
-                options.Log = this.Options.Log?.GetValue(dialogContext) ?? true;
-                options.PreferExternalEntities = this.Options.PreferExternalEntities?.GetValue(dialogContext) ?? true;
-                options.Slot = this.Options.Slot?.GetValue(dialogContext);
+                options.DateTimeReference = this.Options.DateTimeReference;
+                options.ExternalEntities = this.Options.ExternalEntities;
+                options.IncludeAllIntents = this.Options.IncludeAllIntents;
+                options.IncludeInstanceData = this.Options.IncludeInstanceData;
+                options.IncludeAPIResults = this.Options.IncludeAPIResults;
+                options.Log = this.Options.Log;
+                options.PreferExternalEntities = this.Options.PreferExternalEntities;
+                options.Slot = this.Options.Slot;
             }
 
             if (this.Version != null)
             {
-                options.Version = this.Version?.GetValue(dialogContext.State);
+                options.Version = this.Version;
             }
 
             if (DynamicLists != null)
             {
                 var list = new List<AI.LuisV3.DynamicList>();
-                foreach (var listEntity in DynamicLists.GetValue(dialogContext.State))
+                foreach (var listEntity in DynamicLists)
                 {
                     list.Add(new AI.LuisV3.DynamicList(listEntity.Entity, listEntity.List));
                 }
@@ -160,7 +158,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 options.DynamicLists = list;
             }
 
-            var application = new LuisApplication(ApplicationId.GetValue(dialogContext.State), EndpointKey.GetValue(dialogContext.State), Endpoint.GetValue(dialogContext.State));
+            var application = new LuisApplication(ApplicationId, EndpointKey, Endpoint);
             return new LuisRecognizerOptionsV3(application)
             {
                 ExternalEntityRecognizer = ExternalEntityRecognizer,
@@ -180,8 +178,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>The dictionary of properties to be logged with telemetry for the recongizer result.</returns>
         protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dc)
         {
-            var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dc.State);
-            var (applicationId, error2) = this.ApplicationId.TryGetValue(dc.State);
+            var logPersonalInfo = LogPersonalInformation;
+            var applicationId = ApplicationId;
 
             var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 

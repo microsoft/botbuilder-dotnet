@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.LuisV3;
 using Newtonsoft.Json;
 
@@ -28,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// True for returning all intents.
         /// </value>
         [JsonProperty("includeAllIntents")]
-        public BoolExpression IncludeAllIntents { get; set; } = false;
+        public bool IncludeAllIntents { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not instance data should be included in response.
@@ -37,7 +36,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// A value indicating whether or not instance data should be included in response.
         /// </value>
         [JsonProperty("includeInstanceData")]
-        public BoolExpression IncludeInstanceData { get; set; } = false;
+        public bool IncludeInstanceData { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether API results should be included.
@@ -45,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>True to include API results.</value>
         /// <remarks>This is mainly useful for testing or getting access to LUIS features not yet in the SDK.</remarks>
         [JsonProperty("includeAPIResults")]
-        public BoolExpression IncludeAPIResults { get; set; } = false;
+        public bool IncludeAPIResults { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether queries should be logged in LUIS.
@@ -55,16 +54,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </value>
         /// <remarks>The default is to log queries to LUIS in order to support active learning.  To default to the Luis setting set to null.</remarks>
         [JsonProperty("log")]
-        public BoolExpression Log { get; set; } = true;
+        public bool Log { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets external entities recognized in the query.
+        /// Gets external entities recognized in the query.
         /// </summary>
         /// <value>
         /// External entities recognized in query.
         /// </value>
         [JsonProperty("externalEntities")]
-        public ArrayExpression<ExternalEntity> ExternalEntities { get; set; }
+        public List<ExternalEntity> ExternalEntities { get; } = new List<ExternalEntity>();
 
         /// <summary>
         /// Gets or sets a value indicating whether external entities should override other means of recognizing entities.
@@ -72,8 +71,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// Boolean for if external entities should be preferred to the results from LUIS models.
         /// </value>
-        [JsonProperty("preferExternalEntities")]
-        public BoolExpression PreferExternalEntities { get; set; } = true;
+        public bool PreferExternalEntities { get; set; } = true;
 
         /// <summary>
         /// Gets or sets datetimeV2 offset. The format for the datetimeReference is ISO 8601.
@@ -82,7 +80,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// DateTimeReference.
         /// </value>
         [JsonProperty("dateTimeReference")]
-        public StringExpression DateTimeReference { get; set; }
+        public string DateTimeReference { get; set; }
 
         /// <summary>
         /// Gets or sets the LUIS slot to use for the application.
@@ -95,6 +93,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// If you specify a Version, then a private version of the application is used instead of a slot.
         /// </remarks>
         [JsonProperty("slot")]
-        public StringExpression Slot { get; set; } = LuisSlot.Production;
+        public string Slot { get; set; } = LuisSlot.Production;
     }
 }
