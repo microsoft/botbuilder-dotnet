@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
@@ -35,30 +30,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             _qnaMakerRecognizerFixture = qnaMakerRecognizerFixture;
         }
 
-        public AdaptiveDialog QnAMakerRecognizer_DialogBase()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_ReturnsNoAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsNoAnswer.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_TopNAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswerWithIntent\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithIntent.json"));
-
-            return CreateQnAMakerActionDialog(mockHttp);
-        }
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
         public async Task LogsTelemetry(bool logPersonalInformation)
         {
+            var recognizer = new QnAMakerRecognizer();
+
             var rootDialog = QnAMakerRecognizer_DialogBase();
             var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_ReturnsAnswer.json")));
             var recognizer = (QnAMakerRecognizer)rootDialog.Recognizer;
@@ -87,7 +65,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var activity = MessageFactory.Text("hi");
             var context = new TurnContext(new TestAdapter(), activity);
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
-            var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+            var logPersonalInfo = recognizer.LogPersonalInformation;
 
             // Should be false by default, when not specified by user.
             Assert.False(logPersonalInfo);
@@ -327,6 +305,26 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             }
 
             return true;
+        }
+
+
+        private AdaptiveDialog QnAMakerRecognizer_DialogBase()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .WithContent("{\"question\":\"QnaMaker_ReturnsNoAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsNoAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .WithContent("{\"question\":\"QnaMaker_TopNAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswerWithIntent\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithIntent.json"));
+
+            return CreateQnAMakerActionDialog(mockHttp);
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -60,7 +59,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// The default threshold for answers returned, based on score.
         /// </summary>
-        protected const float DefaultThreshold = 0.3F;
+        protected const double DefaultThreshold = 0.3F;
 
         /// <summary>
         /// The default maximum number of answers to be returned for the question.
@@ -105,12 +104,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             string endpointKey,
             string hostName,
             Activity noAnswer = null,
-            float threshold = DefaultThreshold,
+            double threshold = DefaultThreshold,
             string activeLearningCardTitle = DefaultCardTitle,
             string cardNoMatchText = DefaultCardNoMatchText,
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
-            Metadata[] strictFilters = null,
+            List<Metadata> strictFilters = null,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -165,12 +164,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             string endpointKey,
             string hostName,
             Activity noAnswer = null,
-            float threshold = DefaultThreshold,
+            double threshold = DefaultThreshold,
             string activeLearningCardTitle = DefaultCardTitle,
             string cardNoMatchText = DefaultCardNoMatchText,
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
-            Metadata[] strictFilters = null,
+            List<Metadata> strictFilters = null,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -227,7 +226,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The knowledge base ID or an expression which evaluates to the knowledge base ID.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public StringExpression KnowledgeBaseId { get; set; }
+        public string KnowledgeBaseId { get; set; }
 
         /// <summary>
         /// Gets or sets the QnA Maker host URL for the knowledge base.
@@ -236,7 +235,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker host URL or an expression which evaluates to the host URL.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; }
+        public string HostName { get; set; }
 
         /// <summary>
         /// Gets or sets the QnA Maker endpoint key to use to query the knowledge base.
@@ -245,7 +244,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker endpoint key to use or an expression which evaluates to the endpoint key.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; }
+        public string EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets the threshold for answers returned, based on score.
@@ -254,7 +253,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The threshold for answers returned or an expression which evaluates to the threshold.
         /// </value>
         [JsonProperty("threshold")]
-        public NumberExpression Threshold { get; set; } = DefaultThreshold;
+        public double Threshold { get; set; } = DefaultThreshold;
 
         /// <summary>
         /// Gets or sets the maximum number of answers to return from the knowledge base.
@@ -264,7 +263,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// evaluates to the maximum number to return.
         /// </value>
         [JsonProperty("top")]
-        public IntExpression Top { get; set; } = DefaultTopN;
+        public int Top { get; set; } = DefaultTopN;
 
         /// <summary>
         /// Gets or sets the template to send the user when QnA Maker does not find an answer.
@@ -284,7 +283,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// expression which evaluates to the card title.
         /// </value>
         [JsonProperty("activeLearningCardTitle")]
-        public StringExpression ActiveLearningCardTitle { get; set; }
+        public string ActiveLearningCardTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the button text to use with active learning options, allowing a user to
@@ -295,7 +294,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// the button text.
         /// </value>
         [JsonProperty("cardNoMatchText")]
-        public StringExpression CardNoMatchText { get; set; }
+        public string CardNoMatchText { get; set; }
 
         /// <summary>
         /// Gets or sets the template to send the user if they select the no match option on an
@@ -308,7 +307,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public ITemplate<Activity> CardNoMatchResponse { get; set; } = new BindToActivity(MessageFactory.Text(DefaultCardNoMatchResponse));
 
         /// <summary>
-        /// Gets or sets the QnA Maker metadata with which to filter or boost queries to the knowledge base;
+        /// Gets the QnA Maker metadata with which to filter or boost queries to the knowledge base;
         /// or null to apply none.
         /// </summary>
         /// <value>
@@ -316,16 +315,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// or an expression which evaluates to the QnA Maker metadata.
         /// </value>
         [JsonProperty("strictFilters")]
-        public ArrayExpression<Metadata> StrictFilters { get; set; }
+        public List<Metadata> StrictFilters { get; }
 
         /// <summary>
-        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// Gets or sets a value indicating whether gets or sets the flag to determine if personal information should be logged in telemetry.
         /// </summary>
         /// <value>
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
         [JsonProperty("logPersonalInformation")]
-        public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
+        public bool LogPersonalInformation { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
@@ -344,7 +343,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// </value>
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
-        public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
+        public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -467,12 +466,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = this.EndpointKey.GetValue(dc.State),
-                Host = this.HostName.GetValue(dc.State),
-                KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State)
+                EndpointKey = this.EndpointKey,
+                Host = this.HostName,
+                KnowledgeBaseId = this.KnowledgeBaseId
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+            return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation);
         }
 
         /// <summary>
@@ -485,13 +484,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         {
             return Task.FromResult(new QnAMakerOptions
             {
-                ScoreThreshold = (float)this.Threshold.GetValue(dc.State),
-                StrictFilters = this.StrictFilters?.GetValue(dc.State)?.ToArray(),
-                Top = this.Top.GetValue(dc.State),
+                ScoreThreshold = Threshold,
+                StrictFilters = StrictFilters?.ToArray(),
+                Top = Top,
                 Context = new QnARequestContext(),
                 QnAId = 0,
-                RankerType = this.RankerType?.GetValue(dc.State),
-                IsTest = this.IsTest
+                RankerType = RankerType,
+                IsTest = IsTest
             });
         }
 
@@ -506,8 +505,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return new QnADialogResponseOptions
             {
                 NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
-                ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
-                CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
+                ActiveLearningCardTitle = this.ActiveLearningCardTitle ?? DefaultCardTitle,
+                CardNoMatchText = this.CardNoMatchText ?? DefaultCardNoMatchText,
                 CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
             };
         }

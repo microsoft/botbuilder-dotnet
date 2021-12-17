@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The minimum score threshold, used to filter returned results.
         /// </value>
         [JsonProperty("scoreThreshold")]
-        public float ScoreThreshold { get; set; }
+        public double ScoreThreshold { get; set; }
 
         /// <summary>
         /// Gets or sets the time in milliseconds to wait before the request times out.

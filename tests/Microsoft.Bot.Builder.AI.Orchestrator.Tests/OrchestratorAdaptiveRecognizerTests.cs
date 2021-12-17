@@ -3,11 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.BotFramework.Orchestrator;
 using Moq;
@@ -31,8 +30,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath")
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath"
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
@@ -69,8 +68,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath")
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath"
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
@@ -80,13 +79,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             var result = await recognizer.RecognizeAsync(dc, activity, default);
             Assert.Equal(3, result.Intents.Count);
-            List<Result> results = (List<Result>)result.Properties[OrchestratorRecognizer.ResultProperty];
-            Assert.Equal(AdaptiveRecognizer.NoneIntent, results[0].Label.Name);
+            var results = (List<Result>)result.Properties[OrchestratorRecognizer.ResultProperty];
+            Assert.Equal(Recognizer.NoneIntent, results[0].Label.Name);
             Assert.Equal(3, results.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.3, result.Intents["mockLabel"].Score);
-            Assert.True(result.Intents.ContainsKey(AdaptiveRecognizer.NoneIntent));
-            Assert.Equal(1.0, result.Intents[AdaptiveRecognizer.NoneIntent].Score);
+            Assert.True(result.Intents.ContainsKey(Recognizer.NoneIntent));
+            Assert.Equal(1.0, result.Intents[Recognizer.NoneIntent].Score);
             Assert.True(result.Intents.ContainsKey("mockLabel2"));
             Assert.Equal(0.6, result.Intents["mockLabel2"].Score);
         }
@@ -104,8 +103,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath")
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath"
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
@@ -130,8 +129,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath")
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath"
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
@@ -164,8 +163,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        [InlineData(null)]
-        public async Task TestIntentRecognizeLogsTelemetry(bool? logPersonalInformation)
+        public async Task TestIntentRecognizeLogsTelemetry(bool logPersonalInformation)
         {
             var mockResult1 = new Result
             {
@@ -183,15 +181,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath"),
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath",
                 TelemetryClient = telemetryClient.Object,
             };
 
-            if (logPersonalInformation != null)
-            {
-                recognizer.LogPersonalInformation = logPersonalInformation;
-            }
+            recognizer.LogPersonalInformation = logPersonalInformation;
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
             var activity = MessageFactory.Text("hi");
@@ -200,13 +195,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             var result = await recognizer.RecognizeAsync(dc, activity, default);
 
-            if (logPersonalInformation == null)
-            {
-                // Should be false by default, when not specified by user.
-                var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
-                Assert.False(logPersonalInfo);
-            }
-
+            Assert.Equal(logPersonalInformation, recognizer.LogPersonalInformation);
             Assert.Equal(2, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
@@ -216,8 +205,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        [InlineData(null)]
-        public async Task TestIntentRecognizeNoneIntentTelemetry(bool? logPersonalInformation)
+        public async Task TestIntentRecognizeNoneIntentTelemetry(bool logPersonalInformation)
         {
             var mockResult1 = new Result
             {
@@ -230,15 +218,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath"),
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath",
                 TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = logPersonalInformation
             };
-
-            if (logPersonalInformation != null)
-            {
-                recognizer.LogPersonalInformation = logPersonalInformation;
-            }
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
             var activity = MessageFactory.Text("hi");
@@ -247,13 +231,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             var result = await recognizer.RecognizeAsync(dc, activity, default);
 
-            if (logPersonalInformation == null)
-            {
-                // Should be false by default, when not specified by user.
-                var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
-                Assert.False(logPersonalInfo);
-            }
-
+            Assert.Equal(logPersonalInformation, recognizer.LogPersonalInformation);
             Assert.Equal(2, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("None"));
             Assert.Equal(1.0, result.Intents["None"].Score);
@@ -261,7 +239,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         }
 
         [Fact]
-        public async Task TestEntityRecognize()
+        public async Task TestExternalEntityRecognition()
         {
             var mockResult = new Result
             {
@@ -280,9 +258,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockResolver = new MockResolver(mockScore, mockEntityScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath"),
-                ExternalEntityRecognizer = new NumberEntityRecognizer()
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath",
+                ExternalEntityRecognizer = new TestExternalEntityRecognizer()
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
@@ -293,15 +271,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var result = await recognizer.RecognizeAsync(dc, activity, default);
             Assert.NotNull(result.Entities);
             Assert.Equal(new JValue("12"), result.Entities["number"][0]);
-            var resolution = result.Entities["$instance"]["number"][0]["resolution"];
-            Assert.Equal(new JValue("integer"), resolution["subtype"]);
-            Assert.Equal(new JValue("12"), resolution["value"]);
-
-            Assert.True(result.Entities.ContainsKey("mockEntityLabel"));
-            Assert.Equal(0.75, result.Entities["mockEntityLabel"][0]["score"]);
-            Assert.Equal("room 12", result.Entities["mockEntityLabel"][0]["text"]);
-            Assert.Equal(17, result.Entities["mockEntityLabel"][0]["start"]);
-            Assert.Equal(24, result.Entities["mockEntityLabel"][0]["end"]);
         }
 
         [Fact]
@@ -327,10 +296,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath"),
-                DetectAmbiguousIntents = new BoolExpression(true),
-                DisambiguationScoreThreshold = new NumberExpression(0.5)
+                ModelFolder = "fakePath",
+                SnapshotFile = "fakePath",
+                DetectAmbiguousIntents = true,
+                DisambiguationScoreThreshold = 0.5
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
@@ -342,10 +311,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.True(result.Intents.ContainsKey("ChooseIntent"));
         }
 
-        private static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
+        private static void ValidateTelemetry(OrchestratorRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
         {
             var eventName = GetEventName(recognizer.GetType().Name);
-            var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+            var logPersonalInfo = recognizer.LogPersonalInformation;
             var expectedTelemetryProps = GetExpectedTelemetryProps(activity, result, logPersonalInfo);
             var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
 
@@ -357,10 +326,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Times.Exactly(callCount));
         }
 
-        private static void ValidateNoneTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
+        private static void ValidateNoneTelemetry(OrchestratorRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
         {
             var eventName = GetEventName(recognizer.GetType().Name);
-            var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+            var logPersonalInfo = recognizer.LogPersonalInformation;
             var expectedTelemetryProps = GetExpectedNoneTelemetryProps(activity, result, logPersonalInfo);
             var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
 
@@ -442,6 +411,19 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// A recognizer to test that the external entity recognizer is called.
+        /// </summary>
+        private class TestExternalEntityRecognizer : Recognizer
+        {
+            public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
+            {
+                var result = new RecognizerResult();
+                result.Entities = JObject.Parse("{ 'number': ['12'] }");
+                return Task.FromResult(result);
+            }
         }
     }
 }

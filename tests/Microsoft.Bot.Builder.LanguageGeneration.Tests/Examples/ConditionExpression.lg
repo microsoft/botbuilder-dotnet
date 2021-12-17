@@ -1,9 +1,0 @@
-﻿# conditionTemplate(num)
-- IF: ${num == 1}
-- Your input is one
-- ELSE if: ${num == 2}
-- Your input is two
-- ELSEIF: ${num == 3}
-- Your input is three
-- else:
-- Your input is not one, two or three

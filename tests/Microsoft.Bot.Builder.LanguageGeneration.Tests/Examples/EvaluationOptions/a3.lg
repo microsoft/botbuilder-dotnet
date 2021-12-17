@@ -1,7 +1,0 @@
-﻿> !# @lineBreakStyle = markdown
-> !# @replaceNull = the ${path} is undefined a3!
-[import](b3.lg)
-[import](c3.lg)
-
-#SayHello
-- hi ${user.name}

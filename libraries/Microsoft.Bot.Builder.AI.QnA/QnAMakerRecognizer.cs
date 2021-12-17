@@ -9,7 +9,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -49,7 +48,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// The knowledgebase Id.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
-        public StringExpression KnowledgeBaseId { get; set; }
+        public string KnowledgeBaseId { get; set; }
 
         /// <summary>
         /// Gets or sets the Hostname for your QnA Maker service.
@@ -58,7 +57,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// The host name of the QnA Maker knowledgebase.
         /// </value>
         [JsonProperty("hostname")]
-        public StringExpression HostName { get; set; }
+        public string HostName { get; set; }
 
         /// <summary>
         /// Gets or sets the Endpoint key for the QnA Maker KB.
@@ -67,7 +66,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// The endpoint key for the QnA service.
         /// </value>
         [JsonProperty("endpointKey")]
-        public StringExpression EndpointKey { get; set; }
+        public string EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets the number of results you want.
@@ -77,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// </value>
         [DefaultValue(3)]
         [JsonProperty("top")]
-        public IntExpression Top { get; set; } = 3;
+        public int Top { get; set; } = 3;
 
         /// <summary>
         /// Gets or sets the threshold score to filter results.
@@ -87,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// </value>
         [DefaultValue(0.3F)]
         [JsonProperty("threshold")]
-        public NumberExpression Threshold { get; set; } = 0.3F;
+        public double Threshold { get; set; } = 0.3F;
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
@@ -105,7 +104,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// The desired RankerType.
         /// </value>
         [JsonProperty("rankerType")]
-        public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
+        public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
         /// Gets or sets <see cref="Metadata"/> join operator.
@@ -117,35 +116,35 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public JoinOperator StrictFiltersJoinOperator { get; set; }
 
         /// <summary>
-        /// Gets or sets the whether to include the dialog name metadata for QnA context.
+        /// Gets or sets a value indicating whether to include the dialog name metadata for QnA context.
         /// </summary>
         /// <value>
         /// A bool or boolean expression.
         /// </value>
         [DefaultValue(true)]
         [JsonProperty("includeDialogNameInMetadata")]
-        public BoolExpression IncludeDialogNameInMetadata { get; set; } = true;
+        public bool IncludeDialogNameInMetadata { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets an expression to evaluate to set additional metadata name value pairs.
+        /// Gets an expression to evaluate to set additional metadata name value pairs.
         /// </summary>
         /// <value>An expression to evaluate for pairs of metadata.</value>
         [JsonProperty("metadata")]
-        public ArrayExpression<Metadata> Metadata { get; set; }
+        public List<Metadata> Metadata { get; }
 
         /// <summary>
         /// Gets or sets an expression to evaluate to set the context.
         /// </summary>
         /// <value>An expression to evaluate to QnARequestContext to pass as context.</value>
         [JsonProperty("context")]
-        public ObjectExpression<QnARequestContext> Context { get; set; }
+        public QnARequestContext Context { get; set; }
 
         /// <summary>
         /// Gets or sets an expression or numberto use for the QnAId paratmer.
         /// </summary>
         /// <value>The expression or number.</value>
         [JsonProperty("qnaId")]
-        public IntExpression QnAId { get; set; } = 0;
+        public int QnAId { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
@@ -157,13 +156,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public HttpClient HttpClient { get; set; }
 
         /// <summary>
-        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// Gets or sets a value indicating whether personal information should be logged in telemetry.
         /// </summary>
         /// <value>
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
         [JsonProperty("logPersonalInformation")]
-        public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
+        public bool LogPersonalInformation { get; set; } = false;
 
         /// <summary>
         /// Return results of the call to QnA Maker.
@@ -190,7 +189,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             var filters = new List<Metadata>();
-            if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
+            if (IncludeDialogNameInMetadata)
             {
                 filters.Add(new Metadata
                 {
@@ -200,7 +199,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = Metadata?.GetValue(dialogContext.State);
+            var externalMetadata = Metadata;
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -212,12 +211,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = Context?.GetValue(dialogContext.State),
-                    ScoreThreshold = (float)Threshold.GetValue(dialogContext.State),
+                    Context = Context,
+                    ScoreThreshold = (float)Threshold,
                     StrictFilters = filters.ToArray(),
-                    Top = Top.GetValue(dialogContext.State),
-                    QnAId = QnAId.GetValue(dialogContext.State),
-                    RankerType = RankerType.GetValue(dialogContext.State),
+                    Top = Top,
+                    QnAId = QnAId,
+                    RankerType = RankerType,
                     IsTest = IsTest,
                     StrictFiltersJoinOperator = StrictFiltersJoinOperator
                 },
@@ -286,16 +285,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 httpClient = HttpClient;
             }
 
-            var (epKey, error) = EndpointKey.TryGetValue(dc.State);
-            var (hn, error2) = HostName.TryGetValue(dc.State);
-            var (kbId, error3) = KnowledgeBaseId.TryGetValue(dc.State);
-            var (logPersonalInfo, error4) = LogPersonalInformation.TryGetValue(dc.State);
+            var epKey = EndpointKey;
+            var hn = HostName;
+            var kbId = KnowledgeBaseId;
+            var logPersonalInfo = LogPersonalInformation;
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = epKey ?? throw new InvalidOperationException($"Unable to get a value for {nameof(EndpointKey)} from state. {error}"),
-                Host = hn ?? throw new InvalidOperationException($"Unable to a get value for {nameof(HostName)} from state. {error2}"),
-                KnowledgeBaseId = kbId ?? throw new InvalidOperationException($"Unable to get a value for {nameof(KnowledgeBaseId)} from state. {error3}")
+                EndpointKey = epKey,
+                Host = hn,
+                KnowledgeBaseId = kbId
             };
 
             return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), httpClient, TelemetryClient, logPersonalInfo));
@@ -324,7 +323,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
             };
 
-            var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
+            var logPersonalInfo = LogPersonalInformation;
             
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {

@@ -7,6 +7,13 @@
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="DialogManagerTests.cs" />
+    <Compile Remove="DialogStateManagerTests.cs" />
+    <Compile Remove="MemoryScopeTests.cs" />
+    <Compile Remove="Startup.cs" />
+    <Compile Remove="TestUtilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="test.settings.json" />
   </ItemGroup>
   <ItemGroup>
@@ -27,8 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
   </ItemGroup>

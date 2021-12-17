@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -30,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty);
-            var context = TestUtilities.CreateEmptyContext();
+            var context = CreateEmptyContext();
             await ds.CreateContextAsync(context);
         }
 
@@ -40,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty);
-            var context = TestUtilities.CreateEmptyContext();
+            var context = CreateEmptyContext();
             await ds.CreateContextAsync(context);
         }
 
@@ -172,6 +174,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("B").TelemetryClient.GetType());
             Assert.Equal(typeof(MyBotTelemetryClient), ds.Find("C").TelemetryClient.GetType());
             await Task.CompletedTask;
+        }
+
+        private static TurnContext CreateEmptyContext()
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                ChannelId = "EmptyContext",
+                From = new ChannelAccount
+                {
+                    Id = "empty@empty.context.org",
+                },
+
+                Conversation = new ConversationAccount()
+                {
+                    Id = "213123123123",
+                },
+            };
+            var bc = new TurnContext(b, a);
+
+            return bc;
         }
 
         private class MyBotTelemetryClient : IBotTelemetryClient, IBotPageViewTelemetryClient

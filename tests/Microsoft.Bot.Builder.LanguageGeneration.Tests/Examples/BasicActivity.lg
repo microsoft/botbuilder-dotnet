@@ -1,9 +1,0 @@
-﻿﻿# RecentTasks
-- IF: ${count(recentTasks) == 1}
-    - Your most recent task is ${recentTasks[0]}. You can let me know if you want to add or complete a task.||  Your most recent task is ${recentTasks[0]}. You can let me know.
-- ELSEIF: ${count(recentTasks) == 2}
-    - Your most recent tasks are ${join(recentTasks, ',', 'and')}. You can let me know if you want to add or complete a task.   ||    Your most recent tasks are ${join(recentTasks, ',', 'and')}. You can let me know. 
-- ELSEIF: ${count(recentTasks) >= 3}
-    - Your most recent tasks are ${join(recentTasks, ',', 'and')}. You can let me know if you want to add or complete a task. && Your most recent tasks are ${join(recentTasks, ',', 'and')}. You can let me know.
-- ELSE:
-    - You don't have any tasks.

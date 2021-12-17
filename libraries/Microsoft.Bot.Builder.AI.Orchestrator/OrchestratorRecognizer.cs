@@ -8,12 +8,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.BotFramework.Orchestrator;
 using Newtonsoft.Json;
@@ -24,7 +21,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     /// <summary>
     /// Class that represents an adaptive Orchestrator recognizer.
     /// </summary>
-    public class OrchestratorRecognizer : AdaptiveRecognizer
+    public class OrchestratorRecognizer : Recognizer
     {
         /// <summary>
         /// The Kind name for this recognizer.
@@ -77,7 +74,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Model path.
         /// </value>
         [JsonProperty("modelFolder")]
-        public StringExpression ModelFolder { get; set; } = "=settings.orchestrator.modelFolder";
+        public string ModelFolder { get; set; }
 
         /// <summary>
         /// Gets or sets the full path to Orchestrator snapshot file to use.
@@ -86,7 +83,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Snapshot path.
         /// </value>
         [JsonProperty("snapshotFile")]
-        public StringExpression SnapshotFile { get; set; } = "=settings.orchestrator.snapshotFile";
+        public string SnapshotFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether personal information should be logged in telemetry.
+        /// </summary>
+        /// <value>
+        /// The flag to indicate in personal information should be logged in telemetry.
+        /// </value>
+        [JsonProperty("logPersonalInformation")]
+        public bool LogPersonalInformation { get; set; }
 
         /// <summary>
         /// Gets or sets an external entity recognizer.
@@ -103,16 +109,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Recognizer returns ChooseIntent (disambiguation) if other intents are classified within this threshold of the top scoring intent.
         /// </value>
         [JsonProperty("disambiguationScoreThreshold")]
-        public NumberExpression DisambiguationScoreThreshold { get; set; } = 0.05F;
+        public double DisambiguationScoreThreshold { get; set; } = 0.05F;
 
         /// <summary>
-        /// Gets or sets detect ambiguous intents.
+        /// Gets or sets a value indicating whether gets or sets detect ambiguous intents.
         /// </summary>
         /// <value>
         /// When true, recognizer will look for ambiguous intents - those within specified threshold to top scoring intent.
         /// </value>
         [JsonProperty("detectAmbiguousIntents")]
-        public BoolExpression DetectAmbiguousIntents { get; set; } = false;
+        public bool DetectAmbiguousIntents { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable or disable entity-extraction logic.
@@ -136,13 +142,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         {
             if (_resolver == null)
             {
-                string modelFolder = ModelFolder.GetValue(dc.State);
-                string snapshotFile = SnapshotFile.GetValue(dc.State);
+                string modelFolder = ModelFolder;
+                string snapshotFile = SnapshotFile;
                 InitializeModel(modelFolder, snapshotFile, null);
             }
 
             var text = activity.Text ?? string.Empty;
-            var detectAmbiguity = DetectAmbiguousIntents.GetValue(dc.State);
+            var detectAmbiguity = DetectAmbiguousIntents;
 
             var recognizerResult = new RecognizerResult()
             {
@@ -201,7 +207,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     // Disambiguate if configured
                     if (detectAmbiguity)
                     {
-                        var thresholdScore = DisambiguationScoreThreshold.GetValue(dc.State);
+                        var thresholdScore = DisambiguationScoreThreshold;
                         var classifyingScore = Math.Round(topScore, 2) - Math.Round(thresholdScore, 2);
                         var ambiguousResults = results.Where(item => item.Score >= classifyingScore).ToList();
 
@@ -274,7 +280,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
             };
 
-            var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
+            var logPersonalInfo = LogPersonalInformation;
 
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {

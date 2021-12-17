@@ -1,9 +1,0 @@
-﻿﻿# templateWithSameParams(param)
-- ${listTemplate1(param)} ${listTemplate1!(param)} ${listTemplate1(param)}
-
-# listTemplate1(param)
-- item1
-- item2
-- item3
-- item4
-- item5
