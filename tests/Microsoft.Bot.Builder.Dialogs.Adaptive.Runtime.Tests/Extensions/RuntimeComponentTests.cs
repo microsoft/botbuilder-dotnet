@@ -28,7 +28,10 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         public void AddComponent_ConfiguredComponent()
         {
             // Setup
+            // [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="This is a fake password.")]
             const string contosoSecret = "shh123";
+
+            // [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="This is a fake password.")]
             const string adventureWorksSecret = "superSecret!@!";
 
             var assemblyName = typeof(RuntimeComponentTests).Assembly.GetName().Name;
