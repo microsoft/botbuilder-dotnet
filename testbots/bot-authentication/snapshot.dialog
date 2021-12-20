@@ -1,0 +1,19 @@
+{
+  "$kind": "Microsoft.AdaptiveDialog",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnMessageActivity",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "Hello world"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "turn.x",
+          "value": "y"
+        }
+      ]
+    }
+  ]
+}

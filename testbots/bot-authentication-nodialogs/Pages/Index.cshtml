@@ -1,0 +1,288 @@
+﻿@page
+@model AuthenticationBotNoDialogsWebChatSSO.Pages.Index
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0
+        }
+
+        #webchat {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            padding-top: 50px;
+            padding-bottom: 20px;
+        }
+
+        .body-content {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .carousel-caption p {
+            font-size: 20px;
+            line-height: 1.4;
+        }
+
+        .carousel-inner .item img[src$=".svg"] {
+            width: 100%;
+        }
+
+        #qrCode {
+            margin: 15px;
+        }
+
+
+
+    </style>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!--Need bluebird for polyfilling promise in IE-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.4/bluebird.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/msal.js"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-page="/Contacts/Index" class="navbar-brand">Test WebChat SSO</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                @*<ul class="nav navbar-nav">
+                    <li><a asp-page="/Index">Home</a></li>
+                    <li><a asp-page="/About">About</a></li>
+                    <li><a asp-page="/Contact">Contact</a></li>
+                </ul>*@
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="app-user navbar-text"></li>
+                    <li><a href="javascript:;" class="app-show-graph">GraphToken</a></li>
+                    <li><a href="javascript:;" class="app-hide-graph">HideGraphToken</a></li>
+                    <li><a href="javascript:;" class="app-logout">Logout</a></li>
+                    <li><a href="javascript:;" class="app-login">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class="graph-token">Graph token goes here</div>
+    <div id="webchat" role="main" />
+
+    <script>
+    //AAD Application
+    var clientApplication;
+
+    (function () {
+        var msalConfig = {
+            auth: {
+                clientId: '@Model.ClientId',
+                authority: 'https://login.microsoftonline.com/@Model.TenantId'
+            },
+            cache: {
+                cacheLocation: 'localStorage'
+            }
+        };
+        let requestObj = {
+            scopes: ["openid"]
+        };
+
+        if (!clientApplication) {
+            clientApplication = new Msal.UserAgentApplication(msalConfig);
+        }
+
+        var $signInButton = $(".app-login");
+        var $signOutButton = $(".app-logout");
+        var $userDisplay = $(".app-user");
+
+        //delete these (for demo purpose only)
+        var $showGraphTokenButton = $(".app-show-graph");
+        var $hideGraphTokenButton = $(".app-hide-graph");
+        var $graphTokenDisplay = $(".graph-token");
+
+        // Register NavBar Click Handlers
+        $signOutButton.click(function () {
+            clientApplication.logout();
+        });
+
+        $signInButton.click(function () {
+            clientApplication.loginPopup(requestObj).then(onSignin).catch(function (error) {console.log(error) });
+        });
+        $showGraphTokenButton.click(function () {
+            let user = clientApplication.getAccount();
+            if (user) {
+                let requestObj1 = {
+                    scopes: ['openid']
+                };
+                clientApplication.acquireTokenSilent(requestObj1).then(function (tokenResponse) {
+                    $showGraphTokenButton.hide();
+                    $hideGraphTokenButton.show();
+                    $graphTokenDisplay.html(tokenResponse.accessToken);
+                    $graphTokenDisplay.show();
+
+                });
+            }
+        });
+
+        $hideGraphTokenButton.click(function () {
+            $showGraphTokenButton.show();
+            $hideGraphTokenButton.hide();
+            $graphTokenDisplay.empty();
+            $graphTokenDisplay.hide();
+        });
+
+        $hideGraphTokenButton.hide();
+        $graphTokenDisplay.empty();
+        $graphTokenDisplay.hide();
+
+
+        //delete ends here
+        let user1 = clientApplication.getAccount();
+        if (user1) {
+            $userDisplay.html(user1.name);
+            $userDisplay.show();
+            $signInButton.hide();
+            $signOutButton.show();
+        }
+        else {
+            $userDisplay.empty();
+            $userDisplay.hide();
+            $signInButton.show();
+            $signOutButton.hide();
+        }
+
+
+
+        function onSignin(idToken) {
+            // Check Login Status, Update UI
+            let user = clientApplication.getAccount();
+            if (user) {
+                $userDisplay.html(user.name);
+                $userDisplay.show();
+                $signInButton.hide();
+                $signOutButton.show();
+            } else {
+                $userDisplay.empty();
+                $userDisplay.hide();
+                $signInButton.show();
+                $signOutButton.hide();
+            }
+
+        }
+
+    }());
+
+    function getOAuthCardResourceUri(activity) {
+        if (activity &&
+            activity.attachments &&
+            activity.attachments[0] &&
+            activity.attachments[0].contentType === 'application/vnd.microsoft.card.oauth' &&
+            activity.attachments[0].content.tokenExchangeResource &&
+            activity.attachments[0].content.tokenExchangeResource.providerId) {        // asking for token exchange with AAD
+            return activity.attachments[0].content.tokenExchangeResource.uri;
+        }
+    }
+
+    function exchangeTokenAsync(resourceUri) {
+        // todo: token exchange
+        // return a token if successful, nothing otherwise
+        let user = clientApplication.getAccount();
+        if (user) {
+            let requestObj = {
+                scopes: [resourceUri]
+            };
+            return clientApplication.acquireTokenSilent(requestObj)
+                .then(function (tokenResponse) {
+                    return tokenResponse.accessToken;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        }
+        else {
+            return Promise.resolve(null);
+        }
+    }
+
+    const directLine = window.WebChat.createDirectLine({ token: '@Model.Token', domain: '@Model.Domain' });
+
+    // We are creating the Web Chat store here so we can dispatch WEB_CHAT/SEND_MESSAGE action later.
+    // We are adding a new middleware to customize the behavior of DIRECT_LINE/INCOMING_ACTIVITY.
+    const store = window.WebChat.createStore(
+        {},
+        ({ dispatch }) => next => action => {
+            if (action.type === 'DIRECT_LINE/INCOMING_ACTIVITY') {
+                const activity = action.payload.activity;
+                let resourceUri;
+                if (activity.from && activity.from.role === 'bot' && (resourceUri = getOAuthCardResourceUri(activity))) {
+                    exchangeTokenAsync(resourceUri).then(function (token) {
+
+                        if (token) {
+                            directLine.postActivity({
+                                type: 'invoke',
+                                name: 'signin/tokenExchange',
+                                value: {
+                                    id: activity.attachments[0].content.tokenExchangeResource.id,
+                                    connectionName: activity.attachments[0].content.connectionName,
+                                    token
+                                }
+                            }).subscribe(
+                                id => {
+                                    if (id === 'retry') {
+                                        // bot was not able to handle the invoke, so display the oauthCard
+                                        return next(action);
+                                    }
+                                    // else: token exchange was successful and we do not display the oauthCard
+                                },
+                                error => {
+                                    // an error occurred to display the oauthCard
+                                    return next(action);
+                                }
+                            );
+                            return;
+                        }
+                        else
+                            return next(action);
+                    });
+                }
+                else
+                    return next(action);
+            }
+            else
+                return next(action);
+        });
+
+    window.WebChat.renderWebChat({
+        directLine: directLine,
+        store: store,
+        userID: '@Model.UserId'
+    }, document.getElementById('webchat'));
+
+        
+    </script>
+</body>
+</html>
