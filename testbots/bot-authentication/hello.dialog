@@ -1,0 +1,14 @@
+{
+  "$kind": "Microsoft.AdaptiveDialog",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnMessageActivity",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "Hello world"
+        }
+      ]
+    }
+  ]
+}
