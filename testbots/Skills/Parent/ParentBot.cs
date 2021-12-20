@@ -67,8 +67,7 @@ namespace Microsoft.BotBuilderSamples
                 }
                 else if (turnContext.Activity.Text == "logout")
                 {
-                    var adapter = turnContext.Adapter as IExtendedUserTokenProvider;
-                    await adapter.SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
+                    await turnContext.TurnState.Get<UserTokenClient>().SignOutUserAsync(turnContext.Activity.From.Id, _connectionName, turnContext.Activity.ChannelId, cancellationToken).ConfigureAwait(false);   
                     await turnContext.SendActivityAsync(MessageFactory.Text("logout from parent bot successful"), cancellationToken);
                 }
                 else if (turnContext.Activity.Text == "skill login" || turnContext.Activity.Text == "skill logout")
@@ -145,13 +144,11 @@ namespace Microsoft.BotBuilderSamples
                     if (oauthCard.TokenExchangeResource != null)
                     {
                         // AAD token exchange
-                        var tokenExchangeProvider = turnContext.Adapter as IExtendedUserTokenProvider;
-                        var result = await tokenExchangeProvider.ExchangeTokenAsync(
-                            turnContext,
-                            _connectionName,
-                            turnContext.Activity.From.Id,
-                            new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri));
-
+                        var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
+                        var userId = turnContext.Activity.From.Id;
+                        var channelId = turnContext.Activity.ChannelId;
+                        var result = await userTokenClient.ExchangeTokenAsync(userId, _connectionName, channelId, new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri), cancellationToken).ConfigureAwait(false);
+                        
                         if (!string.IsNullOrWhiteSpace(result.Token))
                         {
                             // Send an invoke back to the skill

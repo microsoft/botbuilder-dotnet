@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -53,8 +54,7 @@ namespace Microsoft.BotBuilderSamples
                 }
                 else if (turnContext.Activity.Text == "skill logout")
                 {
-                    var adapter = turnContext.Adapter as IExtendedUserTokenProvider;
-                    await adapter.SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
+                    await turnContext.TurnState.Get<UserTokenClient>().SignOutUserAsync(turnContext.Activity.From.Id, _connectionName, turnContext.Activity.ChannelId, cancellationToken).ConfigureAwait(false);
                     await turnContext.SendActivityAsync(MessageFactory.Text("logout from child bot successful"), cancellationToken);
                 }
             }

@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters
     /// A mock adapter that can be used for unit testing of bot logic.
     /// </summary>
     /// <seealso cref="TestFlow"/>
-    public class TestAdapter : BotAdapter, IExtendedUserTokenProvider
+    public class TestAdapter : BotAdapter
     {
         private const string ExceptionExpected = "ExceptionExpected";
 
@@ -810,7 +810,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="finalRedirect">A final redirect URL.</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>A SignInResource with the link and token exchange info.</returns>
+#pragma warning disable CA1801 // Review unused parameters
         public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+#pragma warning restore CA1801 // Review unused parameters
         {
             return Task.FromResult(new SignInResource()
             {
@@ -850,7 +852,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>If the task completes, the exchanged token is returned.</returns>
+#pragma warning disable CA1801 // Review unused parameters
         public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
+#pragma warning restore CA1801 // Review unused parameters
         {
             var exchangableValue = !string.IsNullOrEmpty(exchangeRequest?.Token) ?
                 exchangeRequest?.Token :
