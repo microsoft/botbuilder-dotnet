@@ -143,15 +143,6 @@ namespace Microsoft.Bot.Builder.Teams
                         new TokenExchangeRequest { Token = tokenExchangeRequest.Token },
                         cancellationToken).ConfigureAwait(false);
                 }
-                else if (turnContext.Adapter is IExtendedUserTokenProvider adapter)
-                {
-                    tokenExchangeResponse = await adapter.ExchangeTokenAsync(
-                        turnContext,
-                        _oAuthConnectionName,
-                        turnContext.Activity.From.Id,
-                        new TokenExchangeRequest { Token = tokenExchangeRequest.Token },
-                        cancellationToken).ConfigureAwait(false);
-                }
                 else
                 {
                     throw new NotSupportedException("Token Exchange is not supported by the current adapter.");

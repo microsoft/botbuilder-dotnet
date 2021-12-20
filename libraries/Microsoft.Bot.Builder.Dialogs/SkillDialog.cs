@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -320,7 +321,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         private async Task<bool> InterceptOAuthCardsAsync(ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(connectionName) || !(turnContext.Adapter is IExtendedUserTokenProvider tokenExchangeProvider))
+            var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
+            if (string.IsNullOrWhiteSpace(connectionName) || userTokenClient != null)
             {
                 // The adapter may choose not to support token exchange, in which case we fallback to showing an oauth card to the user.
                 return false;
@@ -334,12 +336,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     try
                     {
-                        var result = await tokenExchangeProvider.ExchangeTokenAsync(
-                            turnContext,
-                            connectionName,
-                            turnContext.Activity.From.Id,
-                            new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri),
-                            cancellationToken).ConfigureAwait(false);
+                        var userId = turnContext.Activity.From.Id;
+                        var channelId = turnContext.Activity.ChannelId;
+                        var result = await userTokenClient.ExchangeTokenAsync(userId, connectionName, channelId, new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri), cancellationToken).ConfigureAwait(false);
 
                         if (!string.IsNullOrWhiteSpace(result?.Token))
                         {
