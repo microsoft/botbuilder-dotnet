@@ -61,10 +61,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
-        private const string PersistedCaller = "caller";
-
+        
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
+        private readonly OAuthCardProvider _cardProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthPrompt"/> class.
@@ -85,303 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _validator = validator;
-        }
-
-        /// <summary>
-        /// Shared implementation of the SendOAuthCardAsync function. This is intended for internal use, to
-        /// consolidate the implementation of the OAuthPrompt and OAuthInput. Application logic should use
-        /// those dialog classes.
-        /// </summary>
-        /// <param name="settings">OAuthSettings.</param>
-        /// <param name="turnContext">ITurnContext.</param>
-        /// <param name="prompt">IMessageActivity.</param>
-        /// <param name="cancellationToken">CancellationToken.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public static async Task SendOAuthCardAsync(OAuthPromptSettings settings, ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken)
-        {
-            BotAssert.ContextNotNull(turnContext);
-
-            // Ensure prompt initialized
-            prompt ??= Activity.CreateMessageActivity();
-
-            if (prompt.Attachments == null)
-            {
-                prompt.Attachments = new List<Attachment>();
-            }
-
-            // Append appropriate card if missing
-            if (!ChannelSupportsOAuthCard(turnContext.Activity.ChannelId))
-            {
-                if (!prompt.Attachments.Any(a => a.Content is SigninCard))
-                {
-                    var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
-                    prompt.Attachments.Add(new Attachment
-                    {
-                        ContentType = SigninCard.ContentType,
-                        Content = new SigninCard
-                        {
-                            Text = settings.Text,
-                            Buttons = new[]
-                            {
-                                new CardAction
-                                {
-                                    Title = settings.Title,
-                                    Value = signInResource.SignInLink,
-                                    Type = ActionTypes.Signin,
-                                },
-                            },
-                        },
-                    });
-                }
-            }
-            else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
-            {
-                var cardActionType = ActionTypes.Signin;
-                var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
-                var value = signInResource.SignInLink;
-
-                // use the SignInLink when 
-                //   in speech channel or
-                //   bot is a skill or
-                //   an extra OAuthAppCredentials is being passed in
-                if (turnContext.Activity.IsFromStreamingConnection() ||
-                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && botIdentity.Claims.IsSkillClaim()) ||
-                    settings.OAuthAppCredentials != null)
-                {
-                    if (turnContext.Activity.ChannelId == Channels.Emulator)
-                    {
-                        cardActionType = ActionTypes.OpenUrl;
-                    }
-                }
-                else if ((settings.ShowSignInLink != null && settings.ShowSignInLink == false) || 
-                    (settings.ShowSignInLink == null && !ChannelRequiresSignInLink(turnContext.Activity.ChannelId)))
-                {
-                    value = null;
-                }
-
-                prompt.Attachments.Add(new Attachment
-                {
-                    ContentType = OAuthCard.ContentType,
-                    Content = new OAuthCard
-                    {
-                        Text = settings.Text,
-                        ConnectionName = settings.ConnectionName,
-                        Buttons = new[]
-                        {
-                            new CardAction
-                            {
-                                Title = settings.Title,
-                                Text = settings.Text,
-                                Type = cardActionType,
-                                Value = value
-                            },
-                        },
-                        TokenExchangeResource = signInResource.TokenExchangeResource,
-                    },
-                });
-            }
-
-            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
-            if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && settings.Timeout.HasValue)
-            {
-                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(settings.Timeout.Value));
-            }
-
-            // Set input hint
-            if (string.IsNullOrEmpty(prompt.InputHint))
-            {
-                prompt.InputHint = InputHints.AcceptingInput;
-            }
-
-            await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Shared implementation of the RecognizeTokenAsync function. This is intended for internal use, to
-        /// consolidate the implementation of the OAuthPrompt and OAuthInput. Application logic should use
-        /// those dialog classes.
-        /// </summary>
-        /// <param name="settings">OAuthPromptSettings.</param>
-        /// <param name="dc">DialogContext.</param>
-        /// <param name="cancellationToken">CancellationToken.</param>
-        /// <returns>PromptRecognizerResult.</returns>
-        public static async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(OAuthPromptSettings settings, DialogContext dc, CancellationToken cancellationToken)
-        {
-            var turnContext = dc.Context;
-            var result = new PromptRecognizerResult<TokenResponse>();
-            if (IsTokenResponseEvent(turnContext))
-            {
-                var tokenResponseObject = turnContext.Activity.Value as JObject;
-                var token = tokenResponseObject?.ToObject<TokenResponse>();
-                result.Succeeded = true;
-                result.Value = token;
-
-                // fixup the turnContext's state context if this was received from a skill host caller
-                var callerInfo = (CallerInfo)dc.ActiveDialog.State[PersistedCaller];
-                if (callerInfo != null)
-                {
-                    // set the ServiceUrl to the skill host's Url
-                    dc.Context.Activity.ServiceUrl = callerInfo.CallerServiceUrl;
-
-                    // recreate a ConnectorClient and set it in TurnState so replies use the correct one
-                    var serviceUrl = dc.Context.Activity.ServiceUrl;
-                    var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
-                    var audience = callerInfo.Scope;
-                    var connectorClient = await UserTokenAccess.CreateConnectorClientAsync(turnContext, serviceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
-                    if (turnContext.TurnState.Get<IConnectorClient>() != null)
-                    {
-                        turnContext.TurnState.Set(connectorClient);
-                    }
-                    else
-                    {
-                        turnContext.TurnState.Add(connectorClient);
-                    }
-                }
-            }
-            else if (IsTeamsVerificationInvoke(turnContext))
-            {
-                var magicCodeObject = turnContext.Activity.Value as JObject;
-                var magicCode = magicCodeObject.GetValue("state", StringComparison.Ordinal)?.ToString();
-
-                // Getting the token follows a different flow in Teams. At the signin completion, Teams
-                // will send the bot an "invoke" activity that contains a "magic" code. This code MUST
-                // then be used to try fetching the token from Botframework service within some time
-                // period. We try here. If it succeeds, we return 200 with an empty body. If it fails
-                // with a retriable error, we return 500. Teams will re-send another invoke in this case.
-                // If it fails with a non-retriable error, we return 404. Teams will not (still work in
-                // progress) retry in that case.
-                try
-                {
-                    var token = await UserTokenAccess.GetUserTokenAsync(turnContext, settings, magicCode, cancellationToken).ConfigureAwait(false);
-
-                    if (token != null)
-                    {
-                        result.Succeeded = true;
-                        result.Value = token;
-
-                        await turnContext.SendActivityAsync(new Activity { Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await SendInvokeResponseAsync(turnContext, HttpStatusCode.NotFound, null, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-#pragma warning disable CA1031 // Do not catch general exception types (ignoring exception for now and send internal server error, see comment above)
-                catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    await SendInvokeResponseAsync(turnContext, HttpStatusCode.InternalServerError, null, cancellationToken).ConfigureAwait(false);
-                }
-            }
-            else if (IsTokenExchangeRequestInvoke(turnContext))
-            {
-                var tokenExchangeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>();
-
-                if (tokenExchangeRequest == null)
-                {
-                    await SendInvokeResponseAsync(
-                        turnContext,
-                        HttpStatusCode.BadRequest,
-                        new TokenExchangeInvokeResponse
-                        {
-                            Id = null,
-                            ConnectionName = settings.ConnectionName,
-                            FailureDetail = "The bot received an InvokeActivity that is missing a TokenExchangeInvokeRequest value. This is required to be sent with the InvokeActivity.",
-                        }, cancellationToken).ConfigureAwait(false);
-                }
-                else if (tokenExchangeRequest.ConnectionName != settings.ConnectionName)
-                {
-                    await SendInvokeResponseAsync(
-                        turnContext,
-                        HttpStatusCode.BadRequest,
-                        new TokenExchangeInvokeResponse
-                        {
-                            Id = tokenExchangeRequest.Id,
-                            ConnectionName = settings.ConnectionName,
-                            FailureDetail = "The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName that does not match the ConnectionName expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
-                        }, cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    TokenResponse tokenExchangeResponse = null;
-                    try
-                    {
-                        tokenExchangeResponse = await UserTokenAccess.ExchangeTokenAsync(turnContext, settings, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
-                    }
-#pragma warning disable CA1031 // Do not catch general exception types (ignoring, see comment below)
-                    catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                    {
-                        // Ignore Exceptions
-                        // If token exchange failed for any reason, tokenExchangeResponse above stays null , and hence we send back a failure invoke response to the caller.
-                        // This ensures that the caller shows 
-                    }
-
-                    if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
-                    {
-                        await SendInvokeResponseAsync(
-                            turnContext,
-                            HttpStatusCode.PreconditionFailed,
-                            new TokenExchangeInvokeResponse
-                            {
-                                Id = tokenExchangeRequest.Id,
-                                ConnectionName = settings.ConnectionName,
-                                FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
-                            }, cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await SendInvokeResponseAsync(
-                            turnContext,
-                            HttpStatusCode.OK,
-                            new TokenExchangeInvokeResponse
-                            {
-                                Id = tokenExchangeRequest.Id,
-                                ConnectionName = settings.ConnectionName,
-                            }, cancellationToken).ConfigureAwait(false);
-
-                        result.Succeeded = true;
-                        result.Value = new TokenResponse
-                        {
-                            ChannelId = tokenExchangeResponse.ChannelId,
-                            ConnectionName = tokenExchangeResponse.ConnectionName,
-                            Token = tokenExchangeResponse.Token,
-                        };
-                    }
-                }
-            }
-            else if (turnContext.Activity.Type == ActivityTypes.Message)
-            {
-                if (!string.IsNullOrEmpty(turnContext.Activity.Text))
-                {
-                    // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
-                    var magicCodeRegex = new Regex(@"(\d{6})");
-                    var matched = magicCodeRegex.Match(turnContext.Activity.Text);
-                    if (matched.Success)
-                    {
-                        var token = await UserTokenAccess.GetUserTokenAsync(turnContext, settings, magicCode: matched.Value, cancellationToken).ConfigureAwait(false);
-                        if (token != null)
-                        {
-                            result.Succeeded = true;
-                            result.Value = token;
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Shared implementation of the SetCallerInfoInDialogState function. This is intended for internal use, to
-        /// consolidate the implementation of the OAuthPrompt and OAuthInput. Application logic should use
-        /// those dialog classes.
-        /// </summary>
-        /// <param name="state">The dialog state.</param>
-        /// <param name="context">ITurnContext.</param>
-        public static void SetCallerInfoInDialogState(IDictionary<string, object> state, ITurnContext context)
-        {
-            state[PersistedCaller] = CreateCallerInfo(context);
+            _cardProvider = new OAuthCardProvider(_settings);
         }
 
         /// <summary>
@@ -436,18 +140,26 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(timeout);
-            SetCallerInfoInDialogState(state, dc.Context);
+            OAuthCardProvider.SetCallerInfoInState(state, dc.Context);
 
             // Attempt to get the users token
-            var output = await UserTokenAccess.GetUserTokenAsync(dc.Context, _settings, magicCode: null, cancellationToken).ConfigureAwait(false);
-            if (output != null)
+            var userTokenClient = dc.Context.TurnState.Get<UserTokenClient>();
+            if (userTokenClient != null)
             {
-                // Return token
-                return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
+                var output = await userTokenClient.GetUserTokenAsync(dc.Context.Activity.From.Id, _settings.ConnectionName, dc.Context.Activity.ChannelId, magicCode: null, cancellationToken).ConfigureAwait(false);
+                if (output != null)
+                {
+                    // Return token
+                    return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
+                }
             }
-
+            else
+            {
+                throw new NotSupportedException("OAuth prompt is not supported by the current adapter");
+            }
+        
             // Prompt user to login
-            await SendOAuthCardAsync(_settings, dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
+            await _cardProvider.SendOAuthCardAsync(dc.Context, prompt: opt?.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
@@ -477,9 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // If the incoming Activity is a message, or an Activity Type normally handled by OAuthPrompt,
             // check to see if this OAuthPrompt Expiration has elapsed, and end the dialog if so.
             var isTimeoutActivityType = isMessage
-                            || IsTokenResponseEvent(dc.Context)
-                            || IsTeamsVerificationInvoke(dc.Context)
-                            || IsTokenExchangeRequestInvoke(dc.Context);
+                            || OAuthCardProvider.IsOAuthResponseActivity(dc.Context.Activity);
             var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.UtcNow, expires) > 0;
 
             if (hasTimedOut)
@@ -489,8 +199,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Recognize token
-            var recognized = await RecognizeTokenAsync(_settings, dc, cancellationToken).ConfigureAwait(false);
-
+            var tokenResponse = await _cardProvider.RecognizeTokenAsync(dc.Context, _settings, state, cancellationToken: cancellationToken).ConfigureAwait(false);
+            
             var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
             var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();
 
@@ -502,10 +212,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             var isValid = false;
             if (_validator != null)
             {
-                var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
+                var recognizerResult = new PromptRecognizerResult<TokenResponse>() 
+                { 
+                    Succeeded = !string.IsNullOrEmpty(tokenResponse?.Token), 
+                    Value = tokenResponse 
+                };
+                var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognizerResult, promptState, promptOptions);
                 isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
             }
-            else if (recognized.Succeeded)
+            else if (!string.IsNullOrEmpty(tokenResponse?.Token))
             {
                 isValid = true;
             }
@@ -513,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Return recognized value or re-prompt
             if (isValid)
             {
-                return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
             }
             else if (isMessage && _settings.EndOnInvalidMessage)
             {
@@ -527,109 +242,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return EndOfTurn;
-        }
-
-        /// <summary>
-        /// Attempts to get the user's token.
-        /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful and user already has a token or the user successfully signs in,
-        /// the result contains the user's token.</remarks>
-        public Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
-        {
-            return UserTokenAccess.GetUserTokenAsync(turnContext, _settings, magicCode: null, cancellationToken);
-        }
-
-        /// <summary>
-        /// Signs out the user.
-        /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
-        {
-            return UserTokenAccess.SignOutUserAsync(turnContext, _settings, cancellationToken);
-        }
-
-        private static CallerInfo CreateCallerInfo(ITurnContext turnContext)
-        {
-            if (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && botIdentity.Claims.IsSkillClaim())
-            {
-                return new CallerInfo
-                {
-                    CallerServiceUrl = turnContext.Activity.ServiceUrl,
-                    Scope = botIdentity.Claims.GetAppIdFromClaims(),
-                };
-            }
-
-            return null;
-        }
-
-        private static bool IsTokenResponseEvent(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Event && activity.Name == SignInConstants.TokenResponseEventName;
-        }
-
-        private static bool IsTeamsVerificationInvoke(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == SignInConstants.VerifyStateOperationName;
-        }
-
-        private static bool IsTokenExchangeRequestInvoke(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == SignInConstants.TokenExchangeOperationName;
-        }
-
-        private static bool ChannelSupportsOAuthCard(string channelId)
-        {
-            switch (channelId)
-            {
-                case Channels.Cortana:
-                case Channels.Skype:
-                case Channels.Skypeforbusiness:
-                    return false;
-            }
-
-            return true;
-        }
-
-        private static bool ChannelRequiresSignInLink(string channelId)
-        {
-            switch (channelId)
-            {
-                case Channels.Msteams:
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static async Task SendInvokeResponseAsync(ITurnContext turnContext, HttpStatusCode statusCode, object body, CancellationToken cancellationToken)
-        {
-            await turnContext.SendActivityAsync(
-                new Activity
-                {
-                    Type = ActivityTypesEx.InvokeResponse,
-                    Value = new InvokeResponse
-                    {
-                        Status = (int)statusCode,
-                        Body = body,
-                    },
-                }, cancellationToken).ConfigureAwait(false);
-        }
-
-        private class CallerInfo
-        {
-            public string CallerServiceUrl { get; set; }
-
-            public string Scope { get; set; }
         }
     }
 }
