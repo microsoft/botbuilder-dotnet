@@ -29,7 +29,8 @@ namespace Microsoft.BotBuilderSamples
         private readonly string _connectionName;
         private readonly BotState _userState;
         private readonly IStatePropertyAccessor<bool> _userLoggingInProperty;
-        private readonly OAuthCardProvider _oauthCardProvider;
+        private readonly OAuthMessageClient _oauthCardProvider;
+        private readonly UserTokenResponseClient _userTokenResponseClient;
 
         public Bot(IConfiguration configuration, ConversationState conversationState, UserState userState)
         {
@@ -38,7 +39,8 @@ namespace Microsoft.BotBuilderSamples
             _connectionName = configuration[ConfigurationConnectionName].ToString();
             _userLoggingInProperty = conversationState.CreateProperty<bool>(UserLoggingInPropertyName);
             var oauthSettings = new OAuthSettings { ConnectionName = _connectionName, Title = "Login", Text = "Please Sign In to proceed..." };
-            _oauthCardProvider = new OAuthCardProvider(oauthSettings);
+            _oauthCardProvider = new OAuthMessageClient(oauthSettings);
+            _userTokenResponseClient = new UserTokenResponseClient(oauthSettings);
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -72,7 +74,9 @@ namespace Microsoft.BotBuilderSamples
             }
             else if (text.Equals("login", StringComparison.OrdinalIgnoreCase))
             {
-                await _oauthCardProvider.SendOAuthCardAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var userTokenClient = turnContext.TurnState.Get<UserTokenClient>() ?? throw new InvalidOperationException("The UserTokenClient is not supported by the current adapter.");
+                var message = await _oauthCardProvider.GetCardMessageFromActivityAsync(turnContext.Activity as Activity, userTokenClient, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
                 await _userLoggingInProperty.SetAsync(turnContext, true).ConfigureAwait(false);
             }
             else
@@ -101,7 +105,7 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task CompleteLoginWithResponse(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var token = await _oauthCardProvider.RecognizeTokenAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var token = await _userTokenResponseClient.RecognizeTokenAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(token?.Token))
             {

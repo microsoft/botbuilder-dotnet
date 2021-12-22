@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -233,6 +234,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testAdapter = new TestAdapter(Channels.Test)
                 .Use(new AutoSaveStateMiddleware(conversationState));
 
+            var mockUserTokenClient = new Mock<UserTokenClient>();
+            TokenResponse result = new TokenResponse { Token = "token" };
+            mockUserTokenClient.Setup(
+                x => x.ExchangeTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TokenExchangeRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(result);
+            testAdapter.Use(new RegisterClassMiddleware<UserTokenClient>(mockUserTokenClient.Object));
             var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient, connectionName);
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = CreateSendActivity();

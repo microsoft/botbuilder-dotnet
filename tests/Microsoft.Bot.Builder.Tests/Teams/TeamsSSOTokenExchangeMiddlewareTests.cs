@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -35,8 +37,9 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             bool wasCalled = false;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
+               .Use(CreateUserTokenClientMiddleware())
                .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
-            
+           
             adapter.AddExchangeableToken(ConnectionName, Channels.Msteams, TeamsUserId, FakeExchangeableItem, Token);
 
             // Act
@@ -62,6 +65,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             int calledCount = 0;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
+               .Use(CreateUserTokenClientMiddleware())
                .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
 
             adapter.AddExchangeableToken(ConnectionName, Channels.Msteams, TeamsUserId, FakeExchangeableItem, Token);
@@ -147,6 +151,16 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.True(wasCalled, "Delegate was not called");
+        }
+
+        private RegisterClassMiddleware<UserTokenClient> CreateUserTokenClientMiddleware()
+        {
+            var mockUserTokenClient = new Mock<UserTokenClient>();
+            TokenResponse result = new TokenResponse { Token = Token };
+            mockUserTokenClient.Setup(
+                x => x.ExchangeTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.Is<TokenExchangeRequest>(t => t.Token == FakeExchangeableItem), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(result);
+            return new RegisterClassMiddleware<UserTokenClient>(mockUserTokenClient.Object);
         }
 
         private ConversationReference CreateConversationReference(string channelId = Channels.Msteams)

@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private async Task<bool> InterceptOAuthCardsAsync(ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
         {
             var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
-            if (string.IsNullOrWhiteSpace(connectionName) || userTokenClient != null)
+            if (string.IsNullOrWhiteSpace(connectionName) || userTokenClient == null)
             {
                 // The adapter may choose not to support token exchange, in which case we fallback to showing an oauth card to the user.
                 return false;

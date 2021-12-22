@@ -64,7 +64,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
-        private readonly OAuthCardProvider _cardProvider;
+        private readonly OAuthMessageClient _cardProvider;
+        private readonly UserTokenResponseClient _userTokenResponseClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthPrompt"/> class.
@@ -85,7 +86,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _validator = validator;
-            _cardProvider = new OAuthCardProvider(_settings);
+            _cardProvider = new OAuthMessageClient(_settings);
+            _userTokenResponseClient = new UserTokenResponseClient(_settings);
         }
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(timeout);
-            OAuthCardProvider.SetCallerInfoInState(state, dc.Context);
+            UserTokenResponseClient.SetCallerInfoInState(state, dc.Context);
 
             // Attempt to get the users token
             var userTokenClient = dc.Context.TurnState.Get<UserTokenClient>();
@@ -157,9 +159,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 throw new NotSupportedException("OAuth prompt is not supported by the current adapter");
             }
-        
+
+            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
+            if (!dc.Context.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && _settings.Timeout.HasValue)
+            {
+                dc.Context.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(_settings.Timeout.Value));
+            }
+
             // Prompt user to login
-            await _cardProvider.SendOAuthCardAsync(dc.Context, prompt: opt?.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var prompt = await _cardProvider.GetCardMessageFromActivityAsync(dc.Context.Activity, userTokenClient, _settings, prompt: opt?.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
@@ -189,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // If the incoming Activity is a message, or an Activity Type normally handled by OAuthPrompt,
             // check to see if this OAuthPrompt Expiration has elapsed, and end the dialog if so.
             var isTimeoutActivityType = isMessage
-                            || OAuthCardProvider.IsOAuthResponseActivity(dc.Context.Activity);
+                            || OAuthMessageClient.IsOAuthResponseActivity(dc.Context.Activity);
             var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.UtcNow, expires) > 0;
 
             if (hasTimedOut)
@@ -199,7 +208,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Recognize token
-            var tokenResponse = await _cardProvider.RecognizeTokenAsync(dc.Context, _settings, state, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var tokenResponse = await _userTokenResponseClient.RecognizeTokenAsync(dc.Context, _settings, state, cancellationToken: cancellationToken).ConfigureAwait(false);
             
             var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
             var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();

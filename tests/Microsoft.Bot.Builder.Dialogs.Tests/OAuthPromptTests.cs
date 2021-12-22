@@ -2,11 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -117,10 +120,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
-
+            
+            bool setTokenResponse = false;
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var mockUserTokenClient = SetupUserTokenClientMock(setTokenResponse ? new TokenResponse { Token = Token } : null);
+                setTokenResponse = !setTokenResponse;
+                turnContext.TurnState.Add<UserTokenClient>(mockUserTokenClient.Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -228,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
+            
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
@@ -240,6 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 // Add a magic code to the adapter preemptively so that we can test if the message that triggers BeginDialogAsync uses magic code detection
                 adapter.AddUserToken(ConnectionName, turnContext.Activity.ChannelId, turnContext.Activity.From.Id, Token, MagicCode);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
@@ -285,6 +293,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var mockUserTokenClient = SetupUserTokenClientMock();
+                mockUserTokenClient.Setup(t =>
+                    t.ExchangeTokenAsync(
+                        It.Is<string>(s => s.Equals(turnContext.Activity.From.Id)),
+                        It.Is<string>(s => s.Equals(ConnectionName)),
+                        It.Is<string>(s => s.Equals(turnContext.Activity.ChannelId)),
+                        It.Is<TokenExchangeRequest>(t => t.Token == ExchangeToken),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new TokenResponse() { Token = Token, ConnectionName = ConnectionName });
+
+                turnContext.TurnState.Add<UserTokenClient>(mockUserTokenClient.Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -355,6 +374,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -423,6 +443,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -488,6 +509,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -556,7 +578,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
@@ -605,6 +627,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock(signInResource: new SignInResource { SignInLink = "https://test.com" }).Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -642,6 +665,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 adapter.AddExchangeableToken(ConnectionName, turnContext.Activity.ChannelId, UserId, ExchangeToken, Token);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 // Positive case: Token
                 var result = await adapter.ExchangeTokenAsync(turnContext, ConnectionName, UserId, new TokenExchangeRequest() { Token = ExchangeToken });
@@ -682,11 +706,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in", EndOnInvalidMessage = false }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -725,6 +750,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
@@ -784,12 +810,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(prompt);
 
-            var activity = new Activity { ChannelId = ChannelId, From = new ChannelAccount { Id = UserId } };
-            var turnContext = new TurnContext(adapter, activity);
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = UserId },
+                Conversation = new ConversationAccount { Id = "conversation-id" },
+                ChannelId = Channels.Webchat,
+                Text = "login",
+            };
 
-            var userToken = await prompt.GetUserTokenAsync(turnContext, CancellationToken.None);
-            
-            Assert.Equal(Token, userToken.Token);
+            var mockUserTokenClient = SetupUserTokenClientMock(signInResource: new SignInResource { SignInLink = "https://test.com" });
+
+            // The on-turn callback.
+            BotCallbackHandler callback = async (turnContext, cancellationToken) =>
+            {
+                var context = await dialogs.CreateContextAsync(turnContext);
+                turnContext.TurnState.Add<UserTokenClient>(mockUserTokenClient.Object);
+                await context.BeginDialogAsync(prompt.Id);
+            };
+
+            // Act
+            await adapter.ProcessActivityAsync(activity, callback).ConfigureAwait(false);
+
+            var activity2 = new Activity
+            {
+                Type = ActivityTypes.Event,
+                Name = SignInConstants.TokenResponseEventName,
+                From = new ChannelAccount { Id = UserId },
+                Conversation = new ConversationAccount { Id = "conversation-id" },
+                ChannelId = Channels.Webchat,
+                Text = "987654",
+                Value = JObject.FromObject(new TokenResponse { Token = Token })
+            };
+
+            BotCallbackHandler callback2 = async (turnContext, cancellationToken) =>
+            {
+                var context = await dialogs.CreateContextAsync(turnContext);
+                var dialogResult = await context.ContinueDialogAsync();
+                Assert.Equal(Token, (dialogResult.Result as TokenResponse).Token);
+            };
+
+            await adapter.ProcessActivityAsync(activity2, callback2).ConfigureAwait(false);
+         }
+
+        private Mock<UserTokenClient> SetupUserTokenClientMock(TokenResponse result = null, SignInResource signInResource = null)
+        {
+            var mockUserTokenClient = new Mock<UserTokenClient>();
+            mockUserTokenClient.Setup(
+                x => x.GetUserTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(result);
+
+            mockUserTokenClient.Setup(
+                x => x.GetSignInResourceAsync(It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(signInResource ?? new SignInResource());
+
+            return mockUserTokenClient;
         }
 
         private async Task OAuthPrompt(IStorage storage)
@@ -807,6 +882,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
@@ -861,6 +937,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                turnContext.TurnState.Add<UserTokenClient>(SetupUserTokenClientMock().Object);
 
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
