@@ -36,19 +36,6 @@ namespace Microsoft.Bot.Builder.OAuth
         }
 
         /// <summary>
-        /// Useful for determining if an activity is an Azure Bot Service response to an OAuthCard.
-        /// </summary>
-        /// <param name="activity">The activity to check the type and name of.</param>
-        /// <returns>True if the activity is of type event with name of tokens/response or an invoke
-        /// with name of signin/verifyState or signin/tokenExchange.</returns>
-        public static bool IsOAuthResponseActivity(Activity activity)
-        {
-            return (activity.Type.Equals(ActivityTypes.Event, StringComparison.OrdinalIgnoreCase) && activity.Name.Equals(SignInConstants.TokenResponseEventName, StringComparison.OrdinalIgnoreCase))
-                || (activity.Type.Equals(ActivityTypes.Invoke, StringComparison.OrdinalIgnoreCase) && activity.Name.Equals(SignInConstants.VerifyStateOperationName, StringComparison.OrdinalIgnoreCase))
-                || (activity.Type.Equals(ActivityTypes.Invoke, StringComparison.OrdinalIgnoreCase) && activity.Name.Equals(SignInConstants.TokenExchangeOperationName, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
         /// This method will properly construct an OAuthCard based on <see cref="OAuthSettings"/>
         /// provided during class construction, or from the <paramref name="prompt"/> if present.
         /// </summary>

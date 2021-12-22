@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // If the incoming Activity is a message, or an Activity Type normally handled by OAuthPrompt,
             // check to see if this OAuthPrompt Expiration has elapsed, and end the dialog if so.
             var isTimeoutActivityType = isMessage
-                            || OAuthMessageClient.IsOAuthResponseActivity(dc.Context.Activity);
+                            || UserTokenResponseClient.IsOAuthResponseActivity(dc.Context.Activity);
             var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.UtcNow, expires) > 0;
 
             if (hasTimedOut)
