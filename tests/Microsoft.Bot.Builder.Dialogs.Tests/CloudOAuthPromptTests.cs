@@ -778,19 +778,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestCloudAdapter(mockBotFrameworkAuthentication.Object);
 
-            // Add the OAuthPrompt.
-            var oauthPromptSettings = new OAuthPromptSettings
-            {
-                Text = "Please sign in",
-                ConnectionName = connectionName,
-                Title = "Sign in",
-            };
-
-            // The on-turn callback.
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
-                var oauthPrompt = new OAuthPrompt("OAuthPrompt", oauthPromptSettings);
-                await oauthPrompt.SignOutUserAsync(turnContext, cancellationToken);
+                var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
+                await userTokenClient.SignOutUserAsync(turnContext.Activity.From.Id, connectionName, turnContext.Activity.ChannelId, cancellationToken).ConfigureAwait(false);
             };
 
             // The Activity for the turn.
