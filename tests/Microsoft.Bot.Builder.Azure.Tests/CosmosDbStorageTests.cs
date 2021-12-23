@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,76 +21,29 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB")]
+    [Collection("CosmosDb")]
     public class CosmosDbStorageTests : StorageBaseTests, IAsyncLifetime
     {
-        // Endpoint and Authkey for the CosmosDB Emulator running locally
-        private const string CosmosServiceEndpoint = "https://localhost:8081";
-        private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "test-CosmosDbStorageTests";
         private const string CosmosCollectionName = "bot-storage";
         private const string DocumentId = "UtteranceLog-001";
-
-        private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
-        {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
-            {
-                return false;
-            }
-
-            if (File.Exists(EmulatorPath))
-            {
-                var tries = 5;
-
-                do
-                {
-                    var p = new Process();
-                    p.StartInfo.UseShellExecute = true;
-                    p.StartInfo.FileName = EmulatorPath;
-                    p.StartInfo.Arguments = "/GetStatus";
-                    p.Start();
-                    p.WaitForExit();
-
-                    switch (p.ExitCode)
-                    {
-                        case 1: // starting
-                            Task.Delay(1000).Wait();
-                            tries--;
-                            break;
-
-                        case 2: // started
-                            return true;
-
-                        case 3: // stopped
-                            return false;
-
-                        default:
-                            return false; // unknown status code
-                    }
-                }
-                while (tries > 0);
-            }
-
-            return false;
-        });
 
         // Item used to test delete cases
         private readonly StoreItem _itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
 
         private IStorage _storage;
 
-        public CosmosDbStorageTests()
+        public CosmosDbStorageTests(CosmosDbFixture cosmosDbFixture)
         {
-            if (HasEmulator.Value)
+            cosmosDbFixture.SkipIfEmulatorIsNotRunning();
+
+            _storage = new CosmosDbStorage(new CosmosDbStorageOptions
             {
-                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
-                {
-                    AuthKey = CosmosAuthKey,
-                    CollectionId = CosmosCollectionName,
-                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
-                    DatabaseId = CosmosDatabaseName,
-                });
-            }
+                AuthKey = CosmosDbFixture.CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosDbFixture.CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+            });
         }
 
         public Task InitializeAsync() 
@@ -103,7 +55,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (_storage != null)
             {
-                var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey);
+                var client = new DocumentClient(new Uri(CosmosDbFixture.CosmosServiceEndpoint), CosmosDbFixture.CosmosAuthKey);
                 try
                 {
                     await client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(CosmosDatabaseName)).ConfigureAwait(false);
@@ -115,7 +67,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public void Sanitize_Key_Should_Work()
         {
             // Note: The SanitizeKey method delegates to the CosmosDBKeyEscape class. The method is
@@ -128,7 +80,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 #pragma warning restore 0618
         }
 
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw.
@@ -171,7 +123,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
         }
 
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public void CustomConstructor_Should_Throw_On_InvalidOptions()
         {
             var customClient = GetDocumentClient().Object;
@@ -201,7 +153,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
         }
 
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public void Connection_Policy_Configurator_Should_Be_Called_If_Present()
         {
             var wasCalled = false;
@@ -221,7 +173,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.True(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task Database_Creation_Request_Options_Should_Be_Used()
         {
             var documentClientMock = GetDocumentClient();
@@ -244,52 +196,46 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             documentClientMock.Verify(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), documentCollectionRequestOptions), Times.Once());
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task CreateObjectCosmosDBTest()
         {
             await CreateObjectTest(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadUnknownCosmosDBTest()
         {
             await ReadUnknownTest(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task UpdateObjectCosmosDBTest()
         {
             await UpdateObjectTest<DocumentClientException>(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeleteObjectCosmosDBTest()
         {
             await DeleteObjectTest(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task HandleCrazyKeysCosmosDB()
         {
             await HandleCrazyKeys(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public void ConnectionPolicyConfiguratorShouldBeCalled()
         {
             ConnectionPolicy policyRef = null;
 
             _storage = new CosmosDbStorage(new CosmosDbStorageOptions
             {
-                AuthKey = CosmosAuthKey,
+                AuthKey = CosmosDbFixture.CosmosAuthKey,
                 CollectionId = CosmosCollectionName,
-                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                CosmosDBEndpoint = new Uri(CosmosDbFixture.CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
                 ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy,
             });
@@ -297,8 +243,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.NotNull(policyRef);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
             var state = await _storage.ReadAsync(new string[] { });
@@ -306,29 +251,25 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.Equal(0, state.Count);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadingNullKeysThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.ReadAsync(null));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task WritingNullStoreItemsThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.WriteAsync(null));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task WritingNoStoreItemsDoesntThrow()
         {
             var changes = new Dictionary<string, object>();
             await _storage.WriteAsync(changes);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
         // See the linked issue for details. This issue was happening when using the CosmosDB
         // data store for state. The stepIndex, which was an object being cast to an Int64
@@ -338,7 +279,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // The problem was reintroduced when the prompt retry count feature was implemented:
         // https://github.com/microsoft/botbuilder-dotnet/issues/1859
         // The waterfall in this test has been modified to include a prompt.
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task WaterfallCosmos()
         {
             var convoState = new ConversationState(_storage);
@@ -414,8 +355,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 .StartTestAsync();
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeleteAsyncFromSingleCollection()
         {
             var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
@@ -430,8 +370,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.True(result.IsCompletedSuccessfully);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeleteAsyncFromPartitionedCollection()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -454,8 +393,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.True(result.IsCompletedSuccessfully);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeleteAsyncFromPartitionedCollectionWithoutPartitionKey()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -478,8 +416,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadAsyncWithPartitionKey()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -502,8 +439,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.Equal(_itemToTest.City, result[DocumentId].City);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadAsyncWithoutPartitionKey()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -543,8 +479,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 #endif
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
             var storage = new CosmosDbStorage(
@@ -555,7 +490,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)
         {
-            using var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey);
+            using var client = new DocumentClient(new Uri(CosmosDbFixture.CosmosServiceEndpoint), CosmosDbFixture.CosmosAuthKey);
             Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
             var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
             var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
@@ -568,9 +503,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return new CosmosDbStorageOptions()
             {
                 PartitionKey = partitionKey,
-                AuthKey = CosmosAuthKey,
+                AuthKey = CosmosDbFixture.CosmosAuthKey,
                 CollectionId = CosmosCollectionName,
-                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                CosmosDBEndpoint = new Uri(CosmosDbFixture.CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
             };
         }

@@ -9,7 +9,6 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -17,24 +16,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB Partitioned")]
+    [Collection("CosmosDb")]
     public class CosmosDbPartitionStorageTests : StorageBaseTests, IAsyncLifetime, IClassFixture<CosmosDbPartitionStorageFixture>
     {
-        // Endpoint and Authkey for the CosmosDB Emulator running locally
-        private const string CosmosServiceEndpoint = "https://localhost:8081";
-        private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-        private const string CosmosDatabaseName = "test-CosmosDbPartitionStorageTests";
-        private const string CosmosCollectionName = "bot-storage";
         private IStorage _storage;
 
-        public CosmosDbPartitionStorageTests()
+        public CosmosDbPartitionStorageTests(CosmosDbFixture cosmosDbFixture)
         {
+            cosmosDbFixture.SkipIfEmulatorIsNotRunning();
+
             _storage = new CosmosDbPartitionedStorage(
                 new CosmosDbPartitionedStorageOptions
                 {
-                    AuthKey = CosmosAuthKey,
-                    ContainerId = CosmosCollectionName,
-                    CosmosDbEndpoint = CosmosServiceEndpoint,
-                    DatabaseId = CosmosDatabaseName,
+                    AuthKey = CosmosDbFixture.CosmosAuthKey,
+                    ContainerId = CosmosDbPartitionStorageFixture.CosmosCollectionName,
+                    CosmosDbEndpoint = CosmosDbFixture.CosmosServiceEndpoint,
+                    DatabaseId = CosmosDbPartitionStorageFixture.CosmosDatabaseName,
                 });
         }
 
@@ -48,7 +45,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _storage = null;
         }
 
-        [Fact]
+        [SkippableFact]
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw.
@@ -115,50 +112,43 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task CreateObjectCosmosDBPartitionTest()
         {
             await CreateObjectTest(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadUnknownCosmosDBPartitionTest()
         {
             await ReadUnknownTest(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task UpdateObjectCosmosDBPartitionTest()
         {
             await UpdateObjectTest<CosmosException>(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeleteObjectCosmosDBPartitionTest()
         {
             await DeleteObjectTest(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeleteUnknownObjectCosmosDBPartitionTest()
         {
             await _storage.DeleteAsync(new[] { "unknown_delete" });
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task HandleCrazyKeysCosmosDBPartition()
         {
             await HandleCrazyKeys(_storage);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
             var state = await _storage.ReadAsync(new string[] { });
@@ -166,36 +156,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.Equal(0, state.Count);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task ReadingNullKeysThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.ReadAsync(null));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task WritingNullStoreItemsThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.WriteAsync(null));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task WritingNoStoreItemsDoesntThrow()
         {
             var changes = new Dictionary<string, object>();
             await _storage.WriteAsync(changes);
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task DeletingNullStoreItemsThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(() => _storage.DeleteAsync(null));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
         // See the linked issue for details. This issue was happening when using the CosmosDB
         // data store for state. The stepIndex, which was an object being cast to an Int64
@@ -205,7 +190,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // The problem was reintroduced when the prompt retry count feature was implemented:
         // https://github.com/microsoft/botbuilder-dotnet/issues/1859
         // The waterfall in this test has been modified to include a prompt.
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task WaterfallCosmos()
         {
             var convoState = new ConversationState(_storage);
@@ -290,8 +275,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 .StartTestAsync();
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task Should_Be_Aware_Of_Nesting_Limit()
         {
             async Task TestNestAsync(int depth)
@@ -328,8 +312,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnNoEmulatorFact]
+        [SkippableFact]
         public async Task Should_Be_Aware_Of_Nesting_Limit_With_Dialogs()
         {
             async Task TestDialogNestAsync(int dialogDepth)
