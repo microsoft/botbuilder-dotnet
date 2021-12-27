@@ -152,20 +152,6 @@ namespace Microsoft.Bot.Builder
                     // Set ETag if applicable
                     SetETagFromNewValue(newValue, newState, oldStateETag);
 
-                    if (newValue is IStoreItem newStoreItem)
-                    {
-                        if (oldStateETag != null
-                                &&
-                           newStoreItem.ETag != "*"
-                                &&
-                           newStoreItem.ETag != oldStateETag)
-                        {
-                            throw new ArgumentException($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
-                        }
-
-                        newState["ETag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
-                    }
-
                     _memory[change.Key] = newState;
                 }
             }
