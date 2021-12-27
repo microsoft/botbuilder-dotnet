@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Dialogs
             if ((bool)stepContext.Result)
             {
                 // Pull the booking details from the waterfall state.
-                var bookingDetails = (BookingDetails)stepContext.Values["BookingInfo"];
+                var bookingDetails = stepContext.Values.MapValueTo<BookingDetails>("BookingInfo");
 
                 // Now we have all the booking information to call the booking service.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Booking your flight, this shouldn't take long..."), cancellationToken);

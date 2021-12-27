@@ -243,32 +243,9 @@ namespace Microsoft.Bot.Builder
 
             var cachedState = GetCachedState(turnContext);
 
-            if (cachedState.State.TryGetValue(propertyName, out object result))
+            if (cachedState.State.TryMapValueTo<T>(propertyName, out T result))
             {
-                if (result is T t)
-                {
-                    return Task.FromResult(t);
-                }
-
-                if (result == null)
-                {
-                    return Task.FromResult(default(T));
-                }
-
-                // If types are not used by storage serialization, and Newtonsoft is the serializer,
-                // use Newtonsoft to convert the object to the type expected.
-                if (result is JObject jObj)
-                {
-                    return Task.FromResult(jObj.ToObject<T>());
-                }
-
-                if (result is JArray jarray)
-                {
-                    return Task.FromResult(jarray.ToObject<T>());
-                }
-
-                // attempt to convert result to T using json serializer.
-                return Task.FromResult(JToken.FromObject(result).ToObject<T>());
+                return Task.FromResult(result);
             }
 
             if (typeof(T).IsValueType)

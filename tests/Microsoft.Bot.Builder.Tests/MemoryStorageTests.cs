@@ -28,6 +28,18 @@ namespace Microsoft.Bot.Builder.Tests
         {
             await CreateObjectTest(storage);
         }
+        
+        [Fact]
+        public async Task MemoryStorage_TestTyped()
+        {
+            await TestTypedObjects(new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.All }), expectTyped: true);
+        }
+
+        [Fact]
+        public async Task MemoryStorage_TestUnTyped()
+        {
+            await TestTypedObjects(new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }), expectTyped: false);
+        }
 
         [Fact]
         public void MemoryParamTest()
@@ -45,7 +57,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task MemoryStorage_UpdateObjectTest()
         {
-            await UpdateObjectTest<Exception>(storage);
+            await UpdateObjectTest(storage);
         }
 
         [Fact]
@@ -60,10 +72,14 @@ namespace Microsoft.Bot.Builder.Tests
             await HandleCrazyKeys(storage);
         }
 
-        [Fact]
-        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        [Theory]
+        [InlineData(TypeNameHandling.None)]
+        [InlineData(TypeNameHandling.All)]
+        [InlineData(TypeNameHandling.Auto)]
+        [InlineData(TypeNameHandling.Objects)]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone(TypeNameHandling typeNameHandling)
         {
-            storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = typeNameHandling });
             await StatePersistsThroughMultiTurn(storage);
         }
     }

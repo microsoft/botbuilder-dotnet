@@ -68,6 +68,35 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
             }
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task UpdateObjectTestAsJObjects_TypeNameHandlingNone(bool typeNameHandlingNone)
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await UpdateObjectTest_AsJObjects(GetStorage(typeNameHandlingNone));
+            }
+        }
+
+        [Fact]
+        public async Task TestTypedObjects_TypeNameHandling_All()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await TestTypedObjects(GetStorage(), expectTyped: true);
+            }
+        }
+
+        [Fact]
+        public async Task TestTypedObjects_TypeNameHandling_None()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await TestTypedObjects(GetStorage(true), expectTyped: false);
+            }
+        }
+
         protected override IStorage GetStorage(bool typeNameHandlingNone = false)
         {
             if (typeNameHandlingNone)

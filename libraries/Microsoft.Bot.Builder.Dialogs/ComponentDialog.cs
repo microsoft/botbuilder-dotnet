@@ -385,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (instance.State.ContainsKey(PersistedDialogState))
             {
-                state = instance.State[PersistedDialogState] as DialogState;
+                state = instance.State.MapValueTo<DialogState>(PersistedDialogState);
             }
             else
             {

@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests.Common.Storage;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -28,14 +29,7 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 
         public CosmosDbPartitionStorageTests()
         {
-            _storage = new CosmosDbPartitionedStorage(
-                new CosmosDbPartitionedStorageOptions
-                {
-                    AuthKey = CosmosAuthKey,
-                    ContainerId = CosmosCollectionName,
-                    CosmosDbEndpoint = CosmosServiceEndpoint,
-                    DatabaseId = CosmosDatabaseName,
-                });
+            _storage = GetStorage();
         }
 
         public Task InitializeAsync()
@@ -46,6 +40,25 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
         public async Task DisposeAsync()
         {
             _storage = null;
+        }
+
+        [IgnoreOnNoEmulatorFact]
+        public async Task TestTypedObjects_TypeNameHandling_All()
+        {
+            await TestTypedObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.All }), expectTyped: true);
+        }
+
+        [IgnoreOnNoEmulatorFact]
+        public async Task TestTypedObjects_TypeNameHandling_None()
+        {
+            await TestTypedObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }), expectTyped: false);
+        }
+
+        [IgnoreOnNoEmulatorFact]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            _storage = GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await StatePersistsThroughMultiTurn(_storage);
         }
 
         [Fact]
@@ -115,6 +128,26 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
             }));
         }
 
+        [IgnoreOnNoEmulatorFact]
+        public async Task UpdateObjectTest_TypeNameHandlingNone()
+        {
+            await UpdateObjectTest(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [IgnoreOnNoEmulatorFact]
+        public async Task UpdateObjectTest_AsJObjects_TypeNameHandlingNone()
+        {
+            await UpdateObjectTest_AsJObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [IgnoreOnNoEmulatorFact]
+        public async Task UpdateObjectTest_TypeNameHandlingAll()
+        {
+            await UpdateObjectTest(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.All }));
+        }
+
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [IgnoreOnNoEmulatorFact]
         public async Task CreateObjectCosmosDBPartitionTest()
@@ -133,7 +166,7 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
         [IgnoreOnNoEmulatorFact]
         public async Task UpdateObjectCosmosDBPartitionTest()
         {
-            await UpdateObjectTest<CosmosException>(_storage);
+            await UpdateObjectTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -383,6 +416,30 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
                 // then this assertion won't be reached, which is okay
                 Assert.Contains("dialogs", ex.Message);
             }
+        }
+
+        private CosmosDbPartitionedStorage GetStorage(JsonSerializer jsonSerializer = null)
+        {
+            if (jsonSerializer == null)
+            {
+                return new CosmosDbPartitionedStorage(
+                    new CosmosDbPartitionedStorageOptions
+                    {
+                        AuthKey = CosmosAuthKey,
+                        ContainerId = CosmosCollectionName,
+                        CosmosDbEndpoint = CosmosServiceEndpoint,
+                        DatabaseId = CosmosDatabaseName,
+                    });
+            }
+
+            return new CosmosDbPartitionedStorage(
+                    new CosmosDbPartitionedStorageOptions
+                    {
+                        AuthKey = CosmosAuthKey,
+                        ContainerId = CosmosCollectionName,
+                        CosmosDbEndpoint = CosmosServiceEndpoint,
+                        DatabaseId = CosmosDatabaseName,
+                    }, jsonSerializer);
         }
     }
 }

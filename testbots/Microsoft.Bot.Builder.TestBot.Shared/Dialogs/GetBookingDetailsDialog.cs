@@ -34,10 +34,17 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Dialogs
             var timexProperty = new TimexProperty(timex);
             return !timexProperty.Types.Contains(Constants.TimexTypes.Definite);
         }
+        
+        private BookingDetails GetBookingDetails(WaterfallStepContext stepContext)
+        {
+            var bookingDetails = ObjectPath.MapValueTo<BookingDetails>(stepContext.Options);
+            stepContext.ActiveDialog.State["options"] = bookingDetails;
+            return bookingDetails;
+        }
 
         private async Task<DialogTurnResult> DestinationActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options ?? new BookingDetails();
+            var bookingDetails = GetBookingDetails(stepContext);
 
             if (bookingDetails.Destination == null)
             {
@@ -49,7 +56,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Dialogs
 
         private async Task<DialogTurnResult> OriginActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var bookingDetails = GetBookingDetails(stepContext);
             bookingDetails.Destination = (string)stepContext.Result;
 
             if (bookingDetails.Origin == null)
@@ -62,7 +69,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Dialogs
 
         private async Task<DialogTurnResult> TravelDateActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var bookingDetails = GetBookingDetails(stepContext);
             bookingDetails.Origin = (string)stepContext.Result;
 
             if (bookingDetails.TravelDate == null || IsAmbiguous(bookingDetails.TravelDate))
@@ -76,7 +83,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Dialogs
 
         private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var bookingDetails = GetBookingDetails(stepContext);
             bookingDetails.TravelDate = (string)stepContext.Result;
 
             // We are done collection booking  details, return the data to the caller.

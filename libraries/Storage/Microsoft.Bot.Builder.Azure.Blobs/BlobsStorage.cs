@@ -13,6 +13,7 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Azure.Blobs
 {
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                 {
-                                                    TypeNameHandling = TypeNameHandling.All,
+                                                    TypeNameHandling = TypeNameHandling.None,
                                                 });
 
             // Triggers a check for the existence of the container
@@ -177,11 +178,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             foreach (var keyValuePair in changes)
             {
                 var newValue = keyValuePair.Value;
-                var storeItem = newValue as IStoreItem;
+
+                string eTag = StorageExtensions.GetETagOrNull(newValue);
 
                 // "*" eTag in IStoreItem converts to null condition for AccessCondition
-                var accessCondition = (!string.IsNullOrEmpty(storeItem?.ETag) && storeItem?.ETag != "*")
-                    ? new BlobRequestConditions() { IfMatch = new ETag(storeItem?.ETag) }
+                var accessCondition = (!string.IsNullOrEmpty(eTag) && eTag != "*")
+                    ? new BlobRequestConditions() { IfMatch = new ETag(eTag) }
                     : null;
 
                 var blobName = GetBlobName(keyValuePair.Key);
@@ -233,6 +235,10 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                             if (obj is IStoreItem storeItem)
                             {
                                 storeItem.ETag = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
+                            }
+                            else if (obj is JObject asJobject)
+                            {
+                                asJobject["ETag"] = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
                             }
 
                             return obj;

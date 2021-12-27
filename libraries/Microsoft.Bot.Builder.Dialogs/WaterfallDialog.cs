@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // data store for state. The stepIndex which was an object being cast to an Int64
             // after deserialization was throwing an exception for not being Int32 datatype.
             // This change ensures the correct datatype conversion has been done.
-            var index = Convert.ToInt32(state[StepIndex], CultureInfo.InvariantCulture);
+            var index = state.MapValueTo<int>(StepIndex);
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
@@ -166,12 +166,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (reason == DialogReason.CancelCalled)
             {
-                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
+                var state = instance.State;
 
                 // Create step context
-                var index = Convert.ToInt32(state[StepIndex], CultureInfo.InvariantCulture);
+                var index = state.MapValueTo<int>(StepIndex);
                 var stepName = WaterfallStepName(index);
-                var instanceId = state[PersistedInstanceId] as string;
+                var instanceId = state.MapValueTo<string>(PersistedInstanceId);
 
                 var properties = new Dictionary<string, string>
                 {
@@ -183,8 +183,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (reason == DialogReason.EndCalled)
             {
-                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
-                var instanceId = state[PersistedInstanceId] as string;
+                var state = instance.State;
+                var instanceId = state.MapValueTo<string>(PersistedInstanceId);
                 var properties = new Dictionary<string, string>
                 {
                     { "DialogId", Id },
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var stepName = WaterfallStepName(stepContext.Index);
-            var instanceId = stepContext.ActiveDialog.State[PersistedInstanceId] as string;
+            var instanceId = stepContext.ActiveDialog.State.MapValueTo<string>(PersistedInstanceId);
             var properties = new Dictionary<string, string>
             {
                 { "DialogId", Id },
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // Create step context
                 var options = state[PersistedOptions];
-                var values = (IDictionary<string, object>)state[PersistedValues];
+                var values = state.MapValueTo<IDictionary<string, object>>(PersistedValues);
                 var stepContext = new WaterfallStepContext(this, dc, options, values, index, reason, result);
 
                 // Execute step

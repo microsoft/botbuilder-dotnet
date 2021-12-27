@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder
     {
         private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer()
         {
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.None,
             ReferenceLoopHandling = ReferenceLoopHandling.Error,
         };
 
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder
 
                     if (_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        if (oldState != null && oldState.TryGetValue("eTag", out var etag))
+                        if (oldState != null && oldState.TryGetValue("ETag", StringComparison.OrdinalIgnoreCase, out var etag))
                         {
                             oldStateETag = etag.Value<string>();
                         }
@@ -150,6 +150,8 @@ namespace Microsoft.Bot.Builder
                     var newState = newValue != null ? JObject.FromObject(newValue, _stateJsonSerializer) : null;
 
                     // Set ETag if applicable
+                    SetETagFromNewValue(newValue, newState, oldStateETag);
+
                     if (newValue is IStoreItem newStoreItem)
                     {
                         if (oldStateETag != null
@@ -161,7 +163,7 @@ namespace Microsoft.Bot.Builder
                             throw new ArgumentException($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
                         }
 
-                        newState["eTag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
+                        newState["ETag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
                     }
 
                     _memory[change.Key] = newState;
@@ -169,6 +171,32 @@ namespace Microsoft.Bot.Builder
             }
 
             return Task.CompletedTask;
+        }
+
+        private void SetETagFromNewValue(object newValue, JObject newState, string oldStateETag)
+        {
+            if (newValue is IStoreItem newStoreItem)
+            {
+                SetETag(newState, oldStateETag, newStoreItem.ETag);
+            }
+            else if (newValue is JObject asJobject && asJobject.ContainsKey("ETag"))
+            {
+                SetETag(newState, oldStateETag, asJobject.Value<string>("ETag"));
+            }
+        }
+
+        private void SetETag(JObject state, string oldStateETag, string newEtag)
+        {
+            if (oldStateETag != null
+                    &&
+               newEtag != "*"
+                    &&
+               newEtag != oldStateETag)
+            {
+                throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newEtag}\r\nCurrent: {oldStateETag}");
+            }
+
+            state["ETag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
         }
     }
 }

@@ -67,13 +67,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (!(options is PromptOptions))
-            {
-                throw new ArgumentOutOfRangeException(nameof(options), "Prompt options are required for Prompt dialogs");
-            }
-
             // Ensure prompts have input hint set
-            var opt = (PromptOptions)options;
+            var opt = ObjectPath.MapValueTo<PromptOptions>(options);
             if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
             {
                 opt.Prompt.InputHint = InputHints.ExpectingInput;
@@ -93,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             // Send initial prompt
-            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], false, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, state.MapValueTo<IDictionary<string, object>>(PersistedState), state.MapValueTo<PromptOptions>(PersistedOptions), false, cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
@@ -117,8 +112,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Perform base recognition
             var instance = dc.ActiveDialog;
-            var state = (IDictionary<string, object>)instance.State[PersistedState];
-            var options = (PromptOptions)instance.State[PersistedOptions];
+            var state = instance.State.MapValueTo<IDictionary<string, object>>(PersistedState);
+            var options = instance.State.MapValueTo<PromptOptions>(PersistedOptions);
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Increment attempt count
@@ -187,8 +182,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
-            var state = (IDictionary<string, object>)instance.State[PersistedState];
-            var options = (PromptOptions)instance.State[PersistedOptions];
+            var state = instance.State.MapValueTo<IDictionary<string, object>>(PersistedState);
+            var options = instance.State.MapValueTo<PromptOptions>(PersistedOptions);
             await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
 

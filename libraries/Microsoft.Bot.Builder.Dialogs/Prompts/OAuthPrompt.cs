@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 result.Value = token;
 
                 // fixup the turnContext's state context if this was received from a skill host caller
-                var callerInfo = (CallerInfo)dc.ActiveDialog.State[PersistedCaller];
+                var callerInfo = dc.ActiveDialog.State.MapValueTo<CallerInfo>(PersistedCaller);
                 if (callerInfo != null)
                 {
                     // set the ServiceUrl to the skill host's Url
@@ -406,12 +406,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token", nameof(options));
             }
 
-            if (options != null && !(options is PromptOptions))
+            var opt = ObjectPath.MapValueTo<PromptOptions>(options);
+
+            if (options != null && opt == null)
             {
                 throw new ArgumentException($"Parameter {nameof(options)} should be an instance of to {nameof(PromptOptions)} if provided", nameof(options));
             }
 
-            var opt = (PromptOptions)options;
             if (opt != null)
             {
                 // Ensure prompts have input hint set
@@ -491,8 +492,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Recognize token
             var recognized = await RecognizeTokenAsync(_settings, dc, cancellationToken).ConfigureAwait(false);
 
-            var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
-            var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();
+            var promptState = state.MapValueTo<IDictionary<string, object>>(PersistedState);
+            var promptOptions = state.MapValueTo<PromptOptions>(PersistedOptions);
 
             // Increment attempt count
             // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859

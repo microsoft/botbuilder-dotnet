@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
-        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
@@ -141,6 +141,11 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
                         storeItem.ETag = documentStoreItem.ETag;
                         storeItems.Add(documentStoreItem.RealId, storeItem);
                     }
+                    else if (item is JObject asJobject)
+                    {
+                        asJobject["ETag"] = documentStoreItem.ETag;
+                        storeItems.Add(documentStoreItem.RealId, item);
+                    }
                     else
                     {
                         storeItems.Add(documentStoreItem.RealId, item);
@@ -202,8 +207,7 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
                     Document = json,
                 };
 
-                var etag = (change.Value as IStoreItem)?.ETag;
-
+                var etag = StorageExtensions.GetETagOrNull(change.Value);
                 try
                 {
                     if (etag == null || etag == "*")

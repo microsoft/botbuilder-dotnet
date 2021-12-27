@@ -34,7 +34,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The list of available choices.</value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<Choice> Choices { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the <see cref="ListStyle"/> for a <see cref="ChoicePrompt"/>.
@@ -51,5 +50,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>Additional options for use with a prompt validator.</value>
         public object Validations { get; set; }
+
+        /// <summary>
+        /// Gets or sets any extra properties to include in the results.
+        /// </summary>
+        /// <value>
+        /// Any extra properties to include in the results.
+        /// </value>
+        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }
