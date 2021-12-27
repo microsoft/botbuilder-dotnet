@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <remarks>The new instance is created with an empty dialog stack.</remarks>
         /// <seealso cref="DialogContext.Stack"/>
-        /// <seealso cref="DialogSet(IStatePropertyAccessor{DialogState})"/>
+        /// <seealso cref="DialogSet"/>
         public DialogState()
             : this(null)
         {
