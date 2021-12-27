@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>The assembly version for this Bot Connector client.</returns>
         private static string GetClientVersion()
         {
-            var type = typeof(ConnectorClient).GetType();
+            var type = typeof(ConnectorClient);
             var assembly = type.GetTypeInfo().Assembly;
             return assembly.GetName().Version.ToString();
         }
