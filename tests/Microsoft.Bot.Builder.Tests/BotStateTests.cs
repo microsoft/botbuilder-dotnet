@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_RememberIStoreItemUserState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var testProperty = userState.CreateProperty<TestState>("test");
             var adapter = new TestAdapter(TestAdapter.CreateConversation("State_RememberIStoreItemUserState"))
                 .Use(new AutoSaveStateMiddleware(userState));
 
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.Tests
                 adapter,
                 async (context, cancellationToken) =>
                 {
-                    var state = await testProperty.GetAsync(context, () => new TestPocoState());
+                    var state = await testProperty.GetAsync(context, () => new TestState());
                     Assert.NotNull(state);
                     switch (context.Activity.Text)
                     {
