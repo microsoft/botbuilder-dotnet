@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnMessageReactionActivityAsync", bot.Record[0]);
             Assert.Equal("OnReactionsChangedAsync", bot.Record[1]);
         }
@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnMessageReactionActivityAsync", bot.Record[0]);
             Assert.Equal("OnReactionsAddedAsync", bot.Record[1]);
         }
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnMessageReactionActivityAsync", bot.Record[0]);
             Assert.Equal("OnReactionsRemovedAsync", bot.Record[1]);
         }
