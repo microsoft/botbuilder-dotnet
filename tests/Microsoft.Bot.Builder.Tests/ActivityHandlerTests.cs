@@ -288,12 +288,12 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
         }
 
+
         [Fact]
-        public async Task TestMessageReaction()
+        public async Task TestMessageOnReactionsChanged()
         {
             // Note the code supports multiple adds and removes in the same activity though
-            // a channel may decide to send separate activities for each. For example, Teams
-            // sends separate activities each with a single add and a single remove.
+            // a channel may decide to send separate activities for each. 
 
             // Arrange
             var activity = new Activity
@@ -317,8 +317,61 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(3, bot.Record.Count);
             Assert.Equal("OnMessageReactionActivityAsync", bot.Record[0]);
+            Assert.Equal("OnReactionsChangedAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestMessageReactionAdded()
+        {
+            // Note the code supports multiple adds and removes in the same activity though
+            // a channel may decide to send separate activities for each. 
+
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageReaction,
+                ReactionsAdded = new List<MessageReaction>
+                {
+                    new MessageReaction("sad"),
+                },
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnMessageReactionActivityAsync", bot.Record[0]);
             Assert.Equal("OnReactionsAddedAsync", bot.Record[1]);
-            Assert.Equal("OnReactionsRemovedAsync", bot.Record[2]);
+        }
+
+        [Fact]
+        public async Task TestMessageReactionRemoved()
+        {
+            // Note the code supports multiple adds and removes in the same activity though
+            // a channel may decide to send separate activities for each. 
+
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageReaction,
+                ReactionsRemoved = new List<MessageReaction>
+                {
+                    new MessageReaction("angry"),
+                },
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnMessageReactionActivityAsync", bot.Record[0]);
+            Assert.Equal("OnReactionsRemovedAsync", bot.Record[1]);
         }
 
         [Fact]
@@ -718,6 +771,12 @@ namespace Microsoft.Bot.Builder.Tests
                 return base.OnMessageReactionActivityAsync(turnContext, cancellationToken);
             }
 
+            protected override Task OnReactionsChangedAsync(IList<MessageReaction> addedReactions, IList<MessageReaction> removedReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnReactionsChangedAsync(addedReactions, removedReactions, turnContext, cancellationToken);
+            }
+
             protected override Task OnReactionsAddedAsync(IList<MessageReaction> messageReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
@@ -836,42 +895,6 @@ namespace Microsoft.Bot.Builder.Tests
                 await turnContext.SendActivityAsync(new Activity());
                 await turnContext.SendActivitiesAsync(new IActivity[] { new Activity() });
                 await turnContext.UpdateActivityAsync(new Activity());
-            }
-        }
-
-        private class MockConnectorClient : IConnectorClient
-        {
-            private Uri _baseUri = new Uri("http://tempuri.org/whatever");
-
-            public Uri BaseUri
-            {
-                get { return _baseUri; }
-                set { _baseUri = value; }
-            }
-
-            public JsonSerializerSettings SerializationSettings => throw new NotImplementedException();
-
-            public JsonSerializerSettings DeserializationSettings => throw new NotImplementedException();
-
-            public ServiceClientCredentials Credentials { get => new MockCredentials(); }
-
-            public IAttachments Attachments => throw new NotImplementedException();
-
-            public IConversations Conversations => throw new NotImplementedException();
-
-            public void Dispose()
-            {
-                throw new NotImplementedException();
-            }
-
-            private class MockCredentials : ServiceClientCredentials
-            {
-                public override Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-                {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("awesome");
-                    request.Headers.UserAgent.Add(new ProductInfoHeaderValue("Windows", "3.1"));
-                    return Task.CompletedTask;
-                }
             }
         }
     }
