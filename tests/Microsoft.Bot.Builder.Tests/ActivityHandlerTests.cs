@@ -288,7 +288,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
         }
 
-
         [Fact]
         public async Task TestMessageOnReactionsChanged()
         {
