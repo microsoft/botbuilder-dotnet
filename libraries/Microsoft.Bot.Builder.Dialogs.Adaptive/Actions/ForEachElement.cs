@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private void UpdateActionScopeState(DialogContext dc, DialogState state)
         {
-            var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
+            var activeDialogState = dc.ActiveDialog?.State as Dictionary<string, object>;
 
             if (activeDialogState != null)
             {
