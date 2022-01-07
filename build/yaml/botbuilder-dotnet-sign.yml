@@ -53,4 +53,8 @@ jobs:
 
   - template: ci-build-steps.yml
   - template: sign-steps.yml
-#  - template: functional-test-setup-steps.yml
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection'
+  inputs:
+    failOnAlert: false
