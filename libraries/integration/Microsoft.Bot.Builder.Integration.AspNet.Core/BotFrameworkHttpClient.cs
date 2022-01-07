@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// * Posting an activity to yourself (External service => Bot) which is done via PostActivityAsync(botId, endpoint, activity)
     /// The latter is used by external services such as webjobs that need to post activities to the bot using the bots own credentials.
     /// </remarks>
+    [Obsolete("Use `BotFrameworkAuthentication.CreateBotFrameworkClient()` to obtain a client and perform the operations that were accomplished through `BotFrameworkHttpClient`.", false)]
     public class BotFrameworkHttpClient : BotFrameworkClient
     {
         /// <summary>

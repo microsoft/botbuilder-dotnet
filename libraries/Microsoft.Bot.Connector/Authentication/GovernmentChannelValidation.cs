@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Valies JWT tokens from a Government channel.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to perform government channel validation.", false)]
     public sealed class GovernmentChannelValidation
     {
         /// <summary>

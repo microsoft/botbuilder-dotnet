@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Validates JWT tokens from an enterprise channel.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to perform enterprise channel validation.", false)]
     public sealed class EnterpriseChannelValidation
     {
         /// <summary>

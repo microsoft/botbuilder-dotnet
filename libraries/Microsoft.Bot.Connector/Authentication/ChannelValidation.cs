@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Validates JWT tokens sent from Azure.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to perform channel validation.", false)]
     public static class ChannelValidation
     {
         /// <summary>

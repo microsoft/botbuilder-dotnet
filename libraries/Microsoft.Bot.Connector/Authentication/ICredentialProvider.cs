@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -15,6 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// For Single Tenant bots (the vast majority) the simple static providers
     /// are sufficient.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to configure credentials.", false)]
     public interface ICredentialProvider
     {
         /// <summary>
