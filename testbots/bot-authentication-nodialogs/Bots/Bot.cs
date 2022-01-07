@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples
         private readonly string _connectionName;
         private readonly BotState _userState;
         private readonly IStatePropertyAccessor<bool> _userLoggingInProperty;
-        private readonly OAuthMessageClient _oauthCardProvider;
+        private readonly OAuthActivityFactory _oauthCardProvider;
         private readonly UserTokenResponseClient _userTokenResponseClient;
 
         public Bot(IConfiguration configuration, ConversationState conversationState, UserState userState)
@@ -39,7 +39,7 @@ namespace Microsoft.BotBuilderSamples
             _connectionName = configuration[ConfigurationConnectionName].ToString();
             _userLoggingInProperty = conversationState.CreateProperty<bool>(UserLoggingInPropertyName);
             var oauthSettings = new OAuthSettings { ConnectionName = _connectionName, Title = "Login", Text = "Please Sign In to proceed..." };
-            _oauthCardProvider = new OAuthMessageClient(oauthSettings);
+            _oauthCardProvider = new OAuthActivityFactory(oauthSettings);
             _userTokenResponseClient = new UserTokenResponseClient(oauthSettings);
         }
 
@@ -75,7 +75,7 @@ namespace Microsoft.BotBuilderSamples
             else if (text.Equals("login", StringComparison.OrdinalIgnoreCase))
             {
                 var userTokenClient = turnContext.TurnState.Get<UserTokenClient>() ?? throw new InvalidOperationException("The UserTokenClient is not supported by the current adapter.");
-                var message = await _oauthCardProvider.GetCardMessageFromActivityAsync(turnContext.Activity as Activity, userTokenClient, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var message = await _oauthCardProvider.CreateOAuthActivityAsync(turnContext.Activity as Activity, userTokenClient, cancellationToken: cancellationToken).ConfigureAwait(false);
                 await turnContext.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
                 await _userLoggingInProperty.SetAsync(turnContext, true).ConfigureAwait(false);
             }
@@ -103,6 +103,16 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
+        protected async override Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName)
+            {
+                await CompleteLoginWithResponse(turnContext, cancellationToken).ConfigureAwait(false);
+            }
+
+            await base.OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
         private async Task CompleteLoginWithResponse(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var token = await _userTokenResponseClient.RecognizeTokenAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -120,24 +130,3 @@ namespace Microsoft.BotBuilderSamples
         }
     }
 }
-
-
-
-//protected async override Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-//{
-//    if (turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName) 
-//    {
-//        await LoginUserWithResponse(turnContext, cancellationToken).ConfigureAwait(false);
-//    }
-
-//    await base.OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
-//}
-//protected override Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-//{
-//    return base.OnInvokeActivityAsync(turnContext, cancellationToken);
-//}
-
-//protected override Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
-//{
-//    return base.OnEventActivityAsync(turnContext, cancellationToken);
-//}

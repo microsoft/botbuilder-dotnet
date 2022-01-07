@@ -3,7 +3,7 @@
 
 using Microsoft.Bot.Connector.Authentication;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.OAuth
 {
     /// <summary>
     /// Contains settings for User OAuth.

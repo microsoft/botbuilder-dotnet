@@ -15,104 +15,93 @@ namespace Microsoft.Bot.Builder.OAuth
     /// <summary>
     /// Used for properly constructing a User OAuth message with OAuthCard of the channel supports it, or SignInCard.
     /// </summary>
-    public class OAuthMessageClient
+    public class OAuthActivityFactory
     {
-        private readonly OAuthSettings _settings;
+        private readonly OAuthSettings _defaultSettings;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthMessageClient"/> class.
+        /// Initializes a new instance of the <see cref="OAuthActivityFactory"/> class.
         /// </summary>
-        public OAuthMessageClient() 
-        { 
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthMessageClient"/> class.
-        /// </summary>
-        /// <param name="settings">Settings specific to this <see cref="OAuthMessageClient"/>.</param>
-        public OAuthMessageClient(OAuthSettings settings) 
+        /// <param name="settings">Settings specific to this <see cref="OAuthActivityFactory"/>.</param>
+        public OAuthActivityFactory(OAuthSettings settings) 
         {
-            _settings = settings ?? throw new NullReferenceException(nameof(settings));
+            _defaultSettings = settings ?? throw new NullReferenceException(nameof(settings));
         }
 
         /// <summary>
         /// This method will properly construct an OAuthCard based on <see cref="OAuthSettings"/>
-        /// provided during class construction, or from the <paramref name="prompt"/> if present.
+        /// provided during class construction, or from the <paramref name="promptActivity"/> if present.
         /// </summary>
         /// <param name="activity">The incoming <see cref="Activity"/> to use while constructing the card and response activity.</param>
         /// <param name="userTokenClient">The <see cref="UserTokenClient"/> to use for retrieving the <see cref="SignInResource"/> for the card.</param>
         /// <param name="settings"><see cref="OAuthSettings"/> to use while constructing the OAuthCard.</param>
-        /// <param name="prompt"><see cref="IMessageActivity"/> to use for sending the OAuthCard. If this activity 
+        /// <param name="promptActivity"><see cref="Activity"/> to use for adding the OAuthCard as an attachment. If this activity 
         /// does not have an attachment containing an OAuthCard, then one will be added.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for async operations from this method.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<IMessageActivity> GetCardMessageFromActivityAsync(Activity activity, UserTokenClient userTokenClient, OAuthSettings settings = default(OAuthSettings), IMessageActivity prompt = default(IMessageActivity), CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<Activity> CreateOAuthActivityAsync(Activity activity, UserTokenClient userTokenClient, OAuthSettings settings = default(OAuthSettings), Activity promptActivity = default(Activity), CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
             userTokenClient = userTokenClient ?? throw new ArgumentNullException(nameof(userTokenClient));
-            settings = settings ?? _settings ?? throw new NullReferenceException(nameof(settings));
+            settings = settings ?? _defaultSettings;
 
             // Ensure prompt initialized
-            prompt ??= Activity.CreateMessageActivity();
+            promptActivity ??= Activity.CreateMessageActivity() as Activity;
 
-            if (prompt.Attachments == null)
+            if (promptActivity.Attachments == null)
             {
-                prompt.Attachments = new List<Attachment>();
+                promptActivity.Attachments = new List<Attachment>();
+            }
+            
+            // Set input hint
+            if (string.IsNullOrEmpty(promptActivity.InputHint))
+            {
+                promptActivity.InputHint = InputHints.AcceptingInput;
             }
 
             // Append appropriate card if missing
             if (!ChannelSupportsOAuthCard(activity.ChannelId))
             {
-                if (!prompt.Attachments.Any(a => a.Content is SigninCard))
-                {
-                    var signInResource = await userTokenClient.GetSignInResourceAsync(settings.ConnectionName, activity, null, cancellationToken).ConfigureAwait(false);
-                    prompt.Attachments.Add(new Attachment
-                    {
-                        ContentType = SigninCard.ContentType,
-                        Content = new SigninCard
-                        {
-                            Text = settings.Text,
-                            Buttons = new[]
-                            {
-                                new CardAction
-                                {
-                                    Title = settings.Title,
-                                    Value = signInResource.SignInLink,
-                                    Type = ActionTypes.Signin,
-                                },
-                            },
-                        },
-                    });
-                }
+                await AddSignInCardToActivityAsync(promptActivity, activity, userTokenClient, settings, cancellationToken).ConfigureAwait(false);
             }
-            else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
+            else
+            {
+                await AddOAuthCardToActivityAsync(promptActivity, activity, userTokenClient, settings, cancellationToken).ConfigureAwait(false);
+            }
+
+            return promptActivity;
+        }
+
+        private static async Task AddOAuthCardToActivityAsync(Activity promptActivity, Activity originalActivity, UserTokenClient userTokenClient, OAuthSettings settings, CancellationToken cancellationToken)
+        {
+            if (!promptActivity.Attachments.Any(a => a.Content is OAuthCard))
             {
                 var cardActionType = ActionTypes.Signin;
-                var signInResource = await userTokenClient.GetSignInResourceAsync(settings.ConnectionName, activity, null, cancellationToken).ConfigureAwait(false);
+                var signInResource = await userTokenClient.GetSignInResourceAsync(settings.ConnectionName, originalActivity, null, cancellationToken).ConfigureAwait(false);
                 var value = signInResource.SignInLink;
 
                 // use the SignInLink when 
                 //   in speech channel or
                 //   bot is a skill or
                 //   an extra OAuthAppCredentials is being passed in
-                if (activity.IsFromStreamingConnection() ||
+                if (originalActivity.IsFromStreamingConnection() ||
 
                     // TODO: support skills with emulator
                     //(turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && botIdentity.Claims.IsSkillClaim()) ||
                     settings.OAuthAppCredentials != null)
                 {
-                    if (activity.ChannelId == Channels.Emulator)
+                    if (originalActivity.ChannelId == Channels.Emulator)
                     {
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
                 else if ((settings.ShowSignInLink != null && settings.ShowSignInLink == false) ||
-                    (settings.ShowSignInLink == null && !ChannelRequiresSignInLink(activity.ChannelId)))
+                    (settings.ShowSignInLink == null && !ChannelRequiresSignInLink(originalActivity.ChannelId)))
                 {
                     value = null;
                 }
 
-                prompt.Attachments.Add(new Attachment
+                promptActivity.Attachments.Add(new Attachment
                 {
                     ContentType = OAuthCard.ContentType,
                     Content = new OAuthCard
@@ -133,14 +122,31 @@ namespace Microsoft.Bot.Builder.OAuth
                     },
                 });
             }
+        }
 
-            // Set input hint
-            if (string.IsNullOrEmpty(prompt.InputHint))
+        private static async Task AddSignInCardToActivityAsync(Activity promptActivity, Activity originalActivity, UserTokenClient userTokenClient, OAuthSettings settings, CancellationToken cancellationToken)
+        {
+            if (!promptActivity.Attachments.Any(a => a.Content is SigninCard))
             {
-                prompt.InputHint = InputHints.AcceptingInput;
+                var signInResource = await userTokenClient.GetSignInResourceAsync(settings.ConnectionName, originalActivity, null, cancellationToken).ConfigureAwait(false);
+                promptActivity.Attachments.Add(new Attachment
+                {
+                    ContentType = SigninCard.ContentType,
+                    Content = new SigninCard
+                    {
+                        Text = settings.Text,
+                        Buttons = new[]
+                        {
+                                new CardAction
+                                {
+                                    Title = settings.Title,
+                                    Value = signInResource.SignInLink,
+                                    Type = ActionTypes.Signin,
+                                },
+                        },
+                    },
+                });
             }
-            
-            return prompt;
         }
 
         private static bool ChannelSupportsOAuthCard(string channelId)

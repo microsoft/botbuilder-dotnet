@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Security.Cryptography.X509Certificates;
-using AuthenticationBot;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;

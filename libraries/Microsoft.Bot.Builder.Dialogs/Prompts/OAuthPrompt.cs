@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
-        private readonly OAuthMessageClient _cardProvider;
+        private readonly OAuthActivityFactory _cardProvider;
         private readonly UserTokenResponseClient _userTokenResponseClient;
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _validator = validator;
-            _cardProvider = new OAuthMessageClient(_settings);
+            _cardProvider = new OAuthActivityFactory(_settings);
             _userTokenResponseClient = new UserTokenResponseClient(_settings);
         }
 
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Prompt user to login
-            var prompt = await _cardProvider.GetCardMessageFromActivityAsync(dc.Context.Activity, userTokenClient, _settings, prompt: opt?.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var prompt = await _cardProvider.CreateOAuthActivityAsync(dc.Context.Activity, userTokenClient, _settings, promptActivity: opt?.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }

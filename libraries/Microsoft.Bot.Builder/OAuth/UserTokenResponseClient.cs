@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.OAuth
                 result = tokenResponseObject?.ToObject<TokenResponse>();
 
                 // fixup the turnContext's state context if this was received from a skill host caller
-                if (state[PersistedCaller] is CallerInfo callerInfo)
+                if (state != default(IDictionary<string, object>) && state[PersistedCaller] is CallerInfo callerInfo)
                 {
                     // set the ServiceUrl to the skill host's Url
                     turnContext.Activity.ServiceUrl = callerInfo.CallerServiceUrl;
