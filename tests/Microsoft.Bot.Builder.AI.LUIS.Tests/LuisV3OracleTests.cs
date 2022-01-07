@@ -311,7 +311,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var userAgent = clientHandler.UserAgent;
 
             // And that we added the bot.builder package details.
-            Assert.Contains("Microsoft.Bot.Builder.AI.Luis/4", userAgent);
+            var majorVersion = typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version.Major;
+            Assert.Contains($"Microsoft.Bot.Builder.AI.Luis/{majorVersion}", userAgent);
         }
 
         [Fact]
