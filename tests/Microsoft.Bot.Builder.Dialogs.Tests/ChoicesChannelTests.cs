@@ -128,6 +128,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var supports = Channel.SupportsCardActions(Channels.Skype, 5);
             Assert.False(supports);
         }
+        
+        [Fact]
+        public void ShouldReturnTrueForSupportsCardActionsWithTeamsAnd50()
+        {
+            var supports = Channel.SupportsCardActions(Channels.Msteams, 50);
+            Assert.True(supports);
+        }
+
+        [Fact]
+        public void ShouldReturnFalseForSupportsCardActionsWithTeamsAnd51()
+        {
+            var supports = Channel.SupportsCardActions(Channels.Msteams, 51);
+            Assert.False(supports);
+        }
 
         [Fact]
         public void ShouldReturnFalseForHasMessageFeedWithCortana()
