@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Integration
     /// Contains settings used by the .NET integration APIs to initialize the <see cref="BotFrameworkAdapter"/>
     /// that processes the HTTP requests coming from the Bot Framework Service.
     /// </summary>
+    [Obsolete("Use `CloudAdapter` with `ConfigurationBotFrameworkAuthentication` instead to configure bot runtime.", false)]
     public class BotFrameworkOptions
     {
         /// <summary>
