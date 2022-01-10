@@ -10,6 +10,10 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
+    command: 'restore'
+    feedsToUse: 'select'
+    vstsFeed: 'SDK_v4/SDK_Dotnet_V4'
+    includeNuGetOrg: false
     restoreSolution: '$(Parameters.solution)'
     verbosityRestore: 'Detailed'
 

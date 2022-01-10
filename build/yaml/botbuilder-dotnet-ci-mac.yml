@@ -32,11 +32,13 @@ steps:
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
 
-- template: sdk_dotnet_v4-feed-setup-steps.yml
-
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
+    command: 'restore'
+    feedsToUse: 'select'
+    vstsFeed: 'SDK_v4/SDK_Dotnet_V4'
+    includeNuGetOrg: false
     restoreSolution: Microsoft.Bot.Builder-Standard.sln
 
 - task: DotNetCoreCLI@2
