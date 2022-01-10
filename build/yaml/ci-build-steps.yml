@@ -6,17 +6,15 @@ steps:
 # For the signed build, they should be settable at queue time. To set that up, define the variables in Azure on the Variables tab.
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
-  inputs:
-    versionSpec: 5.11
-
-- template: sdk_dotnet_v4-feed-setup-steps.yml
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
-    selectOrConfig: config
-    nugetConfigPath: $(Build.SourcesDirectory)\nuget.config
-    solution: '$(Parameters.solution)'
+    command: 'restore'
+    feedsToUse: 'select'
+    vstsFeed: 'SDK_Dotnet_V4_org'
+    includeNuGetOrg: false
+    restoreSolution: '$(Parameters.solution)'
 
 - task: VSBuild@1
   displayName: 'Build solution Microsoft.Bot.Builder.sln'
