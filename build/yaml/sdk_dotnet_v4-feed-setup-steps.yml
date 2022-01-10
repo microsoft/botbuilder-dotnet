@@ -1,0 +1,21 @@
+# Create nuget.config for SDK_DotNet_V4 feed.
+steps:
+- powershell: |
+    $file = "$(Build.SourcesDirectory)\nuget.config";
+
+    $content = @"
+    <?xml version="1.0" encoding="utf-8"?>
+    <configuration>
+      <packageSources>
+        <add key="SDK_Dotnet_V4" value="https://pkgs.dev.azure.com/FuseLabs/SDK_v4/_packaging/SDK_Dotnet_V4/nuget/v3/index.json" />
+      </packageSources>
+      <activePackageSource>
+        <add key="All" value="(Aggregate source)" />
+      </activePackageSource>
+    </configuration>
+
+    "@;
+
+    New-Item -Path $file -ItemType "file" -Value $content -Force;
+    '-------------'; get-content "$file"; '===================';
+  displayName: Create nuget.config for SDK_DotNet_V4 feed
