@@ -11,6 +11,7 @@ steps:
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: '$(Parameters.solution)'
+    verbosityRestore: 'Detailed'
 
 - task: VSBuild@1
   displayName: 'Build solution Microsoft.Bot.Builder.sln'

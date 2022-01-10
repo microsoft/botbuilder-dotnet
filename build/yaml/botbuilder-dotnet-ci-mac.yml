@@ -32,6 +32,8 @@ steps:
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
 
+- template: sdk_dotnet_v4-feed-setup-steps.yml
+
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
