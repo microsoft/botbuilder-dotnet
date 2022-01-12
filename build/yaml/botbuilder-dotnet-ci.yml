@@ -25,10 +25,11 @@ variables:
   PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
-#  DotNetCoverallsToken: define this in Azure
-#  GitHubCommentApiKey: define this in Azure
 #  ApiCompatExcludeClasses: (optional) define this in Azure
 #  DisableApiCompatibityValidation: (optional) define this in Azure
+#  DotNetCoverallsToken: define this in Azure
+#  GitHubCommentApiKey: define this in Azure
+#  SDK_Dotnet_V4_org_Url: define this in Azure
 
 # The following 2 stages run multi-configuration, multi-agent parallel jobs.
 # Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.

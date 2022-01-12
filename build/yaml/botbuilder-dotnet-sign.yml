@@ -23,6 +23,7 @@ variables:
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
 #  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+#  SDK_Dotnet_V4_org_Url: define this in Azure
 
 jobs:
 - job: Build_and_Sign
