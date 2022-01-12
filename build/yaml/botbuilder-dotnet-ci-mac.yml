@@ -46,12 +46,13 @@ steps:
   displayName: 'dotnet restore'
   inputs:
     command: 'restore'
-    restoreArguments: '--ignore-failed-sources'
     feedsToUse: 'select'
     feedRestore: 'SDK_Dotnet_V4_org'
     includeNuGetOrg: false
+    restoreArguments: '--ignore-failed-sources'
+    nobuild: true
     projects: Microsoft.Bot.Builder.sln
-    verbosityRestore: 'Detailed'
+    verbosityRestore: 'Normal'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
