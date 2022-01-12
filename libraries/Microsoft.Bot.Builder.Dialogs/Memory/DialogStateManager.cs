@@ -59,11 +59,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
                 // Add registrations from turn state
                 var resolvers = dc.Context.TurnState.Get<IEnumerable<IPathResolver>>();
-
-                // Get all of the component path resolvers.
-                foreach (var pathResolver in resolvers)
+                if (resolvers != null)
                 {
-                    Configuration.PathResolvers.Add(pathResolver);
+                    // Get all of the component path resolvers.
+                    foreach (var pathResolver in resolvers)
+                    {
+                        Configuration.PathResolvers.Add(pathResolver);
+                    }
                 }
             }
 
