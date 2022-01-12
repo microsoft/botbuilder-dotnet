@@ -62,10 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
         private const string PersistedCaller = "caller";
+        private const int DefaultTimeout = 60000 * 15; // 15 minutes in milliseconds
 
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthPrompt"/> class.
         /// </summary>
@@ -179,12 +180,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                         TokenExchangeResource = signInResource.TokenExchangeResource,
                     },
                 });
-            }
-
-            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
-            if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && settings.Timeout.HasValue)
-            {
-                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(settings.Timeout.Value));
             }
 
             // Set input hint
@@ -427,7 +422,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize state
-            var timeout = _settings.Timeout ?? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
+            var timeout = _settings.Timeout ?? DefaultTimeout;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
