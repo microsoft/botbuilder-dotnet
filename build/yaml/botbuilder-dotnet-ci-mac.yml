@@ -50,6 +50,7 @@ steps:
     feedRestore: 'SDK_Dotnet_V4_org'
     includeNuGetOrg: false
     projects: Microsoft.Bot.Builder.sln
+    restoreArguments: ignore-failed-sources
     verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
