@@ -146,9 +146,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserOAuth", "UserOAuth", "{63937BDB-F2F3-46B4-93C1-F65EECBDEE42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBotNoDialogs", "testbots\bot-authentication-nodialogs\AuthenticationBotNoDialogs.csproj", "{F17692A4-2C10-4E88-B749-F5023C214F5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBotNoDialogs", "testbots\AuthenticationBotNoDialogs\AuthenticationBotNoDialogs.csproj", "{F17692A4-2C10-4E88-B749-F5023C214F5B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBot", "testbots\bot-authentication\AuthenticationBot.csproj", "{7899869F-A615-478A-8AEF-50DB98E30A3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBot", "testbots\AuthenticationBot\AuthenticationBot.csproj", "{7899869F-A615-478A-8AEF-50DB98E30A3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
