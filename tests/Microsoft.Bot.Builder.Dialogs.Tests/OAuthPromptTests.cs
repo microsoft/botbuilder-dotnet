@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+                var prompt = new OAuthPrompt("abc", new OAuthPromptSettings() { ConnectionName = "test" });
                 var convoState = new ConversationState(new MemoryStorage());
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public async Task OAuthPromptBeginDialogWithNoPromptOptions()
         {
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
                 var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
                 var convoState = new ConversationState(new MemoryStorage());
@@ -573,7 +573,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Create new DialogSet
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings()));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { ConnectionName = "test" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -611,9 +611,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [InlineData(true, Channels.Msteams, true)] //Override: show link;  ChannelRequiresSingInLink() returns true; Result: show link
         public async Task OAuthPromptSignInLinkSettingsCases(bool? showSignInLinkValue, string channelId, bool shouldHaveSignInLink)
         {
-            var oAuthPromptSettings = new OAuthPromptSettings(); 
-            oAuthPromptSettings.ShowSignInLink = showSignInLinkValue;
-
+            var oAuthPromptSettings = new OAuthPromptSettings() { ConnectionName = "test", ShowSignInLink = showSignInLinkValue }; 
+            
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 

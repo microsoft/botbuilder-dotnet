@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.OAuth
         /// <param name="defaultConnectionName">Settings specific to this <see cref="UserTokenResponseClient"/>.</param>
         public UserTokenResponseClient(string defaultConnectionName) 
         {
-            _defaultConnectionName = defaultConnectionName ?? throw new NullReferenceException(nameof(defaultConnectionName));
+            _defaultConnectionName = defaultConnectionName ?? throw new ArgumentNullException(nameof(defaultConnectionName));
         }
 
         /// <summary>

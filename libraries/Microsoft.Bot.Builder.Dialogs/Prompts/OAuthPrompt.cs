@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize state
-            var timeout = _settings.Timeout <= 0 ? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds : _settings.Timeout;
+            var timeout = _settings.Timeout < 0 ? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds : _settings.Timeout;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
