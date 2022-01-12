@@ -40,7 +40,8 @@ steps:
     vstsFeed: 'SDK_Dotnet_V4_org'
     includeNuGetOrg: false
     restoreSolution: Microsoft.Bot.Builder-Standard.sln
-
+    verbosityRestore: 'Detailed'
+    
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
