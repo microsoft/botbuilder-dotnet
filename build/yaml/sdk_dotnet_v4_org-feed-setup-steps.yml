@@ -15,6 +15,7 @@ steps:
       </activePackageSource>
       <packageSourceCredentials>
           <SDK_Dotnet_V4_org>
+              <add key="Username" value="ado_pipeline" />
               <add key="ClearTextPassword" value="%SDK_Dotnet_V4_org_PAT%" />
           </SDK_Dotnet_V4_org>
       </packageSourceCredentials>
