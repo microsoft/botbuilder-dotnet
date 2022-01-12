@@ -13,12 +13,6 @@ steps:
       <activePackageSource>
         <add key="All" value="(Aggregate source)" />
       </activePackageSource>
-      <packageSourceCredentials>
-          <SDK_Dotnet_V4_org>
-              <add key="Username" value="v-brucehaley@microsoft.com" />
-              <add key="ClearTextPassword" value="%SDK_Dotnet_V4_org_PAT%" />
-          </SDK_Dotnet_V4_org>
-      </packageSourceCredentials>
     </configuration>
 
     "@;
