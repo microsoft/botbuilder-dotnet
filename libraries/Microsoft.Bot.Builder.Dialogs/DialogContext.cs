@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
+
 using Microsoft.Bot.Builder.Dialogs.Memory;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -205,7 +205,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.Insert(0, instance);
 
                 // Call dialog's BeginAsync() method
-                await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
                 return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             catch (Exception err)
@@ -359,7 +358,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
 
                     // Return result to previous dialog
-                    await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
                     return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
@@ -546,7 +544,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                         }
 
                         // Ask dialog to re-prompt if supported
-                        await this.DebuggerStepAsync(dialog, DialogEvents.RepromptDialog, cancellationToken).ConfigureAwait(false);
                         await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
                     }
                 }
@@ -641,7 +638,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (dialog != null)
                     {
-                        await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
                         return await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
                     }
                 }
@@ -704,7 +700,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog != null)
                 {
                     // Notify dialog of end
-                    await this.DebuggerStepAsync(dialog, "EndDialog", cancellationToken).ConfigureAwait(false);
                     await dialog.EndDialogAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
                 }
 

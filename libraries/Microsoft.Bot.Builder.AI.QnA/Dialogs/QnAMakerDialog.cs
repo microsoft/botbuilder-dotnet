@@ -94,10 +94,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// knowledge base; or null to apply none.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
-        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
-        /// of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
-        /// in the source file at which the method is called.</param>
         public QnAMakerDialog(
             string dialogId,
             string knowledgeBaseId,
@@ -110,12 +106,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             List<Metadata> strictFilters = null,
-            HttpClient httpClient = null,
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+            HttpClient httpClient = null)
             : base(dialogId)
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
             this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
             this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
             this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
@@ -155,10 +148,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// knowledge base; or null to apply none.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
-        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
-        /// of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
-        /// in the source file at which the method is called.</param>
         public QnAMakerDialog(
             string knowledgeBaseId,
             string endpointKey,
@@ -170,9 +159,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             List<Metadata> strictFilters = null,
-            HttpClient httpClient = null,
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+            HttpClient httpClient = null)
             : this(
                 nameof(QnAMakerDialog),
                 knowledgeBaseId,
@@ -185,9 +172,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 top,
                 cardNoMatchResponse,
                 strictFilters,
-                httpClient,
-                sourceFilePath,
-                sourceLineNumber)
+                httpClient)
         {
         }
 
@@ -195,16 +180,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
         /// The JSON serializer uses this constructor to deserialize objects of this class.
         /// </summary>
-        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
-        /// of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
-        /// in the source file at which the method is called.</param>
         [JsonConstructor]
-        public QnAMakerDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public QnAMakerDialog()
             : base(nameof(QnAMakerDialog))
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-
             // add waterfall steps
             this.AddStep(CallGenerateAnswerAsync);
             this.AddStep(CallTrainAsync);

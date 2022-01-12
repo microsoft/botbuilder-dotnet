@@ -48,11 +48,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
         /// </summary>
-        /// <param name="callerLine">Caller line.</param>
-        /// <param name="callerPath">Caller path.</param>
         [JsonConstructor]
-        public OrchestratorRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(callerPath, callerLine)
+        public OrchestratorRecognizer()
         {
         }
 
