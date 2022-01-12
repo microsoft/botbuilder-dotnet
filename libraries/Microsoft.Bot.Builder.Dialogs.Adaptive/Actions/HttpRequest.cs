@@ -407,7 +407,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{Method} {Url?.ToString()}]";
+            return $"{GetType().Name}[{Method}]";
         }
 
         /// <summary>
