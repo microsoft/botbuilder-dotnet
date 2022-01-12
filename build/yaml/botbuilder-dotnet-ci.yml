@@ -43,6 +43,7 @@ stages:
       BuildConfiguration: Debug-Windows
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
     steps:
+    - template: sdk_dotnet_v4_org-feed-setup-steps.yml
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
   - job: Debug_Windows_Configuration_31
@@ -50,6 +51,7 @@ stages:
       BuildConfiguration: Debug-Windows
       BuildTarget: 'netcoreapp31' # set the TargetFramework property for tests to use netcoreapp3.1
     steps:
+    - template: sdk_dotnet_v4_org-feed-setup-steps.yml
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
   - job: Release_Windows_Configuration_21
@@ -58,6 +60,7 @@ stages:
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
       PublishCoverage: false
     steps:
+    - template: sdk_dotnet_v4_org-feed-setup-steps.yml
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
     - template: ci-component-detection-steps.yml
@@ -67,6 +70,7 @@ stages:
       BuildTarget: 'netcoreapp31' # set the TargetFramework property for tests to use netcoreapp3.1
       PublishCoverage: true
     steps:
+    - template: sdk_dotnet_v4_org-feed-setup-steps.yml
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
     - template: ci-component-detection-steps.yml
