@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
-        private readonly OAuthActivityFactory _cardProvider;
+        private readonly UserAuthActivityFactory _cardProvider;
         private readonly UserTokenResponseClient _userTokenResponseClient;
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _validator = validator;
-            _cardProvider = new OAuthActivityFactory(_settings);
-            _userTokenResponseClient = new UserTokenResponseClient(_settings);
+            _cardProvider = new UserAuthActivityFactory(_settings);
+            _userTokenResponseClient = new UserTokenResponseClient(_settings.ConnectionName);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize state
-            var timeout = _settings.Timeout ?? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
+            var timeout = _settings.Timeout <= 0 ? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds : _settings.Timeout;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
@@ -158,12 +158,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 throw new NotSupportedException("OAuth prompt is not supported by the current adapter");
-            }
-
-            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
-            if (!dc.Context.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && _settings.Timeout.HasValue)
-            {
-                dc.Context.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(_settings.Timeout.Value));
             }
 
             // Prompt user to login
@@ -208,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Recognize token
-            var tokenResponse = await _userTokenResponseClient.RecognizeTokenAsync(dc.Context, _settings, state, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var tokenResponse = await _userTokenResponseClient.RecognizeTokenAsync(dc.Context, _settings.ConnectionName, state, cancellationToken: cancellationToken).ConfigureAwait(false);
             
             var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
             var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();

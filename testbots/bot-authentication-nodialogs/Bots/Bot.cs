@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples
         private readonly string _connectionName;
         private readonly BotState _userState;
         private readonly IStatePropertyAccessor<bool> _userLoggingInProperty;
-        private readonly OAuthActivityFactory _oauthCardProvider;
+        private readonly UserAuthActivityFactory _oauthCardProvider;
         private readonly UserTokenResponseClient _userTokenResponseClient;
 
         public Bot(IConfiguration configuration, ConversationState conversationState, UserState userState)
@@ -38,9 +38,9 @@ namespace Microsoft.BotBuilderSamples
             _userState = userState;
             _connectionName = configuration[ConfigurationConnectionName].ToString();
             _userLoggingInProperty = conversationState.CreateProperty<bool>(UserLoggingInPropertyName);
-            var oauthSettings = new OAuthSettings { ConnectionName = _connectionName, Title = "Login", Text = "Please Sign In to proceed..." };
-            _oauthCardProvider = new OAuthActivityFactory(oauthSettings);
-            _userTokenResponseClient = new UserTokenResponseClient(oauthSettings);
+            var oauthSettings = new UserAuthSettings { ConnectionName = _connectionName, Title = "Login", Text = "Please Sign In to proceed..." };
+            _oauthCardProvider = new UserAuthActivityFactory(oauthSettings);
+            _userTokenResponseClient = new UserTokenResponseClient(oauthSettings.ConnectionName);
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

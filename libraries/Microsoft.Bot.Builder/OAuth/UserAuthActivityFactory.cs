@@ -13,33 +13,33 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.OAuth
 {
     /// <summary>
-    /// Used for properly constructing a User OAuth message with OAuthCard of the channel supports it, or SignInCard.
+    /// Used for properly constructing a User OAuth message with OAuthCard if the channel supports it, or SignInCard.
     /// </summary>
-    public class OAuthActivityFactory
+    public class UserAuthActivityFactory
     {
-        private readonly OAuthSettings _defaultSettings;
+        private readonly UserAuthSettings _defaultSettings;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthActivityFactory"/> class.
+        /// Initializes a new instance of the <see cref="UserAuthActivityFactory"/> class.
         /// </summary>
-        /// <param name="settings">Settings specific to this <see cref="OAuthActivityFactory"/>.</param>
-        public OAuthActivityFactory(OAuthSettings settings) 
+        /// <param name="settings">Settings specific to this <see cref="UserAuthActivityFactory"/>.</param>
+        public UserAuthActivityFactory(UserAuthSettings settings) 
         {
             _defaultSettings = settings ?? throw new NullReferenceException(nameof(settings));
         }
 
         /// <summary>
-        /// This method will properly construct an OAuthCard based on <see cref="OAuthSettings"/>
+        /// This method will properly construct an OAuthCard based on <see cref="UserAuthSettings"/>
         /// provided during class construction, or from the <paramref name="promptActivity"/> if present.
         /// </summary>
         /// <param name="activity">The incoming <see cref="Activity"/> to use while constructing the card and response activity.</param>
         /// <param name="userTokenClient">The <see cref="UserTokenClient"/> to use for retrieving the <see cref="SignInResource"/> for the card.</param>
-        /// <param name="settings"><see cref="OAuthSettings"/> to use while constructing the OAuthCard.</param>
+        /// <param name="settings"><see cref="UserAuthSettings"/> to use while constructing the OAuthCard.</param>
         /// <param name="promptActivity"><see cref="Activity"/> to use for adding the OAuthCard as an attachment. If this activity 
         /// does not have an attachment containing an OAuthCard, then one will be added.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use for async operations from this method.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<Activity> CreateOAuthActivityAsync(Activity activity, UserTokenClient userTokenClient, OAuthSettings settings = default(OAuthSettings), Activity promptActivity = default(Activity), CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<Activity> CreateOAuthActivityAsync(Activity activity, UserTokenClient userTokenClient, UserAuthSettings settings = default(UserAuthSettings), Activity promptActivity = default(Activity), CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
             userTokenClient = userTokenClient ?? throw new ArgumentNullException(nameof(userTokenClient));
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.OAuth
             return promptActivity;
         }
 
-        private static async Task AddOAuthCardToActivityAsync(Activity promptActivity, Activity originalActivity, UserTokenClient userTokenClient, OAuthSettings settings, CancellationToken cancellationToken)
+        private static async Task AddOAuthCardToActivityAsync(Activity promptActivity, Activity originalActivity, UserTokenClient userTokenClient, UserAuthSettings settings, CancellationToken cancellationToken)
         {
             if (!promptActivity.Attachments.Any(a => a.Content is OAuthCard))
             {
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.OAuth
             }
         }
 
-        private static async Task AddSignInCardToActivityAsync(Activity promptActivity, Activity originalActivity, UserTokenClient userTokenClient, OAuthSettings settings, CancellationToken cancellationToken)
+        private static async Task AddSignInCardToActivityAsync(Activity promptActivity, Activity originalActivity, UserTokenClient userTokenClient, UserAuthSettings settings, CancellationToken cancellationToken)
         {
             if (!promptActivity.Attachments.Any(a => a.Content is SigninCard))
             {

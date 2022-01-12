@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -22,22 +21,15 @@ namespace Microsoft.Bot.Builder.OAuth
     public class UserTokenResponseClient
     {
         private const string PersistedCaller = "caller";
-        private readonly OAuthSettings _settings;
+        private readonly string _defaultConnectionName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserTokenResponseClient"/> class.
         /// </summary>
-        public UserTokenResponseClient() 
-        { 
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserTokenResponseClient"/> class.
-        /// </summary>
-        /// <param name="settings">Settings specific to this <see cref="UserTokenResponseClient"/>.</param>
-        public UserTokenResponseClient(OAuthSettings settings) 
+        /// <param name="defaultConnectionName">Settings specific to this <see cref="UserTokenResponseClient"/>.</param>
+        public UserTokenResponseClient(string defaultConnectionName) 
         {
-            _settings = settings ?? throw new NullReferenceException(nameof(settings));
+            _defaultConnectionName = defaultConnectionName ?? throw new NullReferenceException(nameof(defaultConnectionName));
         }
 
         /// <summary>
@@ -72,13 +64,13 @@ namespace Microsoft.Bot.Builder.OAuth
         /// </summary>
         /// <param name="turnContext"><see cref="ITurnContext"/> to use for finalizing the user OAuth flow and
         /// returning the appropriate TokenResponse, or sending the correct invoke response.</param>
-        /// <param name="settings"><see cref="OAuthSettings"/>To use while retrieving the token response.</param>
+        /// <param name="connectionName">The Azure Bot Service oauth connection name to use while retrieving the token response.</param>
         /// <param name="state">Parent dialog state, which might contain CallerInfo if it had previously been set.</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/> to use for this async operation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<TokenResponse> RecognizeTokenAsync(ITurnContext turnContext, OAuthSettings settings = default(OAuthSettings), IDictionary<string, object> state = default(IDictionary<string, object>), CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TokenResponse> RecognizeTokenAsync(ITurnContext turnContext, string connectionName = default(string), IDictionary<string, object> state = default(IDictionary<string, object>), CancellationToken cancellationToken = default(CancellationToken))
         {
-            settings = settings ?? _settings ?? throw new NullReferenceException(nameof(settings));
+            connectionName = connectionName ?? _defaultConnectionName;
             TokenResponse result = null;
             if (IsTokenResponseEvent(turnContext))
             {
@@ -120,7 +112,7 @@ namespace Microsoft.Bot.Builder.OAuth
                 // progress) retry in that case.
                 try
                 {
-                    result = await GetUserTokenAsync(turnContext, settings, magicCode, cancellationToken).ConfigureAwait(false);
+                    result = await GetUserTokenAsync(turnContext, connectionName, magicCode, cancellationToken).ConfigureAwait(false);
 
                     if (result != null)
                     {
@@ -150,11 +142,11 @@ namespace Microsoft.Bot.Builder.OAuth
                         new TokenExchangeInvokeResponse
                         {
                             Id = null,
-                            ConnectionName = settings.ConnectionName,
+                            ConnectionName = connectionName,
                             FailureDetail = "The bot received an InvokeActivity that is missing a TokenExchangeInvokeRequest value. This is required to be sent with the InvokeActivity.",
                         }, cancellationToken).ConfigureAwait(false);
                 }
-                else if (tokenExchangeRequest.ConnectionName != settings.ConnectionName)
+                else if (tokenExchangeRequest.ConnectionName != connectionName)
                 {
                     await SendInvokeResponseAsync(
                         turnContext,
@@ -162,7 +154,7 @@ namespace Microsoft.Bot.Builder.OAuth
                         new TokenExchangeInvokeResponse
                         {
                             Id = tokenExchangeRequest.Id,
-                            ConnectionName = settings.ConnectionName,
+                            ConnectionName = connectionName,
                             FailureDetail = "The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName that does not match the ConnectionName expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
                         }, cancellationToken).ConfigureAwait(false);
                 }
@@ -171,7 +163,7 @@ namespace Microsoft.Bot.Builder.OAuth
                     TokenResponse tokenExchangeResponse = null;
                     try
                     {
-                        tokenExchangeResponse = await ExchangeTokenAsync(turnContext, settings, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
+                        tokenExchangeResponse = await ExchangeTokenAsync(turnContext, connectionName, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
                     }
 #pragma warning disable CA1031 // Do not catch general exception types (ignoring, see comment below)
                     catch
@@ -190,7 +182,7 @@ namespace Microsoft.Bot.Builder.OAuth
                             new TokenExchangeInvokeResponse
                             {
                                 Id = tokenExchangeRequest.Id,
-                                ConnectionName = settings.ConnectionName,
+                                ConnectionName = connectionName,
                                 FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
                             }, cancellationToken).ConfigureAwait(false);
                     }
@@ -202,7 +194,7 @@ namespace Microsoft.Bot.Builder.OAuth
                             new TokenExchangeInvokeResponse
                             {
                                 Id = tokenExchangeRequest.Id,
-                                ConnectionName = settings.ConnectionName,
+                                ConnectionName = connectionName,
                             }, cancellationToken).ConfigureAwait(false);
 
                         result = new TokenResponse
@@ -223,7 +215,7 @@ namespace Microsoft.Bot.Builder.OAuth
                     var matched = magicCodeRegex.Match(turnContext.Activity.Text);
                     if (matched.Success)
                     {
-                        result = await GetUserTokenAsync(turnContext, settings, magicCode: matched.Value, cancellationToken).ConfigureAwait(false);
+                        result = await GetUserTokenAsync(turnContext, connectionName, magicCode: matched.Value, cancellationToken).ConfigureAwait(false);
                     }
                 }
             }
@@ -277,12 +269,12 @@ namespace Microsoft.Bot.Builder.OAuth
                 }, cancellationToken).ConfigureAwait(false);
         }
 
-        private static async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, OAuthSettings settings, string magicCode, CancellationToken cancellationToken)
+        private static async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken)
         {
             var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
             if (userTokenClient != null)
             {
-                return await userTokenClient.GetUserTokenAsync(turnContext.Activity.From.Id, settings.ConnectionName, turnContext.Activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
+                return await userTokenClient.GetUserTokenAsync(turnContext.Activity.From.Id, connectionName, turnContext.Activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -290,14 +282,14 @@ namespace Microsoft.Bot.Builder.OAuth
             }
         }
 
-        private static async Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, OAuthSettings settings, TokenExchangeRequest tokenExchangeRequest, CancellationToken cancellationToken)
+        private static async Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, TokenExchangeRequest tokenExchangeRequest, CancellationToken cancellationToken)
         {
             var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
             if (userTokenClient != null)
             {
                 var userId = turnContext.Activity.From.Id;
                 var channelId = turnContext.Activity.ChannelId;
-                return await userTokenClient.ExchangeTokenAsync(userId, settings.ConnectionName, channelId, tokenExchangeRequest, cancellationToken).ConfigureAwait(false);
+                return await userTokenClient.ExchangeTokenAsync(userId, connectionName, channelId, tokenExchangeRequest, cancellationToken).ConfigureAwait(false);
             }
             else
             {
