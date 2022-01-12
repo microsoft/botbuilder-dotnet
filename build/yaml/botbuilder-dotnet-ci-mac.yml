@@ -41,11 +41,12 @@ steps:
     includeNuGetOrg: false
     restoreSolution: Microsoft.Bot.Builder-Standard.sln
     verbosityRestore: 'Detailed'
-    
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
+    verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
