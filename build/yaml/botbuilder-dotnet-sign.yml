@@ -51,7 +51,6 @@ jobs:
        Preview: $(PreviewPackageVersion)
     continueOnError: true
 
-  - template: sdk_dotnet_v4_org-feed-setup-steps.yml
   - template: ci-build-steps.yml
   - template: sign-steps.yml
 #  - template: functional-test-setup-steps.yml
