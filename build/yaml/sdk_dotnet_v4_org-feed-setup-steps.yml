@@ -8,7 +8,7 @@ steps:
     <configuration>
       <packageSources>
         <clear />
-        <add key="SDK_Dotnet_V4_org" value="https://pkgs.dev.azure.com/FuseLabs/_packaging/SDK_Dotnet_V4_org/nuget/v3/index.json" />
+        <add key="SDK_Dotnet_V4_org" value="$(SDK_Dotnet_V4_org_Url)" />
       </packageSources>
       <activePackageSource>
         <add key="All" value="(Aggregate source)" />
