@@ -16,7 +16,6 @@ steps:
     feedsToUse: 'config'
     nugetConfigPath: 'nuget.config'
     restoreSolution: '$(Parameters.solution)'
-  continueOnError: true
 
 - task: VSBuild@1
   displayName: 'Build solution Microsoft.Bot.Builder.sln'
