@@ -37,7 +37,11 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
+    command: 'restore'
+    feedsToUse: 'config'
+    nugetConfigPath: 'nuget.config'
     restoreSolution: Microsoft.Bot.Builder-Standard.sln
+  continueOnError: true
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
