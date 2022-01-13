@@ -46,34 +46,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 Configuration = new DialogStateManagerConfiguration();
 
-                // Legacy memory scopes from static ComponentRegistration which is now obsolete.
-                var memoryScopes = ComponentRegistration.Components
-                    .OfType<IComponentMemoryScopes>()
-                    .SelectMany(c => c.GetMemoryScopes())
-                    .ToList();
-
-                // Merge new registrations from turn state
-                memoryScopes.AddRange(dc.Context.TurnState.Get<IEnumerable<MemoryScope>>() ?? Enumerable.Empty<MemoryScope>());
-
-                // Get all of the component memory scopes.
-                foreach (var scope in memoryScopes)
+                // Add new registrations from turn state
+                var scopes = dc.Context.TurnState.Get<IEnumerable<MemoryScope>>();
+                if (scopes != null)
                 {
-                    Configuration.MemoryScopes.Add(scope);
+                    // Get all of the component memory scopes.
+                    foreach (var scope in scopes)
+                    {
+                        Configuration.MemoryScopes.Add(scope);
+                    }
                 }
 
-                // Legacy memory scopes from static ComponentRegistration which is now obsolete.
-                var pathResolvers = ComponentRegistration.Components
-                    .OfType<IComponentPathResolvers>()
-                    .SelectMany(c => c.GetPathResolvers())
-                    .ToList();
-
-                // Merge new registrations from turn state
-                pathResolvers.AddRange(dc.Context.TurnState.Get<IEnumerable<IPathResolver>>() ?? Enumerable.Empty<IPathResolver>());
-
-                // Get all of the component path resolvers.
-                foreach (var pathResolver in pathResolvers)
+                // Add registrations from turn state
+                var resolvers = dc.Context.TurnState.Get<IEnumerable<IPathResolver>>();
+                if (resolvers != null)
                 {
-                    Configuration.PathResolvers.Add(pathResolver);
+                    // Get all of the component path resolvers.
+                    foreach (var pathResolver in resolvers)
+                    {
+                        Configuration.PathResolvers.Add(pathResolver);
+                    }
                 }
             }
 
