@@ -38,7 +38,7 @@ steps:
     restoreSolution: 'Microsoft.Bot.Builder-Standard.sln'
     vstsFeed: '4fcb3288-f1c5-4851-9385-274a6f808698'
     includeNuGetOrg: false
-    verbosityRestore: Detailed
+    verbosityRestore: Normal
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
