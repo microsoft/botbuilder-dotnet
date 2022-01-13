@@ -32,13 +32,16 @@ steps:
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
 
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
+
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: 'Microsoft.Bot.Builder-Standard.sln'
-    #vstsFeed: '4fcb3288-f1c5-4851-9385-274a6f808698'
-    #includeNuGetOrg: false
-    #verbosityRestore: Normal
+    vstsFeed: '4fcb3288-f1c5-4851-9385-274a6f808698'
+    includeNuGetOrg: false
+    verbosityRestore: Detailed
 
 #- task: DotNetCoreCLI@2
 #  displayName: 'dotnet nuget list source'
@@ -47,7 +50,7 @@ steps:
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
-    arguments: ' --source https://pkgs.dev.azure.com/FuseLabs/_packaging/SDK_Dotnet_V4_org/nuget/v3/index.json'
+#arguments: ' --source https://pkgs.dev.azure.com/FuseLabs/_packaging/SDK_Dotnet_V4_org/nuget/v3/index.json'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
