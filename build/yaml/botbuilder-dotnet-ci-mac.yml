@@ -34,6 +34,8 @@ steps:
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
+  inputs:
+    nuGetServiceConnections: SDK_Dotnet_V4_org Connection
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
@@ -43,14 +45,10 @@ steps:
     includeNuGetOrg: false
     verbosityRestore: Detailed
 
-#- task: DotNetCoreCLI@2
-#  displayName: 'dotnet nuget list source'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
-#arguments: ' --source https://pkgs.dev.azure.com/FuseLabs/_packaging/SDK_Dotnet_V4_org/nuget/v3/index.json'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
