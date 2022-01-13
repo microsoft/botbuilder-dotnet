@@ -41,9 +41,13 @@ steps:
     verbosityRestore: Normal
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet nuget list source'
+
+- task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
+    arguments: ' --no-restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
