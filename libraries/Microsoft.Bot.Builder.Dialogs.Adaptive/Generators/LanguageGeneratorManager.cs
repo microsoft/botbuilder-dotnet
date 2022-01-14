@@ -50,6 +50,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 LoadAsync().GetAwaiter().GetResult();
             }
+            else
+            {
+                LazyLoad();
+            }
 
             // listen for resource changes
             _resourceExplorer.Changed += ResourceExplorer_Changed;
@@ -62,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Generators.
         /// </value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
+        public ConcurrentDictionary<string, Lazy<LanguageGenerator>> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, Lazy<LanguageGenerator>>(StringComparer.OrdinalIgnoreCase);
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
@@ -91,6 +95,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     return new LGResource(resource.Id, resource.FullName, content);
                 }
             };
+        }
+
+        /// <summary>
+        /// Lazy load generator managet.
+        /// </summary>
+        internal void LazyLoad()
+        {
+            LazyLoad(_resourceExplorer.GetResources("lg"));
+        }
+
+        /// <summary>
+        /// Lazy load generator managet.
+        /// </summary>
+        /// <param name="resources">Resources to load.</param>
+        internal void LazyLoad(IEnumerable<Resource> resources)
+        {
+            // Create one LanguageGenerator for each resource.
+            foreach (var resource in resources)
+            {
+                LanguageGenerators[resource.Id] = new Lazy<LanguageGenerator>(() =>
+                 new TemplateEngineLanguageGenerator(resource, _multilanguageResources));
+            }
         }
 
         /// <summary>
@@ -133,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             // Build our language generator table with the fully loaded generators.
             foreach (var entry in loadTaskMap)
             {
-                LanguageGenerators[entry.Key.Id] = entry.Value.Generator;
+                LanguageGenerators[entry.Key.Id] = new Lazy<LanguageGenerator>(() => entry.Value.Generator);
             }
         }
 
