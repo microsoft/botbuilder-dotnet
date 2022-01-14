@@ -3,6 +3,8 @@
 #
 
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+#  SDK_Dotnet_V4_org_Url: define this in Azure
+
 name: $(Build.BuildId)
 
 pool:
@@ -37,19 +39,11 @@ steps:
   inputs:
     nuGetServiceConnections: SDK_Dotnet_V4_org Connection
 
-#- task: NuGetCommand@2
-# displayName: 'NuGet restore'
-# inputs:
-#   restoreSolution: 'Microsoft.Bot.Builder-Standard.sln'
-#   vstsFeed: '4fcb3288-f1c5-4851-9385-274a6f808698'
-#   includeNuGetOrg: false
-#   verbosityRestore: Detailed
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
-    arguments: ' --source https://pkgs.dev.azure.com/FuseLabs/_packaging/SDK_Dotnet_V4_org/nuget/v3/index.json'
+    arguments: ' --source $(SDK_Dotnet_V4_org_Url)'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
