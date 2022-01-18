@@ -368,19 +368,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         }
 
         /// <inheritdoc/>
-        public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
-        {
-            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
-            if (interrupted)
-            {
-                // if qnamaker was interrupted then end the qnamaker dialog
-                return dc.EndDialogAsync(cancellationToken: cancellationToken);
-            }
-
-            return base.ContinueDialogAsync(dc, cancellationToken);
-        }
-
-        /// <inheritdoc/>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (dc.Context.Activity.Type == ActivityTypes.Message)

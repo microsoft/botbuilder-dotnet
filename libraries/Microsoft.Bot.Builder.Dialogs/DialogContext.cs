@@ -33,8 +33,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack = state.DialogStack;
             State = new DialogStateManager(this);
             Services = new TurnContextStateCollection();
-
-            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
 
         /// <summary>
@@ -696,9 +694,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // Pop dialog off stack
                 Stack.RemoveAt(0);
-
-                // set Turn.LastResult to result
-                ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LastResult, result);
             }
         }
 
