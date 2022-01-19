@@ -8,8 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Bot.Builder.Dialogs.Memory;
-
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
@@ -31,7 +29,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            State = new DialogStateManager(this);
             Services = new TurnContextStateCollection();
         }
 
@@ -135,16 +132,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return null;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the DialogStateManager which manages view of all memory scopes.
-        /// </summary>
-        /// <value>
-        /// DialogStateManager with unified memory view of all memory scopes.
-        /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public DialogStateManager State { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets the services collection which is contextual to this dialog context.
@@ -647,17 +634,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            const string TurnLocaleProperty = "turn.locale";
             string locale;
 
             try
             {
-                // turn.locale is the highest precedence.
-                if (State.TryGetValue<string>(TurnLocaleProperty, out locale) && !string.IsNullOrEmpty(locale))
-                {
-                    return new CultureInfo(locale).Name;
-                }
-
                 // If turn.locale was not populated, fall back to activity locale
                 locale = Context.Activity?.Locale;
 
@@ -723,8 +703,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     { nameof(ActiveDialog), this.ActiveDialog?.Id },
                     { nameof(Parent), this.Parent?.ActiveDialog?.Id },
-                    { nameof(Stack), stack },
-                    { nameof(State), this.State.GetMemorySnapshot() }
+                    { nameof(Stack), stack }
                 });
             }
         }

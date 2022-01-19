@@ -23,17 +23,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
     public class QnAMakerDialog : WaterfallDialog
     {
         /// <summary>
-        /// The declarative name for this type.
+        /// The path for storing and retrieving QnA Maker suggested questions data.
         /// </summary>
-        /// <remarks>Used by the framework to serialize and deserialize an instance of this type to JSON.</remarks>
-        [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.QnAMakerDialog";
+        /// <remarks>This represents suggestions returned from QnA Maker when ActiveLearningEnabled is enabled.
+        /// It is stored within the active dialog's state.
+        /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
+        protected const string SuggestedQuestionsData = "suggestedQuestions";
 
         /// <summary>
         /// The path for storing and retrieving QnA Maker context data.
         /// </summary>
         /// <remarks>This represents context about the current or previous call to QnA Maker.
-        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It is stored within the active dialog's state.
         /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
         protected const string QnAContextData = "qnaContextData";
 
@@ -385,11 +386,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     return true;
                 }
 
-                var suggestedQuestions = dc.State.GetValue<List<string>>($"this.suggestedQuestions");
-                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
+                if (dc.ActiveDialog.State.TryGetValue(SuggestedQuestionsData, out object value))
                 {
-                    // it matches one of the suggested actions, we like that.
-                    return true;
+                    var suggestedQuestions = value as List<string>; 
+                    if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
+                    {
+                        // it matches one of the suggested actions, we like that.
+                        return true;
+                    }
                 }
 
                 // Calling QnAMaker to get response.
@@ -399,7 +403,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 var response = await qnaClient.GetAnswersRawAsync(dc.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
 
                 // cache result so step doesn't have to do it again, this is a turn cache and we use hashcode so we don't conflict with any other qnamakerdialogs out there.
-                dc.State.SetValue($"turn.qnaresult{this.GetHashCode()}", response);
+                dc.ActiveDialog.State[$"qnaresult{this.GetHashCode()}"] = response;
 
                 // disable interruption if we have answers.
                 return response.Answers.Any();
@@ -470,7 +474,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         {
             return new QnADialogResponseOptions
             {
-                NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
+                NoAnswer = await this.NoAnswer.BindAsync(dc, dc.ActiveDialog.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText ?? DefaultCardNoMatchText,
                 CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
@@ -560,7 +564,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // clear suggestedQuestions between turns.
-            stepContext.State.RemoveValue($"this.suggestedQuestions");
+            stepContext.ActiveDialog.State.Remove(SuggestedQuestionsData);
 
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
             ResetOptions(stepContext, dialogOptions);
@@ -569,11 +573,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;
 
             // Calling QnAMaker to get response.
+            QueryResults response = null;
             var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
-            var response = stepContext.State.GetValue<QueryResults>($"turn.qnaresult{this.GetHashCode()}");
-            if (response == null)
+            if (stepContext.ActiveDialog.State.TryGetValue($"qnaresult{this.GetHashCode()}", out object value))
             {
-                response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
+                response = value as QueryResults;
+                if (response == null)
+                {
+                    response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
+                }
             }
 
             // Resetting previous query.
@@ -604,8 +612,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
-                    ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
-                    stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
+                    stepContext.ActiveDialog.State[Options] = dialogOptions;
+                    stepContext.ActiveDialog.State[SuggestedQuestionsData] = suggestedQuestions;
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
