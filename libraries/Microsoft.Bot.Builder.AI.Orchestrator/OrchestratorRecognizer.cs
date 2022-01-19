@@ -48,14 +48,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
         /// </summary>
-        [JsonConstructor]
-        public OrchestratorRecognizer()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
-        /// </summary>
         /// <param name="modelFolder">Specifies the base model folder.</param>
         /// <param name="snapshotFile">Specifies full path to the snapshot file.</param>
         /// <param name="resolverExternal">External label resolver object.</param>

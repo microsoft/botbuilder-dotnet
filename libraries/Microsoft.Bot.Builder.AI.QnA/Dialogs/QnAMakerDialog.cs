@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -118,8 +116,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.ActiveLearningCardTitle = activeLearningCardTitle;
             this.CardNoMatchText = cardNoMatchText;
             this.StrictFilters = strictFilters;
-            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
-            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
+            this.NoAnswer = noAnswer ?? MessageFactory.Text(DefaultNoAnswer);
+            this.CardNoMatchResponse = cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse);
             this.HttpClient = httpClient;
 
             // add waterfall steps
@@ -181,7 +179,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
         /// The JSON serializer uses this constructor to deserialize objects of this class.
         /// </summary>
-        [JsonConstructor]
         public QnAMakerDialog()
             : base(nameof(QnAMakerDialog))
         {
@@ -252,7 +249,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The template to send the user when QnA Maker does not find an answer.
         /// </value>
         [JsonProperty("noAnswer")]
-        public ITemplate<Activity> NoAnswer { get; set; } = new BindToActivity(MessageFactory.Text(DefaultNoAnswer));
+        public Activity NoAnswer { get; set; } = MessageFactory.Text(DefaultNoAnswer);
 
         /// <summary>
         /// Gets or sets the card title to use when showing active learning options to the user,
@@ -284,7 +281,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The template to send the user if they select the no match option on an active learning card.
         /// </value>
         [JsonProperty("cardNoMatchResponse")]
-        public ITemplate<Activity> CardNoMatchResponse { get; set; } = new BindToActivity(MessageFactory.Text(DefaultCardNoMatchResponse));
+        public Activity CardNoMatchResponse { get; set; } = MessageFactory.Text(DefaultCardNoMatchResponse);
 
         /// <summary>
         /// Gets the QnA Maker metadata with which to filter or boost queries to the knowledge base;
@@ -470,15 +467,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected virtual async Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            return new QnADialogResponseOptions
+            return Task.FromResult(new QnADialogResponseOptions
             {
-                NoAnswer = await this.NoAnswer.BindAsync(dc, dc.ActiveDialog.State).ConfigureAwait(false),
+                NoAnswer = this.NoAnswer,
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
-            };
+                CardNoMatchResponse = this.CardNoMatchResponse
+            });
         }
 
         /// <summary>

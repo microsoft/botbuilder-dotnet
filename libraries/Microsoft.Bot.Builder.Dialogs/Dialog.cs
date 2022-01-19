@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                _id = _id ?? OnComputeId();
+                _id = _id ?? GetType().Name;
                 return _id;
             }
 
@@ -242,15 +242,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             return Task.FromResult(false);
-        }
-
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
-        protected virtual string OnComputeId()
-        {
-            return GetType().Name;
         }
     }
 }
