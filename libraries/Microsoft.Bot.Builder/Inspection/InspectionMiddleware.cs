@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Middleware to enable debugging the state of a bot.
     /// </summary>
+    [Obsolete("This method is obsolete and will be removed in a future version of the framework.", false)]
     public class InspectionMiddleware : InterceptionMiddleware
     {
         private const string Command = "/INSPECT";
