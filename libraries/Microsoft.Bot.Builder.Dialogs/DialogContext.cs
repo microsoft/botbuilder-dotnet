@@ -479,8 +479,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // End the current dialog and giving the reason.
                 await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                ObjectPath.SetPathValue(this.Context.TurnState, "turn.__repeatDialogId", dialogId);
-
                 // Start replacement dialog
                 return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
             }
