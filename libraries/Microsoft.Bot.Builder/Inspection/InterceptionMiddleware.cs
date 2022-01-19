@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Middleware for the interception of activities.
     /// </summary>
-    [Obsolete("This method is obsolete and will be removed in a future version of the framework.", false)]
+    [Obsolete("This class is obsolete and will be removed in a future version of the framework.", false)]
     public abstract class InterceptionMiddleware : IMiddleware
     {
         internal InterceptionMiddleware(ILogger logger)

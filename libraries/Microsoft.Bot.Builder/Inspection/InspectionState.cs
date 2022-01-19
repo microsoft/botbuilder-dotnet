@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder
     /// state properties to a storage layer. Used by Inspection middleware that enables
     /// debugging bot state.
     /// </summary>
-    [Obsolete("This method is obsolete and will be removed in a future version of the framework.", false)]
+    [Obsolete("This class is obsolete and will be removed in a future version of the framework.", false)]
     public class InspectionState : BotState
     {
         /// <summary>
