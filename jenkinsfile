@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('integrte') {
+            steps {
+                echo 'integrate the project'
+            }
+        }
+        stage('BUilding') {
+            steps {
+                echo 'Build the project'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying'
+            }
+        }
+        stage('release') {
+            steps {
+                echo 'Release te project'
+            }
+        }
+    }
+}
