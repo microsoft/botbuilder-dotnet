@@ -94,6 +94,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (string.IsNullOrEmpty(activity?.Type))
                     {
                         httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                        Logger.LogInformation($"BadRequest: Activity is missing the Type field.");
                         return;
                     }
 
