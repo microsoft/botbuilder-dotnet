@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
@@ -25,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
         private readonly Dictionary<string, T> cachedRefDialogs = new Dictionary<string, T>();
+        private readonly Dictionary<string, T> cachedTypes = new Dictionary<string, T>();
         private readonly Dictionary<JToken, SourceRange> rangeReferences = new Dictionary<JToken, SourceRange>(JToken.EqualityComparer);
 
         /// <summary>
@@ -127,11 +126,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     }
                     else
                     {
-                        result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+                        result = BuildOrGetType(kind, tokenToBuild, serializer, passTwo, (rangeResolved ?? range).ToString());
+
                         if (passTwo && refDialogName != null)
                         {
                             cachedRefDialogs[refDialogName] = result;
-                            this.resourceExplorer.UpdateResourceTokenCache(refDialogName, tokenToBuild, range);
+                            resourceExplorer.UpdateResourceTokenCache(refDialogName, tokenToBuild, range);
                         }
                     }
 
@@ -226,6 +226,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             }
 
             return jToken;
+        }
+
+        /// <summary>
+        /// Attempts to get the type from the cachedTypes dictionary or builds it if not present. 
+        /// </summary>
+        private T BuildOrGetType(string kind, JToken tokenToBuild, JsonSerializer serializer, bool passTwo, string cacheKey)
+        {
+            T result;
+            if (!passTwo && cachedTypes.ContainsKey(cacheKey))
+            {
+                // Pull the type from the cache if found on pass one.
+                result = cachedTypes[cacheKey];
+                Console.WriteLine($"Found result of type {result.GetType().Name} for {cacheKey} in cache");
+            }
+            else
+            {
+                // Always build the type if it is pass two or the type is not found in the cache
+                result = resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+                cachedTypes[cacheKey] = result;
+            }
+
+            return result;
         }
     }
 }
