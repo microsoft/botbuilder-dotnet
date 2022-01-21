@@ -28,8 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             // Only generate schemas on Windows.
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                BotFrameworkCLIPrerequisite();
-
                 // Save an in memory copy of the current schema file.
                 var oldSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
                 File.Delete(schemaPath);
@@ -38,37 +36,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var mergeCommand = $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o \"{schemaPath}\"";
                 var error = RunCommand(mergeCommand);
 
-                // Check if there were any errors or if the new schema file has changed.
-                var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
+                if (error.Length != 0)
+                {
+                    throw new InvalidOperationException(error);
+                }
+
                 if (Environment.GetEnvironmentVariable("IsBuildServer") != null)
                 {
-                    if (error.Length != 0)
-                    {
-                        throw new InvalidOperationException(error);
-                    }
-                    else if (!newSchema.Equals(oldSchema))
+                    // Check if the new schema file has changed.
+                    var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
+                    if (!newSchema.Equals(oldSchema))
                     {
                         throw new InvalidOperationException("tests.schema has changed when running tests on the build server.");
-                    }
-                }
-                else if (error.Length != 0 || !newSchema.Equals(oldSchema))
-                {
-                    // We may get there because there was an error running bf dialog:merge or because 
-                    // the generated file is different than the one that is in source control.
-                    // In either case we try installing latest bf if the schema changed to make sure the
-                    // discrepancy is not because we are using a different version of the CLI
-                    // and we ensure it is installed while on it.
-                    error = RunCommand("/C npm i -g @microsoft/botframework-cli@next --force");
-                    if (error.Length != 0)
-                    {
-                        throw new InvalidOperationException(error);
-                    }
-
-                    // Rerun merge command
-                    error = RunCommand(mergeCommand);
-                    if (error.Length != 0)
-                    {
-                        throw new InvalidOperationException(error);
                     }
                 }
             }
@@ -110,19 +89,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             process.WaitForExit();
 
             return process.ExitCode != 0 ? process.StandardError.ReadToEnd() : string.Empty;
-        }
-
-        /// <summary>
-        /// Validates if BotFramework-CLI is installed in the Operative System (OS).
-        /// If there isn't installed, an error will be thrown, requiring the prerequisite to be installed to be able to execute the test.
-        /// </summary>
-        private static void BotFrameworkCLIPrerequisite()
-        {
-            var error = RunCommand("/C bf");
-            if (error.Length != 0)
-            {
-                throw new InvalidOperationException("This test requires BotFramework-CLI! go to https://github.com/microsoft/botframework-cli#installation to install it.");
-            }
         }
     }
 }
