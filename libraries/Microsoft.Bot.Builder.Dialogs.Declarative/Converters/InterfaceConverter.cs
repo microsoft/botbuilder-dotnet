@@ -237,7 +237,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             if (!passTwo && cachedTypes.ContainsKey(cacheKey))
             {
                 // Pull the type from the cache if found on pass one.
-                result = cachedTypes[cacheKey]; }
+                result = cachedTypes[cacheKey];
+            }
             else
             {
                 // Always build the type if it is pass two or the type is not found in the cache
