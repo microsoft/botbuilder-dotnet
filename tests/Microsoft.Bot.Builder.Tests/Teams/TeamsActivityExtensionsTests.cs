@@ -59,6 +59,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Assert
             Assert.Equal(true, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
+            Assert.Equal(false, ((TeamsChannelData)activity.ChannelData).Notification.AlertInMeeting);
         }
 
         [Fact]
@@ -72,6 +73,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Assert
             Assert.Equal(true, ((TeamsChannelData)activity.ChannelData).Notification.AlertInMeeting);
+            Assert.Equal(false, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
         }
 
         [Fact]
