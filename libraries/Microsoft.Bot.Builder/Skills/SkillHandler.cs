@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Skills
     /// <summary>
     /// A Bot Framework Handler for skills.
     /// </summary>
+    [Obsolete("Use `CloudSkillHandler` instead.", false)]
     public class SkillHandler : ChannelServiceHandler
     {
         /// <summary>

@@ -3,6 +3,7 @@
 
 namespace Microsoft.Bot.Builder
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Methods to call methods on the Token Service.
     /// </summary>
+    [Obsolete("Use UserTokenClient instead. With CloudAdapter the UserTokenClient is available on TurnState.", false)]
     public interface IExtendedUserTokenProvider : IUserTokenProvider
     {
         /// <summary>Attempts to retrieve the token for a user that's in a login flow, using customized AppCredentials.

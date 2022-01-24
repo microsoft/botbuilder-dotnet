@@ -1,0 +1,22 @@
+# Create nuget.config for resolving dependencies exclusively from SDK_Dotnet_V4_org feed.
+steps:
+- powershell: |
+    $file = "$(Build.SourcesDirectory)\nuget.config";
+
+    $content = @"
+    <?xml version="1.0" encoding="utf-8"?>
+    <configuration>
+      <packageSources>
+        <clear />
+        <add key="SDK_Dotnet_V4_org" value="$(SDK_Dotnet_V4_org_Url)" />
+      </packageSources>
+      <activePackageSource>
+        <add key="All" value="(Aggregate source)" />
+      </activePackageSource>
+    </configuration>
+
+    "@;
+
+    New-Item -Path $file -ItemType "file" -Value $content -Force;
+    '-------------'; get-content "$file"; '===================';
+  displayName: Create nuget.config for SDK_Dotnet_V4_org feed

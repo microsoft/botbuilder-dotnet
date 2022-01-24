@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Contains helper methods for authenticating incoming HTTP requests.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to perform JWT token validation.", false)]
     public static class JwtTokenValidation
     {
         private static readonly HttpClient _httpClient = new HttpClient();

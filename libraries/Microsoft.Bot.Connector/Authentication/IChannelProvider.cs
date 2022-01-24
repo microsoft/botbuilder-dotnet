@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -10,6 +11,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// implementation for the configuration parameters to connect to a Bot.
     /// Framework channel service.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to configure channel.", false)]
     public interface IChannelProvider
     {
         /// <summary>

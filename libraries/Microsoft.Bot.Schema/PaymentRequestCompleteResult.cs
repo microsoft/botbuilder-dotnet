@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the <see cref="PaymentRequestCompleteResult"/> class.
         /// </summary>
         /// <param name="result">Result of the payment request completion.</param>
-        public PaymentRequestCompleteResult(string result = default(string))
+        public PaymentRequestCompleteResult(string result = default)
         {
             Result = result;
             CustomInit();

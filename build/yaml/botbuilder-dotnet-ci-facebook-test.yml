@@ -103,7 +103,7 @@ steps:
     verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet publish testbot'
+  displayName: 'dotnet publish primarytestbot'
   inputs:
     command: publish
     publishWebProjects: false

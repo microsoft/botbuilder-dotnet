@@ -7,11 +7,13 @@ namespace Microsoft.Bot.Configuration.Tests
 {
     public class EncryptionTests
     {
+        // [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="This is a fake password.")]
+        private static string key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
+
         [Fact]
         public void EncryptDecrypt()
         {
             var value = "1234567890";
-            var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
 
             var encrypted = value.Encrypt(key);
             Assert.NotEqual(value, encrypted);
@@ -23,8 +25,6 @@ namespace Microsoft.Bot.Configuration.Tests
         [Fact]
         public void EncryptDecryptEmptyWorks()
         {
-            var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
-
             var encrypted = string.Empty.Encrypt(key);
             Assert.Equal(string.Empty, encrypted);
 
@@ -35,8 +35,6 @@ namespace Microsoft.Bot.Configuration.Tests
         [Fact]
         public void EncryptDecryptNullWorks()
         {
-            var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
-
             var encrypted = EncryptUtilities.Encrypt(null, key);
             Assert.Null(encrypted);
 

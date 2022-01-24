@@ -11,14 +11,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Functions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -217,9 +214,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Kind", Kind }
+                    { "Kind", Kind },
+                    { "context", TelemetryLoggerConstants.DialogStartEvent }
                 };
-            TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
             TelemetryClient.TrackDialogView(Id);
 
             await OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
@@ -294,11 +292,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (reason == DialogReason.CancelCalled)
             {
-                TelemetryClient.TrackEvent("AdaptiveDialogCancel", properties);
+                properties.Add("context", TelemetryLoggerConstants.DialogCancelEvent);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
             }
             else if (reason == DialogReason.EndCalled)
             {
-                TelemetryClient.TrackEvent("AdaptiveDialogComplete", properties);
+                properties.Add("context", TelemetryLoggerConstants.CompleteEvent);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
             }
 
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
@@ -750,7 +750,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// OnSetScopedServices provides ability to set scoped services for the current dialogContext.
         /// </summary>
         /// <remarks>
-        /// Use dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
+        /// USe dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
         /// </remarks>
         /// <param name="dialogContext">dialog Context.</param>
         protected virtual void OnSetScopedServices(DialogContext dialogContext)
@@ -758,7 +758,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Generator != null)
             {
                 dialogContext.Services.Set(this.Generator);
-                Expression.Functions.Add(MissingPropertiesFunction.Name, new MissingPropertiesFunction(dialogContext));
             }
         }
 
@@ -1002,8 +1001,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     { "Expression", condition.GetExpression().ToString() },
                     { "Kind", $"Microsoft.{condition.GetType().Name}" },
                     { "ConditionId", condition.Id },
+                    { "context", TelemetryLoggerConstants.TriggerEvent }
                 };
-                TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
+                TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
 
                 var changes = await condition.ExecuteAsync(actionContext).ConfigureAwait(false);
 

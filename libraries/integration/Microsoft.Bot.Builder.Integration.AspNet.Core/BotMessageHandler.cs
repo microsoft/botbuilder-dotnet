@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -14,6 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
     /// <summary>
     /// A handler to process incoming http requests via using an adapter.
     /// </summary>
+    [Obsolete("Use `CloudAdapter` instead to process incoming messages.", false)]
     public class BotMessageHandler : BotMessageHandlerBase
     {
         /// <summary>

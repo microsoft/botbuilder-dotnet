@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>Parameters for creating a new conversation.</summary>
@@ -25,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="activity">(Optional) When creating a new conversation, use this activity as the initial message to the conversation.</param>
         /// <param name="channelData">Channel specific payload for creating the conversation.</param>
         /// <param name="tenantId">(Optional) The tenant ID in which the conversation should be created.</param>
-        public ConversationParameters(bool? isGroup = default(bool?), ChannelAccount bot = default(ChannelAccount), IList<ChannelAccount> members = default(IList<ChannelAccount>), string topicName = default(string), Activity activity = default(Activity), object channelData = default(object), string tenantId = default(string))
+        public ConversationParameters(bool? isGroup = default, ChannelAccount bot = default, IList<ChannelAccount> members = default, string topicName = default, Activity activity = default, object channelData = default, string tenantId = default)
         {
             IsGroup = isGroup;
             Bot = bot;

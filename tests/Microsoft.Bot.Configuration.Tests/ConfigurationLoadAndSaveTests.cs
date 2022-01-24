@@ -412,22 +412,6 @@ namespace Microsoft.Bot.Configuration.Tests
         }
 
         [Fact]
-        public async Task LegacyEncryption()
-        {
-            var secretKey = "d+Mhts8yQIJIj9P/l1pO7n1fQExss7vvE8t9rg8qXsc=";
-            var config = await BotConfiguration.LoadAsync(NormalizePath(@"..\..\..\legacy.bot"), secretKey);
-            Assert.Equal("xyzpdq", ((EndpointService)config.Services[0]).AppPassword);
-            Assert.False(string.IsNullOrEmpty(config.Padlock), "padlock should exist");
-            Assert.Null(config.Properties["secretKey"]);
-
-            await config.SaveAsAsync(OutputBotFileName, secretKey);
-            config = await BotConfiguration.LoadAsync(OutputBotFileName, secretKey);
-            File.Delete(OutputBotFileName);
-            Assert.False(string.IsNullOrEmpty(config.Padlock), "padlock should exist");
-            Assert.Null(config.Properties["secretKey"]);
-        }
-
-        [Fact]
         public void LoadAndVerifyChannelServiceSync()
         {
             var publicConfig = BotConfiguration.Load(testBotFileName);
