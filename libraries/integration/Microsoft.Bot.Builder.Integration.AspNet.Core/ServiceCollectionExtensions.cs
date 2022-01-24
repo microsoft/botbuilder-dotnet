@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <seealso cref="ApplicationBuilderExtensions"/>
     /// <seealso cref="IAdapterIntegration"/>
     /// <seealso cref="IBot"/>
+    [Obsolete("Use `CloudAdapter` with `ConfigurationBotFrameworkAuthentication` instead to configure bot runtime.", false)]
     public static class ServiceCollectionExtensions
     {
         /// <summary>

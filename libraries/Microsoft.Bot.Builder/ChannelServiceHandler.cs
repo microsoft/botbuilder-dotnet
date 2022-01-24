@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// A class to help with the implementation of the Bot Framework protocol.
     /// </summary>
+    [Obsolete("Use `CloudChannelServiceHandler` instead.", false)]
     public class ChannelServiceHandler : ChannelServiceHandlerBase
     {
         private readonly AuthenticationConfiguration _authConfiguration;

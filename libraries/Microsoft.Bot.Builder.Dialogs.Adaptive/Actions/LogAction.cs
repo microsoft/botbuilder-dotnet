@@ -103,8 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 { "template", JsonConvert.SerializeObject(Text) },
                 { "result", text ?? string.Empty },
+                { "context", TelemetryLoggerConstants.LogActionResultEvent }
             };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
 
             System.Diagnostics.Trace.TraceInformation(text);
 

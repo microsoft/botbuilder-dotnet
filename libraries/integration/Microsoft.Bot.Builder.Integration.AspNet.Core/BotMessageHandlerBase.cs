@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
     /// <summary>
     /// Abstract base class for a bot message handler.
     /// </summary>
+    [Obsolete("Use `CloudAdapter` instead to process incoming messages.", false)]
     public abstract class BotMessageHandlerBase
     {
         /// <summary>

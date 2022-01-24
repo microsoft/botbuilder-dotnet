@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
@@ -17,30 +18,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class LanguageGeneratorManager
     {
-        private ResourceExplorer resourceExplorer;
+        private ResourceExplorer _resourceExplorer;
 
         /// <summary>
         /// multi language lg resources. en -> [resourcelist].
         /// </summary>
-        private readonly Dictionary<string, IList<Resource>> multilanguageResources;
+        private readonly Dictionary<string, IList<Resource>> _multilanguageResources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
+            : this(resourceExplorer, true)
         {
-            this.resourceExplorer = resourceExplorer;
-            multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
+        }
 
-            // load all LG resources
-            foreach (var resource in this.resourceExplorer.GetResources("lg"))
-            {   
-                LanguageGenerators[resource.Id] = GetTemplateEngineLanguageGenerator(resource);
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
+        /// <param name="loadOnConstruction">Whether to load language generation resources on construction.</param>
+        internal LanguageGeneratorManager(ResourceExplorer resourceExplorer, bool loadOnConstruction)
+        {
+            _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
+            _multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer); // new Dictionary<string, IList<Resource>>();
+
+            // Legacy path: legacy constructor calls will load the content synchronously in the constructor as before to 
+            // maintain backward compatibility. New path through adaptive runtime will call LoadAsync separately in an asynchronous manner.
+            if (loadOnConstruction)
+            {
+                LoadAsync().GetAwaiter().GetResult();
             }
 
             // listen for resource changes
-            this.resourceExplorer.Changed += ResourceExplorer_Changed;
+            _resourceExplorer.Changed += ResourceExplorer_Changed;
         }
 
         /// <summary>
@@ -81,18 +93,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             };
         }
 
-        private void ResourceExplorer_Changed(object sender, IEnumerable<Resource> resources)
+        /// <summary>
+        /// Default loading of the generator manager, which is usually done on startup and involves loading all LG files.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        internal async Task LoadAsync()
         {
-            // reload changed LG files
-            foreach (var resource in resources.Where(r => Path.GetExtension(r.Id).ToLowerInvariant() == ".lg"))
+            await LoadAsync(_resourceExplorer.GetResources("lg")).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Loads the specified set of resources by creating template language generators and loading
+        /// the content asynchronously. 
+        /// </summary>
+        /// <remarks>Once LoadAsync() is completed, the manager is fully initialized. Note that the this set up supports
+        /// GenerateASync() being called in the generators in other threads while we are loading, and the thread-safe lazy initialization
+        /// is ensuring that a single thread initializes the resources.</remarks>
+        /// <param name="resources">Resources to load.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        private async Task LoadAsync(IEnumerable<Resource> resources)
+        {
+            var loadTaskMap = new Dictionary<Resource, (Task LoadTask, TemplateEngineLanguageGenerator Generator)>();
+
+            // Create one LanguageGenerator for each resource. Given that each language generator needs
+            // to asynchronous load its content, we trigger these loading tasks async and them wait for them all to be done.
+            foreach (var resource in resources)
             {
-                LanguageGenerators[resource.Id] = GetTemplateEngineLanguageGenerator(resource);
+                // Create generator, explicitly asking to not load resources on construction so we can do it asynchronously.
+                var generator = new TemplateEngineLanguageGenerator(resource, _multilanguageResources, loadOnConstruction: false);
+
+                // Capture loading task and store in temporary map.
+                var generatorLoadTask = generator.LoadAsync();
+                loadTaskMap.Add(resource, (generatorLoadTask, generator));
+            }
+
+            // Wait for loading to complete.
+            await Task.WhenAll(loadTaskMap.Select(entry => entry.Value.LoadTask)).ConfigureAwait(false);
+
+            // Build our language generator table with the fully loaded generators.
+            foreach (var entry in loadTaskMap)
+            {
+                LanguageGenerators[entry.Key.Id] = entry.Value.Generator;
             }
         }
 
-        private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
+        private void ResourceExplorer_Changed(object sender, IEnumerable<Resource> resources)
         {
-            return new TemplateEngineLanguageGenerator(resource, multilanguageResources);
+            // reload changed LG files
+            LoadAsync(resources.Where(r => Path.GetExtension(r.Id).ToLowerInvariant() == ".lg")).GetAwaiter().GetResult();
         }
     }
 }

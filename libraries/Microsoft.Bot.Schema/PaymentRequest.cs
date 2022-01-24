@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Schema
         /// desired for the payment request.</param>
         /// <param name="expires">Expiration for this request, in ISO 8601
         /// duration format (e.g., 'P1D').</param>
-        public PaymentRequest(string id = default(string), IList<PaymentMethodData> methodData = default(IList<PaymentMethodData>), PaymentDetails details = default(PaymentDetails), PaymentOptions options = default(PaymentOptions), string expires = default(string))
+        public PaymentRequest(string id = default, IList<PaymentMethodData> methodData = default, PaymentDetails details = default, PaymentOptions options = default, string expires = default)
         {
             Id = id;
             MethodData = methodData;

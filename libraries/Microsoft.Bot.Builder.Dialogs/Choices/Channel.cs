@@ -59,8 +59,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             {
                 case Connector.Channels.Facebook:
                 case Connector.Channels.Skype:
-                case Connector.Channels.Msteams:
                     return buttonCnt <= 3;
+                
+                case Connector.Channels.Msteams:
+                    return buttonCnt <= 50;
 
                 case Connector.Channels.Line:
                     return buttonCnt <= 99;

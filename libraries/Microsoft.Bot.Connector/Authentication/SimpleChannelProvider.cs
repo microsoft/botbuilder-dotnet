@@ -9,6 +9,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// A simple channel provider with basic configuration parameters to connect to a Bot Framework channel service.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to configure channel.", false)]
     public class SimpleChannelProvider : IChannelProvider
     {
         /// <summary>
