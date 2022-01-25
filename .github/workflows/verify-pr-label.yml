@@ -1,0 +1,19 @@
+name: verify-pr-label.yml
+
+on:
+  pull_request_target:
+   types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  prStyle:
+    name: verify-pr-label
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: BruceHaley/verify-pr-label-action@main
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          valid-labels: 'Automation: No parity, Automation: Parity all, Automation: Parity with dotnet, Automation: Parity with Java, Automation: Parity with JS, Automation: Parity with Python'
+          invalid-labels: 'help wanted, invalid'
+          pull-request-number: '${{ github.event.pull_request.number }}'
+          disable-reviews: 'true'
