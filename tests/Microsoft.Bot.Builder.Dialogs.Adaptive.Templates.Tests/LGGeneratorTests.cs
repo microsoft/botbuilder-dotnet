@@ -450,7 +450,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Expression.Functions.Clear();
 
             // user.message and user.flatTasks would not be injected into expression
-            // for these two properties access the value injected from LG before any LG evaluation action.
+            // for these two properties could not access the value injected from LG
+            // before any LG evaluation action (like SendActivity).
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
                 .UseResourceExplorer(resourceExplorer)
