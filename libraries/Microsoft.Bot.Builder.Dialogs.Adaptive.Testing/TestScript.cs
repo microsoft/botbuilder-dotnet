@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -220,9 +221,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             DialogManager dm;
             if (callback == null)
             {
+                //dm = new DialogManager()
+                //    .UseResourceExplorer(resourceExplorer)
+                //    .UseLanguageGeneration(lazyMode: false);
                 dm = new DialogManager()
-                    .UseResourceExplorer(resourceExplorer)
-                    .UseLanguageGeneration(lazyMode: false);
+                   .UseResourceExplorer(resourceExplorer)
+                   .UseLanguageGeneration(lazyMode: true);
 
                 dm.RootDialog = Dialog;
 
