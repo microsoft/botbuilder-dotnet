@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     /// <summary>
     /// BotAdapter to allow for handling Webex Teams app payloads and responses via the Webex Teams API.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private const string WebexAccessTokenKey = "WebexAccessToken";
