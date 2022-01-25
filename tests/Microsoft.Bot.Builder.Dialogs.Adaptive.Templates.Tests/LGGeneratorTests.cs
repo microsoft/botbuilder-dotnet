@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -444,12 +445,37 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public async Task TestLGInjection_WithLazy()
+        {
+            Expression.Functions.Clear();
+
+            // user.message and user.flatTasks would not be injected into expression
+            // for these two properties access the value injected from LG before any LG evaluation action.
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("inject.lg");
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("inject.dialog");
+
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hello")
+                .AssertReply("Hi Jonathan")
+                .AssertReply("Jonathan : 2003-03-20")
+                .AssertReply("Jonathan, your tasks: car, washing, food and laundry")
+                .AssertReply("2")
+            .StartTestAsync();
+        }
+
+        [Fact]
         public async Task TestLGInjection()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("inject.lg");
+                .UseLanguageGeneration("inject.lg", false);
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("inject.dialog");
 
             await CreateFlow(async (turnContext, cancellationToken) =>

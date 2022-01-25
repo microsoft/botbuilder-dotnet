@@ -102,15 +102,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         internal void LazyLoad()
         {
-            LazyLoad(_resourceExplorer.GetResources("lg"));
-        }
+            var resources = _resourceExplorer.GetResources("lg");
 
-        /// <summary>
-        /// Lazy load generator managet.
-        /// </summary>
-        /// <param name="resources">Resources to load.</param>
-        internal void LazyLoad(IEnumerable<Resource> resources)
-        {
             // Create one LanguageGenerator for each resource.
             foreach (var resource in resources)
             {

@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public static DialogManager UseLanguageGeneration(
             this DialogManager dialogManager,
             string defaultLg = null,
-            bool lazyMode = false)
+            bool lazyMode = true)
         {
             if (defaultLg == null)
             {

@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             {
                 dm = new DialogManager()
                     .UseResourceExplorer(resourceExplorer)
-                    .UseLanguageGeneration();
+                    .UseLanguageGeneration(lazyMode: false);
 
                 dm.RootDialog = Dialog;
 
