@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     public class CosmosDbFixture : IAsyncLifetime
     {
-        // Endpoint and Authkey for the CosmosDB Emulator running locally
+        // Endpoint and Authkey for the CosmosDB Emulator running locally (see https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#authenticate-requests for details on the well know key being used)
         public const string CosmosServiceEndpoint = "https://localhost:8081";
         public const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
 
