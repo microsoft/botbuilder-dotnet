@@ -14,6 +14,6 @@ jobs:
         with:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
           valid-labels: 'Automation: No parity, Automation: Parity all, Automation: Parity with dotnet, Automation: Parity with Java, Automation: Parity with JS, Automation: Parity with Python'
-          invalid-labels: 'help wanted, invalid'
+          invalid-labels: 'invalid one, invalid two'
           pull-request-number: '${{ github.event.pull_request.number }}'
           disable-reviews: 'true'
