@@ -84,27 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="resource">Resource.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
         public TemplateEngineLanguageGenerator(Resource resource, Dictionary<string, IList<Resource>> resourceMapping)
-            : this(resource, resourceMapping, loadOnConstruction: true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
-        /// </summary>
-        /// <param name="resource">Resource.</param>
-        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        /// <param name="loadOnConstruction">Whether to load LG resources at build time. If false is specified, then LoadAsync needs to be called.</param>
-        internal TemplateEngineLanguageGenerator(Resource resource, Dictionary<string, IList<Resource>> resourceMapping, bool loadOnConstruction)
         {
             Id = resource.Id;
             _lg = new Lazy<Task<LanguageGeneration.Templates>>(() => CreateTemplatesAsync(resource, resourceMapping));
-
-            // Legacy path: legacy constructor calls will load the content synchronously in the constructor as before to 
-            // maintain backward compatibility. New path through adaptive runtime will call LoadAsync separately in an asynchronous manner.
-            if (loadOnConstruction)
-            {
-                _ = _lg.Value.GetAwaiter().GetResult();
-            }
         }
 
         /// <summary>

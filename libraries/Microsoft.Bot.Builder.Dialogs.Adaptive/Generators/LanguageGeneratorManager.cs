@@ -22,9 +22,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Exports Regex in LG file. Reference: https://docs.microsoft.com/en-us/azure/bot-service/file-format/bot-builder-lg-file-format?view=azure-bot-service-4.0#exports-option.
         /// </summary>
-        private static readonly Regex ExportOptionRegex = new Regex(@"^\s*>\s*!#\s*@exports\s*=", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        private ResourceExplorer _resourceExplorer;
+        private static readonly Regex ExportOptionRegex = new Regex(@"\s*>\s*!#\s*@exports\s*=", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly ResourceExplorer _resourceExplorer;
 
         /// <summary>
         /// multi language lg resources. en -> [resourcelist].
@@ -36,44 +35,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
-            : this(resourceExplorer, true)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
-        /// </summary>
-        /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
-        /// <param name="loadOnConstruction">Whether to load language generation resources on construction.</param>
-        internal LanguageGeneratorManager(ResourceExplorer resourceExplorer, bool loadOnConstruction)
         {
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
-            _multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer); // new Dictionary<string, IList<Resource>>();
+            _multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
 
-            // Legacy path: legacy constructor calls will load the content synchronously in the constructor as before to 
-            // maintain backward compatibility. New path through adaptive runtime will call LoadAsync separately in an asynchronous manner.
-            if (loadOnConstruction)
-            {
-                LoadAsync().GetAwaiter().GetResult();
-            }
-            else
-            {
-                LazyLoad();
-            }
+            PopulateLanguageGenerators();
 
             // listen for resource changes
             _resourceExplorer.Changed += ResourceExplorer_Changed;
         }
 
         /// <summary>
-        /// Gets or sets generators.
+        /// Gets the language generators.
         /// </summary>
         /// <value>
         /// Generators.
         /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public ConcurrentDictionary<string, Lazy<LanguageGenerator>> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, Lazy<LanguageGenerator>>(StringComparer.OrdinalIgnoreCase);
-#pragma warning restore CA2227 // Collection properties should be read only
+        public ConcurrentDictionary<string, Lazy<LanguageGenerator>> LanguageGenerators { get; } = new ConcurrentDictionary<string, Lazy<LanguageGenerator>>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Returns the resolver to resolve LG import id to template text based on language and a template resource loader delegate.
@@ -95,18 +73,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 {
                     throw new InvalidOperationException($"There is no matching LG resource for {resourceName}");
                 }
-                else
-                {
-                    var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-                    return new LGResource(resource.Id, resource.FullName, content);
-                }
+
+                var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+                return new LGResource(resource.Id, resource.FullName, content);
             };
         }
 
         /// <summary>
-        /// Lazy load generator managet.
+        /// Populates the <see cref="LanguageGenerators"/> property with <see cref="Lazy{LaguageGenerator}" /> instances.
         /// </summary>
-        internal void LazyLoad()
+        /// <remarks>
+        /// If the resource contains exports, this method also ensure the LanguageGenerator instance is loaded and ready to use.
+        /// </remarks>
+        internal void PopulateLanguageGenerators()
         {
             var resources = _resourceExplorer.GetResources("lg");
 
@@ -114,39 +93,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             foreach (var resource in resources)
             {
                 LanguageGenerators[resource.Id] = new Lazy<LanguageGenerator>(() =>
-                 new TemplateEngineLanguageGenerator(resource, _multilanguageResources));
+                {
+                    // Creates the generator when requested and loads it. 
+                    var generator = new TemplateEngineLanguageGenerator(resource, _multilanguageResources);
+                    generator.LoadAsync().GetAwaiter().GetResult();
+                    return generator;
+                });
 
-                // Force lazy creation for lg files that contains exports
-                // Exports needs to be available globally and need to be parsed at startup
+                // Check if the file contains exports.
                 if (ContainsExport(resource))
                 {
+                    // Force lazy creation for lg files that contain exports
+                    // Exports need to be available globally and need to be parsed at startup
                     _ = LanguageGenerators[resource.Id].Value;
                 }
             }
         }
 
-        /// <summary>
-        /// Default loading of the generator manager, which is usually done on startup and involves loading all LG files.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        internal async Task LoadAsync()
-        {
-            await LoadAsync(_resourceExplorer.GetResources("lg")).ConfigureAwait(false);
-        }
-
         private bool ContainsExport(Resource resource)
         {
-            try
-            {
-                var content = File.ReadAllText(resource?.FullName);
-                return ExportOptionRegex.IsMatch(content);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                return false;
-            }
+            var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+            return ExportOptionRegex.IsMatch(content);
         }
 
         /// <summary>
@@ -167,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             foreach (var resource in resources)
             {
                 // Create generator, explicitly asking to not load resources on construction so we can do it asynchronously.
-                var generator = new TemplateEngineLanguageGenerator(resource, _multilanguageResources, loadOnConstruction: false);
+                var generator = new TemplateEngineLanguageGenerator(resource, _multilanguageResources);
 
                 // Capture loading task and store in temporary map.
                 var generatorLoadTask = generator.LoadAsync();

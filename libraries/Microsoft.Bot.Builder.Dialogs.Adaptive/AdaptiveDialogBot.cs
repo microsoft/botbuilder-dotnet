@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private LanguageGeneratorManager CreateLanguageGeneratorManager()
         {
-            return new LanguageGeneratorManager(_resourceExplorer, false);
+            return new LanguageGeneratorManager(_resourceExplorer);
         }
     }
 }
