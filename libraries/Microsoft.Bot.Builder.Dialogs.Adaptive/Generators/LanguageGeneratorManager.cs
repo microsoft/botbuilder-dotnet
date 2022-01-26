@@ -136,17 +136,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private bool ContainsExport(Resource resource)
         {
-            try
-            {
-                var content = File.ReadAllText(resource?.FullName);
-                return ExportOptionRegex.IsMatch(content);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                return false;
-            }
+            var content = File.ReadAllText(resource.FullName);
+            return ExportOptionRegex.IsMatch(content);
         }
 
         /// <summary>
