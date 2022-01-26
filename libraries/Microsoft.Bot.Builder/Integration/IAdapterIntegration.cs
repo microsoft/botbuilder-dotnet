@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -10,6 +11,7 @@ namespace Microsoft.Bot.Builder.Integration
     /// <summary>
     /// An interface that defines the contract between web service integration pieces and the bot adapter.
     /// </summary>
+    [Obsolete("Use `CloudAdapter` instead to process incoming messages.", false)]
     public interface IAdapterIntegration
     {
         /// <summary>

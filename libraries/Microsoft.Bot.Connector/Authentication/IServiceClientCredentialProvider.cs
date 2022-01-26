@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -11,6 +12,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// channels. The implementor should return ServiceClientCredentails from GetCredentials 
     /// method.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to configure credentials.", false)]
     public interface IServiceClientCredentialProvider : ICredentialProvider
     {
         /// <summary>
