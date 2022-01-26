@@ -32,48 +32,52 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string DocumentId = "UtteranceLog-001";
 
         private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
-        {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
-            {
-                return false;
-            }
 
-            if (File.Exists(EmulatorPath))
-            {
-                var tries = 5;
+        // This process has been disabled, more information can be found in the tests\Microsoft.Bot.Builder.Azure.Tests\IgnoreOnNoEmulatorFact.cs file.
+        //
+        //private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
+        //{
+        //    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
+        //    {
+        //        return false;
+        //    }
 
-                do
-                {
-                    var p = new Process();
-                    p.StartInfo.UseShellExecute = true;
-                    p.StartInfo.FileName = EmulatorPath;
-                    p.StartInfo.Arguments = "/GetStatus";
-                    p.Start();
-                    p.WaitForExit();
+        //    if (File.Exists(EmulatorPath))
+        //    {
+        //        var tries = 5;
 
-                    switch (p.ExitCode)
-                    {
-                        case 1: // starting
-                            Task.Delay(1000).Wait();
-                            tries--;
-                            break;
+        //        do
+        //        {
+        //            var p = new Process();
+        //            p.StartInfo.UseShellExecute = true;
+        //            p.StartInfo.FileName = EmulatorPath;
+        //            p.StartInfo.Arguments = "/GetStatus";
+        //            p.Start();
+        //            p.WaitForExit();
 
-                        case 2: // started
-                            return true;
+        //            switch (p.ExitCode)
+        //            {
+        //                case 1: // starting
+        //                    Task.Delay(1000).Wait();
+        //                    tries--;
+        //                    break;
 
-                        case 3: // stopped
-                            return false;
+        //                case 2: // started
+        //                    return true;
 
-                        default:
-                            return false; // unknown status code
-                    }
-                }
-                while (tries > 0);
-            }
+        //                case 3: // stopped
+        //                    return false;
 
-            return false;
-        });
+        //                default:
+        //                    return false; // unknown status code
+        //            }
+        //        }
+        //        while (tries > 0);
+        //    }
+
+        //    return false;
+        //});
+        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() => false);
 
         // Item used to test delete cases
         private readonly StoreItem _itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };

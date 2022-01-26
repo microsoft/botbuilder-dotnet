@@ -15,32 +15,35 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
 
-        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
-        {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
-            {
-                return false;
-            }
+        // This process has been disabled, more information can be found in the tests\Microsoft.Bot.Builder.Azure.Tests\IgnoreOnNoEmulatorFact.cs file.
+        //
+        //private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
+        //{
+        //    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
+        //    {
+        //        return false;
+        //    }
 
-            if (File.Exists(EmulatorPath))
-            {
-                var p = new Process
-                {
-                    StartInfo =
-                    {
-                        UseShellExecute = true,
-                        FileName = EmulatorPath,
-                        Arguments = "/GetStatus",
-                    },
-                };
-                p.Start();
-                p.WaitForExit();
+        //    if (File.Exists(EmulatorPath))
+        //    {
+        //        var p = new Process
+        //        {
+        //            StartInfo =
+        //            {
+        //                UseShellExecute = true,
+        //                FileName = EmulatorPath,
+        //                Arguments = "/GetStatus",
+        //            },
+        //        };
+        //        p.Start();
+        //        p.WaitForExit();
 
-                return p.ExitCode == 2;
-            }
+        //        return p.ExitCode == 2;
+        //    }
 
-            return false;
-        });
+        //    return false;
+        //});
+        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() => false);
 
         public async Task InitializeAsync()
         {
