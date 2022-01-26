@@ -445,38 +445,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public async Task TestLGInjection_WithLazy()
-        {
-            Expression.Functions.Clear();
-
-            // user.message and user.flatTasks would not be injected into expression
-            // for these two properties could not access the value injected from LG
-            // before any LG evaluation action (like SendActivity).
-            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
-            DialogManager dm = new DialogManager()
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("inject.lg");
-            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("inject.dialog");
-
-            await CreateFlow(async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            })
-            .Send("hello")
-                .AssertReply("Hi Jonathan")
-                .AssertReply("Jonathan : 2003-03-20")
-                .AssertReply("Jonathan, your tasks: car, washing, food and laundry")
-                .AssertReply("2")
-            .StartTestAsync();
-        }
-
-        [Fact]
         public async Task TestLGInjection()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("inject.lg", true);
+                .UseLanguageGeneration("inject.lg");
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("inject.dialog");
 
             await CreateFlow(async (turnContext, cancellationToken) =>

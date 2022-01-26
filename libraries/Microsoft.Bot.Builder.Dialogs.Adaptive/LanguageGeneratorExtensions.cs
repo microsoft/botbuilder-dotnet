@@ -21,12 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dialogManager">The <see cref="BotAdapter"/> to add services to.</param>
         /// <param name="defaultLg">Default LG Resource Id (default: main.lg).</param>
-        /// <param name="lazyMode">Should load the file in lazy mode.</param>
         /// <returns>The BotAdapter.</returns>
         public static DialogManager UseLanguageGeneration(
             this DialogManager dialogManager,
-            string defaultLg = null,
-            bool lazyMode = true)
+            string defaultLg = null)
         {
             if (defaultLg == null)
             {
@@ -37,11 +35,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (resourceExplorer.TryGetResource(defaultLg, out var resource))
             {
-                dialogManager.UseLanguageGeneration(new ResourceMultiLanguageGenerator(defaultLg), lazyMode);
+                dialogManager.UseLanguageGeneration(new ResourceMultiLanguageGenerator(defaultLg));
             }
             else
             {
-                dialogManager.UseLanguageGeneration(new TemplateEngineLanguageGenerator(), lazyMode);
+                dialogManager.UseLanguageGeneration(new TemplateEngineLanguageGenerator());
             }
 
             return dialogManager;
@@ -52,9 +50,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dialogManager">botAdapter to add services to.</param>
         /// <param name="languageGenerator">LanguageGenerator to use.</param>
-        /// <param name="lazyMode">Should load the file in lazy mode.</param>
         /// <returns>botAdapter.</returns>
-        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, LanguageGenerator languageGenerator, bool lazyMode)
+        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, LanguageGenerator languageGenerator)
         {
             var resourceExplorer = dialogManager.InitialTurnState.Get<ResourceExplorer>();
 
@@ -62,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (!languageGeneratorManagers.TryGetValue(resourceExplorer ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(resourceExplorer)}."), out var lgm))
                 {
-                    lgm = new LanguageGeneratorManager(resourceExplorer, !lazyMode);
+                    lgm = new LanguageGeneratorManager(resourceExplorer);
                     languageGeneratorManagers[resourceExplorer] = lgm;
                 }
 

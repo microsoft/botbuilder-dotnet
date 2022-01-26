@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 //    .UseLanguageGeneration(lazyMode: false);
                 dm = new DialogManager()
                    .UseResourceExplorer(resourceExplorer)
-                   .UseLanguageGeneration(lazyMode: true);
+                   .UseLanguageGeneration();
 
                 dm.RootDialog = Dialog;
 
