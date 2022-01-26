@@ -23,7 +23,6 @@ variables:
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-preview-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
 #  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
-#  SDK_Dotnet_V4_org_Url: define this in Azure
 
 jobs:
 - job: Build_and_Sign
@@ -54,8 +53,3 @@ jobs:
 
   - template: ci-build-steps.yml
   - template: sign-steps.yml
-
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection'
-    inputs:
-      failOnAlert: false
