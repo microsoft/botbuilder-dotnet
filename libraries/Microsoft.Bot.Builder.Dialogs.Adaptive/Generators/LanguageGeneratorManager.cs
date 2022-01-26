@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <remarks>
         /// If the resource contains exports, this method also ensure the LanguageGenerator instance is loaded and ready to use.
         /// </remarks>
-        internal void PopulateLanguageGenerators()
+        private void PopulateLanguageGenerators()
         {
             var resources = _resourceExplorer.GetResources("lg");
 
