@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// A contract for user token provider classes.
     /// </summary>
+    [Obsolete("Use UserTokenClient instead. With CloudAdapter the UserTokenClient is available on TurnState.", false)]
     public interface IUserTokenProvider
     {
         /// <summary>Attempts to retrieve the token for a user that's in a login flow, using the bot's AppCredentials.

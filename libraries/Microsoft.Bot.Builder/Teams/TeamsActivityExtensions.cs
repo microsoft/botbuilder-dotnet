@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Teams
 
             teamsChannelData.Notification = new NotificationInfo
             {
-                Alert = true,
+                Alert = !alertInMeeting,
                 AlertInMeeting = alertInMeeting,
                 ExternalResourceUrl = externalResourceUrl,
             };
