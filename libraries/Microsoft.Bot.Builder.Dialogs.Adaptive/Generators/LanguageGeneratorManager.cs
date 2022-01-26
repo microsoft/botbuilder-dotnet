@@ -19,7 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class LanguageGeneratorManager
     {
-        private static readonly Regex ExportOptionRegex = new Regex(@"^\s*>\s*!#\s*@exports\s*=", RegexOptions.IgnoreCase);
+        /// <summary>
+        /// Exports Regex in LG file. Reference: https://docs.microsoft.com/en-us/azure/bot-service/file-format/bot-builder-lg-file-format?view=azure-bot-service-4.0#exports-option.
+        /// </summary>
+        private static readonly Regex ExportOptionRegex = new Regex(@"^\s*>\s*!#\s*@exports\s*=", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private ResourceExplorer _resourceExplorer;
 
@@ -55,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                LazyLoadAsync().GetAwaiter().GetResult();
+                LazyLoad();
             }
 
             // listen for resource changes
@@ -103,8 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Lazy load generator managet.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        internal async Task LazyLoadAsync()
+        internal void LazyLoad()
         {
             var resources = _resourceExplorer.GetResources("lg");
 
@@ -114,7 +116,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 LanguageGenerators[resource.Id] = new Lazy<LanguageGenerator>(() =>
                  new TemplateEngineLanguageGenerator(resource, _multilanguageResources));
 
-                if (await ContainsExportAsync(resource).ConfigureAwait(false))
+                // Force lazy creation for lg files that contains exports
+                // Exports needs to be available globally and need to be parsed at startup
+                if (ContainsExport(resource))
                 {
                     _ = LanguageGenerators[resource.Id].Value;
                 }
@@ -130,10 +134,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             await LoadAsync(_resourceExplorer.GetResources("lg")).ConfigureAwait(false);
         }
 
-        private async Task<bool> ContainsExportAsync(Resource resource)
+        private bool ContainsExport(Resource resource)
         {
-            var content = await resource.ReadTextAsync().ConfigureAwait(false);
-            return ExportOptionRegex.IsMatch(content);
+            try
+            {
+                var content = File.ReadAllText(resource?.FullName);
+                return ExportOptionRegex.IsMatch(content);
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                return false;
+            }
         }
 
         /// <summary>
