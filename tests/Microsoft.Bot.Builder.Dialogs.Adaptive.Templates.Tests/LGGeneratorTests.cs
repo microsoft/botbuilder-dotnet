@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -205,12 +206,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var lg = new MultiLanguageGenerator();
             var multilanguageresources = LGResourceLoader.GroupByLocale(resourceExplorer);
-            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg"), multilanguageresources);
-            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg"), multilanguageresources);
-            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg"), multilanguageresources);
-            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg"), multilanguageresources);
-            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg"), multilanguageresources);
-            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg"),  multilanguageresources);
+            lg.LanguageGenerators[string.Empty] = new Lazy<LanguageGenerator>(() => new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg"), multilanguageresources));
+            lg.LanguageGenerators["de"] = new Lazy<LanguageGenerator>(() => new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg"), multilanguageresources));
+            lg.LanguageGenerators["en"] = new Lazy<LanguageGenerator>(() => new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg"), multilanguageresources));
+            lg.LanguageGenerators["en-US"] = new Lazy<LanguageGenerator>(() => new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg"), multilanguageresources));
+            lg.LanguageGenerators["en-GB"] = new Lazy<LanguageGenerator>(() => new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg"), multilanguageresources));
+            lg.LanguageGenerators["fr"] = new Lazy<LanguageGenerator>(() => new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg"),  multilanguageresources));
 
             // test targeted in each language
             Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext(locale: "en-us"), "${test()}", null));
