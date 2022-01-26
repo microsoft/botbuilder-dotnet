@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -18,6 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class LanguageGeneratorManager
     {
+        private static readonly Regex ExportOptionRegex = new Regex(@"^\s*>\s*!#\s*@exports\s*=", RegexOptions.IgnoreCase);
+
         private ResourceExplorer _resourceExplorer;
 
         /// <summary>
@@ -52,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                LazyLoad();
+                LazyLoadAsync().GetAwaiter().GetResult();
             }
 
             // listen for resource changes
@@ -100,7 +103,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Lazy load generator managet.
         /// </summary>
-        internal void LazyLoad()
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        internal async Task LazyLoadAsync()
         {
             var resources = _resourceExplorer.GetResources("lg");
 
@@ -109,6 +113,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 LanguageGenerators[resource.Id] = new Lazy<LanguageGenerator>(() =>
                  new TemplateEngineLanguageGenerator(resource, _multilanguageResources));
+
+                if (await ContainsExportAsync(resource).ConfigureAwait(false))
+                {
+                    _ = LanguageGenerators[resource.Id].Value;
+                }
             }
         }
 
@@ -119,6 +128,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         internal async Task LoadAsync()
         {
             await LoadAsync(_resourceExplorer.GetResources("lg")).ConfigureAwait(false);
+        }
+
+        private async Task<bool> ContainsExportAsync(Resource resource)
+        {
+            var content = await resource.ReadTextAsync().ConfigureAwait(false);
+            return ExportOptionRegex.IsMatch(content);
         }
 
         /// <summary>
