@@ -20,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Schema;
 using AdaptiveExpressions.Properties;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -285,17 +286,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [Fact(Skip = "Ignore")]
-        public async Task TestForeachWithLargeItems()
+        [Theory]
+
+        //[InlineData(1000)]
+        [InlineData(10)]
+        public async Task TestForeachWithLargeItems(int itemCount)
         {
             var testFlow = new TestScript()
             {
-                Dialog = new ForeachItemsDialog()
+                Dialog = new ForeachItemsDialog(itemCount)
             }
             .SendConversationUpdate();
 
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < itemCount; i++)
             {
+                testFlow = testFlow.AssertReply("Send me some text.");
+                testFlow.Script.Add(new UserSays() { Text = "1" });
                 testFlow = testFlow.AssertReply(i.ToString());
             }
 
@@ -304,8 +310,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private class ForeachItemsDialog : ComponentDialog
         {
-            internal ForeachItemsDialog()
+            private readonly int _itemCount;
+
+            internal ForeachItemsDialog(int itemCount)
             {
+                _itemCount = itemCount;
                 AddDialog(new AdaptiveDialog
                 {
                     Id = "doItems",
@@ -318,7 +327,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new Foreach
                                 {
                                     ItemsProperty = "$items",
-                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("${$foreach.value}") } }
+                                    Actions = new List<Dialog> 
+                                    {
+                                        new TextInput { Prompt = new ActivityTemplate("Send me some text.") },
+                                        new SendActivity { Activity = new ActivityTemplate("${$foreach.value}") } 
+                                    }
                                 }
                             }
                         }
@@ -329,7 +342,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
             {
                 var items = new List<string>();
-                for (var i = 0; i < 1000; i++)
+                for (var i = 0; i < _itemCount; i++)
                 {
                     items.Add(i.ToString());
                 }

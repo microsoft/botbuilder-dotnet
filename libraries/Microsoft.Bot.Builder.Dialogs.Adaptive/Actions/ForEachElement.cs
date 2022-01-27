@@ -60,7 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             set
             {
-                this._actions = value ?? new List<Dialog>();
+                _actions = value ?? new List<Dialog>();
+                _scope.Actions = _actions;
             }
         }
 #pragma warning restore CA2227 // Collection properties should be read only
