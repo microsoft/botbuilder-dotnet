@@ -1,0 +1,20 @@
+name: verify-pr-label.yml
+
+on:
+  pull_request_target:
+   types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  check_pr_labels_job:
+    name: A job to check the PR labels contain given labels
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR labels action step
+        id: check_pr_labels
+        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          labels: '["enhancement"]'
+      - name: See result
+        run: echo "${{ steps.check_pr_labels.outputs.result }}"
