@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             Actions = new List<Dialog>
                             {
-                                new Foreach
+                                new ForEachElement
                                 {
                                     ItemsProperty = "$items",
                                     Actions = new List<Dialog> 
