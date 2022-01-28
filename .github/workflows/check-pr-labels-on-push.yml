@@ -1,4 +1,4 @@
-name: verify-pr-label.yml
+name: check-per-labels.yml
 
 on:
   pull_request_target:
@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Check PR labels action step
         id: check_pr_labels
-        uses: shioyang/check-pr-labels-on-push-action@v1.0.3
+        uses: BruceHaley/check-pr-labels-on-push-action@v1.0.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '["enhancement"]'
+          labels:  '["enhancement","label 2","label 3"]'
       - name: See result
         run: echo "${{ steps.check_pr_labels.outputs.result }}"
