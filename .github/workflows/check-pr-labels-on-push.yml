@@ -15,6 +15,6 @@ jobs:
         uses: BruceHaley/check-pr-labels-on-push-action@v1.0.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          labels: '["enhancement"]'
+          labels:  '["enhancement","label 2","label 3"]'
       - name: See result
         run: echo "${{ steps.check_pr_labels.outputs.result }}"
