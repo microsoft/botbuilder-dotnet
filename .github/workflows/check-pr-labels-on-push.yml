@@ -1,4 +1,4 @@
-name: check-per-labels.yml
+name: check-pr-labels-on-push.yml
 
 on:
   pull_request_target:
