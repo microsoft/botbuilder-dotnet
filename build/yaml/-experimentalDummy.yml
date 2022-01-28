@@ -1,5 +1,5 @@
 pool:
-  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # XXX or 'windows-latest' or 'vs2017-win2016'
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # XXXX or 'windows-latest' or 'vs2017-win2016'
 
 variables:
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
