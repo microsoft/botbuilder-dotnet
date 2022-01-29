@@ -1,0 +1,9 @@
+name: 'Verify Pull Request Labels action.yml'
+description: 'Verify that the Pull Request has at least one valid label'
+inputs:
+  github-token:
+    description: 'Token provided by GitHub'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

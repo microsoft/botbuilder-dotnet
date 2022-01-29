@@ -1,0 +1,9 @@
+{
+  "name": "action-verify-pr-labels",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "1.2.6",
+    "@actions/github": "4.0.0"
+  }
+}
