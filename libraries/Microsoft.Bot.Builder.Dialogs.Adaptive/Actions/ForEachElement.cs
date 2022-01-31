@@ -167,10 +167,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var list = GetItemsProperty(dc.State, beginDialog);
 
             var indexProperty = Index.GetValue(dc.State);
-            var index = dc.State.GetIntValue(indexProperty, 0);
+            var index = beginDialog ? 0 : dc.State.GetIntValue(indexProperty, 0);
 
             // Next item
-            while (list != null && index < list.Count)
+            while (dc.ActiveDialog != null && list != null && index < list.Count)
             {
                 var childDialogState = GetActionScopeState(dc);
                 var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
@@ -211,7 +211,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 index++;
-                dc.State.SetValue(indexProperty, index);
+                if (dc.ActiveDialog != null)
+                {
+                    dc.State.SetValue(indexProperty, index);
+                }
 
                 if (turnResult.Status == DialogTurnStatus.CompleteAndWait)
                 {
@@ -254,7 +257,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 state = new DialogState();
             }
 
-            activeDialogState[ActionScopeState] = state;
+            if (activeDialogState != null)
+            {
+                activeDialogState[ActionScopeState] = state;
+            }
 
             return state;
         }
