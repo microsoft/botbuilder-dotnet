@@ -53,9 +53,11 @@ const getPullRequestNumber = (ref) => {
       throw `no labels`;
     }
 
-    // Ensure no other parity labels accompany a `no parity` label.
+    // Ensure no other parity labels accompany a `no parity` or a `parity all` label.
     const parityLabelConflict = prValidLabels.find(element => {
-      if ( element.toLowerCase().includes(`no parity`) && prValidLabels.length > 1) {
+      if ( (element.toLowerCase().includes(`no parity`) || 
+          element.toLowerCase().includes(`parity all`)) && 
+          prValidLabels.length > 1) {
         return true;
       }
     });
@@ -64,7 +66,7 @@ const getPullRequestNumber = (ref) => {
       core.info(`OK: No parity label conflict.`);
     }
     else {
-      core.error(`A "no parity" label must not accompany other parity labels: ${prValidLabels.join(`, `)}`);
+      core.error(`Label ${parityLabelConflict} must not accompany other parity labels: ${prValidLabels.join(`, `)}`);
       throw `parity label conflict`;
     }
 
