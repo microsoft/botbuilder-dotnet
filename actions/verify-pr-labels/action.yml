@@ -1,5 +1,5 @@
-name: 'Verify Pull Request Labels action.yml'
-description: 'Verify that the Pull Request has at least one valid label'
+name: 'Verify Pull Request Parity Labels'
+description: 'Verify parity labels for the PR. See index.js for details.'
 inputs:
   github-token:
     description: 'Token provided by GitHub'

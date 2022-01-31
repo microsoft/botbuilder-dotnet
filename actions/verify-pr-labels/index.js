@@ -66,7 +66,7 @@ const getPullRequestNumber = (ref) => {
       core.info(`OK: No parity label conflict.`);
     }
     else {
-      core.error(`Label ${parityLabelConflict} must not accompany other parity labels: ${prValidLabels.join(`, `)}`);
+      core.error(`Label '${parityLabelConflict}' must not accompany other parity labels: ${prValidLabels.join(`, `)}`);
       throw `parity label conflict`;
     }
 
