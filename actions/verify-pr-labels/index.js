@@ -49,7 +49,7 @@ const getPullRequestNumber = (ref) => {
       core.info(`OK: Pull Request has at least one parity label.`);
     }
     else {
-      core.error(`Required is at least one of these labels: ${validLabels.join(`, `)}`);
+      core.error(`Missing parity label: The PR should have at least one of these labels: ${validLabels.join(`, `)}`);
       throw `no labels`;
     }
 
