@@ -215,9 +215,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                         .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                         .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                    using (var client = new WebSocketClient($"wss://test", clientRequestHandler.Object, logger: logger))
+                    using (var client = new WebSocketClient(webSocketFeature.Client, $"wss://test", clientRequestHandler.Object, logger: logger))
                     {
-                        var clientTask = client.ConnectInternalAsync(webSocketFeature.Client, CancellationToken.None);
+                        var clientTask = client.ConnectInternalAsync(CancellationToken.None);
 
                         // Send request bot (server) -> channel (client)
                         const string path = "api/version";

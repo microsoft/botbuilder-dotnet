@@ -505,9 +505,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 clientRequestHandler
                     .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult(StreamingResponse.OK()));
-                using (var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger))
+                using (var client = new WebSocketClient(clientWebSocket, "wss://test", clientRequestHandler.Object, logger: logger))
                 {
-                    var clientRunning = client.ConnectInternalAsync(clientWebSocket, clientCts.Token);
+                    var clientRunning = client.ConnectInternalAsync(clientCts.Token);
 
                     var activity = new Activity
                     {
@@ -605,7 +605,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 }
                 else
                 {
-                    _inner = new WebSocketClient(url, requestHandler, logger: logger);
+                    _inner = new WebSocketClient(client, url, requestHandler, logger: logger);
                 }
             }
 
@@ -617,7 +617,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             {
                 return _useLegacyClient
                     ? _innerLegacy.ConnectInternalAsync(_client)
-                    : _inner.ConnectInternalAsync(_client, CancellationToken.None);
+                    : _inner.ConnectInternalAsync(CancellationToken.None);
             }
 
             public Task ConnectAsync(IDictionary<string, string> requestHeaders)

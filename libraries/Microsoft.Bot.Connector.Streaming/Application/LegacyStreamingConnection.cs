@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO.Pipelines;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
@@ -37,6 +39,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <param name="onServerDisconnect">Additional handling code to be run when the transport server is disconnected.</param>
         public LegacyStreamingConnection(WebSocket socket, ILogger logger, DisconnectedEventHandler onServerDisconnect = null)
+            : base(logger)
         {
             _socket = socket ?? throw new ArgumentNullException(nameof(socket));
             _logger = logger ?? NullLogger.Instance;
@@ -50,6 +53,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <param name="onServerDisconnect">Additional handling code to be run when the transport server is disconnected.</param>
         public LegacyStreamingConnection(string pipeName, ILogger logger, DisconnectedEventHandler onServerDisconnect = null)
+            : base(logger)
         {
             if (string.IsNullOrWhiteSpace(pipeName))
             {
@@ -102,9 +106,16 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             throw new ApplicationException("Neither web socket, nor named pipe found to instantiate a streaming transport server!");
         }
 
+        internal override StreamingTransport CreateStreamingTransport(IDuplexPipe application)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions while disconnecting.")]
+#pragma warning disable CA2215 // Dispose methods should call base class dispose : Legacy streaming connection performs its own dispose.
         protected override void Dispose(bool disposing)
+#pragma warning restore CA2215 // Dispose methods should call base class dispose
         {
             if (!_disposedValue)
             {

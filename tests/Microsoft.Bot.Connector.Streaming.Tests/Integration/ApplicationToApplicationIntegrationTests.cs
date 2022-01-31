@@ -51,9 +51,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger);
+                var client = new WebSocketClient(webSocketFeature.Client, "wss://test", clientRequestHandler.Object, logger: logger);
                 
-                var clientTask = Task.Run(() => client.ConnectInternalAsync(webSocketFeature.Client, CancellationToken.None));
+                var clientTask = Task.Run(() => client.ConnectInternalAsync(CancellationToken.None));
 
                 // Send request bot (server) -> channel (client)
                 const string path = "api/version";
@@ -106,9 +106,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger, closeTimeOut: TimeSpan.FromSeconds(10), keepAlive: TimeSpan.FromMilliseconds(200));
+                var client = new WebSocketClient(webSocketFeature.Client, "wss://test", clientRequestHandler.Object, logger: logger, closeTimeOut: TimeSpan.FromSeconds(10), keepAlive: TimeSpan.FromMilliseconds(200));
 
-                var clientTask = Task.Run(() => client.ConnectInternalAsync(webSocketFeature.Client, CancellationToken.None));
+                var clientTask = Task.Run(() => client.ConnectInternalAsync(CancellationToken.None));
 
                 // Send request bot (server) -> channel (client)
                 const string path = "api/version";
