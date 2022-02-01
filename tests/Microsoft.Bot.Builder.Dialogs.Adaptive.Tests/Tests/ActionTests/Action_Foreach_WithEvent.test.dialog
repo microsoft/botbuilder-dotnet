@@ -1,0 +1,95 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.todo",
+                        "value": "=[]"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=1"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=2"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.todo",
+                        "actions": [
+                          {
+                              "$kind": "Microsoft.EmitEvent",
+                              "eventName": "CustomEvent",
+                              "bubbleEvent": true
+                          },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "index is: ${dialog.foreach.index} and value is: ${dialog.foreach.value}"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Done"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnDialogEvent",
+                "event": "CustomEvent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "CustomEventFired"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "CustomEventFired"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "index is: 0 and value is: 1"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "CustomEventFired"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "index is: 1 and value is: 2"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Done"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi (this should not break)",
+    },
+    {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "CustomEventFired"
+    }
+  ]
+}
