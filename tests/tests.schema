@@ -3432,14 +3432,20 @@
         "index": {
           "$ref": "#/definitions/stringExpression",
           "title": "Index property",
-          "description": "Property that holds the index of the item.",
-          "default": "dialog.foreach.index"
+          "description": "Property that holds the index of the item (must be unique within the dialog scope).",
+          "default": "dialog.foreach.index",
+          "examples": [
+            "dialog.myForEach.myIndex"
+          ]
         },
         "value": {
           "$ref": "#/definitions/stringExpression",
           "title": "Value property",
-          "description": "Property that holds the value of the item.",
-          "default": "dialog.foreach.value"
+          "description": "Property that holds the value of the item (must be unique within the dialog scope).",
+          "default": "dialog.foreach.value",
+          "examples": [
+            "dialog.myForEach.myValue"
+          ]
         },
         "actions": {
           "type": "array",
