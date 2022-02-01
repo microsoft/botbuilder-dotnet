@@ -13,13 +13,3 @@
 
 # Global rule:
 * @microsoft/botframework-sdk
-
-# Streaming library
-**/*Streaming*/**                                                                   @stevengum @carlosscastro @microsoft/botframework-sdk
-
-**/Microsoft.Bot.Builder.Dialogs.Adaptive*/**                                       @microsoft/bf-adaptive @microsoft/botframework-sdk
-**/Microsoft.Bot.Builder.Dialogs.Declarative*/**                                    @microsoft/bf-adaptive @microsoft/botframework-sdk
-**/Microsoft.Bot.Builder.LanguageGeneration*/**                                     @microsoft/bf-adaptive @microsoft/botframework-sdk
-**/AdaptiveExpressions*/**                                                          @microsoft/bf-adaptive @microsoft/botframework-sdk
-**/*.schema                                                                        @chrimc62 @tomlm @microsoft/botframework-sdk
-tests/Microsoft.Bot.Builder.TestBot.Json/**                                        @chrimc62 @tomlm @microsoft/botframework-sdk
