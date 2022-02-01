@@ -36,6 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_Foreach_WithEvent()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_AttachmentInput()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
