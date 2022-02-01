@@ -84,18 +84,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             // Ensure the IConfiguration is available. (Azure Functions don't do this.)
             services.TryAddSingleton(configuration);
 
-            // All things auth
+            // Add basic authentication.
             services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
-            // Check to see if a different IBotFrameworkHttpAdapter was already registered, if it was, skip registering.
-            // We do this not because of the IBotFrameworkHttpAdapter, but to keep from adding the CoreBotAdapter if 
-            // the bot won't be using it and a different implementation was registered.
-            if (!services.Any(x => x.ServiceType == typeof(IBotFrameworkHttpAdapter)))
-            {
-                // CoreBotAdapter registration
-                services.TryAddSingleton<CoreBotAdapter>();
-                services.TryAddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
-            }
+            // Add a CoreBotAdapter as the IBotFrameworkHttpAdapter unless one was already registered.
+            services.TryAddSingleton<IBotFrameworkHttpAdapter, CoreBotAdapter>();
 
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.TryAddSingleton<IStorage>(new MemoryStorage());
