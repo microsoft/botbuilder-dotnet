@@ -95,6 +95,7 @@ steps:
   inputs:
     artifactName: 'BotBuilderDLLs-$(BuildConfiguration)-$(BuildTarget)'
     targetPath: outputLibraries
+  continueOnError: true
 
 - script: |
    cd ..
