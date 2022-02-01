@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             RegisterCommonServices(services, configuration);
 
-            services.AddTransient<IBot, TBot>();
+            services.AddSingleton<IBot, TBot>();
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             RegisterCommonServices(services, configuration);
             services.AddSingleton<TDialog>();
-            services.AddTransient<IBot, TBot>();
+            services.AddSingleton<IBot, TBot>();
         }
 
         private static void RegisterCommonServices(IServiceCollection services, IConfiguration configuration)
