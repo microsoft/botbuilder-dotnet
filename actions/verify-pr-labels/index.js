@@ -23,9 +23,9 @@ const getPullRequestNumber = (ref) => {
       `Automation: No parity`, 
       `Automation: Parity all`, 
       `Automation: Parity with dotnet`, 
-      `Automation: Parity with Java`, 
-      `Automation: Parity with JS`, 
-      `Automation: Parity with Python`];
+      `Automation: Parity with java`, 
+      `Automation: Parity with js`, 
+      `Automation: Parity with python`];
 
     const getPrLabels = async (prNumber) => {
       const { data } = await octokit.pulls.get({
