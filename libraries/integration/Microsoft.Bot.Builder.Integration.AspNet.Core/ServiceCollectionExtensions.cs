@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <see cref="ConversationState"/>
         /// 
         /// This set of dependencies is designed to be sufficient to run a typical bot. Since each of these
-        /// are registered using TrySingleton to provide a different implementation of any of the dependencies
+        /// are registered using TrySingleton if you want to provide a different implementation of any of the dependencies
         /// just register them with the service collection before calling AddBotRuntime.
         /// 
         /// </remark>
@@ -40,11 +40,24 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// Overload that allows for creating the Bot (IBot) type as well as other startup types.
+        /// Adds bot related services to the application's service collection.
         /// </summary>
-        /// <typeparam name="TBot">Type of Bot.</typeparam>
+        /// <remark>
+        /// The following dependencies are added with TrySingleton so advanced scenarios can override them to customize the runtime behavior:
+        /// <see cref="BotFrameworkAuthentication"/>,
+        /// <see cref="IBotFrameworkHttpAdapter"/>,
+        /// <see cref="IStorage"/>,
+        /// <see cref="UserState"/>,
+        /// <see cref="ConversationState"/>
+        /// 
+        /// This set of dependencies is designed to be sufficient to run a typical bot. Since each of these
+        /// are registered using TrySingleton if you want to provide a different implementation of any of the dependencies
+        /// just register them with the service collection before calling AddBotRuntime.
+        /// 
+        /// </remark>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">The application configuration.</param>
+        /// <typeparam name="TBot">Type of Bot.</typeparam>
         public static void AddBotRuntime<TBot>(this IServiceCollection services, IConfiguration configuration) 
             where TBot : class, IBot
         {
@@ -54,12 +67,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// Overload that allows for providing the Bot (IBot) type, and the main Dialog type as well as other startup types.
+        /// Adds bot related services to the application's service collection.
         /// </summary>
-        /// <typeparam name="TBot">Type of Bot.</typeparam>
-        /// <typeparam name="TDialog">Type of Dialog.</typeparam>
+        /// <remark>
+        /// The following dependencies are added with TrySingleton so advanced scenarios can override them to customize the runtime behavior:
+        /// <see cref="BotFrameworkAuthentication"/>,
+        /// <see cref="IBotFrameworkHttpAdapter"/>,
+        /// <see cref="IStorage"/>,
+        /// <see cref="UserState"/>,
+        /// <see cref="ConversationState"/>
+        /// 
+        /// This set of dependencies is designed to be sufficient to run a typical bot. Since each of these
+        /// are registered using TrySingleton if you want to provide a different implementation of any of the dependencies
+        /// just register them with the service collection before calling AddBotRuntime.
+        /// 
+        /// </remark>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">The application configuration.</param>
+        /// <typeparam name="TBot">Type of Bot.</typeparam>
+        /// <typeparam name="TDialog">Type of Dialog.</typeparam>
         public static void AddBotRuntime<TBot, TDialog>(this IServiceCollection services, IConfiguration configuration)
             where TBot : class, IBot
             where TDialog : Dialog

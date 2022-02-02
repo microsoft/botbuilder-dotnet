@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// CoreBotAdapter is a base BotAdapter that derives from CloudAdapter and implements OnTurnError handling. This class
     /// also registers any middleware services that are contained in the middlewares collection.
     /// </summary>
-    public class CoreBotAdapter : CloudAdapter
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes. This class is only instantiated via dependency injection so no direct reference is made.
+    internal class CoreBotAdapter : CloudAdapter
+#pragma warning restore CA1812 // Avoid uninstantiated internal classes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CoreBotAdapter"/> class.

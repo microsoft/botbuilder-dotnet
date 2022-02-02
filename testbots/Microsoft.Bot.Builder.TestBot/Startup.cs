@@ -42,20 +42,7 @@ namespace Microsoft.BotBuilderSamples
             // Create the debug middleware
             services.AddSingleton(sp => new MicrosoftAppCredentials(sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
 
-            // Create the Bot Framework Adapter with error handling enabled.
-            //services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
-            //services.AddSingleton<IStorage, MemoryStorage>();
-
-            // Create the User state. (Used in this bot's Dialog implementation.)
-            //services.AddSingleton<UserState>();
-
-            // Create the Conversation state. (Used by the Dialog system itself.)
-            //services.AddSingleton<ConversationState>();
-
-            // The extension method AddBotRuntime will register common services (those commented out above) to the
-            // service connection.
+            // The extension method AddBotRuntime will register common services to the service collection.
             services.AddBotRuntime(Configuration);
 
             // Register LUIS recognizer
