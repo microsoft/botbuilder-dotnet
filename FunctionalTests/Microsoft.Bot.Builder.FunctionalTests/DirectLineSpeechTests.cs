@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     }
                 });
 
-                var channelData = activity.GetChannelData<SpeechChannelData>();
+                var channelData = activity.GetChannelDataObject<SpeechChannelData>();
                 var id = channelData?.ConversationalAiData?.RequestInfo?.InteractionId;
                 if (!string.IsNullOrEmpty(id))
                 {

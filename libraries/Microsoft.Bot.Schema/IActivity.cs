@@ -125,9 +125,7 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Channel-specific payload.
         /// </value>
-#pragma warning disable CA1721 // Property names should not match get methods (we can't change this without breaking binary compat)
         dynamic ChannelData { get; set; }
-#pragma warning restore CA1721 // Property names should not match get methods
 
         /// <summary>
         /// Gets the channel data as strongly typed object.
@@ -135,7 +133,7 @@ namespace Microsoft.Bot.Schema
         /// <typeparam name="TypeT">The expected type of the object.</typeparam>
         /// <returns>The strongly typed channel data.</returns>
 #pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change this without breaking binary compat)
-        TypeT GetChannelData<TypeT>();
+        TypeT GetChannelDataObject<TypeT>();
 #pragma warning restore CA1715 // Identifiers should have correct prefix
 
         /// <summary>

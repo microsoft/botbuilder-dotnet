@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Schema.Tests
 
             try
             {
-                var result = activity.GetChannelData<MyChannelData>();
+                var result = activity.GetChannelDataObject<MyChannelData>();
                 if (channelData == null)
                 {
                     Assert.Null(result);

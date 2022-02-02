@@ -15,13 +15,11 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
     /// <summary>
-    /// The DialogStateManager manages memory scopes and pathresolvers
+    /// The DialogStateManagerDictionary manages memory scopes and pathresolvers
     /// MemoryScopes are named root level objects, which can exist either in the dialogcontext or off of turn state
     /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo.
     /// </summary>
-#pragma warning disable CA1710 // Identifiers should have correct suffix (We can't rename this class without breaking binary compat)
-    public class DialogStateManager : IDictionary<string, object>
-#pragma warning restore CA1710 // Identifiers should have correct suffix
+    public class DialogStateManagerDictionary : IDictionary<string, object>
     {
         /// <summary>
         /// Information for tracking when path was last modified.
@@ -34,11 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private int _version;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DialogStateManager"/> class.
+        /// Initializes a new instance of the <see cref="DialogStateManagerDictionary"/> class.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="configuration">Configuration for the dialog state manager. Default is <c>null</c>.</param>
-        public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
+        public DialogStateManagerDictionary(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
             _dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();

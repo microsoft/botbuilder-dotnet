@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             var activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { AadGroupId = AadGroupId } } };
 
             // Act
-            var channelData = activity.GetChannelData<TeamsChannelData>();
+            var channelData = activity.GetChannelDataObject<TeamsChannelData>();
 
             // Assert
             Assert.Equal(AadGroupId, channelData.Team.AadGroupId);

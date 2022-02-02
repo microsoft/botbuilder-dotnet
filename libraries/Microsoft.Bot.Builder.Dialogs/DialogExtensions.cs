@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 dialogContext.Services[service.Key] = service.Value;
             }
 
-            var dialogStateManager = new DialogStateManager(dialogContext, stateConfiguration);
+            var dialogStateManager = new DialogStateManagerDictionary(dialogContext, stateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
             dialogContext.Context.TurnState.Add(dialogStateManager);
 

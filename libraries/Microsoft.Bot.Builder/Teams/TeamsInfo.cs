@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Teams
         {
             meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
             participantId ??= turnContext.Activity.From.AadObjectId ?? throw new InvalidOperationException($"{nameof(participantId)} is required.");
-            tenantId ??= turnContext.Activity.GetChannelData<TeamsChannelData>()?.Tenant?.Id ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+            tenantId ??= turnContext.Activity.GetChannelDataObject<TeamsChannelData>()?.Tenant?.Id ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
 
             using (var teamsClient = GetTeamsConnectorClient(turnContext))
             {

@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.Teams
         {
             if (turnContext.Activity.ChannelId == Channels.Msteams)
             {
-                var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
+                var channelData = turnContext.Activity.GetChannelDataObject<TeamsChannelData>();
 
                 if (turnContext.Activity.MembersAdded != null)
                 {

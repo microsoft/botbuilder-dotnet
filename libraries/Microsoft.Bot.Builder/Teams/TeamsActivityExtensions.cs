@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <returns>The current activity's team's meeting, or null.</returns>
         public static TeamsMeetingInfo TeamsGetMeetingInfo(this IActivity activity)
         {
-            var channelData = activity.GetChannelData<TeamsChannelData>();
+            var channelData = activity.GetChannelDataObject<TeamsChannelData>();
             return channelData?.Meeting;
         }
 
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <returns>The current activity's team's channel, or empty string.</returns>
         public static string TeamsGetChannelId(this IActivity activity)
         {
-            var channelData = activity.GetChannelData<TeamsChannelData>();
+            var channelData = activity.GetChannelDataObject<TeamsChannelData>();
             return channelData?.Channel?.Id;
         }
 
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <returns>The current activity's team's Id, or an empty string.</returns>
         public static TeamInfo TeamsGetTeamInfo(this IActivity activity)
         {
-            var channelData = activity.GetChannelData<TeamsChannelData>();
+            var channelData = activity.GetChannelDataObject<TeamsChannelData>();
             return channelData?.Team;
         }
 

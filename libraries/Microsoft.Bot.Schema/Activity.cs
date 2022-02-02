@@ -443,9 +443,7 @@ namespace Microsoft.Bot.Schema
         /// Channel-specific content.
         /// </value>
         [JsonProperty(PropertyName = "channelData")]
-#pragma warning disable CA1721 // Property names should not match get methods (we can't change this without changing binary compat).
         public object ChannelData { get; set; }
-#pragma warning restore CA1721 // Property names should not match get methods
 
         /// <summary>
         /// Gets or sets a string indicating whether the recipient of a
