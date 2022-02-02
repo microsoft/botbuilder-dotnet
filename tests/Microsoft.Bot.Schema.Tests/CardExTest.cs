@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -93,12 +94,12 @@ namespace Microsoft.Bot.Schema.Tests
                         "Data Transfer",
                         price: "$ 38.45",
                         quantity: "368",
-                        image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png")),
+                        image: new CardImage(url: new Uri("https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png"))),
                     new ReceiptItem(
                         "App Service",
                         price: "$ 45.00",
                         quantity: "720",
-                        image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png")),
+                        image: new CardImage(url: new Uri("https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png"))),
                 },
                 Tax = "$ 7.50",
                 Total = "$ 90.95",
