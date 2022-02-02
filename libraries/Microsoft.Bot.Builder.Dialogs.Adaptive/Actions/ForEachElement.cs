@@ -226,6 +226,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 beginDialog = true;
                 UpdateActionScopeState(dc, new DialogState());
+
+                if (turnResult.Status == DialogTurnStatus.Complete && turnResult.ParentEnded)
+                {
+                    return await dc.EndDialogAsync(result: turnResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
             }
 
             // End of list has been reached, or the list is null
