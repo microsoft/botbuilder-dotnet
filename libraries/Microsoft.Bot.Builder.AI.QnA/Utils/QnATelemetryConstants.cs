@@ -57,5 +57,45 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The Key used when storing a username in a custom event within telemetry.
         /// </summary>
         public static readonly string UsernameProperty = "username";
+
+        /// <summary>
+        /// On of the active learning suggestions is clicked.
+        /// </summary>
+        public static readonly string SuggestionSelected = "suggestionSelected";
+
+        /// <summary>
+        /// None of the active learning suggestions is clicked or none of the above is clicked.
+        /// </summary>
+        public static readonly string SuggestionSkipped = "sugestionSkipped";
+
+        /// <summary>
+        /// AmbiguousQuery.
+        /// </summary>
+        public static readonly string AmbiguousQuery = "ambiguousQuery";
+
+        /// <summary>
+        /// PromptSelected in a multi turn dialog.
+        /// </summary>
+        public static readonly string PromptSelected = "promptSelected";
+
+        /// <summary>
+        /// PromptSkipped in a multi turn dialog.
+        /// </summary>
+        public static readonly string PromptSkipped = "promptSkipped";
+
+        /// <summary>
+        /// Parent QnA Id.
+        /// </summary>
+        public static readonly string ParentQnAId = "parentQnAId";
+        
+        /// <summary>
+        /// Current QnA Id - selected prompt's qna Id.
+        /// </summary>
+        public static readonly string CurrentQnAId = "currentQnAId";
+
+        /// <summary>
+        /// User's query in previous turn.
+        /// </summary>
+        public static readonly string PreviousUserQuery = "previousUserQuery";
     }
 }

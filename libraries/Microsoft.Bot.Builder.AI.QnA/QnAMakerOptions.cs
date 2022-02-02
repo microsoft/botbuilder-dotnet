@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         public QnAMakerOptions()
         {
-            ScoreThreshold = 0.3f;
+            ScoreThreshold = 0.3F;
         }
 
         /// <summary>
@@ -76,6 +76,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// An array of <see cref="Metadata"/>.
         /// </value>
+        [Obsolete("This property is no longer used in bots for language service and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFilters")]
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
@@ -113,12 +114,36 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets <see cref="StrictFilters"/> join operator.
+        /// Gets or sets strictFiltersJoinOperator - join operator on metadata strict filters.
         /// </summary>
-        /// <value>
-        /// A value used for join operation of StrictFilters <see cref="StrictFilters"/>.
-        /// </value>
+        /// <value>StrictFiltersJoinOperator - join operator on metadata strict filters.</value>
+        [Obsolete("This property is no longer used and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether  enable Precise Answer.
+        /// </summary>
+        /// <value>
+        /// To enable Precise Answer or not.
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public bool EnablePreciseAnswer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public Models.Filters Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether Flag to enable Query over Unstructured Sources (Optional).
+        /// </summary>
+        /// <value> Flag to enable Query over Unstructured Sources.</value>
+        [JsonProperty("includeUnstructuredSources")]
+        public bool IncludeUnstructuredSources { get; set; } = true;
     }
 }

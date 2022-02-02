@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -8,18 +9,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Represents an individual result from a knowledge base query.
     /// </summary>
-    public class QueryResult
+    public class KnowledgeBaseAnswer
     {
         /// <summary>
-        /// Gets or sets the list of questions indexed in the QnA Service for the given answer.
+        /// Gets the list of questions indexed in the QnA Service for the given answer.
         /// </summary>
         /// <value>
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public string[] Questions { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public List<string> Questions { get; }
 
         /// <summary>
         /// Gets or sets the answer text.
@@ -30,6 +29,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("answer")]
         public string Answer { get; set; }
 
+        /// <summary> Gets metadata associated with the answer, useful to categorize or filter question answers. </summary>
+        /// <value>  Metadata associated with the answer, useful to categorize or filter question answers.</value>
+        [JsonProperty(PropertyName = "metadata")]
+        public Dictionary<string, string> Metadata { get; }
+
         /// <summary>
         /// Gets or sets the answer's score, from 0.0 (least confidence) to
         /// 1.0 (greatest confidence).
@@ -38,21 +42,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The answer's score, from 0.0 (least confidence) to
         /// 1.0 (greatest confidence).
         /// </value>
-        [JsonProperty("score")]
-        public float Score { get; set; }
+        [JsonProperty("confidenceScore")]
+        public double ConfidenceScore { get; set; }
 
-        /// <summary>
-        /// Gets or sets metadata that is associated with the answer.
-        /// </summary>
-        /// <value>
-        /// Metadata that is associated with the answer.
-        /// </value>
-        [JsonProperty(PropertyName = "metadata")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public Metadata[] Metadata { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-
-        /// <summary>
+       /// <summary>
         /// Gets or sets the source from which the QnA was extracted.
         /// </summary>
         /// <value>
@@ -78,8 +71,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The context from which the QnA was extracted.
         /// </value>
-        [JsonProperty(PropertyName = "context")]
-        public QnAResponseContext Context { get; set; }
+        [JsonProperty(PropertyName = "dialog")]
+        public QnAResponseContext Dialog { get; set; }
 
         /// <summary>
         /// Gets or sets AnswerSpan of the previous turn.
@@ -88,6 +81,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The answerspan value.
         /// </value>
         [JsonProperty("answerSpan")]
-        public AnswerSpanResponse AnswerSpan { get; set; }
+        public KnowledgeBaseAnswerSpan AnswerSpan { get; set; }
     }
 }

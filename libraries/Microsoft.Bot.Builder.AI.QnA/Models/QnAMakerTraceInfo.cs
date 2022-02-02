@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -62,11 +63,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
-        /// Gets or sets the filters used to return answers that have the specified metadata.       
+        /// Gets or sets the filters used to return answers that have the specified metadata.
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
-        /// </value>        
+        /// </value>
+        [Obsolete("This property is no longer used and will be ignored")]
         [JsonProperty("strictFilters")]
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
@@ -119,5 +121,30 @@ namespace Microsoft.Bot.Builder.AI.QnA
 #pragma warning disable CA1819 // Properties should not return arrays (this property is obsolete and we won't change it)
         public Metadata[] MetadataBoost { get; set; }
 #pragma warning restore CA1819 // Properties should not return arrays
+
+        /// <summary>
+        /// Gets or sets the list of sources used to filter QnA Maker to filter results.
+        /// </summary>
+        /// <value>
+        /// An array of string.
+        /// </value>
+        [JsonProperty("filters")]
+        public Filters Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets AnswerSpanRequest.
+        /// </summary>
+        /// <value>
+        /// The AnswerSpanRequest.
+        /// </value>
+        [JsonProperty("answerSpanRequest")]
+        public AnswerSpanRequest AnswerSpanRequest { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable Query over Unstructured Sources (Optional).
+        /// </summary>
+        /// <value>A value indicating whether to enable Query over Unstructured Sources.</value>
+        [JsonProperty("includeUnstructuredSources")]
+        public bool IncludeUnstructuredSources { get; set; }
     }
 }

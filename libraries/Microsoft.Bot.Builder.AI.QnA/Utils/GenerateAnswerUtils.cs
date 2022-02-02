@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -103,7 +105,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             results.Answers = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
-
             return results;
         }
 
@@ -134,9 +135,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.Top)} property should be an integer greater than 0");
             }
 
-            if (options.StrictFilters == null)
+            if (options.Filters == null)
             {
-                options.StrictFilters = Array.Empty<Metadata>();
+                options.Filters = new Filters 
+                {
+                    MetadataFilter = new MetadataFilter(
+                        new List<KeyValuePair<string, string>>(),
+                        JoinOperator.AND.ToString())
+                };
             }
 
             if (options.RankerType == null)
@@ -166,9 +172,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.Top = queryOptions.Top;
                 }
 
+                // For backward compatibility of legacy and v2 preview bot code with this SDK
                 if (queryOptions.StrictFilters?.Length > 0)
                 {
-                    hydratedOptions.StrictFilters = queryOptions.StrictFilters;
+                    queryOptions.Filters = LanguageServiceUtils.GetFilters(queryOptions.StrictFilters, queryOptions.StrictFiltersJoinOperator.ToString());
+                }
+
+                if (queryOptions.Filters?.MetadataFilter?.Metadata != null)
+                {
+                    hydratedOptions.Filters = queryOptions.Filters;
                 }
 
                 hydratedOptions.Context = queryOptions.Context;
@@ -176,6 +188,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
                 hydratedOptions.StrictFiltersJoinOperator = queryOptions.StrictFiltersJoinOperator;
+                hydratedOptions.EnablePreciseAnswer = queryOptions.EnablePreciseAnswer;
             }
 
             return hydratedOptions;
@@ -184,18 +197,27 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
+            AnswerSpanRequest answerSpanRequest = null;
+            if (options.EnablePreciseAnswer)
+            {
+                answerSpanRequest = new AnswerSpanRequest();
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            }
+
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
                     question = messageActivity.Text,
                     top = options.Top,
-                    strictFilters = options.StrictFilters,
-                    scoreThreshold = options.ScoreThreshold,
+                    strictFilters = GetMetadataFromFilters(options.Filters),
+                    scoreThreshold = options.ScoreThreshold * 100,
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,
                     rankerType = options.RankerType,
-                    StrictFiltersCompoundOperationType = options.StrictFiltersJoinOperator,
+                    StrictFiltersCompoundOperationType = Enum.TryParse(options.Filters?.MetadataFilter?.LogicalOperation, out JoinOperator operation) ? operation : JoinOperator.AND,
+                    answerSpanRequest = answerSpanRequest,
+                    includeUnstructuredSources = options.IncludeUnstructuredSources // for v2 services
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
@@ -208,21 +230,37 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
+            AnswerSpanRequest answerSpanRequest = null;
+            if (options.EnablePreciseAnswer)
+            {
+                answerSpanRequest = new AnswerSpanRequest();
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            }
+
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = messageActivity,
                 QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
-                ScoreThreshold = options.ScoreThreshold,
+                ScoreThreshold = options.ScoreThreshold * 100,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters,
+                StrictFilters = GetMetadataFromFilters(options.Filters),
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
-                RankerType = options.RankerType
+                RankerType = options.RankerType,
+                AnswerSpanRequest = answerSpanRequest
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
         }
+
+        // Get Metatdata in legacy format from filters object
+        private Metadata[] GetMetadataFromFilters(Filters filters)
+        {
+            // Union metadata and source filters
+            return filters?.MetadataFilter?.Metadata?.Select(kvp => new Metadata { Name = kvp.Key, Value = kvp.Value })
+                    .Union(filters?.SourceFilter?.Select(s => new Metadata { Name = Constants.SourceFilterMetadataKey, Value = s })).ToArray();
+         }
     }
 }

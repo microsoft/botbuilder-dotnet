@@ -108,11 +108,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
-        /// Gets or sets <see cref="Metadata"/> join operator.
+        /// Gets or sets strictFilters join operator.
         /// </summary>
         /// <value>
-        /// A value used for Join operation of Metadata <see cref="Metadata"/>.
+        /// A value used for Join operation of strictFilters.
         /// </value>
+        [Obsolete("This property is no longer used in bots for language service and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
 
@@ -130,6 +131,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// Gets or sets an expression to evaluate to set additional metadata name value pairs.
         /// </summary>
         /// <value>An expression to evaluate for pairs of metadata.</value>
+        [Obsolete("This property is no longer used in bots for language service and will be ignored. User filters object instead.")]
         [JsonProperty("metadata")]
         public ArrayExpression<Metadata> Metadata { get; set; }
 
@@ -146,6 +148,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// <value>The expression or number.</value>
         [JsonProperty("qnaId")]
         public IntExpression QnAId { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public ObjectExpression<Models.Filters> Filters { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
@@ -190,6 +201,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             var filters = new List<Metadata>();
+            var metadataFilter = new Models.MetadataFilter(
+                    new List<KeyValuePair<string, string>>(),
+                    JoinOperator.AND.ToString());
+            var newFilters = new Models.Filters(
+                metadataFilter,
+                new List<string>(),
+                JoinOperator.OR.ToString());              
+
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
                 filters.Add(new Metadata
@@ -197,13 +216,26 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Name = "dialogName",
                     Value = dialogContext.ActiveDialog.Id
                 });
+
+                // add any additional metadata in the new filters format as well
+                newFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("dialogName", dialogContext.ActiveDialog.Id));
             }
 
             // if there is $qna.metadata set add to filters
             var externalMetadata = Metadata?.GetValue(dialogContext.State);
+            var externalFilters = Filters?.GetValue(dialogContext.State);
+
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
+            }
+
+            if (externalFilters != null)
+            {
+                externalFilters.MetadataFilter?.Metadata.ToList().ForEach(kv => newFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>(kv.Key, kv.Value)));
+                newFilters.MetadataFilter.LogicalOperation = externalFilters.MetadataFilter?.LogicalOperation;
+                newFilters.SourceFilter.AddRange(externalFilters.SourceFilter);
+                newFilters.LogicalOperation = externalFilters.LogicalOperation;
             }
 
             // Calling QnAMaker to get response.
@@ -219,7 +251,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     QnAId = QnAId.GetValue(dialogContext.State),
                     RankerType = RankerType.GetValue(dialogContext.State),
                     IsTest = IsTest,
-                    StrictFiltersJoinOperator = StrictFiltersJoinOperator
+                    StrictFiltersJoinOperator = StrictFiltersJoinOperator, // set new filters if user does not have legacy metadata in the dialog context
+                    Filters = externalMetadata == null ? newFilters : null,
                 },
                 null).ConfigureAwait(false);
 
@@ -341,6 +374,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             return properties;
-        } 
+        }
     }
 }
