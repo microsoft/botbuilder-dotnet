@@ -104,13 +104,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <typeparam name="T">The recognition result type.</typeparam>
         /// <param name="dialogContext">Dialog context.</param>
         /// <param name="activity">activity to recognize.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-#pragma warning disable CA1068 // CancellationToken parameters must come last (we can't change this without breaking binary compat)
-        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
-#pragma warning restore CA1068 // CancellationToken parameters must come last
+        public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, Activity activity, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();

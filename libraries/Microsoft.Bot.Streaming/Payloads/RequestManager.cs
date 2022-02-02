@@ -37,9 +37,8 @@ namespace Microsoft.Bot.Streaming.Payloads
         {
             if (_responseTasks.TryGetValue(requestId, out TaskCompletionSource<ReceiveResponse> signal))
             {
-#pragma warning disable VSTHRD110 // Observe result of async calls
-                Task.Run(() => { signal.TrySetResult(response); });
-#pragma warning restore VSTHRD110 // Observe result of async calls
+                _ = Task.Run(() => { signal.TrySetResult(response); });
+
                 return Task.FromResult(true);
             }
 
