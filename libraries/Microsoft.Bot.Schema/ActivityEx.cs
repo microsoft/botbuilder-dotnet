@@ -407,42 +407,38 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets the channel data for this activity as a strongly-typed object.
         /// </summary>
-        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
+        /// <typeparam name="TType">The type of the object to return.</typeparam>
         /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
-#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change it without breaking binary compatibility)
-        public TypeT GetChannelData<TypeT>()
-#pragma warning restore CA1715 // Identifiers should have correct prefix
+        public TType GetChannelData<TType>()
         {
             if (ChannelData == null)
             {
                 return default;
             }
 
-            if (ChannelData.GetType() == typeof(TypeT))
+            if (ChannelData.GetType() == typeof(TType))
             {
-                return (TypeT)ChannelData;
+                return (TType)ChannelData;
             }
 
-            return ((JObject)ChannelData).ToObject<TypeT>();
+            return ((JObject)ChannelData).ToObject<TType>();
         }
 
         /// <summary>
         /// Gets the channel data for this activity as a strongly-typed object.
         /// A return value idicates whether the operation succeeded.
         /// </summary>
-        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
+        /// <typeparam name="TType">The type of the object to return.</typeparam>
         /// <param name="instance">When this method returns, contains the strongly-typed object if the operation succeeded,
         /// or the type's default value if the operation failed.</param>
         /// <returns>
         /// <c>true</c> if the operation succeeded; otherwise, <c>false</c>.
         /// </returns>
         /// <seealso cref="ChannelData"/>
-        /// <seealso cref="GetChannelData{TypeT}"/>
-#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change it without breaking binary compatibility)
-        public bool TryGetChannelData<TypeT>(out TypeT instance)
-#pragma warning restore CA1715 // Identifiers should have correct prefix
+        /// <seealso cref="GetChannelData{TType}"/>
+        public bool TryGetChannelData<TType>(out TType instance)
         {
             instance = default;
 
@@ -453,7 +449,7 @@ namespace Microsoft.Bot.Schema
                     return false;
                 }
 
-                instance = GetChannelData<TypeT>();
+                instance = GetChannelData<TType>();
                 return true;
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)
