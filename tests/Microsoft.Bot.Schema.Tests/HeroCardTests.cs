@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Schema.Tests
             var title = "title";
             var subtitle = "subtitle";
             var text = "Why yes longan fruit is delicious!";
-            var images = new List<CardImage>() { new CardImage(new Uri("http://longan.com"), "longan bunch", new CardAction()) };
+            var images = new List<CardImage>() { new CardImage("http://longan.com", "longan bunch", new CardAction()) };
             var buttons = new List<CardAction>() { new CardAction() };
             var tap = new CardAction();
 

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests
@@ -11,7 +10,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void CardImageInits()
         {
-            var url = new Uri("http://example.com");
+            var url = "http://example.com";
             var alt = "example image";
             var tap = new CardAction("type", "title", "image", "text", "displayText", new { }, new { });
 

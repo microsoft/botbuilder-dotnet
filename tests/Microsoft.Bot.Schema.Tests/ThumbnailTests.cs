@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Schema.Tests
             var title = "title";
             var subtitle = "subtitle";
             var text = "text";
-            var images = new List<CardImage>() { new CardImage(new Uri("http://example.com"), "example image") };
+            var images = new List<CardImage>() { new CardImage("http://example.com", "example image") };
             var buttons = new List<CardAction>() { new CardAction("cardActionType") };
             var tap = new CardAction("type", "title", "image", "text", "displayText", new { }, new { });
 

@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System;
+    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>An image on a card.</summary>
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="url">URL thumbnail image for major content property.</param>
         /// <param name="alt">Image description intended for screen readers.</param>
         /// <param name="tap">Action assigned to specific Attachment.</param>
-        public CardImage(Uri url = default, string alt = default, CardAction tap = default)
+        public CardImage(string url = default, string alt = default, CardAction tap = default)
         {
             Url = url;
             Alt = alt;
@@ -30,7 +30,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>Gets or sets URL thumbnail image for major content property.</summary>
         /// <value>The URL of the thumbnail.</value>
         [JsonProperty(PropertyName = "url")]
-        public Uri Url { get; set; }
+#pragma warning disable CA1056 // Uri properties should not be strings
+        public string Url { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>Gets or sets image description intended for screen readers.</summary>
         /// <value>The image description intended for screen readers.</value>

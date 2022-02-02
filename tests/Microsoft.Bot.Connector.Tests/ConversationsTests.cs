@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -601,7 +600,7 @@ namespace Microsoft.Bot.Connector.Tests
                         {
                             Title = "A static image",
                             Subtitle = "JPEG image",
-                            Images = new CardImage[] { new CardImage() { Url = new Uri("https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png") } },
+                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } },
                         },
                     },
                     new Attachment()
@@ -611,7 +610,7 @@ namespace Microsoft.Bot.Connector.Tests
                         {
                             Title = "An animation",
                             Subtitle = "GIF image",
-                            Images = new CardImage[] { new CardImage() { Url = new Uri("http://i.giphy.com/Ki55RUbOV5njy.gif") } },
+                            Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } },
                         },
                     },
                 },
