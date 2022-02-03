@@ -143,15 +143,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             dialog.TelemetryClient = _telemetryClient;
             _dialogs[dialog.Id] = dialog;
 
-            // Automatically add any dependencies the dialog might have
-            if (dialog is IDialogDependencies dialogWithDependencies)
-            {
-                foreach (var dependencyDialog in dialogWithDependencies.GetDependencies())
-                {
-                    Add(dependencyDialog);
-                }
-            }
-
             return this;
         }
 
