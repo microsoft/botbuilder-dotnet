@@ -555,8 +555,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;
 
             // Calling QnAMaker to get response.
-            
-            // Calling QnAMaker to get response.
             QueryResults response;
             var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
             if (stepContext.ActiveDialog.State.TryGetValue($"qnaresult{GetHashCode()}", out var value))
