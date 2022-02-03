@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 {
@@ -193,7 +192,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets the <see cref="HttpClient"/> instance to use for requests to the QnA Maker service.
         /// </summary>
         /// <value>The HTTP client.</value>
-        [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
         /// <summary>
@@ -202,7 +200,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The knowledge base ID or an expression which evaluates to the knowledge base ID.
         /// </value>
-        [JsonProperty("knowledgeBaseId")]
         public string KnowledgeBaseId { get; set; }
 
         /// <summary>
@@ -211,7 +208,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The QnA Maker host URL or an expression which evaluates to the host URL.
         /// </value>
-        [JsonProperty("hostname")]
         public string HostName { get; set; }
 
         /// <summary>
@@ -220,7 +216,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The QnA Maker endpoint key to use or an expression which evaluates to the endpoint key.
         /// </value>
-        [JsonProperty("endpointKey")]
         public string EndpointKey { get; set; }
 
         /// <summary>
@@ -229,7 +224,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The threshold for answers returned or an expression which evaluates to the threshold.
         /// </value>
-        [JsonProperty("threshold")]
         public double Threshold { get; set; } = DefaultThreshold;
 
         /// <summary>
@@ -239,7 +233,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The maximum number of answers to return from the knowledge base or an expression which
         /// evaluates to the maximum number to return.
         /// </value>
-        [JsonProperty("top")]
         public int Top { get; set; } = DefaultTopN;
 
         /// <summary>
@@ -248,7 +241,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The template to send the user when QnA Maker does not find an answer.
         /// </value>
-        [JsonProperty("noAnswer")]
         public Activity NoAnswer { get; set; } = MessageFactory.Text(DefaultNoAnswer);
 
         /// <summary>
@@ -259,7 +251,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The path card title to use when showing active learning options to the user or an
         /// expression which evaluates to the card title.
         /// </value>
-        [JsonProperty("activeLearningCardTitle")]
         public string ActiveLearningCardTitle { get; set; }
 
         /// <summary>
@@ -270,7 +261,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The button text to use with active learning options or an expression which evaluates to
         /// the button text.
         /// </value>
-        [JsonProperty("cardNoMatchText")]
         public string CardNoMatchText { get; set; }
 
         /// <summary>
@@ -280,7 +270,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The template to send the user if they select the no match option on an active learning card.
         /// </value>
-        [JsonProperty("cardNoMatchResponse")]
         public Activity CardNoMatchResponse { get; set; } = MessageFactory.Text(DefaultCardNoMatchResponse);
 
         /// <summary>
@@ -291,7 +280,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker metadata with which to filter or boost queries to the knowledge base
         /// or an expression which evaluates to the QnA Maker metadata.
         /// </value>
-        [JsonProperty("strictFilters")]
         public List<Metadata> StrictFilters { get; }
 
         /// <summary>
@@ -300,7 +288,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
-        [JsonProperty("logPersonalInformation")]
         public bool LogPersonalInformation { get; set; } = false;
 
         /// <summary>
@@ -309,7 +296,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// A value indicating whether to call test or prod environment of knowledge base. 
         /// </value>
-        [JsonProperty("isTest")]
         public bool IsTest { get; set; }
 
         /// <summary>
@@ -319,7 +305,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker ranker type to use or an expression which evaluates to the ranker type.
         /// </value>
         /// <seealso cref="RankerTypes"/>
-        [JsonProperty("rankerType")]
         public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
