@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -109,6 +109,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task DialogSet_CaseInsensitive()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
+            var ds = new DialogSet(dialogStateProperty)
+                .Add(new WaterfallDialog("a"))
+                .Add(new WaterfallDialog("A"));
+
+            Assert.NotNull(ds.Find("a"));
+            Assert.NotNull(ds.Find("a2"));
+
+            await Task.CompletedTask;
+        }
+
+        [Fact]
+        public async Task DialogSet_CaseSensitive()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
+            var ds = new DialogSet(dialogStateProperty, StringComparer.Ordinal)
+                .Add(new WaterfallDialog("a"))
+                .Add(new WaterfallDialog("A"));
+
+            Assert.NotNull(ds.Find("a"));
+            Assert.NotNull(ds.Find("A"));
+
+            await Task.CompletedTask;
+        }
+
+        [Fact]
         public async Task DialogSet_NullTelemetrySet()
         {
             var convoState = new ConversationState(new MemoryStorage());

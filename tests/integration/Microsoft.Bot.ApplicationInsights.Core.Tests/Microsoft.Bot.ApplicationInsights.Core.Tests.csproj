@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.csproj" />
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

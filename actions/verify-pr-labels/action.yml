@@ -1,0 +1,9 @@
+name: 'Verify Pull Request Parity Labels'
+description: 'Verify parity labels for the PR. See index.js for details.'
+inputs:
+  github-token:
+    description: 'Token provided by GitHub'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'
