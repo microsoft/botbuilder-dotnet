@@ -1,5 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+﻿// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -407,30 +406,30 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets the channel data for this activity as a strongly-typed object.
         /// </summary>
-        /// <typeparam name="TType">The type of the object to return.</typeparam>
+        /// <typeparam name="T">The type of the object to return.</typeparam>
         /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
-        public TType GetChannelData<TType>()
+        public T GetChannelData<T>()
         {
             if (ChannelData == null)
             {
                 return default;
             }
 
-            if (ChannelData.GetType() == typeof(TType))
+            if (ChannelData.GetType() == typeof(T))
             {
-                return (TType)ChannelData;
+                return (T)ChannelData;
             }
 
-            return ((JObject)ChannelData).ToObject<TType>();
+            return ((JObject)ChannelData).ToObject<T>();
         }
 
         /// <summary>
         /// Gets the channel data for this activity as a strongly-typed object.
         /// A return value idicates whether the operation succeeded.
         /// </summary>
-        /// <typeparam name="TType">The type of the object to return.</typeparam>
+        /// <typeparam name="T">The type of the object to return.</typeparam>
         /// <param name="instance">When this method returns, contains the strongly-typed object if the operation succeeded,
         /// or the type's default value if the operation failed.</param>
         /// <returns>
@@ -438,7 +437,7 @@ namespace Microsoft.Bot.Schema
         /// </returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="GetChannelData{TType}"/>
-        public bool TryGetChannelData<TType>(out TType instance)
+        public bool TryGetChannelData<T>(out T instance)
         {
             instance = default;
 
@@ -449,7 +448,7 @@ namespace Microsoft.Bot.Schema
                     return false;
                 }
 
-                instance = GetChannelData<TType>();
+                instance = GetChannelData<T>();
                 return true;
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)
