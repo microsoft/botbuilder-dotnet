@@ -226,10 +226,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 beginDialog = true;
                 UpdateActionScopeState(dc, new DialogState());
+
+                // If one of the descendant dialogs ended the parent, then end processing
+                if (ShouldEndDialog(turnResult, out DialogTurnResult finalResult))
+                {
+                    return await dc.EndDialogAsync(result: finalResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
             }
 
             // End of list has been reached, or the list is null
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        private bool ShouldEndDialog(DialogTurnResult turnResult, out DialogTurnResult finalTurnResult)
+        {
+            finalTurnResult = turnResult;
+            
+            // If a descendant dialog multiple levels below this container ended stack processing,
+            // the result will be nested.
+            while (finalTurnResult.Result != null 
+                && finalTurnResult.Result is DialogTurnResult dtr 
+                && dtr.ParentEnded && dtr.Status == DialogTurnStatus.Complete)
+            {
+                finalTurnResult = dtr;
+            }
+
+            return finalTurnResult.ParentEnded && finalTurnResult.Status == DialogTurnStatus.Complete;
         }
 
         private void UpdateActionScopeState(DialogContext dc, DialogState state)

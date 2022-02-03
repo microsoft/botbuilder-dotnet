@@ -270,6 +270,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 // Recursively call ContinueDialogAsync() to apply changes and continue execution.
                 return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
             }
+            
+            if (result is DialogTurnResult dtr && dtr.ParentEnded)
+            {
+                return await this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
             // Increment our offset into the actions and being the next action
             var nextOffset = dc.State.GetIntValue(OFFSETKEY, 0) + 1;
