@@ -555,15 +555,17 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;
 
             // Calling QnAMaker to get response.
-            QueryResults response = null;
+            
+            // Calling QnAMaker to get response.
+            QueryResults response;
             var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
-            if (stepContext.ActiveDialog.State.TryGetValue($"qnaresult{this.GetHashCode()}", out object value))
+            if (stepContext.ActiveDialog.State.TryGetValue($"qnaresult{GetHashCode()}", out var value))
             {
-                response = value as QueryResults;
-                if (response == null)
-                {
-                    response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
-                }
+                response = (QueryResults)value;
+            }
+            else
+            {
+                response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
             }
 
             // Resetting previous query.
