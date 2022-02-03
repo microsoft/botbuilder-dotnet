@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
 {
     public class Program
     {
-        private static WebSocketClient _client;
+        private static StreamingTransportClient _client;
         private static Task _clientTask;
         private static CancellationTokenSource _cancellationSource;
         private static string _conversationId;
@@ -54,8 +55,12 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
                     await ConnectAsync();
                     break;
 
+                case "cp":
+                    await ConnectAsync(useNamedPipes: true);
+                    break;
+
                 case "car":
-                    await ConnectAsync(true);
+                    await ConnectAsync(automaticallyReconnect: true);
                     break;
 
                 case "m":
@@ -86,34 +91,44 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
             return Console.ReadLine();
         }
 
-        private static async Task ConnectAsync(bool automaticallyReconnect = false)
+        private static async Task ConnectAsync(bool automaticallyReconnect = false, bool useNamedPipes = false)
         {
-            var url = AskUser("Bot url:");
-            var appId = AskUser("Bot app id:");
-            var appPassword = AskUser("Bot app password:");
-
-            var headers = new Dictionary<string, string>() { { "channelId", "Test" } };
-
-            if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appPassword))
-            {
-                var credentials = new MsalAppCredentials(appId, appPassword, null, appId);
-                var token = await credentials.GetTokenAsync();
-
-                headers.Add("Authorization", $"Bearer {token}");
-            }
-
             var configureNamedOptions = new ConfigureNamedOptions<ConsoleLoggerOptions>(string.Empty, null);
             var optionsFactory = new OptionsFactory<ConsoleLoggerOptions>(new[] { configureNamedOptions }, Enumerable.Empty<IPostConfigureOptions<ConsoleLoggerOptions>>());
             var optionsMonitor = new OptionsMonitor<ConsoleLoggerOptions>(optionsFactory, Enumerable.Empty<IOptionsChangeTokenSource<ConsoleLoggerOptions>>(), new OptionsCache<ConsoleLoggerOptions>());
-            
+
             // Improvement opportunity: expose command / argument to control log level.
             var loggerFactory = new LoggerFactory(new[] { new ConsoleLoggerProvider(optionsMonitor) }, new LoggerFilterOptions { MinLevel = LogLevel.Debug });
 
-            _cancellationSource = new CancellationTokenSource();
+            if (useNamedPipes)
+            {
+                var pipeName = AskUser("Pipe Name:");
+                _client = new NamedPipeClient(pipeName, url: ".", new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("NamedPipeClient"));
+                _client.Disconnected += Client_Disconnected;
+                _clientTask = _client.ConnectAsync();
+            }
+            else
+            {
+                var url = AskUser("Bot url:");
+                var appId = AskUser("Bot app id:");
+                var appPassword = AskUser("Bot app password:");
 
-            _client = new WebSocketClient(url, new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("WebSocketClient"));
-            _client.Disconnected += Client_Disconnected;
-            _clientTask = _client.ConnectAsync(headers, _cancellationSource.Token);
+                var headers = new Dictionary<string, string>() { { "channelId", "Test" } };
+
+                if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appPassword))
+                {
+                    var credentials = new MsalAppCredentials(appId, appPassword, null, appId);
+                    var token = await credentials.GetTokenAsync();
+
+                    headers.Add("Authorization", $"Bearer {token}");
+                }
+
+                _cancellationSource = new CancellationTokenSource();
+
+                _client = new WebSocketClient(new ClientWebSocket(), url, new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("WebSocketClient"));
+                _client.Disconnected += Client_Disconnected;
+                _clientTask = _client.ConnectAsync(headers, _cancellationSource.Token);
+            }
         }
 
         private static void Client_Disconnected(object sender, Bot.Streaming.Transport.DisconnectedEventArgs e)
@@ -199,8 +214,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
         {
             Console.WriteLine("Welcome to the streaming client.");
             Console.WriteLine("Commands:");
-            Console.WriteLine("c - Connect client");
-            Console.WriteLine("car - Connect client with automatic reconnect");
+            Console.WriteLine("c - Connect web socket client");
+            Console.WriteLine("cp - Connect named pipe client");
+            Console.WriteLine("car - Connect web socket client with automatic reconnect");
             Console.WriteLine("m - Send message activity to bot");
             Console.WriteLine("msplit - Send message activity to bot, split between request and stream, allowing commands in between.");
             Console.WriteLine("sd - Force server disconnect");
