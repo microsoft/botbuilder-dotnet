@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                     try
                     {
                         // Ping server
-                        var response = await _session.SendRequestAsync(StreamingRequest.CreateGet("/api/version"), _disconnectCts.Token).ConfigureAwait(false);
+                        var response = await SendAsync(StreamingRequest.CreateGet("/api/version"), _disconnectCts.Token).ConfigureAwait(false);
 
                         if (!IsSuccessResponse(response))
                         {
