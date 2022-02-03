@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
     /// <summary>
     /// Represents a Slack Event Type object https://api.slack.com/events-api#receiving_events.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class EventType
     {
         public string Type { get; set; }

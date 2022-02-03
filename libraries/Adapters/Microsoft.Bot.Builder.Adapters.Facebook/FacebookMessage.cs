@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     /// Represents information associated with a Facebook webhook event. For more information, see the Facebook
     /// [Webhook Events Reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events).
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class FacebookMessage
     {
         /// <summary>
