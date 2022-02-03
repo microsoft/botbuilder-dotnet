@@ -134,12 +134,9 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// Deserialize the passed in byte array into the returned <see cref="Header"/>.
         /// </summary>
         /// <param name="buffer">The array containing bytes to be read.</param>
-        /// <param name="offset">Deprecated offset of header's starting location within the byte array.</param>
         /// <param name="count">The length of the byte array.</param>
         /// <returns>The <see cref="Header"/> deserialized from the byte array.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        public static Header Deserialize(byte[] buffer, int offset, int count)
-#pragma warning restore CA1801 // Review unused parameters
+        public static Header Deserialize(byte[] buffer, int count)
         {
             if (count != TransportConstants.MaxHeaderLength)
             {

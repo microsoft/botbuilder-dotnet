@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             // keeping it simple for now and we can optimize further if data says we required it.
             // Alternatively we can have a 48 byte buffer that we reuse, considering that we always
             // have a single thread running a given transportHandler instance.
-            header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), 0, TransportConstants.MaxHeaderLength);
+            header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), TransportConstants.MaxHeaderLength);
 
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 

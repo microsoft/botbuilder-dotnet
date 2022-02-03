@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var length = HeaderSerializer.Serialize(header, buffer, offset);
 
-            var result = HeaderSerializer.Deserialize(buffer, 0, length);
+            var result = HeaderSerializer.Deserialize(buffer, length);
 
             Assert.Equal(header.Type, result.Type);
             Assert.Equal(header.PayloadLength, result.PayloadLength);
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             const string header = "A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+            var result = HeaderSerializer.Deserialize(bytes, bytes.Length);
 
             Assert.Equal('A', result.Type);
             Assert.Equal(168, result.PayloadLength);
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             const string header = "Z.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n";
             var bytes = Encoding.ASCII.GetBytes(header);
 
-            var result = HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+            var result = HeaderSerializer.Deserialize(bytes, bytes.Length);
 
             Assert.Equal('Z', result.Type);
             Assert.Equal(168, result.PayloadLength);
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<ArgumentException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, 5);
+                HeaderSerializer.Deserialize(bytes, 5);
             });
         }
 
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<ArgumentException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, 55);
+                HeaderSerializer.Deserialize(bytes, 55);
             });
         }
 
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Throws<InvalidDataException>(() =>
             {
-                HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+                HeaderSerializer.Deserialize(bytes, bytes.Length);
             });
         }
 

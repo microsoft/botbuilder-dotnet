@@ -168,8 +168,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                     Assert.NotNull(recognizerResult.Intents["SpecifyName"]);
                     Assert.Equal(luisTraceInfo["luisResult"]["query"], utterance);
                     Assert.Equal(luisTraceInfo["luisModel"]["ModelID"], AppId);
-                },
-                "luisTraceInfo")
+                })
                 .Send(utterance)
                 .AssertReply(botResponse, "passthrough")
                 .StartTestAsync();

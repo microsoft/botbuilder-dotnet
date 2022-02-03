@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                     }
 
                     // deserialize the bytes into a header
-                    var header = HeaderSerializer.Deserialize(_receiveHeaderBuffer, 0, TransportConstants.MaxHeaderLength);
+                    var header = HeaderSerializer.Deserialize(_receiveHeaderBuffer, TransportConstants.MaxHeaderLength);
 
                     // read the payload
                     var contentStream = _getStream(header);

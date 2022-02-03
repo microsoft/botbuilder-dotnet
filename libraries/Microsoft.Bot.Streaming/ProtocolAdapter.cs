@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Streaming
 
             var requestId = Guid.NewGuid();
             var responseTask = _requestManager.GetResponseAsync(requestId, cancellationToken);
-            var requestTask = _sendOperations.SendRequestAsync(requestId, request, cancellationToken);
+            var requestTask = _sendOperations.SendRequestAsync(requestId, request);
             cancellationToken.ThrowIfCancellationRequested();
             await Task.WhenAll(requestTask, responseTask).ConfigureAwait(false);
 

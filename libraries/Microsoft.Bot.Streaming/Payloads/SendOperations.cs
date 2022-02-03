@@ -32,13 +32,12 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// </summary>
         /// <param name="id">The ID to assign to the <see cref="RequestDisassembler"/> used by this operation.</param>
         /// <param name="request">The request to send.</param>
-        /// <param name="cancellationToken">A cancelation token. Unused.</param>
         /// <returns>A task representing the status of the operation.</returns>
-        public async Task SendRequestAsync(Guid id, StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SendRequestAsync(Guid id, StreamingRequest request)
         {
             var disassembler = new RequestDisassembler(_payloadSender, id, request);
 
-            await disassembler.DisassembleAsync(cancellationToken).ConfigureAwait(false);
+            await disassembler.DisassembleAsync().ConfigureAwait(false);
 
             if (request.Streams != null)
             {
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Streaming.Payloads
                 {
                     var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);
 
-                    tasks.Add(contentDisassembler.DisassembleAsync(cancellationToken));
+                    tasks.Add(contentDisassembler.DisassembleAsync());
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);

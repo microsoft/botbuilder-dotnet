@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,10 +14,9 @@ namespace Microsoft.Bot.Streaming.Utilities
         /// Falls back to Thread pool if not running under ASP.Net.
         /// </summary>
         /// <param name="task">Background task to execute.</param>
-        /// <param name="properties">Name value pairs to trace if an exception is thrown.</param>
-        public static void Run(Func<Task> task, IDictionary<string, object> properties = null)
+        public static void Run(Func<Task> task)
         {
-            Run((ct) => task(), properties);
+            Run((ct) => task());
         }
 
         /// <summary>
@@ -26,10 +24,7 @@ namespace Microsoft.Bot.Streaming.Utilities
         /// Falls back to Thread pool if not running under ASP.Net.
         /// </summary>
         /// <param name="task">background task to execute.</param>
-        /// <param name="properties">name value pairs to trace if an exception is thrown.</param>
-#pragma warning disable CA1801 // Review unused parameters
-        public static void Run(Func<CancellationToken, Task> task, IDictionary<string, object> properties = null)
-#pragma warning restore CA1801 // Review unused parameters
+        public static void Run(Func<CancellationToken, Task> task)
         {
 #pragma warning disable VSTHRD110 // Observe result of async calls
             Task.Run(() => TrackAsRequestAsync(() => task(CancellationToken.None)));
@@ -41,10 +36,9 @@ namespace Microsoft.Bot.Streaming.Utilities
         /// </summary>
         /// <param name="task">background task to execute.</param>
         /// <param name="spanDelay">the initial delay.</param>
-        /// <param name="eventName">the event name to log individual execution failures.</param>
-        public static void RunForever(Func<CancellationToken, TimeSpan> task, TimeSpan spanDelay, string eventName)
+        public static void RunForever(Func<CancellationToken, TimeSpan> task, TimeSpan spanDelay)
         {
-            RunForever(token => Task.FromResult(task(token)), spanDelay, eventName);
+            RunForever(token => Task.FromResult(task(token)), spanDelay);
         }
 
         /// <summary>
@@ -52,10 +46,7 @@ namespace Microsoft.Bot.Streaming.Utilities
         /// </summary>
         /// <param name="task">Background task to execute.</param>
         /// <param name="spanDelay">The initial delay.</param>
-        /// <param name="eventName">The event name to log individual execution failures.</param>
-#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        public static void RunForever(Func<CancellationToken, Task<TimeSpan>> task, TimeSpan spanDelay, string eventName)
-#pragma warning restore CA1801 // Review unused parameters
+        public static void RunForever(Func<CancellationToken, Task<TimeSpan>> task, TimeSpan spanDelay)
         {
             Run(async token =>
             {

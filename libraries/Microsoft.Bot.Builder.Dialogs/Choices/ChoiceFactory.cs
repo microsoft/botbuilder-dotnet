@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             // Determine list style
             var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
             var supportsCardActions = Channel.SupportsCardActions(channelId, list.Count);
-            var maxActionTitleLength = Channel.MaxActionTitleLength(channelId);
+            var maxActionTitleLength = Channel.MaxActionTitleLength();
             var hasMessageFeed = Channel.HasMessageFeed(channelId);
             var longTitles = maxTitleLength > maxActionTitleLength;
 

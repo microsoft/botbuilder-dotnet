@@ -224,8 +224,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                     Assert.Equal(utterance, luisTraceInfo["luisResult"]["query"]);
                     Assert.Equal(AppId, luisTraceInfo["luisModel"]["ModelID"]);
                     Assert.Equal(default(bool?), luisTraceInfo["luisOptions"]["Staging"]);
-                },
-                "luisTraceInfo")
+                })
                 .Send(utterance)
                 .AssertReply(botResponse, "passthrough")
                 .StartTestAsync();
