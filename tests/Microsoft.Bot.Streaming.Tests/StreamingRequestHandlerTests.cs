@@ -480,6 +480,9 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             {
                 _methodCalls.Add("ListenAsync()");
                 await base.ListenAsync();
+
+                // Wait for disconnect to complete in another thread (to avoid race condition between Listen and Disconnect)
+                await Task.WhenAny(WaitForDisconnect(), Task.Delay(TimeSpan.FromSeconds(30), CancellationToken.None));
             }
 
             public override async Task ListenAsync(CancellationToken cancellationToken)
