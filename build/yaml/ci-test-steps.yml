@@ -15,6 +15,10 @@ steps:
 #         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
 #         Start-CosmosDbEmulator
 
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x' 
+
 - task: Npm@1
   displayName: 'install botframework-cli to set up for Schema merge tests.'
   inputs:
