@@ -253,7 +253,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public async Task TestForeachWithPrompt()
         {
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+               await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestForeachWithEndDialog()
+        {
+               await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]

@@ -1,0 +1,117 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "generator": {
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+              "actions": [
+                {
+                  "$kind": "Microsoft.SetProperty",
+                  "property": "$loopTwoThenEnd",
+                  "value": "=createArray('one', 'two', 'end')"
+                },
+                {
+                  "$kind": "Microsoft.SetProperty",
+                  "property": "$loopTwo",
+                  "value": "=createArray('1', '2')"
+                },
+                {
+                  "$kind": "Microsoft.SetProperty",
+                  "property": "$loopTwoAgain",
+                  "value": "=createArray('a', 'b')"
+                },
+                {
+                  "$kind": "Microsoft.Foreach",
+                  "itemsProperty": "$loopTwo",
+                  "value": "dialog.foreach0.value",
+                  "index": "dialog.foreach0.index",
+                  "actions": [
+                    {
+                      "$kind": "Microsoft.Foreach",
+                      "itemsProperty": "$loopTwoAgain",
+                      "value": "dialog.foreach1.value",
+                      "index": "dialog.foreach1.index",
+                      "actions": [
+                        {
+                          "$kind": "Microsoft.Foreach",
+                          "value": "dialog.foreach2.value",
+                          "index": "dialog.foreach2.index",
+                          "itemsProperty": "$loopTwoThenEnd",
+                          "actions": [
+                            {
+                              "$kind": "Microsoft.IfCondition",
+                              "condition": "($foreach2.value == 'end')",
+                              "actions": [
+                                {
+                                  "$kind": "Microsoft.EndDialog"
+                                }
+                              ]
+                            },
+                            {
+                              "$kind": "Microsoft.SendActivity",
+                              "activity": "${$foreach2.value}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "This should never happen2"
+                    }
+                  ]
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "This should never happen"
+                }
+              ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+      {
+        "$kind": "Microsoft.Test.UserConversationUpdate"
+      },
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "one"
+      },
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "two"
+      },
+      {
+          "$kind": "Microsoft.Test.UserSays",
+          "text": "hi"
+      },
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "one"
+      },
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "two"
+      },
+      {
+          "$kind": "Microsoft.Test.UserSays",
+          "text": "hi"
+      },
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "one"
+      },
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "two"
+      }
+    ]
+}
