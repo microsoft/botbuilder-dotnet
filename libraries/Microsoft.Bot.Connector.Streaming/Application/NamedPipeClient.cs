@@ -3,7 +3,6 @@
 
 using System;
 using System.IO.Pipelines;
-using System.Net.WebSockets;
 using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Logging;
@@ -11,30 +10,35 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Bot.Connector.Streaming.Application
 {
     /// <summary>
-    /// Web socket client.
+    /// Named pipe client.
     /// </summary>
-    public class WebSocketClient : StreamingTransportClient
+    public class NamedPipeClient : StreamingTransportClient
     {
-        private readonly WebSocket _socket;
+        private readonly string _pipeName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebSocketClient"/> class.
+        /// Initializes a new instance of the <see cref="NamedPipeClient"/> class.
         /// </summary>
-        /// <param name="socket">The client web socket to initiate streaming connection to a server.</param>
+        /// <param name="pipeName">The name of the named pipe that will initiate connection to a server.</param>
         /// <param name="url">The server URL to connect to.</param>
         /// <param name="requestHandler">Handler that will receive incoming requests to this client instance.</param>
         /// <param name="closeTimeOut">Optional time out for closing the client connection.</param>
         /// <param name="keepAlive">Optional spacing between keep alives for proactive disconnection detection. If null is provided, no keep alives will be sent.</param>
         /// <param name="logger"><see cref="ILogger"/> for the client.</param>
-        public WebSocketClient(WebSocket socket, string url, RequestHandler requestHandler, TimeSpan? closeTimeOut = null, TimeSpan? keepAlive = null, ILogger logger = null)
+        public NamedPipeClient(string pipeName, string url, RequestHandler requestHandler, TimeSpan? closeTimeOut = null, TimeSpan? keepAlive = null, ILogger logger = null)
             : base(url, requestHandler, closeTimeOut, keepAlive, logger)
         {
-            _socket = socket ?? throw new ArgumentNullException(nameof(socket));
+            if (string.IsNullOrWhiteSpace(pipeName))
+            {
+                throw new ArgumentNullException(nameof(pipeName));
+            }
+
+            _pipeName = pipeName;
         }
 
         internal override StreamingTransport CreateStreamingTransport(IDuplexPipe application)
         {
-            return new WebSocketTransport(_socket, application, Logger);
+            return new NamedPipeTransport(_pipeName, application, Logger);
         }
     }
 }

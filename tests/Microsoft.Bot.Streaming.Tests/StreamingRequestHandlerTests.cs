@@ -468,6 +468,8 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         {
             private List<string> _methodCalls;
 
+            private bool _disconnected;
+
             public StreamingRequestHandlerSub(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience, ILogger logger = null, List<string> methodCalls = null)
                 : base(bot, activityProcessor, socket, audience, logger)
             {
@@ -478,18 +480,36 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             {
                 _methodCalls.Add("ListenAsync()");
                 await base.ListenAsync();
+
+                // Wait for disconnect to complete in another thread (to avoid race condition between Listen and Disconnect)
+                await Task.WhenAny(WaitForDisconnect(), Task.Delay(TimeSpan.FromSeconds(30), CancellationToken.None));
             }
 
-            public override Task ListenAsync(CancellationToken cancellationToken)
+            public override async Task ListenAsync(CancellationToken cancellationToken)
             {
                 _methodCalls.Add("ListenAsync()");
-                return base.ListenAsync(cancellationToken);
+                await base.ListenAsync(cancellationToken);
+
+                // Wait for disconnect to complete in another thread (to avoid race condition between Listen and Disconnect)
+                await Task.WhenAny(WaitForDisconnect(), Task.Delay(TimeSpan.FromSeconds(30), cancellationToken));
             }
 
             protected override void ServerDisconnected(object sender, DisconnectedEventArgs e)
             {
                 _methodCalls.Add("ServerDisconnected()");
+                _disconnected = true;
+
                 base.ServerDisconnected(sender, e);
+            }
+
+            private Task WaitForDisconnect()
+            {
+                while (!_disconnected)
+                {
+                    Thread.Sleep(100);
+                }
+
+                return Task.CompletedTask;
             }
         }
     }

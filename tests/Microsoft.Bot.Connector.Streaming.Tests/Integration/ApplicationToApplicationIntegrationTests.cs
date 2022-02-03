@@ -51,9 +51,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger);
+                var client = new WebSocketClient(webSocketFeature.Client, "wss://test", clientRequestHandler.Object, logger: logger);
                 
-                var clientTask = Task.Run(() => client.ConnectInternalAsync(webSocketFeature.Client, CancellationToken.None));
+                var clientTask = Task.Run(() => client.ConnectInternalAsync(CancellationToken.None));
 
                 // Send request bot (server) -> channel (client)
                 const string path = "api/version";
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                 var socket = await webSocketFeature.AcceptAsync().ConfigureAwait(false);
                 var connection = new WebSocketStreamingConnection(socket, logger);
-                var serverTask = Task.Run(() => connection.ListenAsync(botRequestHandler.Object, cts.Token));
+                var serverTask = connection.ListenAsync(botRequestHandler.Object, cts.Token);
 
                 // Client / channel setup
                 var clientRequestHandler = new Mock<RequestHandler>();
@@ -106,9 +106,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger, closeTimeOut: TimeSpan.FromSeconds(10), keepAlive: TimeSpan.FromMilliseconds(200));
+                var client = new WebSocketClient(webSocketFeature.Client, "wss://test", clientRequestHandler.Object, logger: logger, closeTimeOut: TimeSpan.FromSeconds(10), keepAlive: TimeSpan.FromMilliseconds(200));
 
-                var clientTask = Task.Run(() => client.ConnectInternalAsync(webSocketFeature.Client, CancellationToken.None));
+                var clientTask = client.ConnectInternalAsync(CancellationToken.None);
 
                 // Send request bot (server) -> channel (client)
                 const string path = "api/version";
@@ -129,10 +129,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                 await Task.Delay(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
 
-                cts.Cancel();
-
-                await clientTask.ConfigureAwait(false);
-                await serverTask.ConfigureAwait(false);
+                Assert.True(client.IsConnected);
             }
         }
     }
