@@ -15,8 +15,13 @@ steps:
 #         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
 #         Start-CosmosDbEmulator
 
+- task: NodeTool@0
+  displayName: 'install Node.js v14.x'
+  inputs:
+    versionSpec: '14.x' 
+
 - task: Npm@1
-  displayName: 'install botframework-cli to set up for Schema merge tests.'
+  displayName: 'install botframework-cli to set up for Schema merge tests'
   inputs:
     command: custom
     verbose: false
@@ -32,7 +37,7 @@ steps:
      !Tests/**/Microsoft.Bot.Builder.AI.Orchestrator.Tests.csproj
      
     arguments: '-v n  -f netcoreapp2.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 3.1'
@@ -43,7 +48,7 @@ steps:
      !Tests/**/*21.Tests.csproj
 
     arguments: '-v n  -f netcoreapp3.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
 
 - powershell: |
    # This task copies the code coverage file created by dotnet test into a well known location. In all
