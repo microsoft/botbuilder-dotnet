@@ -19,16 +19,6 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public abstract class AppCredentials : ServiceClientCredentials
     {
-        [Obsolete]
-        internal static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>
-        {
-            // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
-            { "api.botframework.com", DateTime.MaxValue }, // bot connector API
-            { "token.botframework.com", DateTime.MaxValue }, // oauth token endpoint
-            { "api.botframework.azure.us", DateTime.MaxValue }, // bot connector API in US Government DataCenters
-            { "token.botframework.azure.us", DateTime.MaxValue }, // oauth token endpoint in US Government DataCenters
-        };
-
         /// <summary>
         /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
@@ -140,43 +130,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The channel auth token tenant for this credential.
         /// </value>
         protected ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <remarks>If expiration time is not provided, the expiration time will DateTime.UtcNow.AddDays(1).</remarks>
-        [Obsolete("TrustServiceUrl is not a required part of the security model.")]
-#pragma warning disable CA1801 // Review unused parameters
-        public static void TrustServiceUrl(string serviceUrl)
-#pragma warning restore CA1801 // Review unused parameters
-        {
-        }
-
-        /// <summary>
-        /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
-        [Obsolete("TrustServiceUrl is not a required part of the security model.")]
-#pragma warning disable CA1801 // Review unused parameters
-        public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
-#pragma warning restore CA1801 // Review unused parameters
-        {
-        }
-
-        /// <summary>
-        /// Checks if the service url is for a trusted host or not.
-        /// </summary>
-        /// <param name="serviceUrl">The service url.</param>
-        /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
-        [Obsolete("IsTrustedServiceUrl is not a required part of the security model.")]
-#pragma warning disable CA1801 // Review unused parameters
-        public static bool IsTrustedServiceUrl(string serviceUrl)
-#pragma warning restore CA1801 // Review unused parameters
-        {
-            return true;
-        }
 
         /// <summary>
         /// Apply the credentials to the HTTP request.
