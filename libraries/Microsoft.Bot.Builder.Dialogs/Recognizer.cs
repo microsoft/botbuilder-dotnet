@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
+
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -41,32 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// If each recognizer returns no intents or None intents, then this recognizer will return None intent.
         /// </remarks>
         public const string NoneIntent = "None";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Recognizer"/> class to recognize user input.
-        /// </summary>
-        /// <param name="callerPath">The source file path of the caller.</param>
-        /// <param name="callerLine">The line number on the source file where the method is called.</param>
-        public Recognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-        {
-            if (!string.IsNullOrEmpty(callerPath))
-            {
-                DebugSupport.SourceMap.Add(this, new SourceRange
-                {
-                    Path = callerPath,
-                    StartPoint = new SourcePoint
-                    {
-                        LineIndex = callerLine,
-                        CharIndex = 0
-                    },
-                    EndPoint = new SourcePoint
-                    {
-                        LineIndex = callerLine + 1,
-                        CharIndex = 0
-                    },
-                });
-            }
-        }
 
         /// <summary>
         /// Gets or sets id of the recognizer.

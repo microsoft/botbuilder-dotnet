@@ -7,8 +7,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Memory;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -33,8 +31,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack = state.DialogStack;
             State = new DialogStateManagerDictionary(this);
             Services = new TurnContextStateCollection();
-
-            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
 
         /// <summary>
@@ -155,15 +151,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public TurnContextStateCollection Services { get; private set; }
 
         /// <summary>
-        /// Gets the current DialogManager for this dialogContext. This property is obsolete.
-        /// </summary>
-        /// <value>
-        /// The root dialogManager that was used to create this dialog context chain.
-        /// </value>
-        [Obsolete("The DialogManager property serves no function.")]
-        public DialogManager DialogManager => this.Context.TurnState.Get<DialogManager>();
-
-        /// <summary>
         /// Starts a new dialog and pushes it onto the dialog stack.
         /// </summary>
         /// <param name="dialogId">ID of the dialog to start.</param>
@@ -205,7 +192,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.Insert(0, instance);
 
                 // Call dialog's BeginAsync() method
-                await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
                 return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             catch (Exception err)
@@ -359,7 +345,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
 
                     // Return result to previous dialog
-                    await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
                     return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
@@ -505,8 +490,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // End the current dialog and giving the reason.
                 await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                ObjectPath.SetPathValue(this.Context.TurnState, "turn.__repeatDialogId", dialogId);
-
                 // Start replacement dialog
                 return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
             }
@@ -546,7 +529,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                         }
 
                         // Ask dialog to re-prompt if supported
-                        await this.DebuggerStepAsync(dialog, DialogEvents.RepromptDialog, cancellationToken).ConfigureAwait(false);
                         await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
                     }
                 }
@@ -641,7 +623,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (dialog != null)
                     {
-                        await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
                         return await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
                     }
                 }
@@ -662,17 +643,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            const string TurnLocaleProperty = "turn.locale";
             string locale;
 
             try
             {
-                // turn.locale is the highest precedence.
-                if (State.TryGetValue<string>(TurnLocaleProperty, out locale) && !string.IsNullOrEmpty(locale))
-                {
-                    return new CultureInfo(locale).Name;
-                }
-
                 // If turn.locale was not populated, fall back to activity locale
                 locale = Context.Activity?.Locale;
 
@@ -704,15 +678,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog != null)
                 {
                     // Notify dialog of end
-                    await this.DebuggerStepAsync(dialog, "EndDialog", cancellationToken).ConfigureAwait(false);
                     await dialog.EndDialogAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Pop dialog off stack
                 Stack.RemoveAt(0);
-
-                // set Turn.LastResult to result
-                ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LastResult, result);
             }
         }
 
@@ -742,8 +712,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     { nameof(ActiveDialog), this.ActiveDialog?.Id },
                     { nameof(Parent), this.Parent?.ActiveDialog?.Id },
-                    { nameof(Stack), stack },
-                    { nameof(State), this.State.GetMemorySnapshot() }
+                    { nameof(Stack), stack }
                 });
             }
         }

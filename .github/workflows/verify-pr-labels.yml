@@ -1,0 +1,25 @@
+name: Verify Pull Request Labels
+
+on:
+  pull_request:
+    types: [ready_for_review, review_requested, labeled, unlabeled]
+
+jobs:
+  verify_pr_labels:
+    if: github.event.pull_request.draft == false
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install github actions dependencies
+        uses: bahmutov/npm-install@v1.6.2
+        with:
+          working-directory: actions/verify-pr-labels
+
+      - name: Verify Pull Request Labels
+        uses: ./actions/verify-pr-labels/
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'

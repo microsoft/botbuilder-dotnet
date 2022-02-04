@@ -7,7 +7,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -40,10 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-            await InternalRunAsync(turnContext, dialog.Id, dialogContext, null, cancellationToken).ConfigureAwait(false);
+            await InternalRunAsync(turnContext, dialog.Id, dialogContext, cancellationToken).ConfigureAwait(false);
         }
 
-        internal static async Task<DialogTurnResult> InternalRunAsync(ITurnContext turnContext, string dialogId, DialogContext dialogContext, DialogStateManagerConfiguration stateConfiguration, CancellationToken cancellationToken)
+        internal static async Task<DialogTurnResult> InternalRunAsync(ITurnContext turnContext, string dialogId, DialogContext dialogContext, CancellationToken cancellationToken)
         {
             // map TurnState into root dialog context.services
             foreach (var service in turnContext.TurnState)
@@ -84,9 +83,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                 }
             }
-
-            // save all state scopes to their respective botState locations.
-            await dialogStateManager.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // return the redundant result because the DialogManager contract expects it
             return dialogTurnResult;
@@ -133,8 +129,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 result = await dialogContext.BeginDialogAsync(dialogId, null, cancellationToken).ConfigureAwait(false);
             }
 
-            await SendStateSnapshotTraceAsync(dialogContext, cancellationToken).ConfigureAwait(false);
-
             // Skills should send EoC when the dialog completes.
             if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled)
             {
@@ -148,21 +142,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Helper to send a trace activity with a memory snapshot of the active dialog DC. 
-        /// </summary>
-        private static async Task SendStateSnapshotTraceAsync(DialogContext dialogContext, CancellationToken cancellationToken)
-        {
-            var traceLabel = dialogContext.Context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && claimIdentity.Claims.IsSkillClaim()
-                ? "Skill State"
-                : "Bot State";
-
-            // send trace of memory
-            var snapshot = GetActiveDialogContext(dialogContext).State.GetMemorySnapshot();
-            var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, traceLabel);
-            await dialogContext.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

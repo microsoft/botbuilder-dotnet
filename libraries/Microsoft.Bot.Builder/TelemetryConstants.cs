@@ -77,5 +77,10 @@ namespace Microsoft.Bot.Builder
         /// The telemetry property value for attachments.
         /// </summary>
         public static readonly string AttachmentsProperty = "attachments";
+
+        /// <summary>
+        /// The telemetry property value for activity type.
+        /// </summary>
+        public static readonly string ActivityTypeProperty = "type";
     }
 }
