@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -629,7 +630,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 {
                     stepContext.Values[ValueProperty.QnAData] = new List<QueryResult>() { qnaResult };
 
-                    var records = new FeedbackRecord[]
+                    var records = new Collection<FeedbackRecord>
                     {
                         new FeedbackRecord
                         {
@@ -639,7 +640,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                         }
                     };
 
-                    var feedbackRecords = new FeedbackRecords { Records = records };
+                    var feedbackRecords = new FeedbackRecords(records);
 
                     // Call Active Learning Train API
                     var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);

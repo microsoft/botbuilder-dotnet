@@ -32,9 +32,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="attachmentId">id of the attachment.</param>
         /// <param name="viewId">default is "original".</param>
         /// <returns>uri.</returns>
-#pragma warning disable CA1055 // Uri return values should not be strings (we can't change this without breaking binary compat)
-        public string GetAttachmentUri(string attachmentId, string viewId = "original")
-#pragma warning restore CA1055 // Uri return values should not be strings
+        public Uri GetAttachmentUri(string attachmentId, string viewId = "original")
         {
             if (attachmentId == null)
             {
@@ -42,11 +40,11 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var baseUrl = this.Client.BaseUri.AbsoluteUri;
+            var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/", StringComparison.OrdinalIgnoreCase)), "v3/attachments/{attachmentId}/views/{viewId}").ToString();
             url = url.Replace("{attachmentId}", Uri.EscapeDataString(attachmentId));
             url = url.Replace("{viewId}", Uri.EscapeDataString(viewId));
-            return url;
+            return new Uri(url);
         }
 
         /// <summary>
