@@ -29,7 +29,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            State = new DialogStateManagerDictionary(this);
             Services = new TurnContextStateCollection();
         }
 
@@ -133,16 +132,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return null;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the DialogStateManagerDictionary which manages view of all memory scopes.
-        /// </summary>
-        /// <value>
-        /// DialogStateManagerDictionary with unified memory view of all memory scopes.
-        /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public DialogStateManagerDictionary State { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets the services collection which is contextual to this dialog context.

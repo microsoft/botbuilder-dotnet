@@ -50,10 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 dialogContext.Services[service.Key] = service.Value;
             }
 
-            var dialogStateManager = new DialogStateManagerDictionary(dialogContext, stateConfiguration);
-            await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
-            dialogContext.Context.TurnState.Add(dialogStateManager);
-
             DialogTurnResult dialogTurnResult = null;
 
             // Loop as long as we are getting valid OnError handled we should continue executing the actions for the turn.
