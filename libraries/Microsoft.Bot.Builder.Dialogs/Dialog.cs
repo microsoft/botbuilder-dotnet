@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
+
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                _id = _id ?? OnComputeId();
+                _id = _id ?? GetType().Name;
                 return _id;
             }
 
@@ -78,13 +78,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 _telemetryClient = value;
             }
         }
-
-        /// <summary>
-        /// Gets the information of the cref="SourceRange"/>.
-        /// </summary>
-        /// <value>The cref="SourceRange"/> information.</value>
-        [JsonIgnore]
-        public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -249,33 +242,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             return Task.FromResult(false);
-        }
-
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
-        protected virtual string OnComputeId()
-        {
-            return GetType().Name;
-        }
-
-        /// <summary>
-        /// Registers a cref="SourceRange"/> in the provided location.
-        /// </summary>
-        /// <param name="path">The path to the source file.</param>
-        /// <param name="lineNumber">The line number where the source will be located on the file.</param>
-        protected void RegisterSourceLocation(string path, int lineNumber)
-        {
-            if (!string.IsNullOrEmpty(path))
-            {
-                DebugSupport.SourceMap.Add(this, new SourceRange()
-                {
-                    Path = path,
-                    StartPoint = new SourcePoint() { LineIndex = lineNumber, CharIndex = 0 },
-                    EndPoint = new SourcePoint() { LineIndex = lineNumber + 1, CharIndex = 0 },
-                });
-            }
         }
     }
 }

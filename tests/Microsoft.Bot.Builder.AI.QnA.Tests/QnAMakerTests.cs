@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
@@ -660,7 +662,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
 
             // Verify that we added the bot.builder package details.
-            Assert.Contains("Microsoft.Bot.Builder.AI.QnA/4", interceptHttp.UserAgent);
+            var majorVersion = typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version.Major;
+            Assert.Contains($"Microsoft.Bot.Builder.AI.QnA/{majorVersion}", interceptHttp.UserAgent);
         }
 
         [Fact]

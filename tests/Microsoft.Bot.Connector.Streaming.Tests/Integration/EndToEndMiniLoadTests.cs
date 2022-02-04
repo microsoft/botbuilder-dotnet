@@ -387,6 +387,60 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             Task.WhenAll(connections).Wait();
         }
 
+        [Fact]
+        public void NamedPipeActivityTest()
+        {
+            const string pipeName = "test.pipe";
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            // Arrange
+            var activity = new Activity
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = "testUser" },
+                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                Recipient = new ChannelAccount { Id = "testBot" },
+                ServiceUrl = "unknown",
+                ChannelId = "test",
+                Text = "hi"
+            };
+
+            var bot = new StreamingTestBot((turnContext, cancellationToken) =>
+            {
+                var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(turnContext.Activity));
+                activityClone.Text = $"Echo: {turnContext.Activity.Text}";
+
+                return turnContext.SendActivityAsync(activityClone, cancellationToken);
+            });
+
+            var verifiedResponse = false;
+            var clientRequestHandler = new Mock<RequestHandler>();
+            clientRequestHandler
+                .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
+                {
+                    var body = request.ReadBodyAsString();
+                    var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+
+                    Assert.NotNull(response);
+                    Assert.Equal("Echo: hi", response.Text);
+                    verifiedResponse = true;
+
+                    return Task.FromResult(StreamingResponse.OK());
+                });
+
+            // Act
+            var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            var serverRunning = server.ConnectNamedPipeAsync(pipeName, bot, "testAppId", "testAudience", "testCallerId");
+            var client = new NamedPipeClient(pipeName, ".", clientRequestHandler.Object, logger: logger);
+            var clientRunning = client.ConnectAsync();
+            SimulateMultiTurnConversation(1, new[] { activity }, client, logger);
+
+            // Assert
+            Assert.True(verifiedResponse);
+        }
+
         private static IBotFrameworkHttpAdapter CreateTestStreamingTransportServer(bool useLegacyServer, ILogger logger)
         {
             if (useLegacyServer)
@@ -505,9 +559,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 clientRequestHandler
                     .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult(StreamingResponse.OK()));
-                using (var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger))
+                using (var client = new WebSocketClient(clientWebSocket, "wss://test", clientRequestHandler.Object, logger: logger))
                 {
-                    var clientRunning = client.ConnectInternalAsync(clientWebSocket, clientCts.Token);
+                    var clientRunning = client.ConnectInternalAsync(clientCts.Token);
 
                     var activity = new Activity
                     {
@@ -618,7 +672,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 }
                 else
                 {
-                    _inner = new WebSocketClient(url, requestHandler, logger: logger);
+                    _inner = new WebSocketClient(client, url, requestHandler, logger: logger);
                 }
             }
 
@@ -630,7 +684,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             {
                 return _useLegacyClient
                     ? _innerLegacy.ConnectInternalAsync(_client)
-                    : _inner.ConnectInternalAsync(_client, CancellationToken.None);
+                    : _inner.ConnectInternalAsync(CancellationToken.None);
             }
 
             public Task ConnectAsync(IDictionary<string, string> requestHeaders)

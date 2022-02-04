@@ -41,16 +41,12 @@ namespace Microsoft.BotBuilderSamples
 
             // Create the debug middleware
             services.AddSingleton(sp => new MicrosoftAppCredentials(sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
-            services.AddSingleton<InspectionMiddleware>();
-
+            
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
-
-            // Create the App state. (Used by the DebugMiddleware.)
-            services.AddSingleton<InspectionState>();
 
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();

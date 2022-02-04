@@ -38,8 +38,4 @@
     <ProjectReference Include="..\Microsoft.Bot.Connector.Streaming\Microsoft.Bot.Connector.Streaming.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Inspection\" />
-  </ItemGroup>
-
 </Project>

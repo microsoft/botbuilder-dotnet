@@ -10,31 +10,6 @@ namespace Microsoft.Bot.Builder.Tests
     public class MentionTests
     {
         [Fact]
-        public void Mention_Skype()
-        {
-            // A Skype mention contains the user mention enclosed in <at> tags.  But the Activity.Text (as below)
-            // does not.
-            var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"<at id=\\\"28: 841caffa-9e92-425d-8d84-b503b3ded285\\\">botname</at>\"}";
-            var mention = JsonConvert.DeserializeObject<Entity>(mentionJson);
-            mention.Type = "mention";
-
-            var activity = MessageFactory.Text("botname sometext");
-            activity.ChannelId = "skype";
-            activity.Entities.Add(mention);
-
-            // Normalize the Skype mention so that it is in a format RemoveMentionText can handle.
-            // If SkypeMentionNormalizeMiddleware is added to the adapters Middleware set, this
-            // will be called on every Skype message.
-            SkypeMentionNormalizeMiddleware.NormalizeSkypMentionText(activity);
-
-            // This will remove the Mention.Text from the Activity.Text.  This should just leave before/after the
-            // mention.
-            activity.RemoveMentionText("recipientid");
-
-            Assert.Equal("sometext", activity.Text);
-        }
-
-        [Fact]
         public void Mention_Teams()
         {
             var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"<at>botname</at>\"}";

@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
 	ProjectSection(SolutionItems) = preProject
 		tests\Directory.Build.props = tests\Directory.Build.props
-		tests\tests.schema = tests\tests.schema
 		tests\update = tests\update
 		tests\update.cmd = tests\update.cmd
 		tests\updateTranscripts.cmd = tests\updateTranscripts.cmd
