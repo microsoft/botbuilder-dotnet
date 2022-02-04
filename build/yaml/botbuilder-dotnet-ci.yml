@@ -74,8 +74,8 @@ stages:
     - template: ci-component-detection-steps.yml
 
 - stage: API_Compatibility_Validation
-  condition: ne(variables['DisableApiCompatibityValidation'], 'true')
   dependsOn: Build
+  condition: and(succeeded(), ne(variables['DisableApiCompatibityValidation'], 'true'))
   variables:
     skipComponentGovernanceDetection: true # the task is already injected into the build jobs, so unnecessary here.
   jobs:
