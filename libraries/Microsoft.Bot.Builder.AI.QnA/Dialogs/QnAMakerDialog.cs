@@ -524,7 +524,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 EndpointKey = this.EndpointKey.GetValue(dc.State),
                 Host = this.HostName.GetValue(dc.State),
                 KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State),
-                QnAServiceType = this.QnAServiceType.GetValue(dc.State)
+                QnAServiceType = this.QnAServiceType?.GetValue(dc.State)
             };
 
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
@@ -549,7 +549,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 RankerType = this.RankerType?.GetValue(dc.State),
                 IsTest = this.IsTest,
                 EnablePreciseAnswer = this.EnablePreciseAnswer,
-                Filters = this.Filters.GetValue(dc.State)
+                Filters = this.Filters?.GetValue(dc.State)
             });
         }
 
@@ -635,7 +635,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
             else
             {
-                    await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);                
+                await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             return await stepContext.EndDialogAsync().ConfigureAwait(false);
@@ -707,7 +707,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     foreach (var qna in response.Answers)
                     {
                         // for unstructured sources questions will be empty
-                        if (qna.Questions.Length > 0) 
+                        if (qna.Questions.Length > 0)
                         {
                             suggestedQuestions.Add(qna.Questions[0]);
                         }
@@ -739,7 +739,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
         }
- 
+
         private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
@@ -835,7 +835,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
-         }
+        }
 
         internal class ValueProperty
         {

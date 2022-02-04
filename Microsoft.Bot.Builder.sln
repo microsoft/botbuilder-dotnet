@@ -241,7 +241,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Str
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Perf", "tests\Microsoft.Bot.Connector.Streaming.Perf\Microsoft.Bot.Connector.Streaming.Perf.csproj", "{B49A3201-5BEE-426C-A082-D92D52172E06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QnABot", "..\..\Downloaded bot codes\first-qnaMaker-bot-c#\QnABot.csproj", "{075A6A53-8DC7-4807-9187-554646DEBADD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QnABotAllFeatures", "..\bot\QnABotAllFeatures.csproj", "{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -939,14 +939,14 @@ Global
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{075A6A53-8DC7-4807-9187-554646DEBADD}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

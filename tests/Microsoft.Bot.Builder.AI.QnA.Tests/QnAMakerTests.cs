@@ -2,53 +2,74 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1201 // Elements should appear in the correct order
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
-using Microsoft.Bot.Builder.AI.QnA.Tests;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Configuration;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Schema;
-using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RichardSzalay.MockHttp;
-using Xunit;
-
 namespace Microsoft.Bot.Builder.AI.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Bot.Builder.Adapters;
+    using Microsoft.Bot.Builder.AI.QnA;
+    using Microsoft.Bot.Builder.AI.QnA.Dialogs;
+    using Microsoft.Bot.Builder.AI.QnA.Tests;
+    using Microsoft.Bot.Builder.Dialogs;
+    using Microsoft.Bot.Builder.Dialogs.Adaptive;
+    using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+    using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+    using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+    using Microsoft.Bot.Configuration;
+    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Schema;
+    using Moq;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using RichardSzalay.MockHttp;
+    using Xunit;
+
+    /// <summary>
+    /// Defines the <see cref="QnAMakerTests" />.
+    /// </summary>
     public class QnAMakerTests
     {
+        /// <summary>
+        /// Defines the _knowledgeBaseId.
+        /// </summary>
         private const string _knowledgeBaseId = "dummy-id";
+
+        /// <summary>
+        /// Defines the _endpointKey.
+        /// </summary>
         private const string _endpointKey = "dummy-key";
+
+        /// <summary>
+        /// Defines the _hostname.
+        /// </summary>
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialogBase.
+        /// </summary>
+        /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
-
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
+               .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialog_WithProperResponse.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse()
         {
@@ -66,6 +87,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialog_WithNoResponse.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse()
         {
@@ -85,6 +110,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery()
         {
@@ -102,17 +131,26 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
+        /// <summary>
+        /// The QnAMakerAction_MultiTurnDialogBase.
+        /// </summary>
+        /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
+        /// <summary>
+        /// The QnAMakerAction_MultiTurnDialogBase_WithAnswer.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         public async Task QnAMakerAction_MultiTurnDialogBase_WithAnswer()
         {
@@ -130,6 +168,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
+        /// <summary>
+        /// The QnAMakerAction_MultiTurnDialogBase_WithNoAnswer.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer()
         {
@@ -147,6 +189,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
+        /// <summary>
+        /// The QnaMaker_TraceActivity.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -223,6 +269,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             }
         }
 
+        /// <summary>
+        /// The QnaMaker_TraceActivity_EmptyText.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -246,6 +296,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
+        /// <summary>
+        /// The QnaMaker_TraceActivity_NullText.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -269,6 +323,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
+        /// <summary>
+        /// The QnaMaker_TraceActivity_NullContext.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -280,6 +338,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await Assert.ThrowsAsync<ArgumentNullException>(() => qna.GetAnswersAsync(null));
         }
 
+        /// <summary>
+        /// The QnaMaker_TraceActivity_BadMessage.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -303,6 +365,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
+        /// <summary>
+        /// The QnaMaker_TraceActivity_NullActivity.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -318,6 +384,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswer.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -346,6 +416,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswerRaw.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -377,6 +451,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results.Answers[0].Answer);
         }
 
+        /// <summary>
+        /// The QnaMaker_LowScoreVariation.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -396,7 +474,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 new QnAMakerOptions
                 {
-                   Top = 5,
+                    Top = 5,
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
@@ -410,7 +488,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer_DisableActiveLearning.json"));
-           
+
             results = await qna.GetAnswersAsync(GetContext("Q11"));
             Assert.NotNull(results);
             Assert.Equal(4, results.Length);
@@ -420,6 +498,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(3, filteredResults.Length);
         }
 
+        /// <summary>
+        /// The QnaMaker_CallTrain.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -459,6 +541,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await qna.CallTrainAsync(feedbackRecords);
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswer_Configuration.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -489,6 +575,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswerWithFiltering.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -532,6 +622,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal("value", obj["strictFilters"][0]["value"].Value<string>());
         }
 
+        /// <summary>
+        /// The QnaMaker_SetScoreThresholdWhenThresholdIsZero.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -561,6 +655,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Single(results);
         }
 
+        /// <summary>
+        /// The QnaMaker_TestThreshold.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -589,6 +687,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Empty(results);
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_ScoreThresholdTooLarge_OutOfRange.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -610,6 +711,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(endpoint, tooLargeThreshold));
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_ScoreThresholdTooSmall_OutOfRange.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -631,6 +735,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(endpoint, tooSmallThreshold));
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswerWithContext.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -666,6 +774,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(1, results[0].Score);
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswerWithoutContext.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -695,6 +807,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.NotEqual(1, results[0].Score);
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsHighScoreWhenIdPassed.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -726,6 +842,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(1, results[0].Score);
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_Top_OutOfRange.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -734,14 +853,20 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = _endpointKey, Host = _hostname,
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
                 },
                 new QnAMakerOptions
                 {
-                    Top = -1, ScoreThreshold = 0.5F,
+                    Top = -1,
+                    ScoreThreshold = 0.5F,
                 }));
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_Endpoint_EmptyKbId.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -752,11 +877,16 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 new QnAMaker(
                     new QnAMakerEndpoint
                     {
-                        KnowledgeBaseId = string.Empty, EndpointKey = _endpointKey, Host = _hostname,
+                        KnowledgeBaseId = string.Empty,
+                        EndpointKey = _endpointKey,
+                        Host = _hostname,
                     });
             });
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_Endpoint_EmptyEndpointKey.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -765,10 +895,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = string.Empty, Host = _hostname,
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = string.Empty,
+                    Host = _hostname,
                 }));
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_Endpoint_EmptyHost.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -777,10 +912,16 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = _endpointKey, Host = string.Empty,
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = string.Empty,
                 }));
         }
 
+        /// <summary>
+        /// The QnaMaker_UserAgent.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -816,6 +957,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Contains($"Microsoft.Bot.Builder.AI.QnA/{majorVersion}", interceptHttp.UserAgent);
         }
 
+        /// <summary>
+        /// The QnaMaker_V2LegacyEndpoint_Should_Throw.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -835,6 +979,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<NotSupportedException>(() => GetQnAMaker(mockHttp, v2LegacyEndpoint));
         }
 
+        /// <summary>
+        /// The QnaMaker_V3LegacyEndpoint_ShouldThrow.
+        /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -854,6 +1001,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<NotSupportedException>(() => GetQnAMaker(mockHttp, v3LegacyEndpoint));
         }
 
+        /// <summary>
+        /// The QnaMaker_ReturnsAnswerWithMetadataBoost.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -876,7 +1027,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var options = new QnAMakerOptions
             {
-               Top = 1,
+                Top = 1,
             };
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
@@ -886,6 +1037,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("Kiki", results[0].Answer);
         }
 
+        /// <summary>
+        /// The QnaMaker_TestThresholdInQueryOption.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -920,9 +1075,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var obj = JObject.Parse(interceptHttp.Content);
             Assert.Equal(2, obj["top"].Value<int>());
-            Assert.Equal(0.5F, obj["scoreThreshold"].Value<float>());
+            Assert.Equal(0.5F, obj["scoreThreshold"].Value<float>() / 100.0f);
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_UnsuccessfulResponse.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -944,6 +1103,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await Assert.ThrowsAsync<HttpRequestException>(() => qna.GetAnswersAsync(GetContext("how do I clean the stove?")));
         }
 
+        /// <summary>
+        /// The QnaMaker_IsTest_True.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -953,26 +1116,33 @@ namespace Microsoft.Bot.Builder.AI.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_IsTest_True.json"));
 
-            var qna = GetQnAMaker(
-                mockHttp,
-                new QnAMakerEndpoint
-                {
-                    KnowledgeBaseId = _knowledgeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname,
-                });
-
             var qnaMakerOptions = new QnAMakerOptions
             {
                 Top = 1,
                 IsTest = true
             };
+            var client = new HttpClient(mockHttp);
 
-            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaMakerOptions);
+            var endpoint = new QnAMakerEndpoint
+            {
+                KnowledgeBaseId = _knowledgeBaseId,
+                EndpointKey = _endpointKey,
+                Host = _hostname,
+            };
+
+            var qna = new QnAMaker(endpoint, qnaMakerOptions, client, null, true);
+            var results = await qna.GetAnswersAsync(GetContext("Will answer be any different now?"));
+
+            // Assert - Validate we didn't break QnA functionality.
             Assert.NotNull(results);
-            Assert.Empty(results);
+            Assert.Single(results);
+            Assert.StartsWith("No, isTest won't change your answer.", results[0].Answer);
         }
 
+        /// <summary>
+        /// The QnaMaker_RankerType_QuestionOnly.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1002,6 +1172,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(2, results.Length);
         }
 
+        /// <summary>
+        /// The QnaMaker_Test_Options_Hydration.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1100,14 +1274,18 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Empty(requestContent4.StrictFilters);
 
             Assert.Equal(2000, requestContent5.Top);
-            Assert.Equal(0.42, Math.Round(requestContent5.ScoreThreshold, 2));
+            Assert.Equal(42.0f, Math.Round(requestContent5.ScoreThreshold, 1));
             Assert.Single(requestContent5.StrictFilters);
 
             Assert.Equal(30, requestContent6.Top);
-            Assert.Equal(0.3, Math.Round(requestContent6.ScoreThreshold, 2));
+            Assert.Equal(30.0f, Math.Round(requestContent6.ScoreThreshold, 1));
             Assert.Empty(requestContent6.StrictFilters);
         }
 
+        /// <summary>
+        /// The QnaMaker_StrictFilters_Compound_OperationType.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1145,7 +1323,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
                                 Host = _hostname,
                             }, oneFilteredOption);
-            
+
             var context = GetContext("up");
             var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
             var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
@@ -1153,6 +1331,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
         }
 
+        /// <summary>
+        /// The Telemetry_NullTelemetryClient.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1189,6 +1371,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("Editorial", results[0].Source);
         }
 
+        /// <summary>
+        /// The Telemetry_ReturnsAnswer.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1239,6 +1425,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("Editorial", results[0].Source);
         }
 
+        /// <summary>
+        /// The Telemetry_ReturnsAnswer_WhenNoAnswerFoundInKB.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1274,19 +1464,20 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
-            Assert.Equal("No Qna Question matched", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["matchedQuestion"]);
+            Assert.Equal("No good match found in KB.", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
-            Assert.Equal("No Qna Answer matched", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
-            Assert.Empty((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]);
 
             // Assert - Validate we didn't break QnA functionality.
             Assert.NotNull(results);
-            Assert.Empty(results);
         }
 
+        /// <summary>
+        /// The Telemetry_PII.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1337,6 +1528,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("Editorial", results[0].Source);
         }
 
+        /// <summary>
+        /// The Telemetry_Override.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1391,6 +1586,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("Editorial", results[0].Source);
         }
 
+        /// <summary>
+        /// The Telemetry_AdditionalPropsMetrics.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1454,6 +1653,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("Editorial", results[0].Source);
         }
 
+        /// <summary>
+        /// The Telemetry_AdditionalPropsOverride.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1513,6 +1716,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(3.14159, ((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"]);
         }
 
+        /// <summary>
+        /// The Telemetry_FillPropsOverride.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
@@ -1580,6 +1787,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal(3.14159, ((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"]);
         }
 
+        /// <summary>
+        /// The GetContext.
+        /// </summary>
+        /// <param name="utterance">The utterance<see cref="string"/>.</param>
+        /// <returns>The <see cref="TurnContext"/>.</returns>
         private static TurnContext GetContext(string utterance)
         {
             var b = new TestAdapter();
@@ -1594,6 +1806,12 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return new TurnContext(b, a);
         }
 
+        /// <summary>
+        /// The CreateFlow.
+        /// </summary>
+        /// <param name="rootDialog">The rootDialog<see cref="Dialog"/>.</param>
+        /// <param name="testName">The testName<see cref="string"/>.</param>
+        /// <returns>The <see cref="TestFlow"/>.</returns>
         private TestFlow CreateFlow(Dialog rootDialog, string testName)
         {
             var storage = new MemoryStorage();
@@ -1614,19 +1832,42 @@ namespace Microsoft.Bot.Builder.AI.Tests
             });
         }
 
+        /// <summary>
+        /// Defines the <see cref="QnaMakerTestDialog" />.
+        /// </summary>
         public class QnaMakerTestDialog : ComponentDialog, IDialogDependencies
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="QnaMakerTestDialog"/> class.
+            /// </summary>
+            /// <param name="knowledgeBaseId">The knowledgeBaseId<see cref="string"/>.</param>
+            /// <param name="endpointKey">The endpointKey<see cref="string"/>.</param>
+            /// <param name="hostName">The hostName<see cref="string"/>.</param>
+            /// <param name="httpClient">The httpClient<see cref="HttpClient"/>.</param>
             public QnaMakerTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
                 : base(nameof(QnaMakerTestDialog))
             {
                 AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey, hostName, httpClient: httpClient));
             }
 
+            /// <summary>
+            /// The BeginDialogAsync.
+            /// </summary>
+            /// <param name="outerDc">The outerDc<see cref="DialogContext"/>.</param>
+            /// <param name="options">The options<see cref="object"/>.</param>
+            /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/>.</param>
+            /// <returns>The <see cref="Task{DialogTurnResult}"/>.</returns>
             public override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
                 return ContinueDialogAsync(outerDc, cancellationToken);
             }
 
+            /// <summary>
+            /// The ContinueDialogAsync.
+            /// </summary>
+            /// <param name="dc">The dc<see cref="DialogContext"/>.</param>
+            /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/>.</param>
+            /// <returns>The <see cref="Task{DialogTurnResult}"/>.</returns>
             public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
             {
                 if (dc.Context.Activity.Text == "moo")
@@ -1634,15 +1875,27 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     await dc.Context.SendActivityAsync("Yippee ki-yay!");
                     return EndOfTurn;
                 }
-                
+
                 return await dc.BeginDialogAsync("qnaDialog");
             }
 
+            /// <summary>
+            /// The GetDependencies.
+            /// </summary>
+            /// <returns>The <see cref="IEnumerable{Dialog}"/>.</returns>
             public IEnumerable<Dialog> GetDependencies()
             {
                 return Dialogs.GetDialogs();
             }
 
+            /// <summary>
+            /// The ResumeDialogAsync.
+            /// </summary>
+            /// <param name="dc">The dc<see cref="DialogContext"/>.</param>
+            /// <param name="reason">The reason<see cref="DialogReason"/>.</param>
+            /// <param name="result">The result<see cref="object"/>.</param>
+            /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/>.</param>
+            /// <returns>The <see cref="Task{DialogTurnResult}"/>.</returns>
             public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
                 if ((bool)result == false)
@@ -1654,6 +1907,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
             }
         }
 
+        /// <summary>
+        /// The CreateQnAMakerActionDialog.
+        /// </summary>
+        /// <param name="mockHttp">The mockHttp<see cref="MockHttpMessageHandler"/>.</param>
+        /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
         private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
         {
             var client = new HttpClient(mockHttp);
@@ -1714,20 +1972,46 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return rootDialog;
         }
 
+        /// <summary>
+        /// The GetV2LegacyRequestUrl.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
 
+        /// <summary>
+        /// The GetV3LegacyRequestUrl.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
 
+        /// <summary>
+        /// The GetRequestUrl.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/generateanswer";
 
+        /// <summary>
+        /// The GetTrainRequestUrl.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/train";
 
+        /// <summary>
+        /// The GetResponse.
+        /// </summary>
+        /// <param name="fileName">The fileName<see cref="string"/>.</param>
+        /// <returns>The <see cref="Stream"/>.</returns>
         private Stream GetResponse(string fileName)
         {
             var path = GetFilePath(fileName);
             return File.OpenRead(path);
         }
 
+        /// <summary>
+        /// The GetFilePath.
+        /// </summary>
+        /// <param name="fileName">The fileName<see cref="string"/>.</param>
+        /// <returns>The <see cref="string"/>.</returns>
         private string GetFilePath(string fileName)
         {
             return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
@@ -1737,9 +2021,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// Return a stock Mocked Qna thats loaded with QnaMaker_ReturnsAnswer.json
         /// Used for tests that just require any old qna instance.
         /// </summary>
-        /// <returns>
-        /// QnAMaker.
-        /// </returns>
+        /// <returns>The <see cref="QnAMaker"/>.</returns>
         private QnAMaker QnaReturnsAnswer()
         {
             // Mock Qna
@@ -1761,19 +2043,46 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return qna;
         }
 
+        /// <summary>
+        /// The GetQnAMaker.
+        /// </summary>
+        /// <param name="messageHandler">The messageHandler<see cref="HttpMessageHandler"/>.</param>
+        /// <param name="endpoint">The endpoint<see cref="QnAMakerEndpoint"/>.</param>
+        /// <param name="options">The options<see cref="QnAMakerOptions"/>.</param>
+        /// <returns>The <see cref="QnAMaker"/>.</returns>
         private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
         {
             var client = new HttpClient(messageHandler);
             return new QnAMaker(endpoint, options, client);
         }
 
+        /// <summary>
+        /// Defines the <see cref="OverrideTelemetry" />.
+        /// </summary>
         public class OverrideTelemetry : QnAMaker
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="OverrideTelemetry"/> class.
+            /// </summary>
+            /// <param name="endpoint">The endpoint<see cref="QnAMakerEndpoint"/>.</param>
+            /// <param name="options">The options<see cref="QnAMakerOptions"/>.</param>
+            /// <param name="httpClient">The httpClient<see cref="HttpClient"/>.</param>
+            /// <param name="telemetryClient">The telemetryClient<see cref="IBotTelemetryClient"/>.</param>
+            /// <param name="logPersonalInformation">The logPersonalInformation<see cref="bool"/>.</param>
             public OverrideTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
                 : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
             {
             }
 
+            /// <summary>
+            /// The OnQnaResultsAsync.
+            /// </summary>
+            /// <param name="queryResults">The queryResults<see cref="QueryResult[]"/>.</param>
+            /// <param name="turnContext">The turnContext<see cref="ITurnContext"/>.</param>
+            /// <param name="telemetryProperties">The telemetryProperties<see cref="Dictionary{string, string}"/>.</param>
+            /// <param name="telemetryMetrics">The telemetryMetrics<see cref="Dictionary{string, double}"/>.</param>
+            /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/>.</param>
+            /// <returns>The <see cref="Task"/>.</returns>
             protected override Task OnQnaResultsAsync(
                                         QueryResult[] queryResults,
                                         ITurnContext turnContext,
@@ -1801,13 +2110,33 @@ namespace Microsoft.Bot.Builder.AI.Tests
             }
         }
 
+        /// <summary>
+        /// Defines the <see cref="OverrideFillTelemetry" />.
+        /// </summary>
         public class OverrideFillTelemetry : QnAMaker
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="OverrideFillTelemetry"/> class.
+            /// </summary>
+            /// <param name="endpoint">The endpoint<see cref="QnAMakerEndpoint"/>.</param>
+            /// <param name="options">The options<see cref="QnAMakerOptions"/>.</param>
+            /// <param name="httpClient">The httpClient<see cref="HttpClient"/>.</param>
+            /// <param name="telemetryClient">The telemetryClient<see cref="IBotTelemetryClient"/>.</param>
+            /// <param name="logPersonalInformation">The logPersonalInformation<see cref="bool"/>.</param>
             public OverrideFillTelemetry(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation)
                 : base(endpoint, options, httpClient, telemetryClient, logPersonalInformation)
             {
             }
 
+            /// <summary>
+            /// The OnQnaResultsAsync.
+            /// </summary>
+            /// <param name="queryResults">The queryResults<see cref="QueryResult[]"/>.</param>
+            /// <param name="turnContext">The turnContext<see cref="ITurnContext"/>.</param>
+            /// <param name="telemetryProperties">The telemetryProperties<see cref="Dictionary{string, string}"/>.</param>
+            /// <param name="telemetryMetrics">The telemetryMetrics<see cref="Dictionary{string, double}"/>.</param>
+            /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/>.</param>
+            /// <returns>The <see cref="Task"/>.</returns>
             protected override async Task OnQnaResultsAsync(
                                         QueryResult[] queryResults,
                                         ITurnContext turnContext,
@@ -1835,17 +2164,35 @@ namespace Microsoft.Bot.Builder.AI.Tests
             }
         }
 
+        /// <summary>
+        /// Defines the <see cref="CapturedRequest" />.
+        /// </summary>
         private class CapturedRequest
         {
+            /// <summary>
+            /// Gets or sets the Questions.
+            /// </summary>
             public string[] Questions { get; set; }
 
+            /// <summary>
+            /// Gets or sets the Top.
+            /// </summary>
             public int Top { get; set; }
 
+            /// <summary>
+            /// Gets or sets the StrictFilters.
+            /// </summary>
             public Metadata[] StrictFilters { get; set; }
 
+            /// <summary>
+            /// Gets or sets the MetadataBoost.
+            /// </summary>
             public Metadata[] MetadataBoost { get; set; }
 
+            /// <summary>
+            /// Gets or sets the ScoreThreshold.
+            /// </summary>
             public float ScoreThreshold { get; set; }
-           }
+        }
     }
 }

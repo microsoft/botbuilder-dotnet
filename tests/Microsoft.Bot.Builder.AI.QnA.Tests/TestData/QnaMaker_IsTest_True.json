@@ -2,12 +2,17 @@
   "activeLearningEnabled": true,
   "answers": [
     {
-      "questions": [],
-      "answer": "No good match found in KB.",
-      "score": 0,
-      "id": -1,
-      "source": null,
-      "metadata": []
+      "questions": [
+        "Will answer be any different now?"
+      ],
+      "answer": "No, isTest won't change your answer.",
+      "score": 100,
+      "id": 5,
+      "source": "Editorial",
+      "metadata": [],
+      "context": {
+        "isContextOnly": true
+      }
     }
   ]
 }

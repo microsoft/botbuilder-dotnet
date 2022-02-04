@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return result;
         }
 
-        private static async Task<QueryResults> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
+        private static async Task<QueryResults> FormatQnaResultAsync(HttpResponseMessage response)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            results.Answers = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+            results.Answers = results.Answers.ToArray();
             return results;
         }
 
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.Filters == null)
             {
-                options.Filters = new Filters 
+                options.Filters = new Filters
                 {
                     MetadataFilter = new MetadataFilter(
                         new List<KeyValuePair<string, string>>(),
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     question = messageActivity.Text,
                     top = options.Top,
                     strictFilters = GetMetadataFromFilters(options.Filters),
-                    scoreThreshold = options.ScoreThreshold * 100,
+                    scoreThreshold = Math.Round(options.ScoreThreshold * 100.0f, 1),
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,
@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
 
-            var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
+            var result = await FormatQnaResultAsync(response).ConfigureAwait(false);
 
             return result;
         }
@@ -261,6 +261,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             // Union metadata and source filters
             return filters?.MetadataFilter?.Metadata?.Select(kvp => new Metadata { Name = kvp.Key, Value = kvp.Value })
                     .Union(filters?.SourceFilter?.Select(s => new Metadata { Name = Constants.SourceFilterMetadataKey, Value = s })).ToArray();
-         }
+        }
     }
 }

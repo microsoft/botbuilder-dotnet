@@ -39,16 +39,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":30.0,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_ReturnsNoAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .WithContent("{\"question\":\"QnaMaker_ReturnsNoAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":30.0,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsNoAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_TopNAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .WithContent("{\"question\":\"QnaMaker_TopNAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":30.0,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswerWithIntent\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .WithContent("{\"question\":\"QnaMaker_ReturnsAnswerWithIntent\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":30.0,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0,\"answerSpanRequest\":null,\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithIntent.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"QnAMatch\":{\"score\":1.0}}" },
                 { "Entities", "{\r\n  \"answer\": [\r\n    \"BaseCamp: You can use a damp rag to clean around the Power Pack\"\r\n  ],\r\n  \"$instance\": {\r\n    \"answer\": [\r\n      {\r\n        \"questions\": [\r\n          \"how do I clean the stove?\"\r\n        ],\r\n        \"answer\": \"BaseCamp: You can use a damp rag to clean around the Power Pack\",\r\n        \"score\": 1.0,\r\n        \"metadata\": [],\r\n        \"source\": \"Editorial\",\r\n        \"id\": 5,\r\n        \"context\": {\r\n          \"prompts\": [\r\n            {\r\n              \"displayOrder\": 0,\r\n              \"qnaId\": 55,\r\n              \"displayText\": \"Where can I buy?\",\r\n              \"qna\": null\r\n            }\r\n          ]\r\n        },\r\n        \"startIndex\": 0,\r\n        \"endIndex\": 22\r\n      }\r\n    ]\r\n  }\r\n}" },
-                { "AdditionalProperties", "{\"answers\":[{\"questions\":[\"how do I clean the stove?\"],\"answer\":\"BaseCamp: You can use a damp rag to clean around the Power Pack\",\"score\":1.0,\"metadata\":[],\"source\":\"Editorial\",\"id\":5,\"context\":{\"prompts\":[{\"displayOrder\":0,\"qnaId\":55,\"displayText\":\"Where can I buy?\",\"qna\":null}]}}]}" }
+                { "AdditionalProperties", "{\"answers\":[{\"questions\":[\"how do I clean the stove?\"],\"answer\":\"BaseCamp: You can use a damp rag to clean around the Power Pack\",\"score\":1.0,\"metadata\":[],\"source\":\"Editorial\",\"id\":5,\"context\":{\"prompts\":[{\"displayOrder\":0,\"qnaId\":55,\"displayText\":\"Where can I buy?\",\"qna\":null}]},\"answerSpan\":null}]}" }
             };
 
             if (logPersonalInformation == true)
@@ -321,6 +321,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     if (property.Value != expected[property.Key])
                     {
+                        Console.WriteLine(property.Value + "-------------" + expected[property.Key]);
                         return false;
                     }
                 }
