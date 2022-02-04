@@ -16,12 +16,12 @@ steps:
 #         Start-CosmosDbEmulator
 
 - task: NodeTool@0
-  displayName: 'install Node.js v14.x.'
+  displayName: 'install Node.js v14.x'
   inputs:
     versionSpec: '14.x' 
 
 - task: Npm@1
-  displayName: 'install botframework-cli to set up for Schema merge tests.'
+  displayName: 'install botframework-cli to set up for Schema merge tests'
   inputs:
     command: custom
     verbose: false
