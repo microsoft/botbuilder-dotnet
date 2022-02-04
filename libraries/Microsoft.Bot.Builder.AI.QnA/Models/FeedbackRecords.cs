@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -11,14 +12,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class FeedbackRecords
     {
         /// <summary>
-        /// Gets or sets the list of feedback records.
+        /// Initializes a new instance of the <see cref="FeedbackRecords"/> class.
+        /// </summary>
+        /// <param name="records">The list of feedback records.</param>
+        public FeedbackRecords(Collection<FeedbackRecord> records)
+        {
+            Records = records;
+        }
+
+        /// <summary>
+        /// Gets the list of feedback records.
         /// </summary>
         /// <value>
         /// List of feedback records.
         /// </value>
         [JsonProperty("feedbackRecords")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public FeedbackRecord[] Records { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<FeedbackRecord> Records { get; }
     }
 }

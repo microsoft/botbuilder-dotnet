@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -318,23 +319,24 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     Host = _hostname,
                 });
 
-            var feedbackRecords = new FeedbackRecords();
-
-            var feedback1 = new FeedbackRecord
+            var feedbacks = new Collection<FeedbackRecord>
             {
-                QnaId = 1,
-                UserId = "test",
-                UserQuestion = "How are you?",
+                new FeedbackRecord
+                {
+                    QnaId = 1,
+                    UserId = "test",
+                    UserQuestion = "How are you?",
+                },
+
+                new FeedbackRecord
+                {
+                    QnaId = 2,
+                    UserId = "test",
+                    UserQuestion = "What up??",
+                }
             };
 
-            var feedback2 = new FeedbackRecord
-            {
-                QnaId = 2,
-                UserId = "test",
-                UserQuestion = "What up??",
-            };
-
-            feedbackRecords.Records = new FeedbackRecord[] { feedback1, feedback2 };
+            var feedbackRecords = new FeedbackRecords(feedbacks);
 
             await qna.CallTrainAsync(feedbackRecords);
         }
