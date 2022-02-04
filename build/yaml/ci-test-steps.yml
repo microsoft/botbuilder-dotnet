@@ -16,6 +16,7 @@ steps:
 #         Start-CosmosDbEmulator
 
 - task: NodeTool@0
+  displayName: 'install Node.js v14.x.'
   inputs:
     versionSpec: '14.x' 
 
