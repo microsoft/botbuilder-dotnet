@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
@@ -318,46 +317,6 @@ namespace Microsoft.Bot.Builder
             var cachedState = GetCachedState(turnContext);
             cachedState.State[propertyName] = value;
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Internal cached bot state.
-        /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
-        public class CachedBotState
-#pragma warning restore CA1034 // Nested types should not be visible
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CachedBotState"/> class.
-            /// </summary>
-            /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
-            public CachedBotState(IDictionary<string, object> state = null)
-            {
-                State = state ?? new Dictionary<string, object>();
-                Hash = ComputeHash(State);
-            }
-
-            /// <summary>
-            /// Gets or sets the state as a dictionary of key value pairs.
-            /// </summary>
-            /// <value>
-            /// The state as a dictionary of key value pairs.
-            /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-            public IDictionary<string, object> State { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
-
-            internal string Hash { get; set; }
-
-            internal static string ComputeHash(object obj)
-            {
-                return JsonConvert.SerializeObject(obj);
-            }
-
-            internal bool IsChanged()
-            {
-                return Hash != ComputeHash(State);
-            }
         }
 
         /// <summary>

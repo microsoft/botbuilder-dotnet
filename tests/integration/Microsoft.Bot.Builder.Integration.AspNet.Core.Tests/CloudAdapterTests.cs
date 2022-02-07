@@ -794,13 +794,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         private static Stream CreateStream(Activity activity)
         {
-            string json = SafeJsonConvert.SerializeObject(activity, MessageSerializerSettings.Create());
-            var stream = new MemoryStream();
-            var textWriter = new StreamWriter(stream);
-            textWriter.Write(json);
-            textWriter.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
+            // Use DeserializationSettings from a ConnectorClient
+            using (var connector = new ConnectorClient(new Uri("http://localhost/")))
+            {
+                string json = SafeJsonConvert.SerializeObject(activity, connector.DeserializationSettings);
+                var stream = new MemoryStream();
+                var textWriter = new StreamWriter(stream);
+                textWriter.Write(json);
+                textWriter.Flush();
+                stream.Seek(0, SeekOrigin.Begin);
+                return stream;
+            }
         }
 
         private class InvokeResponseBot : IBot
