@@ -606,36 +606,31 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             // If response is present then show that response, else default answer.
-            if (stepContext.Result is List<QueryResult> response)
+            var response = (List<QueryResult>)stepContext.Result;
+            if (response.Count > 0 && response[0].Id != -1)
             {
                 var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
-                if (response.Count == 1)
-                {
-                    if (response[0].Id == -1)
-                    {
-                        var activity = dialogOptions.ResponseOptions.NoAnswer;
-                        if (activity == null || activity.Text == null)
-                        {
-                            await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await stepContext.Context.SendActivityAsync(activity).ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
-                        await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
-                    }
-                }
-                else
-                {
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
-                }
+                await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
             }
             else
             {
-                await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var activity = dialogOptions.ResponseOptions.NoAnswer;
+                if (activity != null && activity.Text != null)
+                {
+                    await stepContext.Context.SendActivityAsync(activity).ConfigureAwait(false);
+                }
+                else
+                {
+                    if (response.Count == 1 && response[0].Id == -1)
+                    {
+                        var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                        await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
+                }
             }
 
             return await stepContext.EndDialogAsync().ConfigureAwait(false);
@@ -707,7 +702,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     foreach (var qna in response.Answers)
                     {
                         // for unstructured sources questions will be empty
-                        if (qna.Questions.Length > 0)
+                        if (qna.Questions?.Length > 0)
                         {
                             suggestedQuestions.Add(qna.Questions[0]);
                         }

@@ -12,13 +12,24 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class KnowledgeBaseAnswer
     {
         /// <summary>
-        /// Gets the list of questions indexed in the QnA Service for the given answer.
+        /// Initializes a new instance of the <see cref="KnowledgeBaseAnswer"/> class.
+        /// </summary>
+        /// <param name="metadata">Metadata associated with the answer, useful to categorize or filter question answers.</param>
+        public KnowledgeBaseAnswer(Dictionary<string, string> metadata)
+        {
+            Metadata = metadata;
+        }
+
+        /// <summary>
+        /// Gets or sets the list of questions indexed in the QnA Service for the given answer.
         /// </summary>
         /// <value>
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
-        public List<string> Questions { get; }
+#pragma warning disable CA1819 // Properties should not return arrays
+        public string[] Questions { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets the answer text.
@@ -45,7 +56,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("confidenceScore")]
         public double ConfidenceScore { get; set; }
 
-       /// <summary>
+        /// <summary>
         /// Gets or sets the source from which the QnA was extracted.
         /// </summary>
         /// <value>

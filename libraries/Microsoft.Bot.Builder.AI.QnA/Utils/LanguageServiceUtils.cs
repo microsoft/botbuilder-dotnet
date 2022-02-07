@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var hydratedOptions = HydrateOptions(options);
             ValidateOptions(hydratedOptions);
 
-            var result = await QueryKBAsync((Activity)messageActivity, options).ConfigureAwait(false);
-            
+            var result = await QueryKBAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
+
             await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers, hydratedOptions).ConfigureAwait(false);
 
             return result;
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.Filters = queryOptions.Filters;
                 }
                 else
-                { 
+                {
                     // For Legacy and V2 preview bots to work as-is with language service
                     hydratedOptions.Filters = GetFilters(queryOptions.StrictFilters, queryOptions.StrictFiltersJoinOperator.ToString());
                 }
@@ -267,14 +267,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     Score = (float)kbAnswer.AnswerSpan.ConfidenceScore,
                     Text = kbAnswer.AnswerSpan?.Text,
                     StartIndex = kbAnswer.AnswerSpan?.Offset ?? 0,
-                    EndIndex = kbAnswer.AnswerSpan?.Length != null ? (kbAnswer.AnswerSpan?.Offset + kbAnswer.AnswerSpan?.Length - 1).Value : 0 
-                } 
+                    EndIndex = kbAnswer.AnswerSpan?.Length != null ? (kbAnswer.AnswerSpan?.Offset + kbAnswer.AnswerSpan?.Length - 1).Value : 0
+                }
                 : null,
                 Context = kbAnswer.Dialog != null ? new QnAResponseContext
                 {
                     Prompts = kbAnswer.Dialog?.Prompts?.Select(p =>
                                 new QnaMakerPrompt { DisplayOrder = p.DisplayOrder, DisplayText = p.DisplayText, Qna = null, QnaId = p.QnaId }).ToArray()
-                } 
+                }
                 : null,
                 Id = kbAnswer.Id,
                 Metadata = kbAnswer.Metadata?.ToList().Select(nv => new Metadata { Name = nv.Key, Value = nv.Value }).ToArray(),

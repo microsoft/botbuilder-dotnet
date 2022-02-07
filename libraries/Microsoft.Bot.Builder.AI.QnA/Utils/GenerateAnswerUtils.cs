@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     question = messageActivity.Text,
                     top = options.Top,
                     strictFilters = GetMetadataFromFilters(options.Filters),
-                    scoreThreshold = Math.Round(options.ScoreThreshold * 100.0f, 1),
+                    scoreThreshold = Math.Round(options.ScoreThreshold * 100.0f, 2),
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,

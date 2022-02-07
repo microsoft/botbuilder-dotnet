@@ -1,0 +1,30 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "Q1"
+      ],
+      "answer": "A1",
+      "confidenceScore": 0.80,
+      "id": 15,
+      "source": "Editorial",
+      "metadata": {
+        "name": "topic",
+        "value": "value"
+      }
+    },
+    {
+      "questions": [
+        "Q2"
+      ],
+      "answer": "A2",
+      "confidenceScore": 0.78,
+      "id": 16,
+      "source": "Editorial",
+      "metadata": {
+        "name": "topic",
+        "value": "value"
+      }
+    }
+  ]
+}
