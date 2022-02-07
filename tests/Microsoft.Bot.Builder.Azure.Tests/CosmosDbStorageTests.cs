@@ -32,48 +32,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string DocumentId = "UtteranceLog-001";
 
         private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
-        {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
-            {
-                return false;
-            }
 
-            if (File.Exists(EmulatorPath))
-            {
-                var tries = 5;
-
-                do
-                {
-                    var p = new Process();
-                    p.StartInfo.UseShellExecute = true;
-                    p.StartInfo.FileName = EmulatorPath;
-                    p.StartInfo.Arguments = "/GetStatus";
-                    p.Start();
-                    p.WaitForExit();
-
-                    switch (p.ExitCode)
-                    {
-                        case 1: // starting
-                            Task.Delay(1000).Wait();
-                            tries--;
-                            break;
-
-                        case 2: // started
-                            return true;
-
-                        case 3: // stopped
-                            return false;
-
-                        default:
-                            return false; // unknown status code
-                    }
-                }
-                while (tries > 0);
-            }
-
-            return false;
-        });
+        // This process has been disabled, more information can be found in the tests\Microsoft.Bot.Builder.Azure.Tests\IgnoreOnNoEmulatorFact.cs file.
+        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() => false);
 
         // Item used to test delete cases
         private readonly StoreItem _itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
