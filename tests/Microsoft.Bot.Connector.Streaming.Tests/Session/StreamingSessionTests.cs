@@ -9,10 +9,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Connector.Streaming.Session;
 using Microsoft.Bot.Connector.Streaming.Transport;
-using Microsoft.Bot.Streaming;
-using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
@@ -27,45 +27,45 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         public static IEnumerable<object[]> ReceiveRequestParameterValidationData =>
             new List<object[]>
             {
-                new object[] { new Header() { Type = PayloadTypes.Request }, null, typeof(ArgumentNullException) },
-                new object[] { null, new ReceiveRequest(), typeof(ArgumentNullException) },
-                new object[] { new Header() { Type = PayloadTypes.Response }, new ReceiveRequest(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.Stream }, new ReceiveRequest(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelStream }, new ReceiveRequest(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelAll }, new ReceiveRequest(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Request, null, typeof(ArgumentNullException) },
+                new object[] { '\0', new ReceiveRequest(), typeof(ArgumentNullException) },
+                new object[] { PayloadTypes.Response, new ReceiveRequest(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Stream, new ReceiveRequest(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelStream, new ReceiveRequest(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelAll, new ReceiveRequest(), typeof(InvalidOperationException) }
             };
 
         public static IEnumerable<object[]> ReceiveResponseParameterValidationData =>
             new List<object[]>
             {
-                new object[] { new Header() { Type = PayloadTypes.Response }, null, typeof(ArgumentNullException) },
-                new object[] { null, new ReceiveResponse(), typeof(ArgumentNullException) },
-                new object[] { new Header() { Type = PayloadTypes.Request }, new ReceiveResponse(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.Stream }, new ReceiveResponse(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelStream }, new ReceiveResponse(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelAll }, new ReceiveResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Response, null, typeof(ArgumentNullException) },
+                new object[] { '\0', new ReceiveResponse(), typeof(ArgumentNullException) },
+                new object[] { PayloadTypes.Request, new ReceiveResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Stream, new ReceiveResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelStream, new ReceiveResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelAll, new ReceiveResponse(), typeof(InvalidOperationException) },
             };
 
         public static IEnumerable<object[]> ReceiveStreamParameterValidationData =>
             new List<object[]>
             {
-                new object[] { new Header() { Type = PayloadTypes.Response }, null, typeof(ArgumentNullException) },
-                new object[] { null, Array.Empty<byte>(), typeof(ArgumentNullException) },
-                new object[] { new Header() { Type = PayloadTypes.Request }, Array.Empty<byte>(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.Response }, Array.Empty<byte>(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelStream }, Array.Empty<byte>(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelAll }, Array.Empty<byte>(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Response, null, typeof(ArgumentNullException) },
+                new object[] { '\0', Array.Empty<byte>(), typeof(ArgumentNullException) },
+                new object[] { PayloadTypes.Request, Array.Empty<byte>(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Response, Array.Empty<byte>(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelStream, Array.Empty<byte>(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelAll, Array.Empty<byte>(), typeof(InvalidOperationException) },
             };
 
         public static IEnumerable<object[]> SendResponseParameterValidationData =>
             new List<object[]>
             {
-                new object[] { new Header() { Type = PayloadTypes.Response }, null, typeof(ArgumentNullException) },
-                new object[] { null, new StreamingResponse(), typeof(ArgumentNullException) },
-                new object[] { new Header() { Type = PayloadTypes.Request }, new StreamingResponse(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.Stream }, new StreamingResponse(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelAll }, new StreamingResponse(), typeof(InvalidOperationException) },
-                new object[] { new Header() { Type = PayloadTypes.CancelStream }, new StreamingResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Response, null, typeof(ArgumentNullException) },
+                new object[] { '\0', new StreamingResponse(), typeof(ArgumentNullException) },
+                new object[] { PayloadTypes.Request, new StreamingResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.Stream, new StreamingResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelAll, new StreamingResponse(), typeof(InvalidOperationException) },
+                new object[] { PayloadTypes.CancelStream, new StreamingResponse(), typeof(InvalidOperationException) },
             };
 
         [Fact]
@@ -96,49 +96,53 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
         [Theory]
         [MemberData(nameof(SendResponseParameterValidationData))]
-        public async Task StreamingSession_SendResponse_ParameterValidation(Header header, StreamingResponse response, Type exceptionType)
+        public async Task StreamingSession_SendResponse_ParameterValidation(char payloadType, StreamingResponse response, Type exceptionType)
         {
             // Arrange
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var session = new StreamingSession(new Mock<RequestHandler>().Object, transportHandler.Object, NullLogger.Instance);
 
             // Act + Assert
+            var header = payloadType == '\0' ? null : new Header { Type = payloadType };
             await Assert.ThrowsAsync(exceptionType, () => session.SendResponseAsync(header, response, CancellationToken.None));
         }
 
         [Theory]
         [MemberData(nameof(ReceiveRequestParameterValidationData))]
-        public void StreamingSession_ReceiveRequest_ParameterValidation(Header header, ReceiveRequest request, Type exceptionType)
+        public void StreamingSession_ReceiveRequest_ParameterValidation(char payloadType, ReceiveRequest request, Type exceptionType)
         {
             // Arrange
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var session = new StreamingSession(new Mock<RequestHandler>().Object, transportHandler.Object, NullLogger.Instance);
 
             // Act + Assert
+            var header = payloadType == '\0' ? null : new Header { Type = payloadType };
             Assert.Throws(exceptionType, () => session.ReceiveRequest(header, request));
         }
 
         [Theory]
         [MemberData(nameof(ReceiveResponseParameterValidationData))]
-        public void StreamingSession_ReceiveResponse_ParameterValidation(Header header, ReceiveResponse response, Type exceptionType)
+        public void StreamingSession_ReceiveResponse_ParameterValidation(char payloadType, ReceiveResponse response, Type exceptionType)
         {
             // Arrange
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var session = new StreamingSession(new Mock<RequestHandler>().Object, transportHandler.Object, NullLogger.Instance);
 
             // Act + Assert
+            var header = payloadType == '\0' ? null : new Header { Type = payloadType };
             Assert.Throws(exceptionType, () => session.ReceiveResponse(header, response));
         }
 
         [Theory]
         [MemberData(nameof(ReceiveStreamParameterValidationData))]
-        public void StreamingSession_Receivestream_ParameterValidation(Header header, byte[] payload, Type exceptionType)
+        public void StreamingSession_ReceiveStream_ParameterValidation(char payloadType, byte[] payload, Type exceptionType)
         {
             // Arrange
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var session = new StreamingSession(new Mock<RequestHandler>().Object, transportHandler.Object, NullLogger.Instance);
 
             // Act + Assert
+            var header = payloadType == '\0' ? null : new Header { Type = payloadType };
             Assert.Throws(exceptionType, () => session.ReceiveStream(header, new ArraySegment<byte>(payload)));
         }
 

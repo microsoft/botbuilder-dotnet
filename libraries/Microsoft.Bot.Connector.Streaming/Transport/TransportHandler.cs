@@ -9,8 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Streaming.Payloads;
-using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
