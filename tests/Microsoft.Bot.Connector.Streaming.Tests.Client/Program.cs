@@ -12,8 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
             }
         }
 
-        private static void Client_Disconnected(object sender, Bot.Streaming.Transport.DisconnectedEventArgs e)
+        private static void Client_Disconnected(object sender, DisconnectedEventArgs e)
         {
             WriteLine($"[Program] Client disconnected. Reason: {e?.Reason}.", foregroundColor: ConsoleColor.Yellow);
             var response = AskUser("Attempt to reconnect the existing connection? y / n");

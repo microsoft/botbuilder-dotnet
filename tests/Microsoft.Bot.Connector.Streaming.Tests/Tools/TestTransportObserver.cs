@@ -4,13 +4,12 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using Microsoft.Bot.Streaming.Payloads;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests.Features
 {
-    internal class TestTransportObserver : IObserver<(Header Header, ReadOnlySequence<byte> Payload)>
+    internal class TestTransportObserver : IObserver<(Payloads.Header Header, ReadOnlySequence<byte> Payload)>
     {
-        public List<(Header Header, byte[] Payload)> Received { get; private set; } = new List<(Header Header, byte[] Payload)>();
+        public List<(Payloads.Header Header, byte[] Payload)> Received { get; private set; } = new List<(Payloads.Header Header, byte[] Payload)>();
 
         public void OnCompleted()
         {
@@ -22,7 +21,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Features
             throw new NotImplementedException();
         }
 
-        public void OnNext((Header Header, ReadOnlySequence<byte> Payload) value)
+        public void OnNext((Payloads.Header Header, ReadOnlySequence<byte> Payload) value)
         {
             Received.Add((value.Header, value.Payload.ToArray()));
         }

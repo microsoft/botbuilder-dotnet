@@ -14,8 +14,8 @@ using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -243,18 +243,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 // Internal reuse of the existing StreamingRequestHandler class
                 _requestHandler = new StreamingRequestHandler(bot, this, connection, authenticateRequestResult.Audience, logger: adapter.Logger);
-
-                // Fix up the connector factory so connector create from it will send over this connection
-                _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
-            }
-
-            public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, string pipeName, CloudAdapter adapter, IBot bot)
-            {
-                _authenticateRequestResult = authenticateRequestResult;
-                _adapter = adapter;
-
-                // Internal reuse of the existing StreamingRequestHandler class
-                _requestHandler = new StreamingRequestHandler(bot, this, pipeName, _authenticateRequestResult.Audience, adapter.Logger);
 
                 // Fix up the connector factory so connector create from it will send over this connection
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);

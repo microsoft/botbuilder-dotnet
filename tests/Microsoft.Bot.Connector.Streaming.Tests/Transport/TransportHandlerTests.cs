@@ -11,22 +11,19 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Connector.Streaming.Tests.Features;
 using Microsoft.Bot.Connector.Streaming.Transport;
-using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Xunit;
-using RequestModel = Microsoft.Bot.Connector.Streaming.Payloads.RequestPayload;
-using ResponseModel = Microsoft.Bot.Connector.Streaming.Payloads.ResponsePayload;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests
 {
     public class TransportHandlerTests
     {
         public static IEnumerable<object[]> PipeToObserverData =>
-            new List<object[]>()
+            new List<object[]>
             {
                 new object[] { new List<(Header Header, byte[] Payload)>() },
                 new object[] { GenerateHeaderPayloadData(1, 1) },
@@ -42,7 +39,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             };
 
         public static IEnumerable<object[]> ErrorScenarioData =>
-            new List<object[]>()
+            new List<object[]>
             {
                 new object[] { GenerateHeaderPayloadData(1000, 2), true, false, false },
                 new object[] { GenerateHeaderPayloadData(1000, 2), false, true, false },
@@ -97,14 +94,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         [Fact]
         public async Task TransportHandler_SendRequest_TransportReceivesHeaderAndPayload()
         {
-            var request = new RequestModel()
+            var request = new RequestPayload
             {
                 Verb = "GET",
                 Path = "api/version",
-                Streams = new List<StreamDescription>()
+                Streams = new List<StreamDescription>
                 {
-                    new StreamDescription() { ContentType = "json", Id = Guid.NewGuid().ToString(), Length = 18 },
-                    new StreamDescription() { ContentType = "text", Id = Guid.NewGuid().ToString(), Length = 24 }
+                    new StreamDescription { ContentType = "json", Id = Guid.NewGuid().ToString(), Length = 18 },
+                    new StreamDescription { ContentType = "text", Id = Guid.NewGuid().ToString(), Length = 24 }
                 }
             };
 
@@ -158,13 +155,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         [Fact]
         public async Task TransportHandler_SendResponse_TransportReceivesHeaderAndPayload()
         {
-            var response = new ResponseModel()
+            var response = new ResponsePayload
             {
                 StatusCode = 200,
-                Streams = new List<StreamDescription>()
+                Streams = new List<StreamDescription>
                 {
-                    new StreamDescription() { ContentType = "json", Id = Guid.NewGuid().ToString(), Length = 18 },
-                    new StreamDescription() { ContentType = "text", Id = Guid.NewGuid().ToString(), Length = 24 }
+                    new StreamDescription { ContentType = "json", Id = Guid.NewGuid().ToString(), Length = 18 },
+                    new StreamDescription { ContentType = "text", Id = Guid.NewGuid().ToString(), Length = 24 }
                 }
             };
 
@@ -378,7 +375,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
             if (totalLength == 0)
             { 
-                var header = new Header()
+                var header = new Header
                 {
                     Id = Guid.NewGuid(),
                     End = true,
@@ -403,7 +400,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             {
                 var currentSize = Math.Min(chunkSize, totalLength - current);
 
-                var header = new Header()
+                var header = new Header
                 {
                     Id = Guid.NewGuid(),
                     End = true,
