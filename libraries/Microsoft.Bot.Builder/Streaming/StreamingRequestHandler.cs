@@ -15,9 +15,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming;
-using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
@@ -55,96 +54,6 @@ namespace Microsoft.Bot.Builder.Streaming
             _logger = logger ?? NullLogger.Instance;
 
             Audience = audience;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
-        /// establishes a connection over a WebSocket to a streaming channel.
-        /// </summary>
-        /// <param name="bot">The bot for which we handle requests.</param>
-        /// <param name="activityProcessor">The processor for incoming requests.</param>
-        /// <param name="socket">The base socket to use when connecting to the channel.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
-            : this(bot, activityProcessor, socket, null, logger)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
-        /// establishes a connection over a WebSocket to a streaming channel.
-        /// </summary>
-        /// <remarks>
-        /// The audience represents the recipient at the other end of the StreamingRequestHandler's
-        /// streaming connection. Some acceptable audience values are as follows:
-        /// <list>
-        /// <item>- For Public Azure channels, use <see cref="Microsoft.Bot.Connector.Authentication.AuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
-        /// <item>- For Azure Government channels, use <see cref="Microsoft.Bot.Connector.Authentication.GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
-        /// </list>
-        /// </remarks>
-        /// <param name="bot">The bot for which we handle requests.</param>
-        /// <param name="activityProcessor">The processor for incoming requests.</param>
-        /// <param name="socket">The base socket to use when connecting to the channel.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        /// <param name="audience">The specified recipient of all outgoing activities.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience, ILogger logger = null)
-        {
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-
-            if (socket == null)
-            {
-                throw new ArgumentNullException(nameof(socket));
-            }
-
-            Audience = audience;
-            _logger = logger ?? NullLogger.Instance;
-            _innerConnection = new LegacyStreamingConnection(socket, _logger, ServerDisconnected);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
-        /// establishes a connection over a Named Pipe to a streaming channel.
-        /// </summary>
-        /// <param name="bot">The bot for which we handle requests.</param>
-        /// <param name="activityProcessor">The processor for incoming requests.</param>
-        /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
-            : this(bot, activityProcessor, pipeName, null, logger)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
-        /// establishes a connection over a Named Pipe to a streaming channel.
-        /// </summary>
-        /// <remarks>
-        /// The audience represents the recipient at the other end of the StreamingRequestHandler's
-        /// streaming connection. Some acceptable audience values are as follows:
-        /// <list>
-        /// <item>- For Public Azure channels, use <see cref="Microsoft.Bot.Connector.Authentication.AuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
-        /// <item>- For Azure Government channels, use <see cref="Microsoft.Bot.Connector.Authentication.GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
-        /// </list>
-        /// </remarks>
-        /// <param name="bot">The bot for which we handle requests.</param>
-        /// <param name="activityProcessor">The processor for incoming requests.</param>
-        /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        /// <param name="audience">The specified recipient of all outgoing activities.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, string audience, ILogger logger = null)
-        {
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-            _logger = logger ?? NullLogger.Instance;
-
-            if (string.IsNullOrWhiteSpace(pipeName))
-            {
-                throw new ArgumentNullException(nameof(pipeName));
-            }
-
-            Audience = audience;
-            _innerConnection = new LegacyStreamingConnection(pipeName, _logger, ServerDisconnected);
         }
 
         /// <summary>

@@ -115,20 +115,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
             ? string.Empty
             : turnContext.Activity.ChannelId;
-
-        /// <summary>
-        /// Ids of the channels supported by the Bot Builder.
-        /// </summary>
-        // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels located
-        // at https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs.
-        // This change is non-breaking and this class now inherits from the class in the connector library.
-        [Obsolete("This class is deprecated. Please use Microsoft.Bot.Connector.Channels.")]
-#pragma warning disable CA1034 // Nested types should not be visible (this type is deprecated, ignoring)
-#pragma warning disable CA1724 // Namespace name conflict (this type is deprecated, ignoring)
-        public class Channels : Connector.Channels
-#pragma warning restore CA1724 // Namespace name conflict
-#pragma warning restore CA1034 // Nested types should not be visible
-        {
-        }
     }
 }

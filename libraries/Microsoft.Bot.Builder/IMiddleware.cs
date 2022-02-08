@@ -37,11 +37,11 @@ namespace Microsoft.Bot.Builder
         /// When implemented in middleware, processes an incoming activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="nextDelegate">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>Middleware calls the <paramref name="next"/> delegate to pass control to
+        /// <remarks>Middleware calls the <paramref name="nextDelegate"/> delegate to pass control to
         /// the next middleware in the pipeline. If middleware doesn’t call the next delegate,
         /// the adapter does not call any of the subsequent middleware’s request handlers or the
         /// bot’s receive handler, and the pipeline short circuits.
@@ -50,8 +50,6 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change this without breaking binary compat)
-        Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
-#pragma warning restore CA1716 // Identifiers should not match keywords
+        Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

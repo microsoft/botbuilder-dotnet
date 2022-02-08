@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Connector.Streaming.Session;
 using Microsoft.Bot.Connector.Streaming.Transport;
-using Microsoft.Bot.Streaming;
-using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
@@ -288,14 +287,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="propertyName">The name of the property to set.</param>
         /// <param name="value">The value to set on the property.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
-#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -307,46 +302,6 @@ namespace Microsoft.Bot.Builder
             var cachedState = GetCachedState(turnContext);
             cachedState.State[propertyName] = value;
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Internal cached bot state.
-        /// </summary>
-#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
-        public class CachedBotState
-#pragma warning restore CA1034 // Nested types should not be visible
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CachedBotState"/> class.
-            /// </summary>
-            /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
-            public CachedBotState(IDictionary<string, object> state = null)
-            {
-                State = state ?? new Dictionary<string, object>();
-                Hash = ComputeHash(State);
-            }
-
-            /// <summary>
-            /// Gets or sets the state as a dictionary of key value pairs.
-            /// </summary>
-            /// <value>
-            /// The state as a dictionary of key value pairs.
-            /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-            public IDictionary<string, object> State { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
-
-            internal string Hash { get; set; }
-
-            internal static string ComputeHash(object obj)
-            {
-                return JsonConvert.SerializeObject(obj);
-            }
-
-            internal bool IsChanged()
-            {
-                return Hash != ComputeHash(State);
-            }
         }
 
         /// <summary>
@@ -439,7 +394,7 @@ namespace Microsoft.Bot.Builder
             public async Task SetAsync(ITurnContext turnContext, T value, CancellationToken cancellationToken)
             {
                 await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-                await _botState.SetPropertyValueAsync(turnContext, Name, value, cancellationToken).ConfigureAwait(false);
+                await _botState.SetPropertyValueAsync(turnContext, Name, value).ConfigureAwait(false);
             }
         }
     }
