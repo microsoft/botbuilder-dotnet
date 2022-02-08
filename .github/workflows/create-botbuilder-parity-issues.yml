@@ -1,4 +1,4 @@
-name: create-botbuilder-js-parity-issue.yml
+name: create-botbuilder-parity-issues.yml
 
 on:
   pull_request:
@@ -41,19 +41,23 @@ jobs:
           value: ${{ github.repository }}
 
   dispatchWorkflow:
-    name: create parity issues
+    name: create parity issue
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     needs: encode
 
     strategy:
       matrix:
-        repo: [js, python, java]
+        repo: [dotnet, java, js, python]
 
     steps:
+      - run: echo "::notice ::Creating issue for ${{ matrix.repo }}"
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'Automation: Parity all') == true || contains(github.event.pull_request.labels.*.name, format('Automation: parity with {0}', matrix.repo)) == true
+
       - uses: joshgummersall/dispatch-workflow@main
         if: |
-          contains(github.event.pull_request.labels.*.name, 'Automation: No parity') == false || contains(github.event.pull_request.labels.*.name, format('Automation: parity with {0}', matrix.repo)) == true
+          contains(github.event.pull_request.labels.*.name, 'Automation: Parity all') == true || contains(github.event.pull_request.labels.*.name, format('Automation: parity with {0}', matrix.repo)) == true
         with:
           encoded: "true"
           inputs: |
