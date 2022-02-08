@@ -145,6 +145,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
         /// </summary>
         /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
+#pragma warning disable 612, 618 //'member' is obsolete
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             return new Lazy<AdalAuthenticator>(
@@ -156,5 +157,6 @@ namespace Microsoft.Bot.Connector.Authentication
                     this.Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
+#pragma warning restore 612, 618 //'member' is obsolete
     }
 }

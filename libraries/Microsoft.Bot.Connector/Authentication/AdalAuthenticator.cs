@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// An authentication class that implements <see cref="IAuthenticator"/>, used to authenticate requests against Azure.
     /// </summary>
+    [Obsolete("This class will be deprecated in a future version of the Bot Framework SDK. Use MsalAppCredentials or ManagedIdentityAuthenticator instead.")]
     public class AdalAuthenticator : IAuthenticator
     {
         private const string MsalTemporarilyUnavailable = "temporarily_unavailable";

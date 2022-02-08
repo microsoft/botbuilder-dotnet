@@ -15,9 +15,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Mocks
         {
         }
 
+#pragma warning disable 612, 618 //'member' is obsolete
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             return new Lazy<AdalAuthenticator>();
         }
+#pragma warning restore 612, 618 //'member' is obsolete
+
     }
 }
