@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     /// <summary>
     /// Wrapper class for the Twilio API.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class TwilioClientWrapper
     {
         private const string TwilioSignature = "x-twilio-signature";

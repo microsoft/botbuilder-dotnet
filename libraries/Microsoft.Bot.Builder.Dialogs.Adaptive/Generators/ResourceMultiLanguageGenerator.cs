@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
@@ -45,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">locale to lookup.</param>
         /// <param name="languageGenerator">found LanguageGenerator.</param>
         /// <returns>true if found.</returns>
-        public override bool TryGetGenerator(DialogContext dialogContext, string locale, out LanguageGenerator languageGenerator)
+        public override bool TryGetGenerator(DialogContext dialogContext, string locale, out Lazy<LanguageGenerator> languageGenerator)
         {
             var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
             var resourceId = string.IsNullOrEmpty(locale) ? this.ResourceId : this.ResourceId.Replace(".lg", $".{locale}.lg");

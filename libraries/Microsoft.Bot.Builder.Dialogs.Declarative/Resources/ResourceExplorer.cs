@@ -691,7 +691,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // Add component registration converters to the converters collection to support legacy patterns.
             foreach (var component in GetComponentRegistrations())
             {
-                var result = component.GetConverters(this, sourceContext);
+                var result = component.GetConverters(this, sourceContext).ToList();
                 if (result.Any())
                 {
                     converters.AddRange(result);
@@ -704,7 +704,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // Register our cycle detector on the converters that support observer registration
             foreach (var observableConverter in converters.Where(c => c is IObservableJsonConverter))
             {
-                (observableConverter as IObservableJsonConverter).RegisterObserver(cycleDetector);
+                ((IObservableJsonConverter)observableConverter).RegisterObserver(cycleDetector);
             }
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()

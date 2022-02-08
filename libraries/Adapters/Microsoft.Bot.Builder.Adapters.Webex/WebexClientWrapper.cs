@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     /// <summary>
     /// A client for interacting with the Webex Teams API.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class WebexClientWrapper
     {
         private const string MessageUrl = "https://api.ciscospark.com/v1/messages";

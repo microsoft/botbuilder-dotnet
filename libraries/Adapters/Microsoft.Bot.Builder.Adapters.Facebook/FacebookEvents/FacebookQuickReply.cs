@@ -9,6 +9,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
     /// <summary>
     /// Facebook Quick Reply object that can be sent as part of a Facebook message.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class FacebookQuickReply
     {
         /// <summary>

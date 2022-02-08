@@ -60,7 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             set
             {
-                this._actions = value ?? new List<Dialog>();
+                _actions = value ?? new List<Dialog>();
+                _scope.Actions = _actions;
             }
         }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -166,10 +167,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var list = GetItemsProperty(dc.State, beginDialog);
 
             var indexProperty = Index.GetValue(dc.State);
-            var index = dc.State.GetIntValue(indexProperty, 0);
+            var index = beginDialog ? 0 : dc.State.GetIntValue(indexProperty, 0);
 
             // Next item
-            while (list != null && index < list.Count)
+            while (dc.ActiveDialog != null && list != null && index < list.Count)
             {
                 var childDialogState = GetActionScopeState(dc);
                 var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
@@ -210,7 +211,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 index++;
-                dc.State.SetValue(indexProperty, index);
+                if (dc.ActiveDialog != null)
+                {
+                    dc.State.SetValue(indexProperty, index);
+                }
 
                 if (turnResult.Status == DialogTurnStatus.CompleteAndWait)
                 {
@@ -222,10 +226,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 beginDialog = true;
                 UpdateActionScopeState(dc, new DialogState());
+
+                // If one of the descendant dialogs ended the parent, then end processing
+                if (ShouldEndDialog(turnResult, out DialogTurnResult finalResult))
+                {
+                    return await dc.EndDialogAsync(result: finalResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
             }
 
             // End of list has been reached, or the list is null
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        private bool ShouldEndDialog(DialogTurnResult turnResult, out DialogTurnResult finalTurnResult)
+        {
+            finalTurnResult = turnResult;
+            
+            // If a descendant dialog multiple levels below this container ended stack processing,
+            // the result will be nested.
+            while (finalTurnResult.Result != null 
+                && finalTurnResult.Result is DialogTurnResult dtr 
+                && dtr.ParentEnded && dtr.Status == DialogTurnStatus.Complete)
+            {
+                finalTurnResult = dtr;
+            }
+
+            return finalTurnResult.ParentEnded && finalTurnResult.Status == DialogTurnStatus.Complete;
         }
 
         private void UpdateActionScopeState(DialogContext dc, DialogState state)
@@ -253,7 +279,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 state = new DialogState();
             }
 
-            activeDialogState[ActionScopeState] = state;
+            if (activeDialogState != null)
+            {
+                activeDialogState[ActionScopeState] = state;
+            }
 
             return state;
         }

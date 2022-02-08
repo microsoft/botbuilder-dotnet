@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Text = "hi",
             };
 
-            var streamingConnection = new Mock<StreamingConnection>();
+            var streamingConnection = new Mock<StreamingConnection>(null);
             streamingConnection
                 .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
                 .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(

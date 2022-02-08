@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private readonly Lazy<Task<Dialog>> _lazyRootDialog;
         private readonly Lazy<LanguageGenerator> _lazyLanguageGenerator;
-        private readonly Lazy<Task<LanguageGeneratorManager>> _lazyLanguageGeneratorManager;
+        private readonly Lazy<LanguageGeneratorManager> _lazyLanguageGeneratorManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             _lazyRootDialog = new Lazy<Task<Dialog>>(CreateDialogAsync);
             _lazyLanguageGenerator = new Lazy<LanguageGenerator>(CreateLanguageGenerator);
-            _lazyLanguageGeneratorManager = new Lazy<Task<LanguageGeneratorManager>>(CreateLanguageGeneratorManagerAsync);
+            _lazyLanguageGeneratorManager = new Lazy<LanguageGeneratorManager>(CreateLanguageGeneratorManager);
         }
 
         /// <inheritdoc/>
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_memoryScopes);
             turnContext.TurnState.Add(_pathResolvers);
             turnContext.TurnState.Add(_lazyLanguageGenerator.Value);
-            turnContext.TurnState.Add<LanguageGeneratorManager>(await _lazyLanguageGeneratorManager.Value.ConfigureAwait(false));
+            turnContext.TurnState.Add(_lazyLanguageGeneratorManager.Value);
             turnContext.TurnState.Add(_languagePolicy);
             turnContext.TurnState.Add(_telemetryClient);
 
@@ -175,11 +175,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 : new TemplateEngineLanguageGenerator();
         }
 
-        private async Task<LanguageGeneratorManager> CreateLanguageGeneratorManagerAsync()
+        private LanguageGeneratorManager CreateLanguageGeneratorManager()
         {
-            var lgManager = new LanguageGeneratorManager(_resourceExplorer, false);
-            await lgManager.LoadAsync().ConfigureAwait(false);
-            return lgManager;
+            return new LanguageGeneratorManager(_resourceExplorer);
         }
     }
 }
