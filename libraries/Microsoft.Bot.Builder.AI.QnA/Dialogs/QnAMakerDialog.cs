@@ -623,11 +623,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 {
                     if (response.Count == 1 && response[0].Id == -1)
                     {
+                        // Nomatch Response from service.
                         var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
                         await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
                     }
                     else
                     {
+                        // Empty result array received from service.
                         await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
                 }

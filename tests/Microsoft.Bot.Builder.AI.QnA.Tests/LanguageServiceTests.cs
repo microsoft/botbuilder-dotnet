@@ -425,56 +425,80 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabled.
+        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabledAndDisplayPreciseAnswerOnlyEnabled.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "LanguageService")]
-        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabled()
+        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabledAndDisplayPreciseAnswerOnlyEnabled()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_GivenPreciseAnswerOption.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithAnswerSpan.json"));
 
-            var qna = GetLanguageService(
-                mockHttp,
-                new QnAMakerEndpoint
-                {
-                    KnowledgeBaseId = _projectName,
-                    EndpointKey = _endpointKey,
-                    Host = _endpoint,
-                    QnAServiceType = "language"
-                },
-                new QnAMakerOptions
-                {
-                    Top = 1,
-                    EnablePreciseAnswer = true
-                });
+            // setting enablePreciseAnswer to true
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true);
 
-            var results = await qna.GetAnswersAsync(GetContext("What happens when I enable precise answer?"));
-            Assert.NotNull(results);
-            Assert.Single(results);
-            Assert.StartsWith("The precise answering feature allows you to get the precise short answer from the best candidate answer passage using a deep learning model at runtime.", results[0].AnswerSpan?.Text);
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnsAnswerWithAnswerSpan.json")));
+            var cardWhenDisplayPreciseAnswerOnlyEnabled = QnACardBuilder.GetQnADefaultResponse(GetQueryResultFromKBAnswer(response.Answers[0]), true);
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+            .Send("What happens when I enable precise answer?")
+                .AssertReply(cardWhenDisplayPreciseAnswerOnlyEnabled, equalityComparer: qnaMakerCardEqualityComparer)
+            .StartTestAsync();
         }
 
         /// <summary>
-        /// The LanguageService_ReturnsAnswer_WhenDisplayPreciseAnswerEnabled.
+        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerDisabledAndDisplayPreciseAnswerEnabled.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "LanguageService")]
-        public async Task LanguageService_ReturnsAnswer_WhenDisplayPreciseAnswerEnabled()
+        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerDisabledAndDisplayPreciseAnswerEnabled()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_GivenPreciseAnswerOption.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            // setting enablePreciseAnswer to true
             var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true);
 
-            await CreateFlow(rootDialog, "LanguageServiceAction_ReturnsAnswer_WhenDisplayPreciseAnswerEnabled")
-            .Send("What happens when I enable displayPreciseAnswer")
-                .AssertReply("The precise answering feature allows you to get the precise short answer from the best candidate answer passage using a deep learning model at runtime.")
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnsAnswer.json")));
+            var cardWhenDisplayPreciseAnswerOnlyEnabled = QnACardBuilder.GetQnADefaultResponse(GetQueryResultFromKBAnswer(response.Answers[0]), true);
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+            .Send("What happens when I enable precise answer?")
+                .AssertReply(cardWhenDisplayPreciseAnswerOnlyEnabled, equalityComparer: qnaMakerCardEqualityComparer)
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerDisabledAndDisplayPreciseAnswerEnabled.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabledAndDisplayPreciseAnswerDisabled()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithAnswerSpan.json"));
+
+            // setting enablePreciseAnswer to true
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, false);
+
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnsAnswerWithAnswerSpan.json")));
+            var cardWhenDisplayPreciseAnswerOnlyEnabled = QnACardBuilder.GetQnADefaultResponse(GetQueryResultFromKBAnswer(response.Answers[0]), false);
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+            .Send("What happens when I enable precise answer?")
+                .AssertReply(cardWhenDisplayPreciseAnswerOnlyEnabled, equalityComparer: qnaMakerCardEqualityComparer)
             .StartTestAsync();
         }
 
@@ -544,7 +568,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded.json"));
 
             var options = new QnAMakerOptions
             {
@@ -563,10 +587,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 options);
 
-            var results = await qna.GetAnswersRawAsync(GetContext("how do I clean the stove?"), options);
+            var results = await qna.GetAnswersRawAsync(GetContext("What is machine learning?"), options);
             Assert.NotNull(results.Answers);
             Assert.Single(results.Answers);
-            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results.Answers[0].Answer);
+            Assert.StartsWith("Machine learning refers to statistical modeling techniques that have powered recent excitement in the software and services marketplace.", results.Answers[0].Answer);
         }
 
         /// <summary>
@@ -2132,7 +2156,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="string"/>.</returns>
         private string GetFilePath(string fileName)
         {
-            return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return Path.Combine(Environment.CurrentDirectory, "TestData/LanguageService", fileName);
         }
 
         /// <summary>

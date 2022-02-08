@@ -2014,7 +2014,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="string"/>.</returns>
         private string GetFilePath(string fileName)
         {
-            return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return Path.Combine(Environment.CurrentDirectory, "TestData/QnaMaker", fileName);
         }
 
         /// <summary>

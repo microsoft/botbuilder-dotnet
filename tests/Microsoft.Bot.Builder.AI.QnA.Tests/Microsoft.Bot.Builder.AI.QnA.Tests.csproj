@@ -36,6 +36,104 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestData\LanguageService\" />
+    <None Update="TestData\LanguageService\LanguageService_IsTest_True.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_RankerType_QuestionOnly.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnAnswer_MultiTurnLevel1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnAnswer_withPrompts.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswersWithMetadataBoost.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswerWithContext.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswerWithoutContext.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswerWithAnswerSpan.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswer_GivenScoreThresholdQueryOption.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswer_WhenNoAnswerFoundInKb.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_TestThreshold.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_TopNAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LanguageService\LanguageService_UsesStrictFilters_ToReturnAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\qnamaker.settings.development.westus.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_IsTest_True.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_LegacyEndpointAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_RankerType_QuestionOnly.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnAnswer_MultiTurnLevel1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnAnswer_withPrompts.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswersWithMetadataBoost.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswerWithContext.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswerWithIntent.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswerWithoutContext.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswer_GivenScoreThresholdQueryOption.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_ReturnsNoAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_TestThreshold.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_TopNAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_TopNAnswer_DisableActiveLearning.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\QnaMaker_UsesStrictFilters_ToReturnAnswer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

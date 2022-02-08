@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         private string GetFilePath(string fileName)
         {
-            return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return Path.Combine(Environment.CurrentDirectory, "TestData/QnaMaker", fileName);
         }
 
         private void ValidateTelemetry(string text, Mock<IBotTelemetryClient> telemetryClient, bool logPersonalInfo, int callCount)
