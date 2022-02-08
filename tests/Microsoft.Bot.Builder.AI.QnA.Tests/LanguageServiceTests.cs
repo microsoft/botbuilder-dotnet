@@ -534,6 +534,42 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
+        /// The LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            var options = new QnAMakerOptions
+            {
+                Top = 1,
+                IncludeUnstructuredSources = true
+            };
+
+            var qna = GetLanguageService(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _projectName,
+                    EndpointKey = _endpointKey,
+                    Host = _endpoint,
+                    QnAServiceType = "language"
+                },
+                options);
+
+            var results = await qna.GetAnswersRawAsync(GetContext("how do I clean the stove?"), options);
+            Assert.NotNull(results.Answers);
+            Assert.Single(results.Answers);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results.Answers[0].Answer);
+        }
+
+        /// <summary>
         /// The LanguageService_ReturnsAnswerRaw.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
