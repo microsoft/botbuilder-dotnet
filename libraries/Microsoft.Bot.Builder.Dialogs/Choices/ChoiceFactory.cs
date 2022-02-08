@@ -11,9 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// <summary>
     /// Assists with formatting a message activity that contains a list of choices.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class ChoiceFactory
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class ChoiceFactory
     {
         /// <summary>
         /// Creates a message activity that includes a list of choices formatted based on the capabilities of a given channel.

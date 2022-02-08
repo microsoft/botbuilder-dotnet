@@ -6,9 +6,7 @@ namespace Microsoft.Bot.Streaming.Transport
     /// <summary>
     /// A collection of constants useful when working with <see cref="Microsoft.Bot.Streaming.Payloads.Header"/>s.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class TransportConstants
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class TransportConstants
     {
         /// <summary>
         /// The maximum length of a single payload segment.
