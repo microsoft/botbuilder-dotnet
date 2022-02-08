@@ -48,17 +48,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
         /// </summary>
-        /// <param name="callerLine">Caller line.</param>
-        /// <param name="callerPath">Caller path.</param>
-        [JsonConstructor]
-        public OrchestratorRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(callerPath, callerLine)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
-        /// </summary>
         /// <param name="modelFolder">Specifies the base model folder.</param>
         /// <param name="snapshotFile">Specifies full path to the snapshot file.</param>
         /// <param name="resolverExternal">External label resolver object.</param>

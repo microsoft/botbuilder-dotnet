@@ -3,15 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 {
@@ -23,17 +21,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
     public class QnAMakerDialog : WaterfallDialog
     {
         /// <summary>
-        /// The declarative name for this type.
+        /// The path for storing and retrieving QnA Maker suggested questions data.
         /// </summary>
-        /// <remarks>Used by the framework to serialize and deserialize an instance of this type to JSON.</remarks>
-        [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.QnAMakerDialog";
+        /// <remarks>This represents suggestions returned from QnA Maker when ActiveLearningEnabled is enabled.
+        /// It is stored within the active dialog's state.
+        /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
+        protected const string SuggestedQuestionsData = "suggestedQuestions";
 
         /// <summary>
         /// The path for storing and retrieving QnA Maker context data.
         /// </summary>
         /// <remarks>This represents context about the current or previous call to QnA Maker.
-        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It is stored within the active dialog's state.
         /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
         protected const string QnAContextData = "qnaContextData";
 
@@ -94,10 +93,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// knowledge base; or null to apply none.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
-        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
-        /// of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
-        /// in the source file at which the method is called.</param>
         public QnAMakerDialog(
             string dialogId,
             string knowledgeBaseId,
@@ -110,12 +105,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             List<Metadata> strictFilters = null,
-            HttpClient httpClient = null,
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+            HttpClient httpClient = null)
             : base(dialogId)
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
             this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
             this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
             this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
@@ -124,8 +116,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.ActiveLearningCardTitle = activeLearningCardTitle;
             this.CardNoMatchText = cardNoMatchText;
             this.StrictFilters = strictFilters;
-            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
-            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
+            this.NoAnswer = noAnswer ?? MessageFactory.Text(DefaultNoAnswer);
+            this.CardNoMatchResponse = cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse);
             this.HttpClient = httpClient;
 
             // add waterfall steps
@@ -155,10 +147,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// knowledge base; or null to apply none.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
-        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
-        /// of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
-        /// in the source file at which the method is called.</param>
         public QnAMakerDialog(
             string knowledgeBaseId,
             string endpointKey,
@@ -170,9 +158,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             List<Metadata> strictFilters = null,
-            HttpClient httpClient = null,
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+            HttpClient httpClient = null)
             : this(
                 nameof(QnAMakerDialog),
                 knowledgeBaseId,
@@ -185,9 +171,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 top,
                 cardNoMatchResponse,
                 strictFilters,
-                httpClient,
-                sourceFilePath,
-                sourceLineNumber)
+                httpClient)
         {
         }
 
@@ -195,16 +179,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
         /// The JSON serializer uses this constructor to deserialize objects of this class.
         /// </summary>
-        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
-        /// of the source file that contains the caller.</param>
-        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
-        /// in the source file at which the method is called.</param>
-        [JsonConstructor]
-        public QnAMakerDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public QnAMakerDialog()
             : base(nameof(QnAMakerDialog))
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-
             // add waterfall steps
             this.AddStep(CallGenerateAnswerAsync);
             this.AddStep(CallTrainAsync);
@@ -216,7 +193,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets the <see cref="HttpClient"/> instance to use for requests to the QnA Maker service.
         /// </summary>
         /// <value>The HTTP client.</value>
-        [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
         /// <summary>
@@ -225,7 +201,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The knowledge base ID or an expression which evaluates to the knowledge base ID.
         /// </value>
-        [JsonProperty("knowledgeBaseId")]
         public string KnowledgeBaseId { get; set; }
 
         /// <summary>
@@ -234,7 +209,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The QnA Maker host URL or an expression which evaluates to the host URL.
         /// </value>
-        [JsonProperty("hostname")]
         public string HostName { get; set; }
 
         /// <summary>
@@ -243,7 +217,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The QnA Maker endpoint key to use or an expression which evaluates to the endpoint key.
         /// </value>
-        [JsonProperty("endpointKey")]
         public string EndpointKey { get; set; }
 
         /// <summary>
@@ -252,7 +225,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The threshold for answers returned or an expression which evaluates to the threshold.
         /// </value>
-        [JsonProperty("threshold")]
         public double Threshold { get; set; } = DefaultThreshold;
 
         /// <summary>
@@ -262,7 +234,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The maximum number of answers to return from the knowledge base or an expression which
         /// evaluates to the maximum number to return.
         /// </value>
-        [JsonProperty("top")]
         public int Top { get; set; } = DefaultTopN;
 
         /// <summary>
@@ -271,8 +242,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The template to send the user when QnA Maker does not find an answer.
         /// </value>
-        [JsonProperty("noAnswer")]
-        public ITemplate<Activity> NoAnswer { get; set; } = new BindToActivity(MessageFactory.Text(DefaultNoAnswer));
+        public Activity NoAnswer { get; set; } = MessageFactory.Text(DefaultNoAnswer);
 
         /// <summary>
         /// Gets or sets the card title to use when showing active learning options to the user,
@@ -282,7 +252,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The path card title to use when showing active learning options to the user or an
         /// expression which evaluates to the card title.
         /// </value>
-        [JsonProperty("activeLearningCardTitle")]
         public string ActiveLearningCardTitle { get; set; }
 
         /// <summary>
@@ -293,7 +262,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The button text to use with active learning options or an expression which evaluates to
         /// the button text.
         /// </value>
-        [JsonProperty("cardNoMatchText")]
         public string CardNoMatchText { get; set; }
 
         /// <summary>
@@ -303,8 +271,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The template to send the user if they select the no match option on an active learning card.
         /// </value>
-        [JsonProperty("cardNoMatchResponse")]
-        public ITemplate<Activity> CardNoMatchResponse { get; set; } = new BindToActivity(MessageFactory.Text(DefaultCardNoMatchResponse));
+        public Activity CardNoMatchResponse { get; set; } = MessageFactory.Text(DefaultCardNoMatchResponse);
 
         /// <summary>
         /// Gets the QnA Maker metadata with which to filter or boost queries to the knowledge base;
@@ -314,7 +281,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker metadata with which to filter or boost queries to the knowledge base
         /// or an expression which evaluates to the QnA Maker metadata.
         /// </value>
-        [JsonProperty("strictFilters")]
         public List<Metadata> StrictFilters { get; }
 
         /// <summary>
@@ -323,7 +289,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
-        [JsonProperty("logPersonalInformation")]
         public bool LogPersonalInformation { get; set; } = false;
 
         /// <summary>
@@ -332,7 +297,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// A value indicating whether to call test or prod environment of knowledge base. 
         /// </value>
-        [JsonProperty("isTest")]
         public bool IsTest { get; set; }
 
         /// <summary>
@@ -342,7 +306,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker ranker type to use or an expression which evaluates to the ranker type.
         /// </value>
         /// <seealso cref="RankerTypes"/>
-        [JsonProperty("rankerType")]
         public string RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
@@ -389,19 +352,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         }
 
         /// <inheritdoc/>
-        public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
-        {
-            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
-            if (interrupted)
-            {
-                // if qnamaker was interrupted then end the qnamaker dialog
-                return dc.EndDialogAsync(cancellationToken: cancellationToken);
-            }
-
-            return base.ContinueDialogAsync(dc, cancellationToken);
-        }
-
-        /// <inheritdoc/>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (dc.Context.Activity.Type == ActivityTypes.Message)
@@ -419,11 +369,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     return true;
                 }
 
-                var suggestedQuestions = dc.State.GetValue<List<string>>($"this.suggestedQuestions");
-                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
+                if (dc.ActiveDialog.State.TryGetValue(SuggestedQuestionsData, out object value))
                 {
-                    // it matches one of the suggested actions, we like that.
-                    return true;
+                    var suggestedQuestions = value as List<string>; 
+                    if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
+                    {
+                        // it matches one of the suggested actions, we like that.
+                        return true;
+                    }
                 }
 
                 // Calling QnAMaker to get response.
@@ -433,7 +386,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 var response = await qnaClient.GetAnswersRawAsync(dc.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
 
                 // cache result so step doesn't have to do it again, this is a turn cache and we use hashcode so we don't conflict with any other qnamakerdialogs out there.
-                dc.State.SetValue($"turn.qnaresult{this.GetHashCode()}", response);
+                dc.ActiveDialog.State[$"qnaresult{this.GetHashCode()}"] = response;
 
                 // disable interruption if we have answers.
                 return response.Answers.Any();
@@ -500,15 +453,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected virtual async Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            return new QnADialogResponseOptions
+            return Task.FromResult(new QnADialogResponseOptions
             {
-                NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
+                NoAnswer = this.NoAnswer,
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
-            };
+                CardNoMatchResponse = this.CardNoMatchResponse
+            });
         }
 
         /// <summary>
@@ -594,7 +547,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // clear suggestedQuestions between turns.
-            stepContext.State.RemoveValue($"this.suggestedQuestions");
+            stepContext.ActiveDialog.State.Remove(SuggestedQuestionsData);
 
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
             ResetOptions(stepContext, dialogOptions);
@@ -603,9 +556,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;
 
             // Calling QnAMaker to get response.
+            QueryResults response;
             var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
-            var response = stepContext.State.GetValue<QueryResults>($"turn.qnaresult{this.GetHashCode()}");
-            if (response == null)
+            if (stepContext.ActiveDialog.State.TryGetValue($"qnaresult{GetHashCode()}", out var value))
+            {
+                response = (QueryResults)value;
+            }
+            else
             {
                 response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
             }
@@ -638,8 +595,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
-                    ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
-                    stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
+                    stepContext.ActiveDialog.State[Options] = dialogOptions;
+                    stepContext.ActiveDialog.State[SuggestedQuestionsData] = suggestedQuestions;
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
@@ -673,7 +630,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 {
                     stepContext.Values[ValueProperty.QnAData] = new List<QueryResult>() { qnaResult };
 
-                    var records = new FeedbackRecord[]
+                    var records = new Collection<FeedbackRecord>
                     {
                         new FeedbackRecord
                         {
@@ -683,7 +640,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                         }
                     };
 
-                    var feedbackRecords = new FeedbackRecords { Records = records };
+                    var feedbackRecords = new FeedbackRecords(records);
 
                     // Call Active Learning Train API
                     var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);

@@ -11,29 +11,22 @@
           <CodeCoverage>
             <ModulePaths>
               <Include>
-                <ModulePath>.*\AdaptiveExpressions.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Orchestrator.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Azure.Cosmosdb.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.ApplicationInsights.dll$</ModulePath>
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>-->
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>-->
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.Queues.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.dll$</ModulePath>
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.dll$</ModulePath>-->
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Debugging.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Declarative.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.dll$</ModulePath>
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.Core.dll$</ModulePath>
-                <!--<ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.WebApi.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
-                <!--<ModulePath>.*\Microsoft.Bot.Configuration.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Connector.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Schema.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Connector.Streaming.dll$</ModulePath>
@@ -43,25 +36,6 @@
                 <ModulePath>.*\*.tests.dll</ModulePath>
               </Exclude>
             </ModulePaths>
-            <Sources>
-              <Exclude>
-                <Source>.*\\ActivityResourceResponse.cs</Source>
-                <Source>.*\\Button.cs</Source>
-                <Source>.*\\DefaultAction.cs</Source>
-                <Source>.*\\Element.cs</Source>
-                <Source>.*\\MessagePayload.cs</Source>
-                <Source>.*\\HandoverConstants.cs</Source>
-                <Source>.*\\AttachmentPayload.cs</Source>
-                <Source>.*\\CommonRegexLexer.cs</Source>
-                <Source>.*\\CommonRegexParser.cs</Source>
-                <Source>.*\\ExpressionAntlrLexer.cs</Source>
-                <Source>.*\\ExpressionAntlrParser.cs</Source>
-                <Source>.*\\LGFileLexer.cs</Source>
-                <Source>.*\\LGFileParser.cs</Source>
-                <Source>.*\\LGTemplateLexer.cs</Source>
-                <Source>.*\\LGTemplateParser.cs</Source>
-              </Exclude>
-            </Sources>
           </CodeCoverage>
         </Configuration>
       </DataCollector>
