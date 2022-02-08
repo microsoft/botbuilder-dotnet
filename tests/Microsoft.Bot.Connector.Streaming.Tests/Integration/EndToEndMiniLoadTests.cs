@@ -17,11 +17,10 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Connector.Streaming.Tests.Features;
 using Microsoft.Bot.Connector.Streaming.Tests.Tools;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming;
-using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Moq;
@@ -41,12 +40,8 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             _testOutput = testOutput;
         }
 
-        [Theory]
-        [InlineData(false, false)] // new client, new server
-        [InlineData(true, true)] // legacy client, legacy server
-        [InlineData(true, false)] // legacy client, new server
-        [InlineData(false, true)] // new client, legacy server
-        public void SimpleActivityTest(bool useLegacyClient, bool useLegacyServer)
+        [Fact]
+        public void SimpleActivityTest()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
@@ -76,7 +71,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(activityClone, cancellationToken);
             });
 
-            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+            var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -95,18 +90,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger);
 
             // Assert
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
         }
 
-        [Theory]
-        [InlineData(false, false)] // new client, new server
-        [InlineData(true, true)] // legacy client, legacy server
-        [InlineData(true, false)] // legacy client, new server
-        [InlineData(false, true)] // new client, legacy server
-        public void ActivityWithSuggestedActionsTest(bool useLegacyClient, bool useLegacyServer)
+        [Fact]
+        public void ActivityWithSuggestedActionsTest()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
@@ -145,7 +136,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(activityClone, cancellationToken);
             });
 
-            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+            var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -165,18 +156,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger);
 
             // Assert
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
         }
 
-        [Theory]
-        [InlineData(false, false)] // new client, new server
-        [InlineData(true, true)] // legacy client, legacy server
-        [InlineData(true, false)] // legacy client, new server
-        [InlineData(false, true)] // new client, legacy server
-        public void ActivityWithAttachmentsTest(bool useLegacyClient, bool useLegacyServer)
+        [Fact]
+        public void ActivityWithAttachmentsTest()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
@@ -244,7 +231,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 }
             });
 
-            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+            var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -270,7 +257,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger);
 
             // Assert
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
@@ -307,9 +294,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         }
 
         [Theory]
-        [InlineData(3, 50, 4, false, false)] // new client, new server
-        [InlineData(3, 100, 32, false, false)] // new client, new server
-        public void ConcurrencyTest(int connectionCount, int messageCount, int threadCount, bool useLegacyClient, bool useLegacyServer)
+        [InlineData(3, 50, 4)]
+        [InlineData(3, 100, 32)]
+        public void ConcurrencyTest(int connectionCount, int messageCount, int threadCount)
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
@@ -352,7 +339,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(response, cancellationToken);
             });
 
-            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+            var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -381,7 +368,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             for (var i = 0; i < connectionCount; i++)
             {
                 connections[i] = Task.Factory.StartNew(() =>
-                    RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient, messageCount, threadCount));
+                    RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, messageCount, threadCount));
             }
 
             Task.WhenAll(connections).Wait();
@@ -441,18 +428,6 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             Assert.True(verifiedResponse);
         }
 
-        private static IBotFrameworkHttpAdapter CreateTestStreamingTransportServer(bool useLegacyServer, ILogger logger)
-        {
-            if (useLegacyServer)
-            {
-                return new CloudAdapterWithLegacyStreamingConnection(new StreamingTestBotFrameworkAuthentication(), logger);
-            }
-            else
-            {
-                return new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
-            }
-        }
-
         private static HttpRequest CreateWebSocketUpgradeRequest(WebSocket webSocket)
         {
             var webSocketManager = new Mock<WebSocketManager>();
@@ -497,16 +472,16 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             }
         }
 
-        private static void RunActivityStreamingTest(Activity[] activities, IBot bot, IBotFrameworkHttpAdapter server, RequestHandler clientRequestHandler, ILogger logger, bool useLegacyClient = false, int messageCount = 1, int threadCount = 1)
+        private static void RunActivityStreamingTest(Activity[] activities, IBot bot, IBotFrameworkHttpAdapter server, RequestHandler clientRequestHandler, ILogger logger, int messageCount = 1, int threadCount = 1)
         {
             using (var connection = new TestWebSocketConnectionFeature())
             {
                 var webSocket = connection.AcceptAsync().Result;
                 var clientWebSocket = connection.Client;
-                var client = new TestStreamingTransportClient("wss://test", clientRequestHandler, clientWebSocket, logger, useLegacyClient);
+                var client = new WebSocketClient(clientWebSocket, "wss://test", clientRequestHandler, logger: logger);
 
                 var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
-                var clientRunning = client.ConnectAsync();
+                var clientRunning = client.ConnectInternalAsync(CancellationToken.None);
 
                 if (messageCount == 1)
                 {
@@ -590,19 +565,6 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             }
         }
 
-        private class CloudAdapterWithLegacyStreamingConnection : CloudAdapter
-        {
-            public CloudAdapterWithLegacyStreamingConnection(BotFrameworkAuthentication authentication, ILogger logger)
-                : base(authentication, logger)
-            {
-            }
-
-            protected override StreamingConnection CreateWebSocketConnection(WebSocket socket, ILogger logger)
-            {
-                return new LegacyStreamingConnection(socket, logger);
-            }
-        }
-
         private class StreamingTestBot : ActivityHandler
         {
             private readonly Func<ITurnContext<IMessageActivity>, CancellationToken, Task> _onMessageActivityAsync;
@@ -650,94 +612,6 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             public override Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
             {
                 return Task.FromResult<UserTokenClient>(new TestUserTokenClient());
-            }
-        }
-
-        private class TestStreamingTransportClient : IStreamingTransportClient
-        {
-            private readonly WebSocket _client;
-            private readonly bool _useLegacyClient;
-
-            private readonly WebSocketClient _inner;
-            private readonly Bot.Streaming.Transport.WebSockets.WebSocketClient _innerLegacy;
-
-            public TestStreamingTransportClient(string url, RequestHandler requestHandler, WebSocket client, ILogger logger, bool useLegacyClient = false)
-            {
-                _client = client ?? throw new ArgumentNullException(nameof(client));
-                _useLegacyClient = useLegacyClient;
-
-                if (useLegacyClient)
-                {
-                    _innerLegacy = new Bot.Streaming.Transport.WebSockets.WebSocketClient(url, requestHandler);
-                }
-                else
-                {
-                    _inner = new WebSocketClient(client, url, requestHandler, logger: logger);
-                }
-            }
-
-            public event DisconnectedEventHandler Disconnected;
-
-            public bool IsConnected => _useLegacyClient ? _innerLegacy.IsConnected : _inner.IsConnected;
-
-            public Task ConnectAsync()
-            {
-                return _useLegacyClient
-                    ? _innerLegacy.ConnectInternalAsync(_client)
-                    : _inner.ConnectInternalAsync(CancellationToken.None);
-            }
-
-            public Task ConnectAsync(IDictionary<string, string> requestHeaders)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<ReceiveResponse> SendAsync(StreamingRequest message, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                return _useLegacyClient
-                    ? _innerLegacy.SendAsync(message, cancellationToken)
-                    : _inner.SendAsync(message, cancellationToken);
-            }
-
-            public void Disconnect()
-            {
-                if (_useLegacyClient)
-                {
-                    _innerLegacy.Disconnect();
-                }
-                else
-                {
-                    _inner.Disconnect();
-                }
-            }
-
-            public void Dispose()
-            {
-                if (_useLegacyClient)
-                {
-                    _innerLegacy.Dispose();
-                }
-                else
-                {
-                    _inner.Dispose();
-                }
-
-                if (Disconnected != null)
-                {
-                    Disconnected(GetDisconnectedEventSender(), DisconnectedEventArgs.Empty);
-                }
-            }
-
-            private object GetDisconnectedEventSender()
-            {
-                if (_useLegacyClient)
-                {
-                    return _innerLegacy;
-                }
-                else
-                {
-                    return _inner;
-                }
             }
         }
 

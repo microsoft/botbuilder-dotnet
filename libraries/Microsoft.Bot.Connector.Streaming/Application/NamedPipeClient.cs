@@ -4,7 +4,6 @@
 using System;
 using System.IO.Pipelines;
 using Microsoft.Bot.Connector.Streaming.Transport;
-using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Streaming.Application
