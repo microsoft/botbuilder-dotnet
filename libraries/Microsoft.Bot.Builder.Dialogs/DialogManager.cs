@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Class which runs the dialog system.
     /// </summary>
+    [Obsolete("This class will be deprecated in the next version of the Bot Framework SDK.")]
     public class DialogManager
     {
         private const string LastAccess = "_lastAccess";
