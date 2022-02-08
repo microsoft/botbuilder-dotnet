@@ -22,46 +22,31 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 {
     public class TransportHandlerTests
     {
-        public static IEnumerable<object[]> PipeToObserverData =>
-            new List<object[]>
-            {
-                new object[] { new List<(Header Header, byte[] Payload)>() },
-                new object[] { GenerateHeaderPayloadData(1, 1) },
-                new object[] { GenerateHeaderPayloadData(1, 1) },
-                new object[] { GenerateHeaderPayloadData(10, 1) },
-                new object[] { GenerateHeaderPayloadData(100, 1) },
-                new object[] { GenerateHeaderPayloadData(1000, 1) },
-                new object[] { GenerateHeaderPayloadData(10000, 1) },
-                new object[] { GenerateHeaderPayloadData(100000, 1) },
-                new object[] { GenerateHeaderPayloadData(100000, 2) },
-                new object[] { GenerateHeaderPayloadData(1000, 20) },
-                new object[] { GenerateHeaderPayloadData(1000, 200) },
-            };
-
-        public static IEnumerable<object[]> ErrorScenarioData =>
-            new List<object[]>
-            {
-                new object[] { GenerateHeaderPayloadData(1000, 2), true, false, false },
-                new object[] { GenerateHeaderPayloadData(1000, 2), false, true, false },
-                new object[] { GenerateHeaderPayloadData(1000, 2), false, false, true },
-            };
-
         [Theory]
-        [MemberData(nameof(PipeToObserverData))]
-        public async Task TransportHandler_ReceiveFromPipe_IsSentToObserver(
-            List<(Header Header, byte[] Payload)> transportData)
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        [InlineData(10, 1)]
+        [InlineData(100, 1)]
+        [InlineData(1000, 1)]
+        [InlineData(10000, 1)]
+        [InlineData(100000, 1)]
+        [InlineData(100000, 2)]
+        [InlineData(1000, 20)]
+        [InlineData(1000, 200)]
+        public async Task TransportHandler_ReceiveFromPipe_IsSentToObserver(int totalLength, int packageCount)
         {
+            var transportData = GenerateHeaderPayloadData(totalLength, packageCount);
             await RunTransportHandlerReceiveTestAsync(transportData, false, false, false);
         }
 
         [Theory]
-        [MemberData(nameof(ErrorScenarioData))]
+        [InlineData(1000, 2, true, false, false)]
+        [InlineData(1000, 2, false, true, false)]
+        [InlineData(1000, 2, false, false, true)]
         public async Task TransportHandler_ReceiveFromPipe_ErrorScenarios(
-            List<(Header Header, byte[] Payload)> transportData,
-            bool cancelAfterFirst,
-            bool cancelWithoutPayload,
-            bool completeWithException)
+            int totalLength, int packageCount, bool cancelAfterFirst, bool cancelWithoutPayload, bool completeWithException)
         {
+            var transportData = GenerateHeaderPayloadData(totalLength, packageCount);
             await RunTransportHandlerReceiveTestAsync(transportData, cancelAfterFirst, cancelWithoutPayload, completeWithException);
         }
 
@@ -374,16 +359,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             var result = new List<(Header Header, byte[] Payload)>();
 
             if (totalLength == 0)
-            { 
-                var header = new Header
-                {
-                    Id = Guid.NewGuid(),
-                    End = true,
-                    PayloadLength = 0,
-                    Type = PayloadTypes.Stream
-                };
-
-                result.Add((header, null));
+            {
                 return result; 
             }
 

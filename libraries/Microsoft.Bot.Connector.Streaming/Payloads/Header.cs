@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
     /// |Terminator      1 byte Hardcoded to \n .
     ///  ex: A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n end example.
     /// </summary>
-    public class Header
+    internal class Header
     {
         private int _internalPayloadLength;
 
