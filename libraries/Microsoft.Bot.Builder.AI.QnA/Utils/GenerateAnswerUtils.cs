@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.Top = queryOptions.Top;
                 }
 
-                // For backward compatibility of legacy and v2 preview bot code with this SDK
+                // For backward compatibility of legacy bot code with this SDK
                 if (queryOptions.StrictFilters?.Length > 0)
                 {
                     queryOptions.Filters = LanguageServiceUtils.GetFilters(queryOptions.StrictFilters, queryOptions.StrictFiltersJoinOperator.ToString());
@@ -216,8 +216,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     isTest = options.IsTest,
                     rankerType = options.RankerType,
                     StrictFiltersCompoundOperationType = Enum.TryParse(options.Filters?.MetadataFilter?.LogicalOperation, out JoinOperator operation) ? operation : JoinOperator.AND,
-                    answerSpanRequest = answerSpanRequest,
-                    includeUnstructuredSources = options.IncludeUnstructuredSources // for v2 services
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);

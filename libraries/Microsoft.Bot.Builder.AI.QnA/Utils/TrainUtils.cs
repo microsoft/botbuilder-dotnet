@@ -51,11 +51,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task QueryTrainAsync(FeedbackRecords feedbackRecords)
         {
             var host = _endpoint.Host;
-            if (_endpoint.QnAServiceType == "language" && !_endpoint.Host.Contains("qnamaker/v5.0-preview.2"))
-            {
-                host = _endpoint.Host + "/qnamaker/v5.0-preview.2";
-            }
-            
             var requestUrl = $"{host}/knowledgebases/{_endpoint.KnowledgeBaseId}/train";
 
             var jsonRequest = JsonConvert.SerializeObject(feedbackRecords, Formatting.None);
