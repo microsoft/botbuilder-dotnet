@@ -229,10 +229,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
                    Dictionary<string, double> telemetryMetrics = null,
                    CancellationToken cancellationToken = default(CancellationToken))
         {
-            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
 
             // Track the event
-            this.TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
+            TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
         }
 
         /// <summary>
@@ -243,12 +243,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Properties to add/override for the event.</param>
         /// <param name="telemetryMetrics">Metrics to add/override for the event.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// additionalProperties
         /// <returns>A tuple of Properties and Metrics that will be sent to the IBotTelemetryClient.TrackEvent method for the QnAMessage event.  The properties and metrics returned the standard properties logged with any properties passed from the GetAnswersAsync method.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat) 
-        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var properties = new Dictionary<string, string>();
             var metrics = new Dictionary<string, double>();
@@ -259,7 +255,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var userName = turnContext.Activity.From?.Name;
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
-            if (this.LogPersonalInformation)
+            if (LogPersonalInformation)
             {
                 if (!string.IsNullOrWhiteSpace(text))
                 {

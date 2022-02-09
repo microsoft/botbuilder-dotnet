@@ -97,11 +97,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <summary>
         /// Maximum length allowed for Action Titles.
         /// </summary>
-        /// <param name="channelId">The Channel to determine Maximum Action Title Length.</param>
-        /// <returns>The total number of characters allowed for an Action Title on a specific Channel.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove the channelId parameter without breaking binary compatibility)
-        public static int MaxActionTitleLength(string channelId) => 20;
-#pragma warning restore CA1801 // Review unused parameters
+        /// <returns>The total number of characters allowed for an Action Title.</returns>
+        public static int MaxActionTitleLength() => 20;
 
         /// <summary>
         /// Get the Channel Id from the current Activity on the Turn Context.

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         protected override async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
         {
-            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
+            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties).ConfigureAwait(false);
 
             properties.TryAdd("MyImportantProperty", "myImportantValue");
 

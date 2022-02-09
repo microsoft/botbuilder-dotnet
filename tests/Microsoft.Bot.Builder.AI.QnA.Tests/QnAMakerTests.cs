@@ -1547,7 +1547,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                         Dictionary<string, double> telemetryMetrics = null,
                                         CancellationToken cancellationToken = default(CancellationToken))
             {
-                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
 
                 // Add my property
                 eventData.Properties.Add("MyImportantProperty", "myImportantValue");

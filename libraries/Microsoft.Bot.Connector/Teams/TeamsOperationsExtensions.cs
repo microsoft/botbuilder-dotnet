@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.FetchParticipantWithHttpMessagesAsync(meetingId, participantId, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.FetchParticipantWithHttpMessagesAsync(meetingId, participantId, tenantId, cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
