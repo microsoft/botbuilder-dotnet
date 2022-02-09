@@ -51,46 +51,7 @@ namespace Microsoft.Bot.Builder
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Normalize the activity.
-        /// </summary>
-        /// <param name="activity">activity.</param>
-        private void NormalizeActivity(Activity activity)
-        {
-            if (activity.Type == ActivityTypes.Message)
-            {
-                if (this.RemoveRecipientMention)
-                {
-                    // strip recipient mention tags and text.
-                    activity.RemoveRecipientMention();
-
-                    if (activity.Entities != null)
-                    {
-                        // strip entity.mention records for recipient id.
-                        activity.Entities = activity.Entities.Where(entity => entity.Type == "mention" &&
-                           ((dynamic)entity.Properties["mentioned"]).id != activity.Recipient.Id).ToList();
-                    }
-                }
-
-                // remove <at> </at> tags keeping the inner text.
-                activity.Text = RemoveAt(activity.Text);
-
-                if (activity.Entities != null)
-                {
-                    // remove <at> </at> tags from mention records keeping the inner text.
-                    foreach (var entity in activity.Entities)
-                    {
-                        if (entity.Type == "mention")
-                        {
-                            string entityText = (string)entity.Properties["text"];
-                            entity.Properties["text"] = RemoveAt(entityText)?.Trim();
-                        }
-                    }
-                }
-            }
-        }
-
-        private string RemoveAt(string text)
+        private static string RemoveAt(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -134,6 +95,45 @@ namespace Microsoft.Bot.Builder
             while (foundTag);
 
             return text;
+        }
+
+        /// <summary>
+        /// Normalize the activity.
+        /// </summary>
+        /// <param name="activity">activity.</param>
+        private void NormalizeActivity(Activity activity)
+        {
+            if (activity.Type == ActivityTypes.Message)
+            {
+                if (this.RemoveRecipientMention)
+                {
+                    // strip recipient mention tags and text.
+                    activity.RemoveRecipientMention();
+
+                    if (activity.Entities != null)
+                    {
+                        // strip entity.mention records for recipient id.
+                        activity.Entities = activity.Entities.Where(entity => entity.Type == "mention" &&
+                           ((dynamic)entity.Properties["mentioned"]).id != activity.Recipient.Id).ToList();
+                    }
+                }
+
+                // remove <at> </at> tags keeping the inner text.
+                activity.Text = RemoveAt(activity.Text);
+
+                if (activity.Entities != null)
+                {
+                    // remove <at> </at> tags from mention records keeping the inner text.
+                    foreach (var entity in activity.Entities)
+                    {
+                        if (entity.Type == "mention")
+                        {
+                            string entityText = (string)entity.Properties["text"];
+                            entity.Properties["text"] = RemoveAt(entityText)?.Trim();
+                        }
+                    }
+                }
+            }
         }
     }
 }

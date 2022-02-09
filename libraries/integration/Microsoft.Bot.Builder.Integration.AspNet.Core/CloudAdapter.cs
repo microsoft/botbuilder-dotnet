@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return httpResponseMessage;
                     }
 
-                    private async Task<StreamingRequest> CreateSteamingRequestAsync(HttpRequestMessage httpRequestMessage)
+                    private static async Task<StreamingRequest> CreateSteamingRequestAsync(HttpRequestMessage httpRequestMessage)
                     {
                         var streamingRequest = new StreamingRequest
                         {
@@ -325,7 +325,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return streamingRequest;
                     }
 
-                    private async Task<HttpResponseMessage> CreateHttpResponseAsync(ReceiveResponse receiveResponse)
+                    private static async Task<HttpResponseMessage> CreateHttpResponseAsync(ReceiveResponse receiveResponse)
                     {
                         var httpResponseMessage = new HttpResponseMessage((HttpStatusCode)receiveResponse.StatusCode);
                         httpResponseMessage.Content = new StringContent(await receiveResponse.ReadBodyAsStringAsync().ConfigureAwait(false));

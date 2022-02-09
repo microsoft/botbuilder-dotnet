@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="callerId">The default callerId to use if this is not a skill.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The callerId, this might be null.</returns>
-        protected internal async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, string callerId, CancellationToken cancellationToken)
+        protected internal static async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, string callerId, CancellationToken cancellationToken)
         {
             // Is the bot accepting all incoming messages?
             if (await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))

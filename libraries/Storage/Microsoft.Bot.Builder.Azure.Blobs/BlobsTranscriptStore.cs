@@ -346,6 +346,18 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             while (!string.IsNullOrEmpty(token));
         }
 
+        private static string GetBlobName(IActivity activity)
+        {
+            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x", CultureInfo.InvariantCulture)}-{SanitizeKey(activity.Id)}.json";
+            return blobName;
+        }
+
+        private static string SanitizeKey(string key)
+        {
+            // Blob Name rules: case-sensitive any url char
+            return Uri.EscapeDataString(key);
+        }
+
         private async Task<(Activity, BlobClient)> InnerReadBlobAsync(IActivity activity)
         {
             var i = 0;
@@ -438,18 +450,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             memoryStream.Seek(0, SeekOrigin.Begin);
 
             await blobClient.UploadAsync(memoryStream, options).ConfigureAwait(false);
-        }
-
-        private string GetBlobName(IActivity activity)
-        {
-            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x", CultureInfo.InvariantCulture)}-{SanitizeKey(activity.Id)}.json";
-            return blobName;
-        }
-
-        private string SanitizeKey(string key)
-        {
-            // Blob Name rules: case-sensitive any url char
-            return Uri.EscapeDataString(key);
         }
     }
 }
