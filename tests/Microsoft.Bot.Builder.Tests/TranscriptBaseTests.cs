@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.Null(pagedResult.ContinuationToken);
-            Assert.Equal(activities.Count, pagedResult.Items.Length);
+            Assert.Equal(activities.Count, pagedResult.Items.Count);
 
             int indexActivity = 0;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
-            Assert.Equal(activities.Count / 2, pagedResult.Items.Length);
+            Assert.Equal(activities.Count / 2, pagedResult.Items.Count);
 
             indexActivity = 5;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
@@ -170,8 +170,8 @@ namespace Microsoft.Bot.Builder.Tests
             var pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             var pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
-            Assert.Equal(activities.Count, pagedResult.Items.Length);
-            Assert.Equal(activities.Count, pagedResult2.Items.Length);
+            Assert.Equal(activities.Count, pagedResult.Items.Count);
+            Assert.Equal(activities.Count, pagedResult2.Items.Count);
 
             await Store.DeleteTranscriptAsync("test", conversationId);
 
@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.Tests
             pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
             Assert.Empty(pagedResult.Items);
-            Assert.Equal(activities.Count, pagedResult2.Items.Length);
+            Assert.Equal(activities.Count, pagedResult2.Items.Count);
         }
 
         public async Task GetTranscriptActivities()

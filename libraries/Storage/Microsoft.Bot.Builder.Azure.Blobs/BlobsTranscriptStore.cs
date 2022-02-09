@@ -186,8 +186,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 throw new ArgumentNullException(nameof(conversationId));
             }
 
-            var pagedResult = new PagedResult<IActivity>();
-
             string token = null;
             List<BlobItem> blobs = new List<BlobItem>();
             do
@@ -227,7 +225,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             }
             while (!string.IsNullOrEmpty(token) && blobs.Count < PageSize);
 
-            pagedResult.Items = blobs
+            var items = blobs
                 .Select(async bl =>
                 {
                     var blobClient = _containerClient.Value.GetBlobClient(bl.Name);
@@ -236,7 +234,9 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 .Select(t => t.Result)
                 .ToArray();
 
-            if (pagedResult.Items.Length == PageSize)
+            var pagedResult = new PagedResult<IActivity>(items);
+            
+            if (pagedResult.Items.Count == PageSize)
             {
                 pagedResult.ContinuationToken = blobs.Last().Name;
             }
@@ -296,9 +296,9 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             }
             while (!string.IsNullOrEmpty(token) && conversations.Count < PageSize);
 
-            var pagedResult = new PagedResult<TranscriptInfo>() { Items = conversations.ToArray() };
+            var pagedResult = new PagedResult<TranscriptInfo>(conversations.ToArray());
 
-            if (pagedResult.Items.Length == PageSize)
+            if (pagedResult.Items.Count == PageSize)
             {
                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
             }

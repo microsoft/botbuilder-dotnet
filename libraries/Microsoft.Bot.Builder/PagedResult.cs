@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.Bot.Builder
 {
@@ -12,14 +13,21 @@ namespace Microsoft.Bot.Builder
     public class PagedResult<T>
     {
         /// <summary>
-        /// Gets or sets the page of items.
+        /// Initializes a new instance of the <see cref="PagedResult{T}"/> class.
+        /// </summary>
+        /// <param name="items">The array of items.</param>
+        public PagedResult(T[] items)
+        {
+            Items = new Collection<T>(items);
+        }
+
+        /// <summary>
+        /// Gets the page of items.
         /// </summary>
         /// <value>
         /// The array of items.
         /// </value>
-#pragma warning disable CA1819 // Properties should not return arrays (can't change this without breaking binary compat)
-        public T[] Items { get; set; } = Array.Empty<T>();
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<T> Items { get; } = new Collection<T>();
 
         /// <summary>
         /// Gets or sets a token for retrieving the next page of results.

@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 _toBotFromEmulatorOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements.ToArray()).ConfigureAwait(false);
 
             await ValidateSkillIdentityAsync(identity, cancellationToken).ConfigureAwait(false);
 
@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 _toBotFromEmulatorOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements.ToArray()).ConfigureAwait(false);
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
@@ -520,7 +520,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 _toBotFromChannelOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements.ToArray()).ConfigureAwait(false);
 
             await ValidateChannelIdentityAsync(identity, serviceUrl, cancellationToken).ConfigureAwait(false);
 

@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             // Validate Trace Activity created
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
-            Assert.Equal(7, pagedResult.Items.Length);
+            Assert.Equal(7, pagedResult.Items.Count);
             Assert.Equal("how do I clean the stove?", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.Equal(0, pagedResult.Items[1].Type.CompareTo(ActivityTypes.Trace));
             var traceInfo = ((JObject)((ITraceActivity)pagedResult.Items[1]).Value).ToObject<QnAMakerTraceInfo>();
