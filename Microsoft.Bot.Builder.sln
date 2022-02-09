@@ -25,9 +25,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure", "libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj", "{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.QnA.Tests", "tests\Microsoft.Bot.Builder.AI.QnA.Tests\Microsoft.Bot.Builder.AI.QnA.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA} = {67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj", "{6462DA5D-27DC-4CD5-9467-5EFB998FD838}"
 EndProject
@@ -119,7 +116,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 		libraries\copySchemas.cmd = libraries\copySchemas.cmd
 		Directory.Build.props = Directory.Build.props
-		..\..\Downloaded bot codes\first-qnaMaker-bot-c#\QnABot.csproj = ..\..\Downloaded bot codes\first-qnaMaker-bot-c#\QnABot.csproj
 		tests\tests.schema = tests\tests.schema
 	EndProjectSection
 EndProject
@@ -240,8 +236,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Tests.Client", "tests\Microsoft.Bot.Connector.Streaming.Tests.Client\Microsoft.Bot.Connector.Streaming.Tests.Client.csproj", "{2E5AD07C-4F6E-4B6B-BEFE-9FBE9F789161}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Perf", "tests\Microsoft.Bot.Connector.Streaming.Perf\Microsoft.Bot.Connector.Streaming.Perf.csproj", "{B49A3201-5BEE-426C-A082-D92D52172E06}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QnABotAllFeatures", "..\bot\QnABotAllFeatures.csproj", "{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -939,14 +933,6 @@ Global
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release|Any CPU.Build.0 = Release|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{223BE82C-D2E7-4CFA-8E0A-C4EEB4F96D25}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

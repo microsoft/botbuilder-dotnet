@@ -321,7 +321,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     if (property.Value != expected[property.Key])
                     {
-                        Console.WriteLine(property.Value + "-------------" + expected[property.Key]);
                         return false;
                     }
                 }
