@@ -1,16 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
     /// Methods for determining channel specific functionality.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class Channel
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class Channel
     {
         /// <summary>
         /// Determine if a number of Suggested Actions are supported by a Channel.
