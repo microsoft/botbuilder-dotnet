@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Extensions.DependencyInjection;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TestBot.Shared.Bots;
 using Microsoft.Bot.Builder.TestBot.Shared.Dialogs;
@@ -42,19 +43,40 @@ namespace Microsoft.BotBuilderSamples
             // Create the debug middleware
             services.AddSingleton(sp => new MicrosoftAppCredentials(sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
 
+            // Scenario 1 - this just adds everything that a bot needs (Authentication, HttpAdapter, and Storage).
+            // if the developer wants to override these they need to use service.Add... to add their own desired
+            // implementations for these base services before calling AddBotRuntime.
             // The extension method AddBotRuntime will register common services to the service collection.
-            services.AddBotRuntime(Configuration);
+
+            //services.AddBotRuntime(Configuration);
+
+            // Scenario 2 - here the user adds each service they need in a fluent style.
+            // Use the fluent extension methods to register needed services for the bot. Here the developer needs to add
+            // each required service by adding a .Use... for each service they need. They can use the basic extension method
+            // to get the default service, if they want to override they use another extension method where they can provide the 
+            // type of the service they want to register.
+            services.UseBotConfiguration(Configuration)
+                    .UseBotAuthentication()
+                    .UseBotHttpAdapter()
+                    .UseBotStorage<MemoryStorage>()
+                    .UseBotState<UserState>() // or .UseBotUserState()
+                    .UseBotState<ConversationState>() // or .UseBotConversationState()
+                    .UseBotDialog<MainDialog>()
+                    .UseBotDialog<BookingDialog>(new BookingDialog(new GetBookingDetailsDialog(), new FlightBookingService()))
+                    .UseBot<MyBot>()
+                    .UseBot<DialogBot<MainDialog>>()
+                    .UseBot<DialogAndWelcomeBot<MainDialog>>();
 
             // Register LUIS recognizer
             RegisterLuisRecognizers(services);
 
             // Register dialogs that will be used by the bot.
-            RegisterDialogs(services);
+            //RegisterDialogs(services);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddScoped<MyBot>();
-            services.AddScoped<DialogBot<MainDialog>>();
-            services.AddScoped<DialogAndWelcomeBot<MainDialog>>();
+            //services.AddScoped<MyBot>();
+            //services.AddScoped<DialogBot<MainDialog>>();
+            //services.AddScoped<DialogAndWelcomeBot<MainDialog>>();
 
             // We can also run the inspection at a different endpoint. Just uncomment these lines.
             // services.AddSingleton<DebugAdapter>();
