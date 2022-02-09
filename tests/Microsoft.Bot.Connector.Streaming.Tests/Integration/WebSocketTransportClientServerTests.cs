@@ -25,13 +25,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             using (var webSocketFeature = new TestWebSocketConnectionFeature())
             {
                 // Build server transport
-                var serverTransport = new WebSocketTransport(serverPipePair.Application, NullLogger.Instance);
+                var serverTransport = new WebSocketTransport(await webSocketFeature.AcceptAsync(), serverPipePair.Application, NullLogger.Instance);
 
                 // Accept server web socket, start receiving / sending at the transport level
-                var serverTask = serverTransport.ProcessSocketAsync(await webSocketFeature.AcceptAsync(), CancellationToken.None);
+                var serverTask = serverTransport.ConnectAsync(CancellationToken.None);
 
-                var clientTransport = new WebSocketTransport(clientPipePair.Application, NullLogger.Instance);
-                var clientTask = clientTransport.ProcessSocketAsync(webSocketFeature.Client, CancellationToken.None);
+                var clientTransport = new WebSocketTransport(webSocketFeature.Client, clientPipePair.Application, NullLogger.Instance);
+                var clientTask = clientTransport.ConnectAsync(CancellationToken.None);
 
                 // Send a frame client -> server
                 await clientPipePair.Transport.Output.WriteAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("Hello")));

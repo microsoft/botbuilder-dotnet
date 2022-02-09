@@ -63,8 +63,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            if (this.Actions.Any())
+            if (Actions.Any())
             {
+                if (options != null && options is Dictionary<string, object> dict)
+                {
+                    foreach (var kv in dict)
+                    {
+                        dc.State.SetValue(kv.Key, kv.Value);
+                    }
+                }
+
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -262,6 +270,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 // Recursively call ContinueDialogAsync() to apply changes and continue execution.
                 return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
             }
+            
+            if (result is DialogTurnResult dtr && dtr.ParentEnded)
+            {
+                return await this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
             // Increment our offset into the actions and being the next action
             var nextOffset = dc.State.GetIntValue(OFFSETKEY, 0) + 1;
@@ -322,7 +335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 { "Kind", $"Microsoft.{actionName}" },
                 { "ActionId", $"Microsoft.{action.Id}" },
             };
-            TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.DialogActionEvent, properties);
 
             // begin Action dialog
             return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);

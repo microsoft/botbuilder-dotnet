@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// A Bot Builder Adapter implementation used to handled bot Framework HTTP requests.
     /// </summary>
+    [Obsolete("Use `CloudAdapter` instead.", false)]
     public class BotFrameworkHttpAdapter : BotFrameworkHttpAdapterBase, IBotFrameworkHttpAdapter
     {
         private const string AuthHeaderName = "authorization";
@@ -163,6 +164,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 if (string.IsNullOrEmpty(activity?.Type))
                 {
                     httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                    Logger.LogWarning("BadRequest: Missing activity or activity type.");
                     return;
                 }
 

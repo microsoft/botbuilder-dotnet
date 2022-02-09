@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Validates and Examines JWT tokens from the Bot Framework Emulator.
     /// </summary>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to perform emulator validation.", false)]
     public static class EmulatorValidation
     {
         /// <summary>

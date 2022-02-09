@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="cardValue">Callback parameter specified in the Value
         /// field of the MediaCard that originated this event.</param>
-        public MediaEventValue(object cardValue = default(object))
+        public MediaEventValue(object cardValue = default)
         {
             CardValue = cardValue;
             CustomInit();

@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     /// <summary>
     /// <see cref="BotComponent"/> definition for <see cref="FacebookAdapter"/>.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class FacebookAdapterBotComponent : BotComponent
     {
         /// <inheritdoc/>

@@ -337,7 +337,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.Contains("Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.LUISRuntimeClient", userAgent);
 
             // And that we added the bot.builder package details.
-            Assert.Contains("microsoft.bot.builder.ai.luis/4", userAgent.ToLower());
+            var majorVersion = typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version.Major;
+            Assert.Contains($"microsoft.bot.builder.ai.luis/{majorVersion}", userAgent.ToLower());
         }
 
         [Fact]

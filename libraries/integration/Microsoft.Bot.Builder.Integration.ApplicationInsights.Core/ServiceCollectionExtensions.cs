@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         /// <param name="botConfiguration">Bot configuration that contains the Application Insights configuration information.</param>
         /// <param name="appInsightsServiceInstanceName">(OPTIONAL) Specifies a Application Insights instance name in the Bot configuration.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
+        [Obsolete("This method is obsolete and will be removed in a future version of the framework, use AddBotApplicationInsights(this IServiceCollection services, IConfiguration config) instead.", false)]
         public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services, BotConfiguration botConfiguration, string appInsightsServiceInstanceName = null)
         {
             if (botConfiguration == null)

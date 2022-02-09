@@ -153,6 +153,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 activity.Type = ActivityTypes.Message;
                 activity.Text = message.PostBack.Payload;
             }
+            else if (message.Referral != null)
+            {
+                activity.Type = ActivityTypes.Event;
+                activity.Value = message.Referral.Ref;
+            }
 
             return activity;
         }

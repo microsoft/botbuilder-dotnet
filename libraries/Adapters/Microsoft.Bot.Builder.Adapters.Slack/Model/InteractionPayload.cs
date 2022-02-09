@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
     /// <summary>
     /// Union class to represent various user interaction payloads https://api.slack.com/interactivity/handling#payloads.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class InteractionPayload
     {
         [JsonProperty(PropertyName = "type")]

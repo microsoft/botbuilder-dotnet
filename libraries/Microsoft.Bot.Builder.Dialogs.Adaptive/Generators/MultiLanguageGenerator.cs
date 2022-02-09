@@ -26,15 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         /// <summary>
-        /// Gets or sets the language generators for multiple languages.
+        /// Gets the language generators for multiple languages.
         /// </summary>
         /// <value>
         /// The language generators for multiple languages.
         /// </value>
         [JsonProperty("languageGenerators")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
-#pragma warning restore CA2227 // Collection properties should be read only
+        public ConcurrentDictionary<string, Lazy<LanguageGenerator>> LanguageGenerators { get; } = new ConcurrentDictionary<string, Lazy<LanguageGenerator>>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Implementation of lookup by locale.  This uses internal dictionary to lookup.
@@ -43,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">locale.</param>
         /// <param name="languageGenerator">generator to return.</param>
         /// <returns>true if found.</returns>
-        public override bool TryGetGenerator(DialogContext dialogContext, string locale, out LanguageGenerator languageGenerator)
+        public override bool TryGetGenerator(DialogContext dialogContext, string locale, out Lazy<LanguageGenerator> languageGenerator)
         {
             return this.LanguageGenerators.TryGetValue(locale, out languageGenerator);
         }

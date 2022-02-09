@@ -8,6 +8,7 @@ using SlackAPI;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class SlackAttachment
     {
         [JsonProperty(PropertyName = "callback_id")]

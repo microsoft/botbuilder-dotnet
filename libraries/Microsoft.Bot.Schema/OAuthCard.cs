@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="connectionName">The name of the registered
         /// connection.</param>
         /// <param name="buttons">Action to use to perform signin.</param>
-        public OAuthCard(string text = default(string), string connectionName = default(string), IList<CardAction> buttons = default(IList<CardAction>))
+        public OAuthCard(string text = default, string connectionName = default, IList<CardAction> buttons = default)
         {
             Text = text;
             ConnectionName = connectionName;

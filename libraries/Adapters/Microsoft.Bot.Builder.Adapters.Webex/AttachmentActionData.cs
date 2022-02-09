@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
@@ -10,6 +11,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     /// message attachments such as clicking on a submit button in a card.
     /// https://developer.webex.com/docs/api/v1/attachment-actions.
     /// </summary>
+    [Obsolete("The Bot Framework Adapters will be deprecated in the next version of the Bot Framework SDK and moved to https://github.com/BotBuilderCommunity/botbuilder-community-dotnet. Please refer to their new location for all future work.")]
     public class AttachmentActionData
     {
         /// <summary>

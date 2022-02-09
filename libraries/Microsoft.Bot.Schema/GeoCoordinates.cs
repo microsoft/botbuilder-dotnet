@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -30,7 +29,7 @@ namespace Microsoft.Bot.Schema
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System).</param>
         /// <param name="type">The type of the thing.</param>
         /// <param name="name">The name of the thing.</param>
-        public GeoCoordinates(double? elevation = default(double?), double? latitude = default(double?), double? longitude = default(double?), string type = default(string), string name = default(string))
+        public GeoCoordinates(double? elevation = default, double? latitude = default, double? longitude = default, string type = default, string name = default)
         {
             Elevation = elevation;
             Latitude = latitude;

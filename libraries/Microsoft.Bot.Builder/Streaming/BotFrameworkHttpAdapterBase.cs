@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest.TransientFaultHandling;
@@ -22,6 +23,7 @@ namespace Microsoft.Bot.Builder.Streaming
     /// <summary>
     /// An HTTP adapter base class.
     /// </summary>
+    [Obsolete("Use `CloudAdapter` instead.", false)]
     public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor, IDisposable
     {
         private bool _disposedValue;
@@ -264,7 +266,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope (We'll dispose this when the adapter gets disposed or when elements are removed)
-            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, audience, Logger);
+            var requestHandler = new StreamingRequestHandler(bot, this, new LegacyStreamingConnection(pipeName, Logger), audience, Logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
             RequestHandlers.Add(requestHandler);
 

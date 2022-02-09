@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>h
+    [Obsolete("Use `CloudAdapter` instead.", false)]
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider, IConnectorClientBuilder
     {
         private static readonly HttpClient DefaultHttpClient = new HttpClient();

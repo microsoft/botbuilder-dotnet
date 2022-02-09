@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Schema
         /// "visa" and "mastercard").</param>
         /// <param name="supportedTypes">Supported payment types (e.g.,
         /// "credit").</param>
-        public MicrosoftPayMethodData(string merchantId = default(string), IList<string> supportedNetworks = default(IList<string>), IList<string> supportedTypes = default(IList<string>))
+        public MicrosoftPayMethodData(string merchantId = default, IList<string> supportedNetworks = default, IList<string> supportedTypes = default)
         {
             MerchantId = merchantId;
             SupportedNetworks = supportedNetworks;
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="supportedNetworks">supported networks.</param>
         /// <param name="supportedTypes">supported types.</param>
         /// <param name="testMode">test mode.</param>
-        public MicrosoftPayMethodData(string merchantId = default(string), IList<string> supportedNetworks = default(IList<string>), IList<string> supportedTypes = default(IList<string>), bool testMode = false)
+        public MicrosoftPayMethodData(string merchantId = default, IList<string> supportedNetworks = default, IList<string> supportedTypes = default, bool testMode = false)
             : this(merchantId, supportedNetworks, supportedTypes)
         {
             Mode = testMode ? TestModeValue : null;

@@ -7,9 +7,14 @@ steps:
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
 
+- template: sdk_dotnet_v4_org-feed-setup-steps.yml
+
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
+    command: 'restore'
+    feedsToUse: 'config'
+    nugetConfigPath: 'nuget.config'
     restoreSolution: '$(Parameters.solution)'
 
 - task: VSBuild@1
@@ -22,6 +27,11 @@ steps:
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
     logProjectEvents: false
+    
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection'
+  inputs:
+    failOnAlert: true
 
 - script: |
    cd ..

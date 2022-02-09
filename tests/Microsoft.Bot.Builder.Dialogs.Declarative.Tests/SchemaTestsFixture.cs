@@ -36,37 +36,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var mergeCommand = $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o \"{schemaPath}\"";
                 var error = RunCommand(mergeCommand);
 
-                // Check if there were any errors or if the new schema file has changed.
-                var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
+                if (error.Length != 0)
+                {
+                    throw new InvalidOperationException(error);
+                }
+
                 if (Environment.GetEnvironmentVariable("IsBuildServer") != null)
                 {
-                    if (error.Length != 0)
-                    {
-                        throw new InvalidOperationException(error);
-                    }
-                    else if (!newSchema.Equals(oldSchema))
+                    // Check if the new schema file has changed.
+                    var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
+                    if (!newSchema.Equals(oldSchema))
                     {
                         throw new InvalidOperationException("tests.schema has changed when running tests on the build server.");
-                    }
-                }
-                else if (error.Length != 0 || !newSchema.Equals(oldSchema))
-                {
-                    // We may get there because there was an error running bf dialog:merge or because 
-                    // the generated file is different than the one that is in source control.
-                    // In either case we try installing latest bf if the schema changed to make sure the
-                    // discrepancy is not because we are using a different version of the CLI
-                    // and we ensure it is installed while on it.
-                    error = RunCommand("/C npm i -g @microsoft/botframework-cli@next --force");
-                    if (error.Length != 0)
-                    {
-                        throw new InvalidOperationException(error);
-                    }
-
-                    // Rerun merge command
-                    error = RunCommand(mergeCommand);
-                    if (error.Length != 0)
-                    {
-                        throw new InvalidOperationException(error);
                     }
                 }
             }

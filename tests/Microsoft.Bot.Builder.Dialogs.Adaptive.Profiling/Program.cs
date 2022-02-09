@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
 
         public static void Main(string[] args)
         {
+            // [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="This is a fake password.")]
             var secret = "profile";
             string luis = null;
             var iterations = 1;

@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">locale.</param>
         /// <param name="generator">generator to return.</param>
         /// <returns>true if found.</returns>
-        public abstract bool TryGetGenerator(DialogContext dialogContext, string locale, out LanguageGenerator generator);
+        public abstract bool TryGetGenerator(DialogContext dialogContext, string locale, out Lazy<LanguageGenerator> generator);
 
         /// <summary>
         /// Find a language generator that matches the current context locale.
@@ -80,10 +80,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 throw new InvalidOperationException($"No supported language found for {targetLocale}");
             }
 
-            var generators = new List<LanguageGenerator>();
+            var generators = new List<Lazy<LanguageGenerator>>();
             foreach (var locale in fallbackLocales)
             {
-                if (this.TryGetGenerator(dialogContext, locale, out LanguageGenerator generator))
+                if (this.TryGetGenerator(dialogContext, locale, out Lazy<LanguageGenerator> generator))
                 {
                     generators.Add(generator);
                 }
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 try
                 {
-                    return await generator.GenerateAsync(dialogContext, template, data, cancellationToken).ConfigureAwait(false);
+                    return await generator.Value.GenerateAsync(dialogContext, template, data, cancellationToken).ConfigureAwait(false);
                 }
 #pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the errors list).
                 catch (Exception err)
