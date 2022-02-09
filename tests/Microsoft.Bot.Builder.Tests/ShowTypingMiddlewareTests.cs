@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Tests
                     await Task.CompletedTask;
                 })
                 .Send("foo")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
+                .AssertReply(ValidateTypingActivity)
+                .AssertReply(ValidateTypingActivity)
+                .AssertReply(ValidateTypingActivity)
                 .AssertReply("Message sent after delay")
                 .StartTestAsync();
         }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Tests
                     await Task.CompletedTask;
                 })
                 .Send("foo")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
+                .AssertReply(ValidateTypingActivity)
                 .AssertReply("Message sent after delay")
                 .StartTestAsync();
         }

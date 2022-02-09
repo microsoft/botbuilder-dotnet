@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Connector
     public class OAuthClientOld : ServiceClient<OAuthClientOld>
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope (this class is deprecated, we won't fix FxCop issues)
-#pragma warning disable CA1801 // Review unused parameters (this class is deprecated, we won't fix FxCop issues)
         private readonly ConnectorClient _client;
         private readonly string _uri;
 
@@ -65,12 +64,11 @@ namespace Microsoft.Bot.Connector
         /// <param name="userId">The user's ID.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
         /// <param name="magicCode">The user entered code to validate.</param>
-        /// <param name="customHeaders">customHeaders.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the <see cref="TokenResponse"/> contains the user token.</remarks>
-        public async Task<TokenResponse> GetUserTokenAsync(string userId, string connectionName, string magicCode, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TokenResponse> GetUserTokenAsync(string userId, string connectionName, string magicCode, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -608,6 +606,5 @@ namespace Microsoft.Bot.Connector
             }
         }
 #pragma warning restore CA2000 // Dispose objects before losing scope
-#pragma warning restore CA1801 // Review unused parameters
     }
 }

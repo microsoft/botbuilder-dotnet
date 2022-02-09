@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
             var headerBuffer = buffer.Slice(0, Math.Min(TransportConstants.MaxHeaderLength, buffer.Length));
 
-            var header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), 0, TransportConstants.MaxHeaderLength);
+            var header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), TransportConstants.MaxHeaderLength);
 
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
             var headerBuffer = buffer.Slice(0, Math.Min(TransportConstants.MaxHeaderLength, buffer.Length));
 
-            var header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), 0, TransportConstants.MaxHeaderLength);
+            var header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), TransportConstants.MaxHeaderLength);
 
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 
@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
             var headerBuffer = buffer.Slice(0, Math.Min(TransportConstants.MaxHeaderLength, buffer.Length));
 
-            var header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), 0, TransportConstants.MaxHeaderLength);
+            var header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), TransportConstants.MaxHeaderLength);
 
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 

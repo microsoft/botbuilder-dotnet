@@ -223,15 +223,11 @@ namespace Microsoft.Bot.Builder
         /// <typeparam name="T">The value type of the property.</typeparam>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="propertyName">The name of the property.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result contains the property value, otherwise it will be default(T).</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
-#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -260,14 +256,10 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="propertyName">The name of the property.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
-#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -339,7 +331,7 @@ namespace Microsoft.Bot.Builder
             public async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-                await _botState.DeletePropertyValueAsync(turnContext, Name, cancellationToken).ConfigureAwait(false);
+                await _botState.DeletePropertyValueAsync(turnContext, Name).ConfigureAwait(false);
             }
 
             /// <summary>
@@ -362,7 +354,7 @@ namespace Microsoft.Bot.Builder
                 {
                     // if T is a value type, lookup up will throw key not found if not found, but as perf
                     // optimization it will return null if not found for types which are not value types (string and object).
-                    result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+                    result = await _botState.GetPropertyValueAsync<T>(turnContext, Name).ConfigureAwait(false);
 
                     if (result == null && defaultValueFactory != null)
                     {

@@ -1,16 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
     /// Methods for determining channel specific functionality.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class Channel
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class Channel
     {
         /// <summary>
         /// Determine if a number of Suggested Actions are supported by a Channel.
@@ -101,11 +97,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <summary>
         /// Maximum length allowed for Action Titles.
         /// </summary>
-        /// <param name="channelId">The Channel to determine Maximum Action Title Length.</param>
-        /// <returns>The total number of characters allowed for an Action Title on a specific Channel.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove the channelId parameter without breaking binary compatibility)
-        public static int MaxActionTitleLength(string channelId) => 20;
-#pragma warning restore CA1801 // Review unused parameters
+        /// <returns>The total number of characters allowed for an Action Title.</returns>
+        public static int MaxActionTitleLength() => 20;
 
         /// <summary>
         /// Get the Channel Id from the current Activity on the Turn Context.

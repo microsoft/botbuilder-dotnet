@@ -223,9 +223,6 @@ namespace Microsoft.Bot.Connector.Teams
         /// <param name='tenantId'>
         /// Teams meeting tenant id.
         /// </param>
-        /// <param name='customHeaders'>
-        /// Headers that will be added to request.
-        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -244,9 +241,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-#pragma warning disable CA1801 // Review unused parameters - cannot change without breaking backwards compat.
-        public async Task<HttpOperationResponse<TeamsMeetingParticipant>> FetchParticipantWithHttpMessagesAsync(string meetingId, string participantId, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        public async Task<HttpOperationResponse<TeamsMeetingParticipant>> FetchParticipantWithHttpMessagesAsync(string meetingId, string participantId, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (meetingId == null)
             {

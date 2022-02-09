@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                 { 
                     throw new Exception(uniqueExceptionId); 
                 })
-                    .Test("test", activity => Assert.Null(null), "uh oh!")
+                    .Test("test", activity => Assert.Null(null))
                     .StartTestAsync());
         }
 
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                 })
                     .Send("foo")
                     .AssertReply(
-                        (activity) => throw new Exception(uniqueExceptionId), "should throw")
+                        (activity) => throw new Exception(uniqueExceptionId))
 
                     .StartTestAsync());
         }
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
                 .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
-                .Test("foo", (activity) => Assert.Equal("echo:foo", activity.AsMessageActivity().Text), "say with validator works")
+                .Test("foo", (activity) => Assert.Equal("echo:foo", activity.AsMessageActivity().Text))
                 .StartTestAsync();
         }
 
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
                 .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
-                .Send("foo").AssertReply((activity) => Assert.Equal("echo:foo", activity.AsMessageActivity().Text), "send/reply with validator works")
+                .Send("foo").AssertReply((activity) => Assert.Equal("echo:foo", activity.AsMessageActivity().Text))
                 .StartTestAsync();
         }
 

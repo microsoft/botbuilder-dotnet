@@ -244,7 +244,6 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
                 },
-                description,
                 timeout);
         }
 
@@ -305,7 +304,6 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
                 },
-                description,
                 timeout);
         }
 
@@ -314,13 +312,10 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="validateActivity">A validation method to apply to an activity from the bot.
         /// This activity should throw an exception if validation fails.</param>
-        /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove this withouth breaking binary compat)
-        public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, uint timeout = 3000)
-#pragma warning restore CA1801 // Review unused parameters
+        public TestFlow AssertReply(Action<IActivity> validateActivity, uint timeout = 3000)
         {
             return new TestFlow(
                 async () =>
@@ -418,17 +413,16 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(Action{IActivity}, string, uint)"/>.
+        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(Action{IActivity}, uint)"/>.
         /// </summary>
         /// <param name="userSays">The text of the message to send.</param>
         /// <param name="validateActivity">A validation method to apply to an activity from the bot.
         /// This activity should throw an exception if validation fails.</param>
-        /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow Test(string userSays, Action<IActivity> validateActivity, string description = null, uint timeout = 3000)
+        public TestFlow Test(string userSays, Action<IActivity> validateActivity, uint timeout = 3000)
         {
             if (validateActivity == null)
             {
@@ -436,7 +430,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return Send(userSays)
-                .AssertReply(validateActivity, description, timeout);
+                .AssertReply(validateActivity, timeout);
         }
 
         /// <summary>
@@ -475,12 +469,11 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="activities">The list of activities to test.</param>
         /// <param name="validateReply">The delegate to call to validate responses from the bot.</param>
-        /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow Test(IEnumerable<IActivity> activities, ValidateReply validateReply, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow Test(IEnumerable<IActivity> activities, ValidateReply validateReply, uint timeout = 3000)
         {
             if (activities == null)
             {
@@ -492,7 +485,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (IsReply(activity))
                 {
-                    return flow.AssertReply((actual) => validateReply(activity, actual), description, timeout);
+                    return flow.AssertReply((actual) => validateReply(activity, actual), timeout);
                 }
                 else
                 {
@@ -532,7 +525,6 @@ namespace Microsoft.Bot.Builder.Adapters
 
                     throw new InvalidOperationException(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
                 },
-                description,
                 timeout);
         }
 
