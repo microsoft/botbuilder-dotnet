@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -11,15 +12,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class QueryResult
     {
         /// <summary>
-        /// Gets or sets the list of questions indexed in the QnA Service for the given answer.
+        /// Initializes a new instance of the <see cref="QueryResult"/> class.
+        /// </summary>
+        /// <param name="questions">The list of questions indexed in the QnA Service for the given answer.</param>
+        public QueryResult(string[] questions)
+        {
+            Questions = new Collection<string>(questions);
+        }
+
+        /// <summary>
+        /// Gets the list of questions indexed in the QnA Service for the given answer.
         /// </summary>
         /// <value>
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public string[] Questions { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<string> Questions { get; private set; }
 
         /// <summary>
         /// Gets or sets the answer text.
@@ -42,15 +50,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public float Score { get; set; }
 
         /// <summary>
-        /// Gets or sets metadata that is associated with the answer.
+        /// Gets metadata that is associated with the answer.
         /// </summary>
         /// <value>
         /// Metadata that is associated with the answer.
         /// </value>
         [JsonProperty(PropertyName = "metadata")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public Metadata[] Metadata { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<Metadata> Metadata { get; private set; }
 
         /// <summary>
         /// Gets or sets the source from which the QnA was extracted.

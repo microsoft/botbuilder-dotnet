@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -127,7 +128,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
         /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
+        public Task<Collection<QueryResult>> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
         {
             return GetAnswersAsync(turnContext, options, null);
         }
@@ -140,7 +141,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(
+        public async Task<Collection<QueryResult>> GetAnswersAsync(
                                         ITurnContext turnContext,
                                         QnAMakerOptions options,
                                         Dictionary<string, string> telemetryProperties,
@@ -188,7 +189,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var result = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
-            await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+            await OnQnaResultsAsync(result.Answers.ToArray(), turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
             return result;
         }

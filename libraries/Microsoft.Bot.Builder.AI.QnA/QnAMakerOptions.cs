@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -71,27 +72,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int QnAId { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to filter results.
+        /// Gets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to filter results.
         /// </summary>
         /// <value>
         /// An array of <see cref="Metadata"/>.
         /// </value>
         [JsonProperty("strictFilters")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public Metadata[] StrictFilters { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<Metadata> StrictFilters { get; private set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// Gets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
         /// </summary>
         /// <value>
         /// An array of <see cref="Metadata"/>.
         /// </value>
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
-#pragma warning disable CA1819 // Properties should not return arrays (property is obsolete, we won't change it)
-        public Metadata[] MetadataBoost { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<Metadata> MetadataBoost { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to call test or prod environment of knowledge base to be called. 
@@ -120,5 +117,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
+
+        /// <summary>
+        /// Sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to filter results. 
+        /// </summary>
+        /// <param name="filters">The <see cref="Metadata"/> collection to filter results.</param>
+        public void SetStrictFilters(Metadata[] filters)
+        {
+            StrictFilters = new Collection<Metadata>(filters);
+        }
     }
 }

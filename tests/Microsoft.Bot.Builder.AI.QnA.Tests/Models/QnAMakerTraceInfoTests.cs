@@ -16,19 +16,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests.Models
         {
             var qnaMakerTraceInfo = new QnAMakerTraceInfo
             {
-                QueryResults = new[]
-                {
-                    new QueryResult
-                    {
-                        Questions = new[] { "What's your name?" },
-                        Answer = "My name is Mike",
-                        Score = 0.9F,
-                    },
-                },
                 KnowledgeBaseId = Guid.NewGuid().ToString(),
                 ScoreThreshold = 0.5F,
                 Top = 1,
             };
+
+            qnaMakerTraceInfo.SetQueryResults(new[]
+            {
+                new QueryResult(new[] { "What's your name?" })
+                {
+                    Answer = "My name is Mike",
+                    Score = 0.9F,
+                },
+            });
 
             var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
             var serialized = JsonConvert.SerializeObject(qnaMakerTraceInfo, serializerSettings);

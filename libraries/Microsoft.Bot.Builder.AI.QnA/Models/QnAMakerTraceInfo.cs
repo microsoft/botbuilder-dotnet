@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.ObjectModel;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -22,15 +23,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Activity Message { get; set; }
 
         /// <summary>
-        /// Gets or sets results that QnAMaker returned.
+        /// Gets results that QnAMaker returned.
         /// </summary>
         /// <value>
         /// Results that QnAMaker returned.
         /// </value>
         [JsonProperty("queryResults")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public QueryResult[] QueryResults { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<QueryResult> QueryResults { get; private set; }
 
         /// <summary>
         /// Gets or sets iD of the Knowledgebase that is being used.
@@ -62,15 +61,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
-        /// Gets or sets the filters used to return answers that have the specified metadata.       
+        /// Gets the filters used to return answers that have the specified metadata.       
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
         /// </value>        
         [JsonProperty("strictFilters")]
-#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
-        public Metadata[] StrictFilters { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<Metadata> StrictFilters { get; private set; }
 
         /// <summary>
         /// Gets or sets context for multi-turn responses.
@@ -109,15 +106,31 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// Gets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
         /// </summary>
         /// <value>
         /// An array of <see cref="Metadata"/>.
         /// </value>
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
-#pragma warning disable CA1819 // Properties should not return arrays (this property is obsolete and we won't change it)
-        public Metadata[] MetadataBoost { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public Collection<Metadata> MetadataBoost { get; private set; }
+
+        /// <summary>
+        /// Sets the results that QnAMaker returned.
+        /// </summary>
+        /// <param name="queryResults">The results that QnAMaker returned.</param>
+        public void SetQueryResults(QueryResult[] queryResults)
+        {
+            QueryResults = new Collection<QueryResult>(queryResults);
+        }
+
+        /// <summary>
+        /// Sets the filters used to return answers that have the specified metadata.
+        /// </summary>
+        /// <param name="filters">The filters used to return answers that have the specified metadata.</param>
+        public void SetStrictFilters(Metadata[] filters)
+        {
+            StrictFilters = new Collection<Metadata>(filters);
+        }
     }
 }
