@@ -4,7 +4,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using Microsoft.Bot.Streaming.Payloads;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests.Features
 {
