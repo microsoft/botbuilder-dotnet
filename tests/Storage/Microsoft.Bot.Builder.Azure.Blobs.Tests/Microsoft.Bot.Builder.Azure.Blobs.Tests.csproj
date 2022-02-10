@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\Storage\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.Tests.Common\Microsoft.Bot.Builder.Tests.Common.csproj" />
   </ItemGroup>

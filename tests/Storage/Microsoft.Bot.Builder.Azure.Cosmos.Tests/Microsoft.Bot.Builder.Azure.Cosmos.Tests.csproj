@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\Storage\Microsoft.Bot.Builder.Azure.Cosmos\Microsoft.Bot.Builder.Azure.Cosmos.csproj" />
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.Tests.Common\Microsoft.Bot.Builder.Tests.Common.csproj" />
