@@ -22,10 +22,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.0.0" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.5.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Microsoft.Bot.Connector.DirectLine" Version="3.0.2" />
     <PackageReference Include="Microsoft.CodeCoverage" Version="16.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="ReportGenerator" Version="4.3.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
   </ItemGroup>
