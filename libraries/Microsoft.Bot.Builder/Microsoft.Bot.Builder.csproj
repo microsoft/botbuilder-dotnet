@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.Bot.Connector.Streaming" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
   </ItemGroup>
 
@@ -41,5 +41,4 @@
   <ItemGroup>
     <Folder Include="Inspection\" />
   </ItemGroup>
-
 </Project>
