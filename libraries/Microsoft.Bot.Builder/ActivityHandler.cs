@@ -741,20 +741,6 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        private static AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
-        {
-            return new AdaptiveCardInvokeResponse()
-            {
-                StatusCode = (int)statusCode,
-                Type = "application/vnd.microsoft.error",
-                Value = new Error()
-                {
-                    Code = code,
-                    Message = message
-                }
-            };
-        }
-
         private static AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
         {
             if (activity.Value == null)
@@ -797,6 +783,20 @@ namespace Microsoft.Bot.Builder
             }
 
             return invokeValue;
+        }
+
+        private static AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
+        {
+            return new AdaptiveCardInvokeResponse()
+            {
+                StatusCode = (int)statusCode,
+                Type = "application/vnd.microsoft.error",
+                Value = new Error()
+                {
+                    Code = code,
+                    Message = message
+                }
+            };
         }
     }
 }

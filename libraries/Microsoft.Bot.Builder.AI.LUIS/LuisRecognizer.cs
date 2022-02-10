@@ -570,38 +570,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return Task.FromResult(properties);
         }
 
-        private static DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
-        {
-            // Now, the RetryAfterDelegatingHandler should be the absolute outermost handler
-            // because it's extremely lightweight and non-interfering
-            DelegatingHandler currentHandler =
-#pragma warning disable CA2000 // Dispose objects before losing scope (suppressing this warning, for now! we will address this once we implement HttpClientFactory in a future release)
-                new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
-            if (handlers != null)
-            {
-                for (var i = handlers.Length - 1; i >= 0; --i)
-                {
-                    var handler = handlers[i];
-
-                    // Non-delegating handlers are ignored since we always
-                    // have RetryDelegatingHandler as the outer-most handler
-                    while (handler.InnerHandler is DelegatingHandler)
-                    {
-                        handler = handler.InnerHandler as DelegatingHandler;
-                    }
-
-                    handler.InnerHandler = currentHandler;
-                    currentHandler = handlers[i];
-                }
-            }
-
-            return currentHandler;
-        }
-
-        private static HttpClientHandler CreateRootHandler() => new HttpClientHandler();
-
         /// <summary>
         /// Returns a LuisRecognizerOptions object with the correspondig version.
         /// If no V2 LuisPredictionoption passed it sets the recognizer to use Luis V3 endpoint.
@@ -634,6 +602,38 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             return luisVersionOptions;
         }
+
+        private static DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
+        {
+            // Now, the RetryAfterDelegatingHandler should be the absolute outermost handler
+            // because it's extremely lightweight and non-interfering
+            DelegatingHandler currentHandler =
+#pragma warning disable CA2000 // Dispose objects before losing scope (suppressing this warning, for now! we will address this once we implement HttpClientFactory in a future release)
+                new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
+            if (handlers != null)
+            {
+                for (var i = handlers.Length - 1; i >= 0; --i)
+                {
+                    var handler = handlers[i];
+
+                    // Non-delegating handlers are ignored since we always
+                    // have RetryDelegatingHandler as the outer-most handler
+                    while (handler.InnerHandler is DelegatingHandler)
+                    {
+                        handler = handler.InnerHandler as DelegatingHandler;
+                    }
+
+                    handler.InnerHandler = currentHandler;
+                    currentHandler = handlers[i];
+                }
+            }
+
+            return currentHandler;
+        }
+
+        private static HttpClientHandler CreateRootHandler() => new HttpClientHandler();
 
         /// <summary>
         /// Returns a RecognizerResult object.
