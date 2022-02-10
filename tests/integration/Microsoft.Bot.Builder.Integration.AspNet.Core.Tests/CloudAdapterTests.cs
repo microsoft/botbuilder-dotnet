@@ -18,12 +18,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming;
-using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Rest;
 using Microsoft.Rest.Serialization;
@@ -247,7 +245,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Text = "hi",
             };
 
-            var streamingConnection = new Mock<StreamingConnection>();
+            var streamingConnection = new Mock<StreamingConnection>(null);
             streamingConnection
                 .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
                 .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
@@ -794,13 +792,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         private static Stream CreateStream(Activity activity)
         {
-            string json = SafeJsonConvert.SerializeObject(activity, MessageSerializerSettings.Create());
-            var stream = new MemoryStream();
-            var textWriter = new StreamWriter(stream);
-            textWriter.Write(json);
-            textWriter.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
+            // Use DeserializationSettings from a ConnectorClient
+            using (var connector = new ConnectorClient(new Uri("http://localhost/")))
+            {
+                string json = SafeJsonConvert.SerializeObject(activity, connector.DeserializationSettings);
+                var stream = new MemoryStream();
+                var textWriter = new StreamWriter(stream);
+                textWriter.Write(json);
+                textWriter.Flush();
+                stream.Seek(0, SeekOrigin.Begin);
+                return stream;
+            }
         }
 
         private class InvokeResponseBot : IBot

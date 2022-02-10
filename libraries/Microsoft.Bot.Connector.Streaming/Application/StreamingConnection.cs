@@ -2,9 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Streaming;
+using Microsoft.Bot.Connector.Streaming.Payloads;
+using Microsoft.Bot.Connector.Streaming.Session;
+using Microsoft.Bot.Connector.Streaming.Transport;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Connector.Streaming.Application
 {
@@ -14,13 +20,52 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     /// </summary>
     public abstract class StreamingConnection : IDisposable
     {
+        private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
+
+        private StreamingTransport _transport;
+        private StreamingSession _session;
+
+        private bool _disposedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingConnection"/> class.
+        /// </summary>
+        /// <param name="logger"><see cref="ILogger"/> for the connection.</param>
+        protected StreamingConnection(ILogger logger)
+        {
+            Logger = logger ?? NullLogger.Instance;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ILogger"/> instance for the streaming connection.
+        /// </summary>
+        /// <value>A <see cref="ILogger"/> for the streaming connection.</value>
+        protected ILogger Logger { get; }
+
         /// <summary>
         /// Sends a streaming request through the connection.
         /// </summary>
         /// <param name="request"><see cref="StreamingRequest"/> to be sent.</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/> to cancel the send process.</param>
         /// <returns>The <see cref="ReceiveResponse"/> returned from the client.</returns>
-        public abstract Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken));
+        public virtual async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            // This request could come fast while the session, transport and application are still being set up.
+            // Wait for the session to signal that application and transport started before using the session.
+            await _sessionInitializedTask.Task.ConfigureAwait(false);
+
+            if (_session == null)
+            {
+                throw new InvalidOperationException("Cannot send streaming request since the session is not set up.");
+            }
+
+            return await _session.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Opens the <see cref="StreamingConnection"/> and listens for incoming requests, which will
@@ -30,7 +75,34 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// <param name="cancellationToken"><see cref="CancellationToken"/> that signals the need to stop the connection. 
         /// Once the token is cancelled, the connection will be gracefully shut down, finishing pending sends and receives.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public abstract Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken));
+        public virtual async Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default)
+        {
+            if (requestHandler == null)
+            {
+                throw new ArgumentNullException(nameof(requestHandler));
+            }
+
+            var duplexPipePair = DuplexPipe.CreateConnectionPair(PipeOptions.Default, PipeOptions.Default);
+
+            // Create transport and application
+            _transport = CreateStreamingTransport(duplexPipePair.Application);
+            var application = new TransportHandler(duplexPipePair.Transport, Logger);
+
+            // Create session
+            _session = new StreamingSession(requestHandler, application, Logger, cancellationToken);
+
+            // Start transport and application
+            var transportTask = _transport.ConnectAsync(cancellationToken);
+            var applicationTask = application.ListenAsync(cancellationToken);
+
+            var tasks = new List<Task> { transportTask, applicationTask };
+
+            // Signal that session is ready to be used
+            _sessionInitializedTask.SetResult(true);
+
+            // Let application and transport run
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
 
         /// <inheritdoc />
         public void Dispose()
@@ -40,10 +112,23 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             GC.SuppressFinalize(this);
         }
 
+        internal abstract StreamingTransport CreateStreamingTransport(IDuplexPipe application);
+
         /// <summary>
         /// Disposes managed and unmanaged resources of the underlying <see cref="StreamingConnection"/>.
         /// </summary>
         /// <param name="disposing">Whether we are disposing managed resources.</param>
-        protected abstract void Dispose(bool disposing);
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _transport?.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
     }
 }

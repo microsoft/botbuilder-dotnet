@@ -14,8 +14,8 @@ using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -94,6 +94,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (string.IsNullOrEmpty(activity?.Type))
                     {
                         httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                        Logger.LogWarning("BadRequest: Missing activity or activity type.");
                         return;
                     }
 
@@ -150,11 +151,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             };
 
             // Tie the authentication results, the named pipe, the adapter and the bot together to be ready to handle any inbound activities
-            using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, pipeName, this, bot))
+            var connectionId = Guid.NewGuid();
+            using (var scope = Logger.BeginScope(connectionId))
             {
-                // Start receiving activities on the named pipe
-                // TODO /*_applicationLifetime?.ApplicationStopped ?? */ 
-                await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+#pragma warning disable CA2000 // Dispose objects before losing scope: StreamingRequestHandler is responsible for disposing StreamingConnection
+                var connection = new NamedPipeStreamingConnection(pipeName, Logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
+                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                {
+                    // Start receiving activities on the named pipe
+                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                    Log.WebSocketConnectionStarted(Logger);
+                    await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                    _streamingConnections.TryRemove(connectionId, out _);
+                    Log.WebSocketConnectionCompleted(Logger);
+                }
             }
         }
 
@@ -231,18 +243,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 // Internal reuse of the existing StreamingRequestHandler class
                 _requestHandler = new StreamingRequestHandler(bot, this, connection, authenticateRequestResult.Audience, logger: adapter.Logger);
-
-                // Fix up the connector factory so connector create from it will send over this connection
-                _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
-            }
-
-            public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, string pipeName, CloudAdapter adapter, IBot bot)
-            {
-                _authenticateRequestResult = authenticateRequestResult;
-                _adapter = adapter;
-
-                // Internal reuse of the existing StreamingRequestHandler class
-                _requestHandler = new StreamingRequestHandler(bot, this, pipeName, _authenticateRequestResult.Audience, adapter.Logger);
 
                 // Fix up the connector factory so connector create from it will send over this connection
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);

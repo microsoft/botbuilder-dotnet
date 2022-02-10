@@ -1,16 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
     /// Methods for determining channel specific functionality.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class Channel
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class Channel
     {
         /// <summary>
         /// Determine if a number of Suggested Actions are supported by a Channel.
@@ -101,11 +97,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <summary>
         /// Maximum length allowed for Action Titles.
         /// </summary>
-        /// <param name="channelId">The Channel to determine Maximum Action Title Length.</param>
-        /// <returns>The total number of characters allowed for an Action Title on a specific Channel.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove the channelId parameter without breaking binary compatibility)
-        public static int MaxActionTitleLength(string channelId) => 20;
-#pragma warning restore CA1801 // Review unused parameters
+        /// <returns>The total number of characters allowed for an Action Title.</returns>
+        public static int MaxActionTitleLength() => 20;
 
         /// <summary>
         /// Get the Channel Id from the current Activity on the Turn Context.
@@ -115,20 +108,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
             ? string.Empty
             : turnContext.Activity.ChannelId;
-
-        /// <summary>
-        /// Ids of the channels supported by the Bot Builder.
-        /// </summary>
-        // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels located
-        // at https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs.
-        // This change is non-breaking and this class now inherits from the class in the connector library.
-        [Obsolete("This class is deprecated. Please use Microsoft.Bot.Connector.Channels.")]
-#pragma warning disable CA1034 // Nested types should not be visible (this type is deprecated, ignoring)
-#pragma warning disable CA1724 // Namespace name conflict (this type is deprecated, ignoring)
-        public class Channels : Connector.Channels
-#pragma warning restore CA1724 // Namespace name conflict
-#pragma warning restore CA1034 // Nested types should not be visible
-        {
-        }
     }
 }

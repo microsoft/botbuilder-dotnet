@@ -21,5 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.Orchestrator\Microsoft.Bot.Builder.AI.Orchestrator.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
   </ItemGroup>
 </Project>

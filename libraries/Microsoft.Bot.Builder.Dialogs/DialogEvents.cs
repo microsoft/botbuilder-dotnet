@@ -6,9 +6,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Represents the events related to the "lifecycle" of the dialog.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class DialogEvents
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class DialogEvents
     {
         /// <summary>
         /// Event fired when a dialog beginDialog() is called.

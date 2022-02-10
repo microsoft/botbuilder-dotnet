@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentNullException(nameof(feedbackRecords), "Feedback records cannot be null.");
             }
 
-            if (feedbackRecords.Records == null || feedbackRecords.Records.Length == 0)
+            if (feedbackRecords.Records == null || feedbackRecords.Records.Count == 0)
             {
                 return;
             }

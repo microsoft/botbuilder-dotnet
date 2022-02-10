@@ -2,6 +2,9 @@
 # Pipeline: BotBuilder-Dotnet-PR-MacOS-v5
 #
 
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+
 trigger:
 - v5
 

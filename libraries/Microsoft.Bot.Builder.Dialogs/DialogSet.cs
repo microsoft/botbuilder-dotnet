@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+        private readonly IDictionary<string, Dialog> _dialogs;
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private IBotTelemetryClient _telemetryClient;
         private string _version;
@@ -25,12 +25,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogState">The state property accessor with which to manage the stack for
         /// this dialog set.</param>
+        /// <param name="stringComparer">The <see cref="StringComparer"/> to use for the Dictionary within the DialogSet.</param>
         /// <remarks>To start and control the dialogs in this dialog set, create a <see cref="DialogContext"/>
         /// and use its methods to start, continue, or end dialogs. To create a dialog context,
         /// call <see cref="CreateContextAsync(ITurnContext, CancellationToken)"/>.
         /// </remarks>
-        public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
+        public DialogSet(IStatePropertyAccessor<DialogState> dialogState, StringComparer stringComparer = default(StringComparer))
         {
+            _dialogs = new Dictionary<string, Dialog>(stringComparer ?? StringComparer.OrdinalIgnoreCase);
             _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
@@ -41,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogSet()
         {
             _dialogState = null;
+            _dialogs = new Dictionary<string, Dialog>(StringComparer.OrdinalIgnoreCase);
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
@@ -142,15 +145,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             dialog.TelemetryClient = _telemetryClient;
             _dialogs[dialog.Id] = dialog;
-
-            // Automatically add any dependencies the dialog might have
-            if (dialog is IDialogDependencies dialogWithDependencies)
-            {
-                foreach (var dependencyDialog in dialogWithDependencies.GetDependencies())
-                {
-                    Add(dependencyDialog);
-                }
-            }
 
             return this;
         }

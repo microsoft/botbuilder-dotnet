@@ -38,8 +38,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Connector.Streaming" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Connector.Streaming" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Streaming" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Streaming" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -48,6 +46,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Connector.Streaming\Microsoft.Bot.Connector.Streaming.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Streaming\Microsoft.Bot.Streaming.csproj" />
   </ItemGroup>
 </Project>

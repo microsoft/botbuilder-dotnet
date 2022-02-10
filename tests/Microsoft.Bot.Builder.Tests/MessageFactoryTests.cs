@@ -453,7 +453,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, ReplyWithImBack)
                 .Send("test")
-                .AssertReply(ValidateImBack, "ImBack Did not validate")
+                .AssertReply(ValidateImBack)
                 .StartTestAsync();
         }
     }

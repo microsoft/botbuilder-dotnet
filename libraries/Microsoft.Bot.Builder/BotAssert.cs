@@ -10,9 +10,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Provides methods for debugging Bot Builder code.
     /// </summary>
-#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
-    public class BotAssert
-#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+    public static class BotAssert
     {
         /// <summary>
         /// Checks that an activity object is not <c>null</c>.

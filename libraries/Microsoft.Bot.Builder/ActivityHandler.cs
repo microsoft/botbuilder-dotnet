@@ -259,28 +259,63 @@ namespace Microsoft.Bot.Builder
         /// <see cref="OnReactionsAddedAsync(IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>.
         /// If the message reaction indicates that reactions were removed from a message, it calls
         /// <see cref="OnReactionsRemovedAsync(IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>.
-        ///
+        /// If the message reaction indicates that reactions were both added and removed from a message, it calls
+        /// <see cref="OnReactionsChangedAsync(IList{MessageReaction}, IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>.
+        /// 
         /// In a derived class, override this method to add logic that applies to all message reaction activities.
         /// Add logic to apply before the reactions added or removed logic before the call to the base class
-        /// <see cref="OnMessageReactionActivityAsync(ITurnContext{IMessageReactionActivity}, CancellationToken)"/> method.
-        /// Add logic to apply after the reactions added or removed logic after the call to the base class
         /// <see cref="OnMessageReactionActivityAsync(ITurnContext{IMessageReactionActivity}, CancellationToken)"/> method.
         ///
         /// </remarks>
         /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
         /// <seealso cref="OnReactionsAddedAsync(IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
         /// <seealso cref="OnReactionsRemovedAsync(IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
+        /// <seealso cref="OnReactionsChangedAsync(IList{MessageReaction}, IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
         protected virtual async Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.ReactionsAdded != null)
+            if (turnContext.Activity.ReactionsRemoved != null && turnContext.Activity.ReactionsAdded != null)
             {
-                await OnReactionsAddedAsync(turnContext.Activity.ReactionsAdded, turnContext, cancellationToken).ConfigureAwait(false);
+                await OnReactionsChangedAsync(turnContext.Activity.ReactionsAdded, turnContext.Activity.ReactionsRemoved, turnContext, cancellationToken).ConfigureAwait(false);
             }
+            else
+            {
+                if (turnContext.Activity.ReactionsAdded != null)
+                {
+                    await OnReactionsAddedAsync(turnContext.Activity.ReactionsAdded, turnContext, cancellationToken).ConfigureAwait(false);
+                }
 
-            if (turnContext.Activity.ReactionsRemoved != null)
-            {
-                await OnReactionsRemovedAsync(turnContext.Activity.ReactionsRemoved, turnContext, cancellationToken).ConfigureAwait(false);
+                if (turnContext.Activity.ReactionsRemoved != null)
+                {
+                    await OnReactionsRemovedAsync(turnContext.Activity.ReactionsRemoved, turnContext, cancellationToken).ConfigureAwait(false);
+                }
             }
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic for when reactions to a previous activity
+        /// are both added and removed.
+        /// </summary>
+        /// <param name="addedReactions">The list of reactions added.</param>
+        /// <param name="removedReactions">The list of reactions removed.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// Message reactions correspond to the user adding a 'like' or 'sad' etc. (often an emoji) to a
+        /// previously sent message on the conversation. Message reactions are supported by only a few channels.
+        /// The activity that the message is in reaction to is identified by the activity's
+        /// <see cref="Activity.ReplyToId"/> property. The value of this property is the activity ID
+        /// of a previously sent activity. When the bot sends an activity, the channel assigns an ID to it,
+        /// which is available in the <see cref="ResourceResponse.Id"/> of the result.
+        /// </remarks>
+        /// <seealso cref="OnMessageReactionActivityAsync(ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
+        /// <seealso cref="Activity.Id"/>
+        /// <seealso cref="ITurnContext.SendActivityAsync(IActivity, CancellationToken)"/>
+        /// <seealso cref="ResourceResponse.Id"/>
+        protected virtual Task OnReactionsChangedAsync(IList<MessageReaction> addedReactions, IList<MessageReaction> removedReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -762,67 +797,6 @@ namespace Microsoft.Bot.Builder
                     Message = message
                 }
             };
-        }
-
-        /// <summary>
-        /// A custom exception for invoke response errors.
-        /// </summary>
-#pragma warning disable CA1064 // Exceptions should be public (we can't change this without breaking binary compat, we may consider making this type public in the future)
-        protected class InvokeResponseException : Exception
-#pragma warning restore CA1064 // Exceptions should be public
-        {
-            private readonly HttpStatusCode _statusCode;
-            private readonly object _body;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
-            /// </summary>
-            /// <param name="statusCode">The Http status code of the error.</param>
-            /// <param name="body">The body of the exception. Default is null.</param>
-            public InvokeResponseException(HttpStatusCode statusCode, object body = null)
-            {
-                _statusCode = statusCode;
-                _body = body;
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
-            /// </summary>
-            public InvokeResponseException()
-            {
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
-            /// </summary>
-            /// <param name="message">The message that explains the reason for the exception, or an empty string.</param>
-            public InvokeResponseException(string message)
-                : base(message)
-            {
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
-            /// </summary>
-            /// <param name="message">The message that explains the reason for the exception, or an empty string.</param>
-            /// <param name="innerException">Gets the System.Exception instance that caused the current exception.</param>
-            public InvokeResponseException(string message, Exception innerException)
-                : base(message, innerException)
-            {
-            }
-
-            /// <summary>
-            /// A factory method that creates a new <see cref="InvokeResponse"/> object with the status code and body of the current object..
-            /// </summary>
-            /// <returns>A new <see cref="InvokeResponse"/> object.</returns>
-            public InvokeResponse CreateInvokeResponse()
-            {
-                return new InvokeResponse
-                {
-                    Status = (int)_statusCode,
-                    Body = _body
-                };
-            }
         }
     }
 }
