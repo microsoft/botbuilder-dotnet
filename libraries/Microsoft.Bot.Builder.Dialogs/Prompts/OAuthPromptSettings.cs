@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Builder.OAuth;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -10,12 +11,14 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class OAuthPromptSettings : UserAuthSettings
     {
+        internal const int OAuthLoginTimeoutDefault = 15 * 60 * 1000; // 15 mintues
+
         /// <summary>
         /// Gets or sets the number of milliseconds the prompt waits for the user to authenticate.
         /// Default is 900,000 (15 minutes).
         /// </summary>
         /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
-        public int Timeout { get; set; } = (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
+        public int Timeout { get; set; } = OAuthLoginTimeoutDefault;
 
         /// <summary>
         /// Gets or sets a value indicating whether the auth process should end upon
