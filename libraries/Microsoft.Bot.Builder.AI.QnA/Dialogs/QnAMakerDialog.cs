@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// The default threshold for answers returned, based on score.
         /// </summary>
-        protected const float DefaultThreshold = 0.3f;
+        protected const float DefaultThreshold = 0.3F;
 
         /// <summary>
         /// The default maximum number of answers to be returned for the question.

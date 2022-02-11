@@ -50,9 +50,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task QueryTrainAsync(FeedbackRecords feedbackRecords)
         {
-            var host = _endpoint.Host;
-            var requestUrl = $"{host}/knowledgebases/{_endpoint.KnowledgeBaseId}/train";
-
+            var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/train";
             var jsonRequest = JsonConvert.SerializeObject(feedbackRecords, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);

@@ -356,7 +356,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             };
 
             var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
-
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {
                 properties.Add("Text", recognizerResult.Text);
