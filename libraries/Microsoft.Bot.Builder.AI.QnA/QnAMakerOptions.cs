@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         public QnAMakerOptions()
         {
-            ScoreThreshold = 0.3F;
+            ScoreThreshold = 0.3f;
         }
 
         /// <summary>
@@ -76,7 +76,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// An array of <see cref="Metadata"/>.
         /// </value>
-        [Obsolete("This property is no longer used in bots for language service and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFilters")]
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
@@ -117,7 +116,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets strictFiltersJoinOperator - join operator on metadata strict filters.
         /// </summary>
         /// <value>StrictFiltersJoinOperator - join operator on metadata strict filters.</value>
-        [Obsolete("This property is no longer used and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
 

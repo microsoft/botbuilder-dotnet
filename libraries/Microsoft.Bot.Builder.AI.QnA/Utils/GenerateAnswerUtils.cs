@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets qnA Maker options.
         /// </summary>
         /// <value>The options for QnAMaker.</value>
-        public QnAMakerOptions Options { get; set; }
+        private QnAMakerOptions Options { get; set; }
 
         /// <summary>
         /// Generates an answer from the knowledge base.

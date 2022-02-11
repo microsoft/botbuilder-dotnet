@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentNullException(nameof(suggestionsList));
             }
 
-            if (cardTitle == null) 
+            if (cardTitle == null)
             {
                 throw new ArgumentNullException(nameof(cardTitle));
             }
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 throw new ArgumentNullException(nameof(cardNoMatchText));
             }
-            
+
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = cardTitle;
             var buttonList = new List<CardAction>();
@@ -98,10 +98,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 throw new ArgumentNullException(nameof(result));
             }
-            
+
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = result.Answer;
-            
+
             List<CardAction> buttonList = null;
             if (result?.Context?.Prompts != null &&
                 result.Context.Prompts.Any())

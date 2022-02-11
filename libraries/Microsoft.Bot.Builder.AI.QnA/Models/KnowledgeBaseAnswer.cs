@@ -21,15 +21,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Gets or sets the list of questions indexed in the QnA Service for the given answer.
+        /// Gets the list of questions indexed in the QnA Service for the given answer.
         /// </summary>
         /// <value>
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
-#pragma warning disable CA1819 // Properties should not return arrays
-        public string[] Questions { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
+        public List<string> Questions { get; }
 
         /// <summary>
         /// Gets or sets the answer text.

@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// The default threshold for answers returned, based on score.
         /// </summary>
-        protected const double DefaultThreshold = 0.3;
+        protected const float DefaultThreshold = 0.3f;
 
         /// <summary>
         /// The default maximum number of answers to be returned for the question.
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             string endpointKey,
             string hostName,
             Activity noAnswer = null,
-            double threshold = DefaultThreshold,
+            float threshold = DefaultThreshold,
             string activeLearningCardTitle = DefaultCardTitle,
             string cardNoMatchText = DefaultCardNoMatchText,
             int top = DefaultTopN,
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             string endpointKey,
             string hostName,
             Activity noAnswer = null,
-            double threshold = DefaultThreshold,
+            float threshold = DefaultThreshold,
             string activeLearningCardTitle = DefaultCardTitle,
             string cardNoMatchText = DefaultCardNoMatchText,
             int top = DefaultTopN,
@@ -468,6 +468,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                 var reply = dc.Context.Activity.Text;
                 var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(dc.ActiveDialog.State, Options);
+
                 if (reply.Equals(dialogOptions.ResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
                 {
                     // it matches nomatch text, we like that.
@@ -526,7 +527,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State),
                 QnAServiceType = this.QnAServiceType?.GetValue(dc.State)
             };
-
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
             return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
         }

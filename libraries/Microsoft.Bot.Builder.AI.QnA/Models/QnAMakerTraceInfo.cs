@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -68,7 +67,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The filters used to return answers that have the specified metadata.
         /// </value>
-        [Obsolete("This property is no longer used and will be ignored")]
         [JsonProperty("strictFilters")]
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
@@ -129,7 +127,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// An array of string.
         /// </value>
         [JsonProperty("filters")]
-        public Filters Filters { get; set; }
+        public Models.Filters Filters { get; set; }
 
         /// <summary>
         /// Gets or sets AnswerSpanRequest.

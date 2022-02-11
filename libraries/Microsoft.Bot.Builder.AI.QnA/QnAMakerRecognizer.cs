@@ -113,7 +113,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// <value>
         /// A value used for Join operation of strictFilters.
         /// </value>
-        [Obsolete("This property is no longer used in bots for language service and will be ignored. Use filters object instead.")]
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
 
@@ -131,7 +130,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// Gets or sets an expression to evaluate to set additional metadata name value pairs.
         /// </summary>
         /// <value>An expression to evaluate for pairs of metadata.</value>
-        [Obsolete("This property is no longer used in bots for language service and will be ignored. User filters object instead.")]
         [JsonProperty("metadata")]
         public ArrayExpression<Metadata> Metadata { get; set; }
 
@@ -207,7 +205,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             var newFilters = new Models.Filters(
                 metadataFilter,
                 new List<string>(),
-                JoinOperator.OR.ToString());              
+                JoinOperator.OR.ToString());
 
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
@@ -358,7 +356,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             };
 
             var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
-            
+
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {
                 properties.Add("Text", recognizerResult.Text);

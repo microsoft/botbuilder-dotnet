@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -41,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets qnA Maker options.
         /// </summary>
         /// <value>The options for QnAMaker.</value>
-        public QnAMakerOptions Options { get; set; }
+        private QnAMakerOptions Options { get; set; }
 
         /// <summary>
         /// Converts array of metadata, array of sources and corresponding join operations to LanguageService input format - an object of <see cref="Filters"/>.

@@ -2,35 +2,35 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1201 // Elements should appear in the correct order
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
+using Microsoft.Bot.Builder.AI.QnA.Models;
+using Microsoft.Bot.Builder.AI.QnA.Tests;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
+using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RichardSzalay.MockHttp;
+using Xunit;
+
 namespace Microsoft.Bot.Builder.AI.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Reflection;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Builder.Adapters;
-    using Microsoft.Bot.Builder.AI.QnA;
-    using Microsoft.Bot.Builder.AI.QnA.Dialogs;
-    using Microsoft.Bot.Builder.AI.QnA.Models;
-    using Microsoft.Bot.Builder.AI.QnA.Tests;
-    using Microsoft.Bot.Builder.Dialogs;
-    using Microsoft.Bot.Builder.Dialogs.Adaptive;
-    using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-    using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-    using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-    using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Schema;
-    using Moq;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using RichardSzalay.MockHttp;
-    using Xunit;
-
     /// <summary>
     /// Defines the <see cref="LanguageServiceTests" />.
     /// </summary>
