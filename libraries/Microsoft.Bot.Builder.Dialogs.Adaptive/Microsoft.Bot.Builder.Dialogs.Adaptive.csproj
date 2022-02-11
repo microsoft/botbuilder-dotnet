@@ -23,6 +23,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
     <!-- CA2225: Operator overloads have named alternates, excluding for now, we should address this if we want to support other platforms than C#
     see https://docs.microsoft.com/en-us/visualstudio/code-quality/ca2225?view=vs-2019 .-->

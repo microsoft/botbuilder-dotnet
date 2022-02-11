@@ -20,6 +20,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <!-- The KeyVault package, picked up as a transitive dependency of the Azure Storage libraries
         doesn't yet support NetStandard20. I confirmed with the Azure Storage team that this warning
         is fine, and can be supressed.

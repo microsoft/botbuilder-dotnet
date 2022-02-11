@@ -21,6 +21,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

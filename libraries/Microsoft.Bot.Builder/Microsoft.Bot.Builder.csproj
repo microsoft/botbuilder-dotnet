@@ -21,6 +21,10 @@
     <Summary>Library for building bots using Microsoft Bot Framework Connector</Summary>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Streaming" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Streaming" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />

@@ -20,6 +20,10 @@
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
   
   <PropertyGroup>
     <AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>

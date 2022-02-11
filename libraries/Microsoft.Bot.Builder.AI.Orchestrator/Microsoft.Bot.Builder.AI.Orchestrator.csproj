@@ -20,6 +20,10 @@
     <PackageProjectUrl>https://aka.ms/bf-orchestrator-package-readme</PackageProjectUrl>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Content Include="**/*.dialog" />
     <Content Include="**/*.lg" />

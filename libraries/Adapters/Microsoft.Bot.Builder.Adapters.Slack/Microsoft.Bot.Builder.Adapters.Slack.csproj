@@ -27,6 +27,10 @@
     <NoWarn>$(NoWarn);CS8002;CS1591</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="**/*.schema" />
     <Content Include="**/*.uischema" />

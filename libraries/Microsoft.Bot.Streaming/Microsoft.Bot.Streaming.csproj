@@ -23,6 +23,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <NoWarn>$(NoWarn);</NoWarn>
   </PropertyGroup>
 

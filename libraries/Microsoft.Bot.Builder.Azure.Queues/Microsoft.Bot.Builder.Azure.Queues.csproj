@@ -20,6 +20,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Content Include="**/*.dialog" />
     <Content Include="**/*.lg" />

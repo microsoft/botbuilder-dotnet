@@ -20,6 +20,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- Force System.Text.Encodings.Web to a safe version. -->
     <PackageReference Include="System.Text.Json" Version="4.7.2" />

@@ -20,6 +20,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
     <NoWarn>$(NoWarn);SX1309</NoWarn>
   </PropertyGroup>

@@ -23,6 +23,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <!-- CA1812: Internal class that is apparently never instantiated. A lot of internal classes are just used for serialization and not instantiated explicitly, excliding from this project only -->
     <NoWarn>$(NoWarn);CA1812</NoWarn>
   </PropertyGroup>

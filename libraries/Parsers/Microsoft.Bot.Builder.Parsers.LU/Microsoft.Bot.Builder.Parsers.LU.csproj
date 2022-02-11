@@ -20,6 +20,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Microsoft.Bot.Builder.Parsers.LU</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.Parsers.LU</RootNamespace>

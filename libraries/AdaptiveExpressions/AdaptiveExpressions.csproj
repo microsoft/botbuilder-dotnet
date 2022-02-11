@@ -20,6 +20,10 @@
     <Description>This library implements Microsoft Bot Builder Expression evaluator for .NET</Description>
     <Summary>This library implements Microsoft Bot Builder Expression evaluator for .NET</Summary>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Remove="WindowsIanaMapping" />
