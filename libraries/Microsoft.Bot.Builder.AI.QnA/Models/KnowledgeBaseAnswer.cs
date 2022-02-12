@@ -15,9 +15,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Initializes a new instance of the <see cref="KnowledgeBaseAnswer"/> class.
         /// </summary>
         /// <param name="metadata">Metadata associated with the answer, useful to categorize or filter question answers.</param>
-        public KnowledgeBaseAnswer(Dictionary<string, string> metadata)
+        /// <param name="questions">The list of questions indexed in the QnA Service for the given answer.</param>
+        public KnowledgeBaseAnswer(Dictionary<string, string> metadata, List<string> questions)
         {
             Metadata = metadata;
+            Questions = questions;
         }
 
         /// <summary>
