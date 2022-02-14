@@ -335,13 +335,13 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "01/03/2018 00:00:00"),
             Test("replace(convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 08:00:00"),
             Test("replace(convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 18:00:00"),
-            Test("substring(utcNow('', 'de-DE'), 0, 6)", DateTime.UtcNow.ToString(new CultureInfo("de-DE")).Substring(0, 6)),
-            Test("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 6)", DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 6)),
+            TestUtcNow("substring(utcNow('', 'de-DE'), 0, 6)", () => DateTime.UtcNow.ToString(new CultureInfo("de-DE")).Substring(0, 6)),
+            TestUtcNow("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 6)", () => DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 6)),
             Test("replace(subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE'), '20', '')", "15.03.18 12:00:00"),
             Test("replace(formatEpoch(unixTimestamp, '', 'de-DE'), '20', '')", "15.03.18 13:00:00"),
             Test("replace(formatTicks(ticks, '', 'de-DE'), '2020', '20')", "06.05.20 11:47:00"),
             Test("replace(formatDateTime('2018-03-15', '', 'de-DE'), '20', '')", "15.03.18 00:00:00"),
-            Test("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
+            TestUtcNow("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", () => DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("toUpper('lowercase', 'en-US')", "LOWERCASE"),
             Test("toLower('I AM WHAT I AM', 'fr-FR')", "i am what i am"),
@@ -860,7 +860,7 @@ namespace AdaptiveExpressions.Tests
             Test("year(timestamp)", 2018),
             Test("year(timestampObj)", 2018),
             Test("length(utcNow())", 24),
-            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
+            TestUtcNow("utcNow('MM-DD-YY')", () => DateTime.UtcNow.ToString("MM-DD-YY")),
             Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
             Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
             Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
@@ -889,14 +889,14 @@ namespace AdaptiveExpressions.Tests
             Test("getTimeOfDay('2018-03-15T18:00:00.000Z')", "evening"),
             Test("getTimeOfDay('2018-03-15T22:00:00.000Z')", "evening"),
             Test("getTimeOfDay('2018-03-15T23:00:00.000Z')", "night"),
-            Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.UtcNow.AddYears(-1).ToString("MM-dd-yy")),
-            Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(-1).ToString("MM-dd-yy")),
-            Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(-7).ToString("MM-dd-yy")),
-            Test("getPastTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(-1).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Year','MM-dd-yy')", DateTime.UtcNow.AddYears(1).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
+            TestUtcNow("getPastTime(1,'Year','MM-dd-yy')", () => DateTime.UtcNow.AddYears(-1).ToString("MM-dd-yy")),
+            TestUtcNow("getPastTime(1,'Month','MM-dd-yy')", () => DateTime.UtcNow.AddMonths(-1).ToString("MM-dd-yy")),
+            TestUtcNow("getPastTime(1,'Week','MM-dd-yy')", () => DateTime.UtcNow.AddDays(-7).ToString("MM-dd-yy")),
+            TestUtcNow("getPastTime(1,'Day','MM-dd-yy')", () => DateTime.UtcNow.AddDays(-1).ToString("MM-dd-yy")),
+            TestUtcNow("getFutureTime(1,'Year','MM-dd-yy')", () => DateTime.UtcNow.AddYears(1).ToString("MM-dd-yy")),
+            TestUtcNow("getFutureTime(1,'Month','MM-dd-yy')", () => DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
+            TestUtcNow("getFutureTime(1,'Week','MM-dd-yy')", () => DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
+            TestUtcNow("getFutureTime(1,'Day','MM-dd-yy')", () => DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time')", "2018-01-01T18:00:00.0000000"),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
@@ -1194,13 +1194,13 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth('2018-03-15T13:30:30.000Z', '')", "01/03/2018 00:00:00"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', 'D')", "lundi 1 janvier 2018"),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '')", "01/01/2018 18:00:00"),
-            Test("utcNow('D')", DateTime.UtcNow.ToString("D", new CultureInfo("fr-FR"))),
-            Test("getPastTime(1,'Day', 'D')", DateTime.UtcNow.AddDays(-1).ToString("D", new CultureInfo("fr-FR"))),
+            TestUtcNow("utcNow('D')", () => DateTime.UtcNow.ToString("D", new CultureInfo("fr-FR"))),
+            TestUtcNow("getPastTime(1,'Day', 'D')", () => DateTime.Now.AddDays(-1).ToString("D", new CultureInfo("fr-FR"))),
             Test("subtractFromTime(timestamp, 1, 'Hour', '')", "15/03/2018 12:00:00"),
             Test("formatEpoch(unixTimestamp, '')", "15/03/2018 13:00:00"),
             Test("formatTicks(ticks, '')", "06/05/2020 11:47:00"),
             Test("formatDateTime('2018-03-15', 'D')", "jeudi 15 mars 2018"),
-            Test("getFutureTime(1, 'Year', 'D')", DateTime.UtcNow.AddYears(1).ToString("D", new CultureInfo("fr-FR"))),
+            TestUtcNow("getFutureTime(1, 'Year', 'D')", () => DateTime.Now.AddYears(1).ToString("D", new CultureInfo("fr-FR"))),
             Test("addDays(timestamp, 1, '')", "16/03/2018 13:00:00"),
             Test("toUpper('lowercase')", "LOWERCASE"),
             Test("toLower('I AM WHAT I AM')", "i am what i am"),
@@ -1213,6 +1213,8 @@ namespace AdaptiveExpressions.Tests
         };
 
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
+
+        public static object[] TestUtcNow(string input, Func<string> valueFunc, HashSet<string> paths = null) => new object[] { input, valueFunc, paths };
 
         public static bool IsNumber(object value) =>
            value is sbyte
@@ -1235,6 +1237,11 @@ namespace AdaptiveExpressions.Tests
             Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
             Assert.Null(msg);
+            if (expected is Func<string> func)
+            {
+                expected = func();
+            }
+
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
@@ -1258,6 +1265,11 @@ namespace AdaptiveExpressions.Tests
             var opts = new Options() { Locale = "fr-FR" };
             var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, opts);
             Assert.Null(msg);
+            if (expected is Func<string> func)
+            {
+                expected = func();
+            }
+
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
@@ -1284,6 +1296,11 @@ namespace AdaptiveExpressions.Tests
                 Assert.NotNull(parsed);
                 var (actual, msg) = parsed.TryEvaluate(scope);
                 Assert.Null(msg);
+                if (expected is Func<string> func)
+                {
+                    expected = func();
+                }
+
                 AssertObjectEquals(expected, actual);
                 if (expectedRefs != null)
                 {
@@ -1309,6 +1326,11 @@ namespace AdaptiveExpressions.Tests
             Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(jsonScope);
             Assert.Null(msg);
+            if (expected is Func<string> func)
+            {
+                expected = func();
+            }
+
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
