@@ -297,6 +297,12 @@ namespace AdaptiveExpressions.Tests
                     new { x = 2, y = 2 },
                     new { x = 1, y = 1, z = 1 }
                 }
+            },
+            {
+                "numberJArray", new JArray
+                {
+                    1, 2
+                }
             }
         };
 
@@ -954,6 +960,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region  collection functions test
+            Test("sum(numberJArray)", 3),
             Test("sum(createArray(1, 2))", 3),
             Test("sum(createArray(one, two, 3))", 6.0),
             Test("average(createArray(1, 2))", 1.5),
