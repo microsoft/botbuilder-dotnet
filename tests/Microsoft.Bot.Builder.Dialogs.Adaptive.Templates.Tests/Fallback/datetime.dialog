@@ -23,6 +23,14 @@
         },
         {
           "$kind": "Microsoft.SendActivity",
+          "activity": "${user.date}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${trim(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
           "activity": "${addToTime(user.date, 120, 'Second')}"
         },
         {

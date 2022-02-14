@@ -478,7 +478,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public void SetPathValue()
         {
+            const string dateISO = "2021-11-30T23:59:59:000Z";
             var test = new Dictionary<string, object>();
+
             ObjectPath.SetPathValue(test, "x.y.z", 15);
             ObjectPath.SetPathValue(test, "x.p", "hello");
             ObjectPath.SetPathValue(test, "foo", new { Bar = 15, Blat = "yo" });
@@ -486,6 +488,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ObjectPath.SetPathValue(test, "x.a[0]", "dabba");
             ObjectPath.SetPathValue(test, "null", null);
             ObjectPath.SetPathValue(test, "enum", TypeCode.Empty);
+            ObjectPath.SetPathValue(test, "date.string.iso", dateISO);
+            ObjectPath.SetPathValue(test, "date.string.jtoken.iso", new JValue(dateISO));
+            ObjectPath.SetPathValue(test, "date.object", new { iso = dateISO });
+            ObjectPath.SetPathValue(test, "date.object.jtoken", JToken.FromObject(new { iso = dateISO }));
 
             Assert.Equal(15, ObjectPath.GetPathValue<int>(test, "x.y.z"));
             Assert.Equal("hello", ObjectPath.GetPathValue<string>(test, "x.p"));
@@ -498,6 +504,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal("dabba", value2);
             Assert.False(ObjectPath.TryGetPathValue<object>(test, "null", out var nullValue));
             Assert.Equal(TypeCode.Empty, ObjectPath.GetPathValue<TypeCode>(test, "enum"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.string.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.string.jtoken.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.object.iso"));
+            Assert.Equal(dateISO, ObjectPath.GetPathValue<string>(test, "date.object.jtoken.iso"));
 
             // value type tests
 #pragma warning disable SA1121 // Use built-in type alias

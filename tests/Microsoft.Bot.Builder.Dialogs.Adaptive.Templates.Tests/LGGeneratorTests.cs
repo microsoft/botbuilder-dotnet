@@ -525,6 +525,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
+                .AssertReply("2018-01-01T08:00:00.000Z")
+                .AssertReply("2018-01-01T08:00:00.000Z")
                 .AssertReply("2018-01-01T08:02:00.000Z")
                 .AssertReply("2018-01-01T08:03:00.000Z")
                 .AssertReply("2018-01-06T08:00:00.000Z")
