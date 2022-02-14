@@ -249,8 +249,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     QnAId = QnAId.GetValue(dialogContext.State),
                     RankerType = RankerType.GetValue(dialogContext.State),
                     IsTest = IsTest,
-                    StrictFiltersJoinOperator = StrictFiltersJoinOperator, // set new filters if user does not have legacy metadata in the dialog context
-                    Filters = externalMetadata == null ? newFilters : null,
+                    StrictFiltersJoinOperator = StrictFiltersJoinOperator,
+                    Filters = externalMetadata == null ? newFilters : null, // set new filters if user does not have legacy metadata in the dialog context
                 },
                 null).ConfigureAwait(false);
 
@@ -356,6 +356,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             };
 
             var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
+
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {
                 properties.Add("Text", recognizerResult.Text);

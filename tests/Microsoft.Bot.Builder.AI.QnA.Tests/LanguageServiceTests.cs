@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = "dummy-key",
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions
                 {
@@ -411,7 +411,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions
                 {
@@ -547,7 +547,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 options);
 
@@ -583,7 +583,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 options);
 
@@ -618,7 +618,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 options);
 
@@ -649,7 +649,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions
                 {
@@ -685,7 +685,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var feedbackRecords = new FeedbackRecords();
@@ -727,7 +727,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
 
             var options = new QnAMakerOptions
@@ -766,7 +766,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var options = new QnAMakerOptions
@@ -812,7 +812,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions()
                 {
@@ -846,7 +846,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions
                 {
@@ -872,7 +872,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
 
             var tooLargeThreshold = new QnAMakerOptions
@@ -897,7 +897,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
 
             var tooSmallThreshold = new QnAMakerOptions
@@ -929,7 +929,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var options = new QnAMakerOptions()
@@ -969,7 +969,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var options = new QnAMakerOptions()
@@ -1003,7 +1003,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var options = new QnAMakerOptions()
@@ -1033,7 +1033,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions
                 {
@@ -1058,7 +1058,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                         KnowledgeBaseId = string.Empty,
                         EndpointKey = _endpointKey,
                         Host = _endpoint,
-                        QnAServiceType = "language"
+                        QnAServiceType = Constants.LanguageQnaServiceType
                     });
             });
         }
@@ -1077,7 +1077,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = string.Empty,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 }));
         }
 
@@ -1095,7 +1095,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = string.Empty,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 }));
         }
 
@@ -1121,7 +1121,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 new QnAMakerOptions
                 {
@@ -1161,7 +1161,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var options = new QnAMakerOptions
@@ -1198,7 +1198,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var queryOptionsWithScoreThreshold = new QnAMakerOptions
@@ -1238,7 +1238,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             await Assert.ThrowsAsync<HttpRequestException>(() => qna.GetAnswersAsync(GetContext("how do I clean the stove?")));
@@ -1269,7 +1269,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
 
             var qna = new QnAMaker(endpoint, qnAMakerOptions, client, null, true);
@@ -1301,7 +1301,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 });
 
             var qnaMakerOptions = new QnAMakerOptions
@@ -1342,7 +1342,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = Constants.LanguageQnaServiceType
                 },
                 noFiltersOptions);
 
@@ -1464,7 +1464,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                             {
                                 KnowledgeBaseId = _projectName,
                                 EndpointKey = _endpointKey,
-                                QnAServiceType = "language",
+                                QnAServiceType = Constants.LanguageQnaServiceType,
                                 Host = _endpoint,
                             }, oneFilteredOption);
 
@@ -1497,7 +1497,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1538,7 +1538,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1593,7 +1593,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1643,7 +1643,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1698,7 +1698,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1757,7 +1757,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1825,7 +1825,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -1889,7 +1889,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = "language"
+                QnAServiceType = Constants.LanguageQnaServiceType
             };
             var options = new QnAMakerOptions
             {
@@ -2092,7 +2092,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                 NoAnswer = noAnswerActivity,
                                 ActiveLearningCardTitle = activeLearningCardTitle,
                                 CardNoMatchText = "None of the above.",
-                                QnAServiceType = "language",
+                                QnAServiceType = Constants.LanguageQnaServiceType,
                                 DisplayPreciseAnswerOnly = displayPreciseAnswer,
                             }
                         }

@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
 
-            if (string.Equals(endpoint.QnAServiceType, "language", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(endpoint.QnAServiceType, Constants.LanguageQnaServiceType, StringComparison.OrdinalIgnoreCase))
             {
                 this._languageServiceHelper = new LanguageServiceUtils(TelemetryClient, _httpClient, endpoint, options);
             }
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             QueryResults results;
 
-            if (string.Equals(_endpoint.QnAServiceType, "language", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(_endpoint.QnAServiceType, Constants.LanguageQnaServiceType, StringComparison.OrdinalIgnoreCase))
             {
                 results = await this._languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
             }
@@ -260,14 +260,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            if (string.Equals(_endpoint.QnAServiceType, "language", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(_endpoint.QnAServiceType, Constants.LanguageQnaServiceType, StringComparison.OrdinalIgnoreCase))
             {
                 await this._languageServiceHelper.UpdateActiveLearningFeedbackAsync(feedbackRecords).ConfigureAwait(false);
             }
             else
-            { 
+            {
                 await this._activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
-            } 
+            }
         }
 
         /// <summary>

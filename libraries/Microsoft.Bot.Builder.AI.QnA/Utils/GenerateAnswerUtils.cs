@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets qnA Maker options.
         /// </summary>
         /// <value>The options for QnAMaker.</value>
-        private QnAMakerOptions Options { get; set; }
+        public QnAMakerOptions Options { get; set; }
 
         /// <summary>
         /// Generates an answer from the knowledge base.
@@ -247,7 +247,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
                 RankerType = options.RankerType,
-                AnswerSpanRequest = answerSpanRequest
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

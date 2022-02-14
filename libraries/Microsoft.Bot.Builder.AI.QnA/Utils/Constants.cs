@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
@@ -16,5 +12,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// SourceFilterMetadataKey - Source filter Metadata key.
         /// </summary>
         public const string SourceFilterMetadataKey = "source_name_metadata";
+
+        /// <summary>
+        /// QnaServiceType for Language Service.
+        /// </summary>
+        public const string LanguageQnaServiceType = "language";
     }
 }

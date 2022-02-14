@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// LanguageServiceUtils - Helper class for Language service query knowledgebase and update suggestions api.
     /// </summary>
-    public class LanguageServiceUtils
+    internal class LanguageServiceUtils
     {
         private const string ApiVersionQueryParam = "api-version=2021-10-01";
 
