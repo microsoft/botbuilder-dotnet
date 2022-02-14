@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// sorted in decreasing order of ranking score.
         /// </value>
         [JsonProperty("answers")]
-        public Collection<QueryResult> Answers { get; private set; }
+        public Collection<QueryResult> Answers { get; private set; } = new Collection<QueryResult>();
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or set for the active learning enable flag.
@@ -30,14 +30,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("activeLearningEnabled")]
         public bool ActiveLearningEnabled { get; set; }
-
-        /// <summary>
-        /// Sets the answers for a user query.
-        /// </summary>
-        /// <param name="answers">The answers for a user query.</param>
-        public void SetAnswers(QueryResult[] answers)
-        {
-            Answers = new Collection<QueryResult>(answers);
-        }
     }
 }

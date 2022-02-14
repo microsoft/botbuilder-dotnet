@@ -12,22 +12,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class QueryResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryResult"/> class.
-        /// </summary>
-        /// <param name="questions">The list of questions indexed in the QnA Service for the given answer.</param>
-        public QueryResult(string[] questions)
-        {
-            Questions = new Collection<string>(questions);
-        }
-
-        /// <summary>
         /// Gets the list of questions indexed in the QnA Service for the given answer.
         /// </summary>
         /// <value>
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
-        public Collection<string> Questions { get; private set; }
+        public Collection<string> Questions { get; private set; } = new Collection<string>();
 
         /// <summary>
         /// Gets or sets the answer text.
@@ -56,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Metadata that is associated with the answer.
         /// </value>
         [JsonProperty(PropertyName = "metadata")]
-        public Collection<Metadata> Metadata { get; private set; }
+        public Collection<Metadata> Metadata { get; private set; } = new Collection<Metadata>();
 
         /// <summary>
         /// Gets or sets the source from which the QnA was extracted.

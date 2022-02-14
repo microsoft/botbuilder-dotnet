@@ -445,7 +445,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 IsTest = IsTest
             };
 
-            qnaMakerOptions.SetStrictFilters(StrictFilters?.ToArray());
+            StrictFilters.ForEach(qnaMakerOptions.StrictFilters.Add);
 
             return Task.FromResult(qnaMakerOptions);
         }
@@ -584,8 +584,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             if (response.Answers.Any() && response.Answers.First().Score <= (ActiveLearningUtils.MaximumScoreForLowScoreVariation / 100))
             {
                 // Get filtered list of the response that support low score variation criteria.
-                response.SetAnswers(qnaClient.GetLowScoreVariation(response.Answers.ToArray()));
+                var filteredAnswers = qnaClient.GetLowScoreVariation(response.Answers.ToArray());
 
+                response.Answers.Clear();
+                filteredAnswers.ToList().ForEach(response.Answers.Add);
+                
                 if (response.Answers.Count > 1 && isActiveLearningEnabled)
                 {
                     var suggestedQuestions = new List<string>();

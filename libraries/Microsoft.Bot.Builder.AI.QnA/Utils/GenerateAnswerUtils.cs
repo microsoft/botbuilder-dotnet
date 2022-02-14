@@ -103,7 +103,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            results.SetAnswers(results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray());
+            var filteredResults = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+            
+            results.Answers.Clear();
+
+            filteredResults.ToList().ForEach(results.Answers.Add);
 
             return results;
         }
@@ -135,11 +139,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.Top)} property should be an integer greater than 0");
             }
 
-            if (options.StrictFilters == null)
-            {
-                options.SetStrictFilters(Array.Empty<Metadata>());
-            }
-
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
@@ -169,7 +168,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 if (queryOptions.StrictFilters?.Count > 0)
                 {
-                    hydratedOptions.SetStrictFilters(queryOptions.StrictFilters.ToArray());
+                    hydratedOptions.StrictFilters.Clear();
+                    queryOptions.StrictFilters.ToList().ForEach(hydratedOptions.StrictFilters.Add);
                 }
 
                 hydratedOptions.Context = queryOptions.Context;
@@ -221,8 +221,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 RankerType = options.RankerType
             };
 
-            traceInfo.SetQueryResults(result);
-            traceInfo.SetStrictFilters(options.StrictFilters.ToArray());
+            result.ToList().ForEach(traceInfo.QueryResults.Add);
+            options.StrictFilters.ToList().ForEach(traceInfo.StrictFilters.Add);
 
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

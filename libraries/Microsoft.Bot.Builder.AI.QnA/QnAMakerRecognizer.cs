@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 StrictFiltersJoinOperator = StrictFiltersJoinOperator
             };
             
-            qnaMakerOptions.SetStrictFilters(filters.ToArray());
+            filters.ForEach(qnaMakerOptions.StrictFilters.Add);
 
             var answers = await qnaClient.GetAnswersAsync(
                 dialogContext.Context,

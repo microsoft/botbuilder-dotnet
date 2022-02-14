@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Results that QnAMaker returned.
         /// </value>
         [JsonProperty("queryResults")]
-        public Collection<QueryResult> QueryResults { get; private set; }
+        public Collection<QueryResult> QueryResults { get; private set; } = new Collection<QueryResult>();
 
         /// <summary>
         /// Gets or sets iD of the Knowledgebase that is being used.
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The filters used to return answers that have the specified metadata.
         /// </value>        
         [JsonProperty("strictFilters")]
-        public Collection<Metadata> StrictFilters { get; private set; }
+        public Collection<Metadata> StrictFilters { get; private set; } = new Collection<Metadata>();
 
         /// <summary>
         /// Gets or sets context for multi-turn responses.
@@ -113,24 +113,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
-        public Collection<Metadata> MetadataBoost { get; private set; }
-
-        /// <summary>
-        /// Sets the results that QnAMaker returned.
-        /// </summary>
-        /// <param name="queryResults">The results that QnAMaker returned.</param>
-        public void SetQueryResults(QueryResult[] queryResults)
-        {
-            QueryResults = new Collection<QueryResult>(queryResults);
-        }
-
-        /// <summary>
-        /// Sets the filters used to return answers that have the specified metadata.
-        /// </summary>
-        /// <param name="filters">The filters used to return answers that have the specified metadata.</param>
-        public void SetStrictFilters(Metadata[] filters)
-        {
-            StrictFilters = new Collection<Metadata>(filters);
-        }
+        public Collection<Metadata> MetadataBoost { get; private set; } = new Collection<Metadata>();
     }
 }

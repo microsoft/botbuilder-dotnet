@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// An array of <see cref="Metadata"/>.
         /// </value>
         [JsonProperty("strictFilters")]
-        public Collection<Metadata> StrictFilters { get; private set; }
+        public Collection<Metadata> StrictFilters { get; private set; } = new Collection<Metadata>();
 
         /// <summary>
         /// Gets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
@@ -117,14 +117,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
-
-        /// <summary>
-        /// Sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to filter results. 
-        /// </summary>
-        /// <param name="filters">The <see cref="Metadata"/> collection to filter results.</param>
-        public void SetStrictFilters(Metadata[] filters)
-        {
-            StrictFilters = new Collection<Metadata>(filters);
-        }
     }
 }

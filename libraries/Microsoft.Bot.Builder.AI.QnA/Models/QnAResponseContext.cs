@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
@@ -19,6 +18,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The QnA prompts array.
         /// </value>
         [JsonProperty(PropertyName = "prompts")]
-        public Collection<QnaMakerPrompt> Prompts { get; private set; }
+        public Collection<QnaMakerPrompt> Prompts { get; private set; } = new Collection<QnaMakerPrompt>();
     }
 }

@@ -21,14 +21,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests.Models
                 Top = 1,
             };
 
-            qnaMakerTraceInfo.SetQueryResults(new[]
+            var result = new QueryResult()
             {
-                new QueryResult(new[] { "What's your name?" })
-                {
-                    Answer = "My name is Mike",
-                    Score = 0.9F,
-                },
-            });
+                Answer = "My name is Mike",
+                Score = 0.9F,
+            };
+
+            result.Questions.Add("What's your name?");
+
+            qnaMakerTraceInfo.QueryResults.Add(result);
 
             var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
             var serialized = JsonConvert.SerializeObject(qnaMakerTraceInfo, serializerSettings);

@@ -367,9 +367,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 Top = 1,
             };
 
-            options.SetStrictFilters(new Metadata[]
+            options.StrictFilters.Add(new Metadata()
             {
-                new Metadata() { Name = "topic", Value = "value" },
+                Name = "topic",
+                Value = "value",
             });
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), options);
@@ -887,13 +888,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 Top = 30,
             };
 
-            oneFilteredOption.SetStrictFilters(new Metadata[]
+            oneFilteredOption.StrictFilters.Add(new Metadata
             {
-                new Metadata
-                {
-                    Name = "movie",
-                    Value = "disney",
-                },
+                Name = "movie",
+                Value = "disney",
             });
 
             var twoStrictFiltersOptions = new QnAMakerOptions
@@ -901,18 +899,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 Top = 30,
             };
 
-            twoStrictFiltersOptions.SetStrictFilters(new Metadata[]
+            twoStrictFiltersOptions.StrictFilters.Add(new Metadata()
             {
-                new Metadata()
-                {
-                    Name = "movie",
-                    Value = "disney",
-                },
-                new Metadata()
-                {
-                    Name = "home",
-                    Value = "floating",
-                },
+                Name = "movie",
+                Value = "disney",
+            });
+            twoStrictFiltersOptions.StrictFilters.Add(new Metadata()
+            {
+                Name = "home",
+                Value = "floating",
             });
 
             var allChangedRequestOptions = new QnAMakerOptions
@@ -921,13 +916,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 ScoreThreshold = 0.42F,
             };
 
-            allChangedRequestOptions.SetStrictFilters(new Metadata[]
+            allChangedRequestOptions.StrictFilters.Add(new Metadata()
             {
-                new Metadata()
-                {
-                    Name = "dog",
-                    Value = "samoyed",
-                },
+                Name = "dog",
+                Value = "samoyed",
             });
 
             var context = GetContext("up");
@@ -982,18 +974,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 StrictFiltersJoinOperator = JoinOperator.OR
             };
 
-            oneFilteredOption.SetStrictFilters(new Metadata[]
+            oneFilteredOption.StrictFilters.Add(new Metadata()
             {
-                new Metadata()
-                {
-                    Name = "movie",
-                    Value = "disney",
-                },
-                new Metadata()
-                {
-                    Name = "production",
-                    Value = "Walden",
-                },
+                Name = "movie",
+                Value = "disney",
+            });
+            oneFilteredOption.StrictFilters.Add(new Metadata()
+            {
+                Name = "production",
+                Value = "Walden",
             });
 
             var qna = GetQnAMaker(
