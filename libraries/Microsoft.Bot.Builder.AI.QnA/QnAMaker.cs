@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (string.IsNullOrEmpty(turnContext.Activity.Text))
             {
-                throw new ArgumentException("Null or empty text");
+                throw new ArgumentException("Question cannot be null or empty text");
             }
 
             QueryResults results;
