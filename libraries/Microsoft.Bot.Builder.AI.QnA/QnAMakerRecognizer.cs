@@ -179,7 +179,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             var recognizerResult = new RecognizerResult
             {
                 Text = activity.Text,
-                Intents = new Dictionary<string, IntentScore>(),
             };
 
             if (string.IsNullOrEmpty(activity.Text))

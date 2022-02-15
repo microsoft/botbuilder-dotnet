@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
             {
                 var result = new RecognizerResult();
-                result.Entities = JObject.Parse("{ 'number': ['12'] }");
+                result.Entities.Merge(JObject.Parse("{ 'number': ['12'] }"));
                 return Task.FromResult(result);
             }
         }

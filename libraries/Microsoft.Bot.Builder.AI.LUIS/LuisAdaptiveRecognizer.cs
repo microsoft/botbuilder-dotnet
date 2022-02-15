@@ -126,25 +126,25 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public LuisRecognizerOptionsV3 RecognizerOptions()
         {
             AI.LuisV3.LuisPredictionOptions options = new LuisV3.LuisPredictionOptions();
-            if (this.PredictionOptions != null)
+            if (PredictionOptions != null)
             {
-                options = new LuisV3.LuisPredictionOptions(this.PredictionOptions);
+                options = new LuisV3.LuisPredictionOptions(PredictionOptions);
             }
-            else if (this.Options != null)
+            else if (Options != null)
             {
-                options.DateTimeReference = this.Options.DateTimeReference;
-                options.ExternalEntities = this.Options.ExternalEntities;
-                options.IncludeAllIntents = this.Options.IncludeAllIntents;
-                options.IncludeInstanceData = this.Options.IncludeInstanceData;
-                options.IncludeAPIResults = this.Options.IncludeAPIResults;
-                options.Log = this.Options.Log;
-                options.PreferExternalEntities = this.Options.PreferExternalEntities;
-                options.Slot = this.Options.Slot;
+                options.DateTimeReference = Options.DateTimeReference;
+                ((List<LuisV3.ExternalEntity>)options.ExternalEntities).AddRange(Options.ExternalEntities);
+                options.IncludeAllIntents = Options.IncludeAllIntents;
+                options.IncludeInstanceData = Options.IncludeInstanceData;
+                options.IncludeAPIResults = Options.IncludeAPIResults;
+                options.Log = Options.Log;
+                options.PreferExternalEntities = Options.PreferExternalEntities;
+                options.Slot = Options.Slot;
             }
 
-            if (this.Version != null)
+            if (Version != null)
             {
-                options.Version = this.Version;
+                options.Version = Version;
             }
 
             if (DynamicLists != null)
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     list.Add(new AI.LuisV3.DynamicList(listEntity.Entity, listEntity.List));
                 }
 
-                options.DynamicLists = list;
+                ((List<LuisV3.DynamicList>)options.DynamicLists).AddRange(list);
             }
 
             var application = new LuisApplication(ApplicationId, EndpointKey, Endpoint);
