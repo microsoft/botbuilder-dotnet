@@ -5,7 +5,7 @@
     <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1</TargetFrameworks>
     <!-- Next line suppresses error NETSDK1073: The FrameworkReference 'Microsoft.WindowsDesktop.App.WindowsForms' was not recognized -->
     <!-- Specific to building target netcoreapp3.1 using "dotnet build" in .NET 5.0 on the Mac. -->
-    <!-- <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks> -->
+    <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release;</Configurations>
   </PropertyGroup>

@@ -21,12 +21,6 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: restore
-    projects: Microsoft.Bot.Builder.sln
-
-- task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
