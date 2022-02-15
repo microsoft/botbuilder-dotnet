@@ -483,10 +483,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             await storage.WriteAsync(changes, CancellationToken.None);
 
-#if NETCOREAPP2_1
-            // Should throw DocumentClientException: Cross partition query is required but disabled
-            await Assert.ThrowsAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
-#else // required by NETCOREAPP3_0 (have only tested NETCOREAPP2_1 and NETCOREAPP3_0)
             var badRequestExceptionThrown = false;
             try
             {
@@ -501,7 +497,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             // TODO: netcoreapp3.0 throws Microsoft.Azure.Documents.BadRequestException which derives from DocumentClientException, but it is internal
             //await Assert.ThrowsAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
-#endif
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!

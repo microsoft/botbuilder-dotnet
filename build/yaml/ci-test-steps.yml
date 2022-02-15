@@ -28,24 +28,11 @@ steps:
     customCommand: 'install -g @microsoft/botframework-cli@next'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet test (release) 2.1'
-  inputs:
-    command: test
-    projects: |
-     Tests/**/*Tests.csproj
-     !Tests/**/Microsoft.Bot.Builder.TestBot.Tests.csproj
-     !Tests/**/Microsoft.Bot.Builder.AI.Orchestrator.Tests.csproj
-     
-    arguments: '-v n  -f netcoreapp2.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
-
-- task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 3.1'
   inputs:
     command: test
     projects: |
      Tests/**/*Tests.csproj
-     !Tests/**/*21.Tests.csproj
 
     arguments: '-v n  -f netcoreapp3.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
