@@ -20,11 +20,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 5.0.405'
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
   inputs:
-    version: 5.0.405
-    vsVersion: 16.11.10
+    command: restore
+    projects: Microsoft.Bot.Builder.sln
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
