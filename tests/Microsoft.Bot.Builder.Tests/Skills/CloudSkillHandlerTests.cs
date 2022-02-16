@@ -318,8 +318,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             private Mock<BotFrameworkAuthentication> CreateMockBotFrameworkAuthentication()
             {
                 var auth = new Mock<BotFrameworkAuthentication>();
-                auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), false, It.IsAny<CancellationToken>()))
-                    .Returns<string, CancellationToken>((authHeader, cancellationToken) =>
+                auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                    .Returns<string, bool, CancellationToken>((authHeader, isSkillCallback, cancellationToken) =>
                     {
                         var claimsIdentity = new ClaimsIdentity();
 
