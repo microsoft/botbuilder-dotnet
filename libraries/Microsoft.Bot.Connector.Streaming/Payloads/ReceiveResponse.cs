@@ -20,13 +20,11 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
         public int StatusCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of <see cref="IContentStream"/>s contained within this response.
+        /// Gets the collection of <see cref="IContentStream"/>s contained within this response.
         /// </summary>
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="IContentStream"/> containing information on streams attached to this response.
         /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public List<IContentStream> Streams { get; set; } = new List<IContentStream>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        public List<IContentStream> Streams { get; private set; } = new List<IContentStream>();
     }
 }

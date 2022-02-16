@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 StatusCode = response.StatusCode,
             };
 
-            if (response.Streams != null)
+            if (response.Streams.Any())
             {
                 payload.Streams = new List<StreamDescription>();
                 foreach (var contentStream in response.Streams)
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
             await _sender.SendResponseAsync(header.Id, payload, cancellationToken).ConfigureAwait(false);
 
-            if (response.Streams != null)
+            if (response.Streams.Any())
             {
                 foreach (var stream in response.Streams)
                 {
@@ -401,7 +401,6 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                         {
                             Verb = requestPayload.Verb,
                             Path = requestPayload.Path,
-                            Streams = new List<IContentStream>(),
                         };
 
                         CreatePlaceholderStreams(header, request.Streams, requestPayload.Streams);
@@ -415,7 +414,6 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                         var response = new ReceiveResponse()
                         {
                             StatusCode = responsePayload.StatusCode,
-                            Streams = new List<IContentStream>(),
                         };
 
                         CreatePlaceholderStreams(header, response.Streams, responsePayload.Streams);

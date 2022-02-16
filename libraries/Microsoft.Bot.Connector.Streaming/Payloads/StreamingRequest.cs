@@ -51,14 +51,12 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
         public string Path { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of stream attachments included in this request.
+        /// Gets the collection of stream attachments included in this request.
         /// </summary>
         /// <value>
         /// A <see cref="List{T}"/> of <see cref="ResponseMessageStream"/> items associated with this request.
         /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public List<ResponseMessageStream> Streams { get; set; } = new List<ResponseMessageStream>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        public List<ResponseMessageStream> Streams { get; private set; } = new List<ResponseMessageStream>();
 
         /// <summary>
         /// Creates a <see cref="StreamingRequest"/> to get resources hosted on a remote server.

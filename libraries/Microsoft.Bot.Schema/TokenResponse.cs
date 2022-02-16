@@ -26,12 +26,14 @@ namespace Microsoft.Bot.Schema
         /// <param name="connectionName">The connection name.</param>
         /// <param name="token">The token.</param>
         /// <param name="expiration">The expiration.</param>
-        public TokenResponse(string channelId = default, string connectionName = default, string token = default, string expiration = default)
+        /// <param name="properties">The properties.</param>
+        public TokenResponse(string channelId = default, string connectionName = default, string token = default, string expiration = default, JObject properties = default)
         {
             ChannelId = channelId;
             ConnectionName = connectionName;
             Token = token;
             Expiration = expiration;
+            Properties = properties;
             CustomInit();
         }
 
@@ -62,15 +64,13 @@ namespace Microsoft.Bot.Schema
         /// <value>The expiration.</value>
         [JsonProperty(PropertyName = "expiration")]
         public string Expiration { get; set; }
-        
+
         /// <summary>
-        /// Gets or sets extra propreties.
+        /// Gets extra properties.
         /// </summary>
         /// <value>The extra properties.</value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public JObject Properties { get; set; } = new JObject();
-#pragma warning restore CA2227 // Collection properties should be read only
+        public JObject Properties { get; private set; } = new JObject();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
