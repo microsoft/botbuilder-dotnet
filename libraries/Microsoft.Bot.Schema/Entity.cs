@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets properties that are not otherwise defined by the <see cref="Entity"/> type but that
+        /// Gets properties that are not otherwise defined by the <see cref="Entity"/> type but that
         /// might appear in the REST JSON object.
         /// </summary>
         /// <value>The extended properties for the object.</value>
@@ -40,9 +40,7 @@ namespace Microsoft.Bot.Schema
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public JObject Properties { get; set; } = new JObject();
-#pragma warning restore CA2227 // Collection properties should be read only
+        public JObject Properties { get; private set; } = new JObject();
 
         /// <summary>
         /// Retrieve internal payload.
