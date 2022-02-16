@@ -48,8 +48,8 @@ namespace Microsoft.Bot.Schema
             Subtitle = subtitle;
             Text = text;
             Image = image;
-            Media = media;
-            Buttons = buttons;
+            Media = media ?? new List<MediaUrl>();
+            Buttons = buttons ?? new List<CardAction>();
             Shareable = shareable;
             Autoloop = autoloop;
             Autostart = autostart;
@@ -88,24 +88,20 @@ namespace Microsoft.Bot.Schema
         public ThumbnailUrl Image { get; set; }
 
         /// <summary>
-        /// Gets or sets media URLs for this card. When this field contains
+        /// Gets media URLs for this card. When this field contains
         /// more than one URL, each URL is an alternative format of the same
         /// content.
         /// </summary>
         /// <value>The media URLs for this card.</value>
         [JsonProperty(PropertyName = "media")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<MediaUrl> Media { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MediaUrl> Media { get; private set; } = new List<MediaUrl>();
 
         /// <summary>
-        /// Gets or sets actions on this card.
+        /// Gets actions on this card.
         /// </summary>
         /// <value>The actions of this card.</value>
         [JsonProperty(PropertyName = "buttons")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<CardAction> Buttons { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// Gets or sets this content may be shared with others (default:true).

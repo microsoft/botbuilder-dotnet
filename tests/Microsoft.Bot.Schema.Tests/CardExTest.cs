@@ -24,8 +24,8 @@ namespace Microsoft.Bot.Schema.Tests
                 Title = "Hero Card Title",
                 Subtitle = "Hero Card Subtitle",
                 Text = "Testing Text.",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") },
             };
+            heroCard.Buttons.Add(new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework"));
 
             attachments.Add(heroCard.ToAttachment());
 
@@ -40,13 +40,13 @@ namespace Microsoft.Bot.Schema.Tests
         public void ThumbnailCardToAttachmentTest()
         {
             var attachments = new List<Attachment>();
+            var buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") };
 
-            var thumbnailCard = new ThumbnailCard
+            var thumbnailCard = new ThumbnailCard(buttons: buttons)
             {
                 Title = "Thumbnail Card Title",
                 Subtitle = "Thumbnail Card Subtitle",
                 Text = "Testing Text.",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") },
             };
 
             attachments.Add(thumbnailCard.ToAttachment());
@@ -62,11 +62,11 @@ namespace Microsoft.Bot.Schema.Tests
         public void SigninCardToAttachmentTest()
         {
             var attachments = new List<Attachment>();
+            var buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Sign-in", value: "https://login.microsoftonline.com/") };
 
-            var signinCard = new SigninCard
+            var signinCard = new SigninCard(buttons: buttons)
             {
                 Text = "Testing Text.",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Sign-in", value: "https://login.microsoftonline.com/") },
             };
 
             attachments.Add(signinCard.ToAttachment());
@@ -82,34 +82,34 @@ namespace Microsoft.Bot.Schema.Tests
         public void ReceiptCardToAttachmentTest()
         {
             var attachments = new List<Attachment>();
+            var facts = new List<Fact> { new Fact("Order Number", "1234"), new Fact("Payment Method", "VISA 5555-****") };
+            var items = new List<ReceiptItem>
+            {
+                new ReceiptItem(
+                    "Data Transfer",
+                    price: "$ 38.45",
+                    quantity: "368",
+                    image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png")),
+                new ReceiptItem(
+                    "App Service",
+                    price: "$ 45.00",
+                    quantity: "720",
+                    image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png")),
+            };
+            var buttons = new List<CardAction>
+            {
+                new CardAction(
+                    ActionTypes.OpenUrl,
+                    "More information",
+                    "https://account.windowsazure.com/content/6.10.1.38-.8225.160809-1618/aux-pre/images/offer-icon-freetrial.png",
+                    value: "https://azure.microsoft.com/en-us/pricing/"),
+            };
 
-            var receiptCard = new ReceiptCard
+            var receiptCard = new ReceiptCard(facts: facts, items: items, buttons: buttons)
             {
                 Title = "John Doe",
-                Facts = new List<Fact> { new Fact("Order Number", "1234"), new Fact("Payment Method", "VISA 5555-****") },
-                Items = new List<ReceiptItem>
-                {
-                    new ReceiptItem(
-                        "Data Transfer",
-                        price: "$ 38.45",
-                        quantity: "368",
-                        image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/traffic-manager.png")),
-                    new ReceiptItem(
-                        "App Service",
-                        price: "$ 45.00",
-                        quantity: "720",
-                        image: new CardImage(url: "https://github.com/amido/azure-vector-icons/raw/master/renders/cloud-service.png")),
-                },
                 Tax = "$ 7.50",
                 Total = "$ 90.95",
-                Buttons = new List<CardAction>
-                {
-                    new CardAction(
-                        ActionTypes.OpenUrl,
-                        "More information",
-                        "https://account.windowsazure.com/content/6.10.1.38-.8225.160809-1618/aux-pre/images/offer-icon-freetrial.png",
-                        value: "https://azure.microsoft.com/en-us/pricing/"),
-                },
             };
 
             attachments.Add(receiptCard.ToAttachment());
@@ -134,24 +134,18 @@ namespace Microsoft.Bot.Schema.Tests
                 Image = new ThumbnailUrl
                 {
                     Url = "https://upload.wikimedia.org/wikipedia/en/3/3c/SW_-_Empire_Strikes_Back.jpg",
-                },
-                Media = new List<MediaUrl>
-                {
-                    new MediaUrl()
-                    {
-                        Url = "http://www.wavlist.com/movies/004/father.wav",
-                    },
-                },
-                Buttons = new List<CardAction>
-                {
-                    new CardAction()
-                    {
-                        Title = "Read More",
-                        Type = ActionTypes.OpenUrl,
-                        Value = "https://en.wikipedia.org/wiki/The_Empire_Strikes_Back",
-                    },
-                },
+                }
             };
+            audioCard.Media.Add(new MediaUrl()
+            {
+                Url = "http://www.wavlist.com/movies/004/father.wav",
+            });
+            audioCard.Buttons.Add(new CardAction()
+            {
+                Title = "Read More",
+                Type = ActionTypes.OpenUrl,
+                Value = "https://en.wikipedia.org/wiki/The_Empire_Strikes_Back",
+            });
 
             attachments.Add(audioCard.ToAttachment());
 
@@ -166,8 +160,24 @@ namespace Microsoft.Bot.Schema.Tests
         public void VideoCardToAttachmentTest()
         {
             var attachments = new List<Attachment>();
+            var media = new List<MediaUrl>
+            {
+                new MediaUrl()
+                {
+                    Url = "http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
+                },
+            };
+            var buttons = new List<CardAction>
+            {
+                new CardAction()
+                {
+                    Title = "Learn More",
+                    Type = ActionTypes.OpenUrl,
+                    Value = "https://peach.blender.org/",
+                },
+            };
 
-            var videoCard = new VideoCard
+            var videoCard = new VideoCard(media: media, buttons: buttons)
             {
                 Title = "Audio Card Title",
                 Subtitle = "Audio Card Subtitle",
@@ -175,23 +185,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Image = new ThumbnailUrl
                 {
                     Url = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/220px-Big_buck_bunny_poster_big.jpg",
-                },
-                Media = new List<MediaUrl>
-                {
-                    new MediaUrl()
-                    {
-                        Url = "http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
-                    },
-                },
-                Buttons = new List<CardAction>
-                {
-                    new CardAction()
-                    {
-                        Title = "Learn More",
-                        Type = ActionTypes.OpenUrl,
-                        Value = "https://peach.blender.org/",
-                    },
-                },
+                }
             };
 
             attachments.Add(videoCard.ToAttachment());
@@ -215,15 +209,12 @@ namespace Microsoft.Bot.Schema.Tests
                 Image = new ThumbnailUrl
                 {
                     Url = "https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png",
-                },
-                Media = new List<MediaUrl>
-                {
-                    new MediaUrl()
-                    {
-                        Url = "http://i.giphy.com/Ki55RUbOV5njy.gif",
-                    },
-                },
+                }
             };
+            animationCard.Media.Add(new MediaUrl()
+            {
+                Url = "http://i.giphy.com/Ki55RUbOV5njy.gif",
+            });
 
             attachments.Add(animationCard.ToAttachment());
 
@@ -238,12 +229,12 @@ namespace Microsoft.Bot.Schema.Tests
         public void OAuthCardToAttachmentTest()
         {
             var attachments = new List<Attachment>();
+            var buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Login", value: "https://login.microsoftonline.com/") };
 
-            var oauthCard = new OAuthCard
+            var oauthCard = new OAuthCard(buttons: buttons)
             {
                 Text = "Please, sign in",
-                ConnectionName = "testConnection",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Login", value: "https://login.microsoftonline.com/") },
+                ConnectionName = "testConnection"
             };
 
             attachments.Add(oauthCard.ToAttachment());
