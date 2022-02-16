@@ -14,10 +14,8 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         [ClassData(typeof(TabResponseCardsTestData))]
         public void TabResponseCardsInits(IList<TabResponseCard> cards)
         {
-            var responseCards = new TabResponseCards()
-            {
-                Cards = cards
-            };
+            var responseCards = new TabResponseCards();
+            ((List<TabResponseCard>)responseCards.Cards).AddRange(cards);
 
             Assert.NotNull(responseCards);
             Assert.IsType<TabResponseCards>(responseCards);

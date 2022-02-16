@@ -20,15 +20,13 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets actions for a card tab response.
+        /// Gets actions for a card tab response.
         /// </summary>
         /// <value>
         /// Actions for this <see cref="TabSuggestedActions"/>.
         /// </value>
         [JsonProperty(PropertyName = "actions")]
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IList<CardAction> Actions { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardAction> Actions { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

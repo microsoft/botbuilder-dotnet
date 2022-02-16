@@ -37,8 +37,8 @@ namespace Microsoft.Bot.Schema.Teams
             Text = text;
             Summary = summary;
             ThemeColor = themeColor;
-            Sections = sections;
-            PotentialAction = potentialAction;
+            Sections = sections ?? new List<O365ConnectorCardSection>();
+            PotentialAction = potentialAction ?? new List<O365ConnectorCardActionBase>();
             CustomInit();
         }
 
@@ -71,22 +71,18 @@ namespace Microsoft.Bot.Schema.Teams
         public string ThemeColor { get; set; }
 
         /// <summary>
-        /// Gets or sets set of sections for the current card.
+        /// Gets set of sections for the current card.
         /// </summary>
         /// <value>The sections for the current card.</value>
         [JsonProperty(PropertyName = "sections")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<O365ConnectorCardSection> Sections { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<O365ConnectorCardSection> Sections { get; private set; } = new List<O365ConnectorCardSection>();
 
         /// <summary>
-        /// Gets or sets set of actions for the current card.
+        /// Gets set of actions for the current card.
         /// </summary>
         /// <value>The actions for the current card.</value>
         [JsonProperty(PropertyName = "potentialAction")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<O365ConnectorCardActionBase> PotentialAction { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<O365ConnectorCardActionBase> PotentialAction { get; private set; } = new List<O365ConnectorCardActionBase>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

@@ -52,9 +52,9 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(default, messageActionPayload.From);
             Assert.Equal(default, messageActionPayload.Body);
             Assert.Equal(default, messageActionPayload.AttachmentLayout);
-            Assert.Equal(default, messageActionPayload.Attachments);
-            Assert.Equal(default, messageActionPayload.Mentions);
-            Assert.Equal(default, messageActionPayload.Reactions);
+            Assert.Equal(new List<MessageActionsPayloadAttachment>(), messageActionPayload.Attachments);
+            Assert.Equal(new List<MessageActionsPayloadMention>(), messageActionPayload.Mentions);
+            Assert.Equal(new List<MessageActionsPayloadReaction>(), messageActionPayload.Reactions);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         /// <returns>A MessageActionsPayload set with testing values.</returns>
         private MessageActionsPayload CreateActionPayload()
         {
-            return new MessageActionsPayload
+            return new MessageActionsPayload(attachments: _attachments, mentions: _mentions, reactions: _reactions)
             {
                 Id = _id,
                 ReplyToId = _replyId,
@@ -133,9 +133,6 @@ namespace Microsoft.Bot.Schema.Tests.Teams
                 From = _from,
                 Body = _body,
                 AttachmentLayout = _attachmentLayout,
-                Attachments = _attachments,
-                Mentions = _mentions,
-                Reactions = _reactions,
                 LinkToMessage = _linkToMessage
             };
         }

@@ -27,18 +27,16 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="conversations">The IList of conversations.</param>
         public ConversationList(IList<ChannelInfo> conversations = default)
         {
-            Conversations = conversations;
+            Conversations = conversations ?? new List<ChannelInfo>();
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets the conversations.
+        /// Gets the conversations.
         /// </summary>
         /// <value>The conversations.</value>
         [JsonProperty(PropertyName = "conversations")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
-        public IList<ChannelInfo> Conversations { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ChannelInfo> Conversations { get; private set; } = new List<ChannelInfo>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

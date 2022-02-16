@@ -23,20 +23,18 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the <see cref="MessagingExtensionSuggestedAction"/> class.
         /// </summary>
         /// <param name="actions">Actions.</param>
-        public MessagingExtensionSuggestedAction(IList<CardAction> actions = default(IList<CardAction>))
+        public MessagingExtensionSuggestedAction(IList<CardAction> actions = default)
         {
-            Actions = actions;
+            Actions = actions ?? new List<CardAction>();
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets actions.
+        /// Gets actions.
         /// </summary>
         /// <value>The actions.</value>
         [JsonProperty(PropertyName = "actions")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<CardAction> Actions { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardAction> Actions { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
