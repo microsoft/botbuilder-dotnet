@@ -393,11 +393,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 instance.State[PersistedDialogState] = state;
             }
 
-            if (state.DialogStack == null)
-            {
-                state.DialogStack = new List<DialogInstance>();
-            }
-
             return state;
         }
 

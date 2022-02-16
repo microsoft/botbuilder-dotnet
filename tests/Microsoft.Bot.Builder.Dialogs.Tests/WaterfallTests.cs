@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -377,17 +378,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 trackEventCalled = true;
             });
 
+            var dialogInstance = new DialogInstance()
+            {
+                Id = id,
+            };
+            var states = new Dictionary<string, object>
+            {
+                { "stepIndex", index },
+                { "instanceId", "(guid)" },
+            };
+            states.ToList().ForEach(dialogInstance.State.Add);
+
             await dialog.EndDialogAsync(
                 new TurnContext(new TestAdapter(), new Activity()),
-                new DialogInstance
-                {
-                    Id = id,
-                    State = new Dictionary<string, object>
-                    {
-                        { "stepIndex", index },
-                        { "instanceId", "(guid)" },
-                    }
-                },
+                dialogInstance,
                 DialogReason.CancelCalled);
 
             Assert.True(trackEventCalled, "TrackEvent was never called.");
