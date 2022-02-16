@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema
         public ConversationsResult(string continuationToken = default, IList<ConversationMembers> conversations = default)
         {
             ContinuationToken = continuationToken;
-            Conversations = conversations;
+            Conversations = conversations ?? new List<ConversationMembers>();
             CustomInit();
         }
 
@@ -34,12 +34,10 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "continuationToken")]
         public string ContinuationToken { get; set; }
 
-        /// <summary>Gets or sets list of conversations.</summary>
+        /// <summary>Gets list of conversations.</summary>
         /// <value>A list of conversations.</value>
         [JsonProperty(PropertyName = "conversations")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<ConversationMembers> Conversations { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ConversationMembers> Conversations { get; private set; } = new List<ConversationMembers>();
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
         partial void CustomInit();

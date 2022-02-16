@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         {
             IsGroup = isGroup;
             Bot = bot;
-            Members = members;
+            Members = members ?? new List<ChannelAccount>();
             TopicName = topicName;
             Activity = activity;
             ChannelData = channelData;
@@ -45,12 +45,10 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "bot")]
         public ChannelAccount Bot { get; set; }
 
-        /// <summary>Gets or sets members to add to the conversation.</summary>
+        /// <summary>Gets members to add to the conversation.</summary>
         /// <value>The members added to the conversation.</value>
         [JsonProperty(PropertyName = "members")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<ChannelAccount> Members { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ChannelAccount> Members { get; private set; } = new List<ChannelAccount>();
 
         /// <summary>Gets or sets (Optional) Topic of the conversation (if supported by the channel).</summary>
         /// <value>The topic of the conversation.</value>
