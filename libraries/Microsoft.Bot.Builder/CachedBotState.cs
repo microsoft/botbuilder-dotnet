@@ -14,10 +14,20 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedBotState"/> class.
         /// </summary>
-        /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
-        public CachedBotState(IDictionary<string, object> state = null)
+        /// <param name="state">Initial state dictionary to use for this <see cref="CachedBotState"/>.</param>
+        public CachedBotState(IDictionary<string, object> state)
         {
-            State = state ?? new Dictionary<string, object>();
+            State = new CachedBotStateDictionary(state);
+            Hash = ComputeHash(State);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedBotState"/> class.
+        /// </summary>
+        /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
+        public CachedBotState(CachedBotStateDictionary state = null)
+        {
+            State = state ?? new CachedBotStateDictionary();
             Hash = ComputeHash(State);
         }
 
@@ -27,7 +37,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The state as a dictionary of key value pairs.
         /// </value>
-        public IDictionary<string, object> State { get; }
+        public CachedBotStateDictionary State { get; }
 
         internal string Hash { get; set; }
 

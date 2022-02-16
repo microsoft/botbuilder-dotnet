@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var instance = new DialogInstance
                 {
                     Id = dialogId,
-                    State = new Dictionary<string, object>(),
+                    State = new CachedBotStateDictionary(),
                 };
 
                 Stack.Insert(0, instance);

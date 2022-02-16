@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Azure;
-using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
@@ -30,11 +29,9 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
     /// </remarks>
     public class BlobsStorage : IStorage
     {
-        // If a JsonSerializer is not provided during construction, this will be the default JsonSerializer.
-        private readonly JsonSerializer _jsonSerializer;
+        private readonly BlobsStorageOptions _options;
         private readonly BlobContainerClient _containerClient;
         private int _checkForContainerExistence;
-        private readonly StorageTransferOptions _storageTransferOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
@@ -47,44 +44,27 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
         public BlobsStorage(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
-            : this(dataConnectionString, containerName, default, jsonSerializer)
+            : this(new BlobsStorageOptions(dataConnectionString, containerName, default, jsonSerializer))
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
         /// </summary>
-        /// <param name="dataConnectionString">Azure Storage connection string.</param>
-        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
-        /// /// <param name="storageTransferOptions">Used for providing options for parallel transfers <see cref="StorageTransferOptions"/>.</param>
-        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
-        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
-        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
-        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// </param>
-        public BlobsStorage(string dataConnectionString, string containerName, StorageTransferOptions storageTransferOptions, JsonSerializer jsonSerializer = null)
+        /// <param name="options"><see cref="BlobsStorageOptions"/> to use for this <see cref="BlobsStorage"/>.</param>
+        public BlobsStorage(BlobsStorageOptions options)
         {
-            if (string.IsNullOrEmpty(dataConnectionString))
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(dataConnectionString));
+                throw new ArgumentNullException(nameof(options));
             }
-
-            if (string.IsNullOrEmpty(containerName))
-            {
-                throw new ArgumentNullException(nameof(containerName));
-            }
-
-            _storageTransferOptions = storageTransferOptions;
-
-            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
-                                                {
-                                                    TypeNameHandling = TypeNameHandling.None,
-                                                });
+            
+            _options = options;
 
             // Triggers a check for the existence of the container
             _checkForContainerExistence = 1;
 
-            _containerClient = new BlobContainerClient(dataConnectionString, containerName);
+            _containerClient = new BlobContainerClient(options.DataConnectionString, options.ContainerName);
         }
 
         /// <summary>
@@ -179,24 +159,31 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 var newValue = keyValuePair.Value;
 
-                string eTag = StorageExtensions.GetETagOrNull(newValue);
-
+                string eTag = _options.EnforceEtag ? StorageExtensions.GetETagOrNull(newValue) : eTag = "*";
+                
+                // Empty string etag is not allowed, for consistency among IStorage implementations
+                if (_options.EnforceEtag && eTag?.Length == 0)
+                {
+                    throw new ArgumentException("etag empty");
+                }
+                
                 // "*" eTag in IStoreItem converts to null condition for AccessCondition
                 var accessCondition = (!string.IsNullOrEmpty(eTag) && eTag != "*")
                     ? new BlobRequestConditions() { IfMatch = new ETag(eTag) }
                     : null;
-
+               
                 var blobName = GetBlobName(keyValuePair.Key);
                 var blobReference = _containerClient.GetBlobClient(blobName);
+
                 try
                 {
                     using var memoryStream = new MemoryStream();
                     using var streamWriter = new StreamWriter(memoryStream);
-                    _jsonSerializer.Serialize(streamWriter, newValue);
+                    _options.JsonSerializer.Serialize(streamWriter, newValue);
                     await streamWriter.FlushAsync().ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
 
-                    await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _storageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _options.StorageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 catch (RequestFailedException ex)
                 when (ex.Status == (int)HttpStatusCode.BadRequest
@@ -230,7 +217,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     {
                         using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
                         {
-                            var obj = _jsonSerializer.Deserialize(jsonReader);
+                            var obj = _options.JsonSerializer.Deserialize(jsonReader);
 
                             if (obj is IStoreItem storeItem)
                             {

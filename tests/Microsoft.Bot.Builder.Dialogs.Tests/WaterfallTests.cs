@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 new DialogInstance
                 {
                     Id = id,
-                    State = new Dictionary<string, object>
+                    State = new CachedBotStateDictionary
                     {
                         { "stepIndex", index },
                         { "instanceId", "(guid)" },

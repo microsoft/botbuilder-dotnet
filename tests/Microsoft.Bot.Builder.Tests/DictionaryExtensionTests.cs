@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public void DictionaryCoercianTests()
         {
-            IDictionary<string, object> data = new Dictionary<string, object>()
+            var data = new CachedBotStateDictionary()
             {
                 { "str", "string" },
                 { "short", (short)16 },
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Tests
                 { "bar", new Bar() },
                 { "arr", new Foo[] { new Foo(), new Bar() } }
             };
-
+            
             Assert.Equal("string", data.MapValueTo<string>("str"));
             Assert.Equal(16, data.MapValueTo<short>("short"));
             Assert.Equal(16, data.MapValueTo<ushort>("ushort"));
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal(data.MapValueTo<Foo>("foo").GetHashCode(), data.MapValueTo<Foo>("foo").GetHashCode());
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.None };
-            data = JObject.FromObject(data, serializer).ToObject<IDictionary<string, object>>(serializer);
+            data = JObject.FromObject(data, serializer).ToObject<CachedBotStateDictionary>(serializer);
             Assert.IsType<JObject>(data["foo"]);
             Assert.IsType<JObject>(data["bar"]);
             Assert.IsType<JArray>(data["arr"]);

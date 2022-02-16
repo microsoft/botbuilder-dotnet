@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             WaterfallDialog parentWaterfall,
             DialogContext dc,
             object options,
-            IDictionary<string, object> values,
+            CachedBotStateDictionary values,
             int index,
             DialogReason reason,
             object result = null)
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// A dictionary of values which will be persisted across all waterfall steps.
         /// </value>
-        public IDictionary<string, object> Values { get; }
+        public CachedBotStateDictionary Values { get; }
 
         /// <summary>
         /// Skips to the next step of the waterfall.

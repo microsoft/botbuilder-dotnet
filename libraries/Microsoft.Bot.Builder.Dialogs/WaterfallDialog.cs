@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // Create step context
                 var options = state[PersistedOptions];
-                var values = state.MapValueTo<IDictionary<string, object>>(PersistedValues);
+                var values = state.MapValueTo<CachedBotStateDictionary>(PersistedValues);
                 var stepContext = new WaterfallStepContext(this, dc, options, values, index, reason, result);
 
                 // Execute step

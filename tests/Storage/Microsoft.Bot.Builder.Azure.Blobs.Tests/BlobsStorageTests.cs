@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                await TestTypedObjects(GetStorage(), expectTyped: true);
+                await TestTypedObjects(GetStorage(false), expectTyped: true);
             }
         }
 
@@ -101,10 +101,16 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
         {
             if (typeNameHandlingNone)
             {
-                return new BlobsStorage(ConnectionString, ContainerName, new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
-            }
+                var options = new BlobsStorageOptions(ConnectionString, ContainerName);
 
-            return new BlobsStorage(ConnectionString, ContainerName);
+                return new BlobsStorage(options);
+            }
+            else 
+            {
+                var options = new BlobsStorageOptions(ConnectionString, ContainerName, new JsonSerializer() { TypeNameHandling = TypeNameHandling.All });
+                
+                return new BlobsStorage(options);
+            }
         }
     }
 }

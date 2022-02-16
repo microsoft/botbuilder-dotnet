@@ -73,8 +73,8 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
         /// <summary>
         /// Gets or sets a value indicating whether or not to run in Compatibility Mode.
         /// Early versions of CosmosDb had a key length limit of 255.  Keys longer than this were
-        /// truncated in <see cref="CosmosDbKeyEscape"/>.  This remains the default behavior, but
-        /// can be overridden by setting CompatibilityMode to false.  This setting will also allow
+        /// truncated in <see cref="CosmosDbKeyEscape"/>.  This is no longer the default behavior, and
+        /// can be overridden by setting CompatibilityMode to true.  This setting will also allow
         /// for using older collections where no PartitionKey was specified.
         /// 
         /// Note: CompatibilityMode cannot be 'true' if KeySuffix is used.
@@ -84,6 +84,6 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
         /// https://docs.microsoft.com/en-us/azure/cosmos-db/concepts-limits#per-item-limits
         /// The default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
         /// </value>
-        public bool CompatibilityMode { get; set; } = true;
+        public bool CompatibilityMode { get; set; }
     }
 }
