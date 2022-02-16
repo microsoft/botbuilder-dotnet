@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
@@ -236,7 +237,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 //Note: this should also be analyzed once we start using HttpClientFactory.
 #pragma warning disable CA2000 // Dispose objects before losing scope
-                client = new HttpClient();
+                var handler = new HttpClientHandler();
+                if (handler.SupportsAutomaticDecompression)
+                {
+                    handler.AutomaticDecompression = DecompressionMethods.GZip |
+                                                     DecompressionMethods.Deflate;
+                }
+
+                client = new HttpClient(handler);
 #pragma warning restore CA2000 // Dispose objects before losing scope
             }
 
