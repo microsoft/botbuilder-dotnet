@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return _toChannelFromBotOAuthScope;
         }
 
-        public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
+        public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return new ClaimsIdentity(new List<Claim> { anonymousSkillClaim }, AuthenticationConstants.AnonymousAuthType);
             }
 
-            return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
+            return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, isSkillCallback, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, channelIdHeader, null, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, channelIdHeader, null, false, cancellationToken).ConfigureAwait(false);
 
             var outboundAudience = claimsIdentity.Claims.IsSkillClaim() ? claimsIdentity.Claims.GetAppIdFromClaims() : _toChannelFromBotOAuthScope;
 
@@ -204,30 +204,44 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             // Validate the header and extract claims.
-            var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, activity.ChannelId, activity.ServiceUrl, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, activity.ChannelId, activity.ServiceUrl, false, cancellationToken).ConfigureAwait(false);
             return claimsIdentity;
         }
 
-        private async Task<ClaimsIdentity> JwtTokenValidation_ValidateAuthHeaderAsync(string authHeader, string channelId, string serviceUrl, CancellationToken cancellationToken)
+        private async Task<ClaimsIdentity> JwtTokenValidation_ValidateAuthHeaderAsync(string authHeader, string channelId, string serviceUrl, bool isSkillCallback, CancellationToken cancellationToken)
         {
             var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, channelId, serviceUrl, cancellationToken).ConfigureAwait(false);
 
-            await JwtTokenValidation_ValidateClaimsAsync(identity.Claims).ConfigureAwait(false);
+            await JwtTokenValidation_ValidateClaimsAsync(identity.Claims, isSkillCallback).ConfigureAwait(false);
 
             return identity;
         }
 
-        private async Task JwtTokenValidation_ValidateClaimsAsync(IEnumerable<Claim> claims)
+        private async Task JwtTokenValidation_ValidateClaimsAsync(IEnumerable<Claim> claims, bool isSkillCallback = false)
         {
-            if (_authConfiguration.ClaimsValidator != null)
+            if (claims.IsSkillClaim())
             {
-                // Call the validation method if defined (it should throw an exception if the validation fails)
                 var claimsList = claims as IList<Claim> ?? claims.ToList();
-                await _authConfiguration.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
-            }
-            else if (claims.IsSkillClaim())
-            {
-                throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
+                if (isSkillCallback)
+                {
+                    if (_authConfiguration.SkillCallbackValidator != null)
+                    {
+                        await _authConfiguration.SkillCallbackValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        throw new UnauthorizedAccessException("SkillCallbackValidator is required for validation of callbacks from Skills to the host bot.");
+                    }
+                }
+                else if (_authConfiguration.ClaimsValidator != null)
+                {
+                    // Call the validation method if defined (it should throw an exception if the validation fails)
+                    await _authConfiguration.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
+                }
             }
         }
 

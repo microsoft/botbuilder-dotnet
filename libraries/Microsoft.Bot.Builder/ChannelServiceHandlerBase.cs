@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleSendToConversationAsync(string authHeader, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnSendToConversationAsync(claimsIdentity, conversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleReplyToActivityAsync(string authHeader, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, true, cancellationToken).ConfigureAwait(false);
             return await OnReplyToActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleUpdateActivityAsync(string authHeader, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnUpdateActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         public async Task HandleDeleteActivityAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             await OnDeleteActivityAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<IList<ChannelAccount>> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnGetActivityMembersAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ConversationResourceResponse> HandleCreateConversationAsync(string authHeader, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnCreateConversationAsync(claimsIdentity, parameters, cancellationToken).ConfigureAwait(false);
         }
 
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ConversationsResult> HandleGetConversationsAsync(string authHeader, string conversationId, string continuationToken = default, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnGetConversationsAsync(claimsIdentity, conversationId, continuationToken, cancellationToken).ConfigureAwait(false);
         }
 
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<IList<ChannelAccount>> HandleGetConversationMembersAsync(string authHeader, string conversationId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnGetConversationMembersAsync(claimsIdentity, conversationId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<PagedMembersResult> HandleGetConversationPagedMembersAsync(string authHeader, string conversationId, int? pageSize = default, string continuationToken = default, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnGetConversationPagedMembersAsync(claimsIdentity, conversationId, pageSize, continuationToken, cancellationToken).ConfigureAwait(false);
         }
 
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task HandleDeleteConversationMemberAsync(string authHeader, string conversationId, string memberId, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             await OnDeleteConversationMemberAsync(claimsIdentity, conversationId, memberId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleSendConversationHistoryAsync(string authHeader, string conversationId, Transcript transcript, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnSendConversationHistoryAsync(claimsIdentity, conversationId, transcript, cancellationToken).ConfigureAwait(false);
         }
 
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleUploadAttachmentAsync(string authHeader, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default)
         {
-            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            var claimsIdentity = await AuthenticateAsync(authHeader, false, cancellationToken).ConfigureAwait(false);
             return await OnUploadAttachmentAsync(claimsIdentity, conversationId, attachmentUpload, cancellationToken).ConfigureAwait(false);
         }
 
@@ -190,9 +190,10 @@ namespace Microsoft.Bot.Builder
         /// Helper to authenticate the header token and extract the claims.
         /// </summary>
         /// <param name="authHeader">The auth header containing JWT token.</param>
+        /// <param name="isSkillCallback">Is this a callback from a skill.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="ClaimsIdentity"/> representing the claims associated with given header.</returns>
-        internal abstract Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken);
+        internal abstract Task<ClaimsIdentity> AuthenticateAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken);
 
         /// <summary>
         /// SendToConversation() API for Skill.

@@ -34,6 +34,14 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual ClaimsValidator ClaimsValidator { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets an <see cref="ClaimsValidator"/> instance used to validate the identity claims.
+        /// </summary>
+        /// <value>
+        /// An <see cref="ClaimsValidator"/> instance used to validate the identity claims.
+        /// </value>
+        public virtual ClaimsValidator SkillCallbackValidator { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets a collection of valid JWT token issuers.
         /// </summary>
         /// <value>
