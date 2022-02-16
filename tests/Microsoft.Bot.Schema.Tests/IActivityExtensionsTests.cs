@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Schema.Tests
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Entities = entities,
             };
+            ((List<Entity>)message.Entities).AddRange(entities);
             var mentionsId = ActivityExtensions.MentionsId(message, "ChannelAccountId");
 
             Assert.Equal(expectsMention, mentionsId);
@@ -41,7 +41,6 @@ namespace Microsoft.Bot.Schema.Tests
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Entities = entities,
                 Recipient = new ChannelAccount
                 {
                     Id = "ChannelAccountId",
@@ -50,6 +49,7 @@ namespace Microsoft.Bot.Schema.Tests
                     Role = "ChannelAccountRole",
                 }
             };
+            ((List<Entity>)message.Entities).AddRange(entities);
 
             var mentionsRecipient = ActivityExtensions.MentionsRecipient(message);
 

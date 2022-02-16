@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         {
             Name = name;
             Type = type;
-            Views = views;
+            Views = views ?? new List<AttachmentView>();
             CustomInit();
         }
 
@@ -37,12 +37,10 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
-        /// <summary>Gets or sets attachment views.</summary>
+        /// <summary>Gets attachment views.</summary>
         /// <value> The attachment views.</value>
         [JsonProperty(PropertyName = "views")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<AttachmentView> Views { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<AttachmentView> Views { get; private set; } = new List<AttachmentView>();
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
         partial void CustomInit();

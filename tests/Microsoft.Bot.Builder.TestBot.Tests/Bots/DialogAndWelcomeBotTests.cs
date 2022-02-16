@@ -27,12 +27,9 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
             var conversationUpdateActivity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "theUser" },
-                },
                 Recipient = new ChannelAccount { Id = "theBot" },
             };
+            conversationUpdateActivity.MembersAdded.Add(new ChannelAccount { Id = "theUser" });
             var testAdapter = new TestAdapter(Channels.Test);
 
             // Act

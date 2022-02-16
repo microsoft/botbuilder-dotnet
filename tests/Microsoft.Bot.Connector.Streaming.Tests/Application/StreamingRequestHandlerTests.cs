@@ -111,19 +111,17 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), new NamedPipeStreamingConnection(Guid.NewGuid().ToString(), null));
             var conversationId = Guid.NewGuid().ToString();
-            var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
                 Id = "123",
                 Name = "bot",
             };
-            membersAdded.Add(member);
             var activity = new Activity
             {
                 Type = "conversationUpdate",
-                MembersAdded = membersAdded,
                 Conversation = new ConversationAccount(null, null, conversationId),
             };
+            activity.MembersAdded.Add(member);
 
             var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
             var fakeContentStreamId = Guid.NewGuid();
@@ -184,19 +182,18 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), new NamedPipeStreamingConnection(Guid.NewGuid().ToString(), null));
             var conversationId = Guid.NewGuid().ToString();
-            var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
                 Id = "123",
                 Name = "bot",
             };
-            membersAdded.Add(member);
+
             var activity = new Activity
             {
                 Type = "conversationUpdate",
-                MembersAdded = membersAdded,
                 Conversation = new ConversationAccount(null, null, conversationId),
             };
+            activity.MembersAdded.Add(member);
 
             var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
             var fakeContentStreamId = Guid.NewGuid();
@@ -221,19 +218,18 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), new NamedPipeStreamingConnection(Guid.NewGuid().ToString(), null));
             var conversationId = Guid.NewGuid().ToString();
-            var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
                 Id = "123",
                 Name = "bot",
             };
-            membersAdded.Add(member);
             var activity = new Activity
             {
                 Type = "conversationUpdate",
-                MembersAdded = membersAdded,
+
                 Conversation = new ConversationAccount(null, null, conversationId),
             };
+            activity.MembersAdded.Add(member);
 
             var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
             var fakeContentStreamId = Guid.NewGuid();
@@ -260,20 +256,18 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
             var handler = new StreamingRequestHandler(new MockBot(), new FakeCloudAdapter(), new NamedPipeStreamingConnection(Guid.NewGuid().ToString(), null));
             var conversationId = Guid.NewGuid().ToString();
             const string serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
-            var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
                 Id = "123",
                 Name = "bot",
             };
-            membersAdded.Add(member);
             var activity = new Activity
             {
                 ServiceUrl = serviceUrl,
                 Type = "conversationUpdate",
-                MembersAdded = membersAdded,
                 Conversation = new ConversationAccount(null, null, conversationId),
             };
+            activity.MembersAdded.Add(member);
 
             var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
             var fakeContentStreamId = Guid.NewGuid();

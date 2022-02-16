@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -64,11 +65,14 @@ namespace Microsoft.Bot.Builder
                     // strip recipient mention tags and text.
                     activity.RemoveRecipientMention();
 
-                    if (activity.Entities != null)
+                    if (activity.Entities?.Count > 0)
                     {
                         // strip entity.mention records for recipient id.
-                        activity.Entities = activity.Entities.Where(entity => entity.Type == "mention" &&
+                        var filteredEntities = activity.Entities.Where(entity => entity.Type == "mention" &&
                            ((dynamic)entity.Properties["mentioned"]).id != activity.Recipient.Id).ToList();
+
+                        activity.Entities.Clear();
+                        ((List<Entity>)activity.Entities).AddRange(filteredEntities);
                     }
                 }
 

@@ -84,8 +84,6 @@ namespace Microsoft.Bot.Builder
             handoffEvent.Id = Guid.NewGuid().ToString();
             handoffEvent.Timestamp = DateTime.UtcNow;
             handoffEvent.Conversation = conversation;
-            handoffEvent.Attachments = new List<Attachment>();
-            handoffEvent.Entities = new List<Entity>();
             return handoffEvent;
         }
     }

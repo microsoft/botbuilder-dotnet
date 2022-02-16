@@ -45,7 +45,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
 
             // Create incoming activity with attachment.
-            var activityWithAttachment = new Activity { Type = ActivityTypes.Message, Attachments = new List<Attachment> { attachment } };
+            var activityWithAttachment = new Activity { Type = ActivityTypes.Message };
+            activityWithAttachment.Attachments.Add(attachment);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -90,7 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
 
             // Create incoming activity with attachment.
-            var activityWithAttachment = new Activity { Type = ActivityTypes.Message, Attachments = new List<Attachment> { attachment } };
+            var activityWithAttachment = new Activity { Type = ActivityTypes.Message };
+            activityWithAttachment.Attachments.Add(attachment);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

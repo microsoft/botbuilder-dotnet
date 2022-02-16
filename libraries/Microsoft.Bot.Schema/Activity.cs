@@ -135,10 +135,10 @@ namespace Microsoft.Bot.Schema
             Recipient = recipient;
             TextFormat = textFormat;
             AttachmentLayout = attachmentLayout;
-            MembersAdded = membersAdded;
-            MembersRemoved = membersRemoved;
-            ReactionsAdded = reactionsAdded;
-            ReactionsRemoved = reactionsRemoved;
+            MembersAdded = membersAdded ?? new List<ChannelAccount>();
+            MembersRemoved = membersRemoved ?? new List<ChannelAccount>();
+            ReactionsAdded = reactionsAdded ?? new List<MessageReaction>();
+            ReactionsRemoved = reactionsRemoved ?? new List<MessageReaction>();
             TopicName = topicName;
             HistoryDisclosed = historyDisclosed;
             Locale = locale;
@@ -147,8 +147,8 @@ namespace Microsoft.Bot.Schema
             InputHint = inputHint;
             Summary = summary;
             SuggestedActions = suggestedActions;
-            Attachments = attachments;
-            Entities = entities;
+            Attachments = attachments ?? new List<Attachment>();
+            Entities = entities ?? new List<Entity>();
             ChannelData = channelData;
             Action = action;
             ReplyToId = replyToId;
@@ -161,8 +161,8 @@ namespace Microsoft.Bot.Schema
             Expiration = expiration;
             Importance = importance;
             DeliveryMode = deliveryMode;
-            ListenFor = listenFor;
-            TextHighlights = textHighlights;
+            ListenFor = listenFor ?? new List<string>();
+            TextHighlights = textHighlights ?? new List<TextHighlight>();
             SemanticAction = semanticAction;
             CustomInit();
         }
@@ -291,50 +291,42 @@ namespace Microsoft.Bot.Schema
         public string AttachmentLayout { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of members added to the conversation.
+        /// Gets the collection of members added to the conversation.
         /// </summary>
         /// <value>
         /// The collection of members added to the conversation.
         /// </value>
         [JsonProperty(PropertyName = "membersAdded")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<ChannelAccount> MembersAdded { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ChannelAccount> MembersAdded { get; private set; } = new List<ChannelAccount>();
 
         /// <summary>
-        /// Gets or sets the collection of members removed from the
+        /// Gets the collection of members removed from the
         /// conversation.
         /// </summary>
         /// <value>
         /// The collection of members removed from the conversation.
         /// </value>
         [JsonProperty(PropertyName = "membersRemoved")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<ChannelAccount> MembersRemoved { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ChannelAccount> MembersRemoved { get; private set; } = new List<ChannelAccount>();
 
         /// <summary>
-        /// Gets or sets the collection of reactions added to the conversation.
+        /// Gets the collection of reactions added to the conversation.
         /// </summary>
         /// <value>
         /// The collection of reactions added to the conversation.
         /// </value>
         [JsonProperty(PropertyName = "reactionsAdded")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
-        public IList<MessageReaction> ReactionsAdded { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MessageReaction> ReactionsAdded { get; private set; } = new List<MessageReaction>();
 
         /// <summary>
-        /// Gets or sets the collection of reactions removed from the
+        /// Gets the collection of reactions removed from the
         /// conversation.
         /// </summary>
         /// <value>
         /// The collection of reactions removed from the conversation.
         /// </value>
         [JsonProperty(PropertyName = "reactionsRemoved")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<MessageReaction> ReactionsRemoved { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MessageReaction> ReactionsRemoved { get; private set; } = new List<MessageReaction>();
 
         /// <summary>
         /// Gets or sets the updated topic name of the conversation.
@@ -415,26 +407,22 @@ namespace Microsoft.Bot.Schema
         public SuggestedActions SuggestedActions { get; set; }
 
         /// <summary>
-        /// Gets or sets the attachments for the activity.
+        /// Gets the attachments for the activity.
         /// </summary>
         /// <value>
         /// The attachments for the activity.
         /// </value>
         [JsonProperty(PropertyName = "attachments")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
-        public IList<Attachment> Attachments { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<Attachment> Attachments { get; private set; } = new List<Attachment>();
 
         /// <summary>
-        /// Gets or sets the entities that were mentioned in the message.
+        /// Gets the entities that were mentioned in the message.
         /// </summary>
         /// <value>
         /// The entities that were mentioned in the message.
         /// </value>
         [JsonProperty(PropertyName = "entities")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<Entity> Entities { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<Entity> Entities { get; private set; } = new List<Entity>();
 
         /// <summary>
         /// Gets or sets channel-specific content.
@@ -561,19 +549,17 @@ namespace Microsoft.Bot.Schema
         public string DeliveryMode { get; set; }
 
         /// <summary>
-        /// Gets or sets list of phrases and references that speech and
+        /// Gets list of phrases and references that speech and
         /// language-priming systems should listen for.
         /// </summary>
         /// <value>
         /// List of phrases and references that speech and language-priming systems should listen for.
         /// </value>
         [JsonProperty(PropertyName = "listenFor")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<string> ListenFor { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> ListenFor { get; private set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets the collection of text fragments to highlight when the
+        /// Gets the collection of text fragments to highlight when the
         /// activity contains a ReplyToId value.
         /// </summary>
         /// <value>
@@ -581,9 +567,7 @@ namespace Microsoft.Bot.Schema
         /// activity contains a ReplyToId value.
         /// </value>
         [JsonProperty(PropertyName = "textHighlights")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
-        public IList<TextHighlight> TextHighlights { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<TextHighlight> TextHighlights { get; private set; } = new List<TextHighlight>();
 
         /// <summary>
         /// Gets or sets an optional programmatic action accompanying this

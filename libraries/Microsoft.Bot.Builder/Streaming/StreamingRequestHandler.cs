@@ -220,14 +220,7 @@ namespace Microsoft.Bot.Builder.Streaming
                         streamAttachments.Add(new Attachment() { ContentType = request.Streams[i].ContentType, Content = request.Streams[i].Stream });
                     }
 
-                    if (activity.Attachments != null)
-                    {
-                        activity.Attachments = activity.Attachments.Concat(streamAttachments).ToArray();
-                    }
-                    else
-                    {
-                        activity.Attachments = streamAttachments.ToArray();
-                    }
+                    ((List<Attachment>)activity.Attachments).AddRange(streamAttachments.ToArray());
                 }
 
                 // Populate Activity.CallerId given the Audience value.
@@ -418,7 +411,10 @@ namespace Microsoft.Bot.Builder.Streaming
             var streamAttachments = activity.Attachments.Where(a => a.Content is Stream);
             if (streamAttachments.Any())
             {
-                activity.Attachments = activity.Attachments.Where(a => !(a.Content is Stream)).ToList();
+                var filteredAttachments = activity.Attachments.Where(a => !(a.Content is Stream)).ToList();
+                activity.Attachments.Clear();
+                ((List<Attachment>)activity.Attachments).AddRange(filteredAttachments);
+
                 return streamAttachments.Select(streamAttachment =>
                 {
                     var streamContent = new StreamContent(streamAttachment.Content as Stream);

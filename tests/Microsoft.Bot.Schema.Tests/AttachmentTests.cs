@@ -19,10 +19,7 @@ namespace Microsoft.Bot.Schema.Tests
             var thumbnailUrl = "thumbnailUrl";
             var properties = new JObject();
 
-            var attachment = new Attachment(contentType, contentUrl, content, name, thumbnailUrl)
-            {
-                Properties = properties
-            };
+            var attachment = new Attachment(contentType, contentUrl, content, name, thumbnailUrl);
 
             Assert.NotNull(attachment);
             Assert.IsType<Attachment>(attachment);

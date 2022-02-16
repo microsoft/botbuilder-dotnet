@@ -584,6 +584,20 @@ namespace Microsoft.Bot.Connector.Tests
         [Fact]
         public async Task SendCardToConversation()
         {
+            var heroCardStatic = new HeroCard()
+            {
+                Title = "A static image",
+                Subtitle = "JPEG image",
+                Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } }
+            };
+
+            var heroCardAnimation = new HeroCard()
+            {
+                Title = "An animation",
+                Subtitle = "GIF image",
+                Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } },
+            };
+
             var activity = new Activity()
             {
                 Type = ActivityTypes.Message,
@@ -591,30 +605,22 @@ namespace Microsoft.Bot.Connector.Tests
                 From = Bot,
                 Name = "acticity",
                 Text = "TEST Send Card to Conversation",
-                Attachments = new Attachment[]
+            };
+
+            ((List<Attachment>)activity.Attachments).AddRange(
+                new List<Attachment>()
                 {
                     new Attachment()
                     {
                         ContentType = HeroCard.ContentType,
-                        Content = new HeroCard()
-                        {
-                            Title = "A static image",
-                            Subtitle = "JPEG image",
-                            Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } },
-                        },
+                        Content = heroCardStatic,
                     },
                     new Attachment()
                     {
                         ContentType = HeroCard.ContentType,
-                        Content = new HeroCard()
-                        {
-                            Title = "An animation",
-                            Subtitle = "GIF image",
-                            Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } },
-                        },
+                        Content = heroCardAnimation,
                     },
-                },
-            };
+                });
 
             var createMessage = new ConversationParameters()
             {

@@ -93,12 +93,9 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "b" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
             };
+            activity.MembersAdded.Add(new ChannelAccount { Id = "b" });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -117,13 +114,11 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "a" },
-                    new ChannelAccount { Id = "b" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
             };
+            activity.MembersAdded.Add(new ChannelAccount { Id = "a" });
+            activity.MembersAdded.Add(new ChannelAccount { Id = "b" });
+
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -143,14 +138,14 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "a" },
-                    new ChannelAccount { Id = "b" },
-                    new ChannelAccount { Id = "c" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
             };
+            ((List<ChannelAccount>)activity.MembersAdded).AddRange(new List<ChannelAccount>
+            {
+                new ChannelAccount { Id = "a" },
+                new ChannelAccount { Id = "b" },
+                new ChannelAccount { Id = "c" },
+            });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -170,12 +165,9 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersRemoved = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "c" },
-                },
                 Recipient = new ChannelAccount { Id = "c" },
             };
+            activity.MembersRemoved.Add(new ChannelAccount { Id = "c" });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -194,13 +186,10 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersRemoved = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "a" },
-                    new ChannelAccount { Id = "c" },
-                },
                 Recipient = new ChannelAccount { Id = "c" },
             };
+            activity.MembersRemoved.Add(new ChannelAccount { Id = "a" });
+            activity.MembersRemoved.Add(new ChannelAccount { Id = "c" });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -220,14 +209,14 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersRemoved = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "a" },
-                    new ChannelAccount { Id = "b" },
-                    new ChannelAccount { Id = "c" },
-                },
                 Recipient = new ChannelAccount { Id = "c" },
             };
+            ((List<ChannelAccount>)activity.MembersRemoved).AddRange(new List<ChannelAccount>
+            {
+                new ChannelAccount { Id = "a" },
+                new ChannelAccount { Id = "b" },
+                new ChannelAccount { Id = "c" },
+            });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -247,12 +236,9 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "b" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
             };
+            activity.MembersAdded.Add(new ChannelAccount { Id = "b" });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -271,12 +257,9 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersRemoved = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "c" },
-                },
                 Recipient = new ChannelAccount { Id = "c" },
             };
+            activity.MembersRemoved.Add(new ChannelAccount { Id = "c" });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -298,15 +281,10 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.MessageReaction,
-                ReactionsAdded = new List<MessageReaction>
-                {
-                    new MessageReaction("sad"),
-                },
-                ReactionsRemoved = new List<MessageReaction>
-                {
-                    new MessageReaction("angry"),
-                },
             };
+            activity.ReactionsAdded.Add(new MessageReaction("sad"));
+            activity.ReactionsRemoved.Add(new MessageReaction("angry"));
+
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -329,11 +307,8 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.MessageReaction,
-                ReactionsAdded = new List<MessageReaction>
-                {
-                    new MessageReaction("sad"),
-                },
             };
+            activity.ReactionsAdded.Add(new MessageReaction("sad"));
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
@@ -356,11 +331,8 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.MessageReaction,
-                ReactionsRemoved = new List<MessageReaction>
-                {
-                    new MessageReaction("angry"),
-                },
             };
+            activity.ReactionsRemoved.Add(new MessageReaction("angry"));
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act

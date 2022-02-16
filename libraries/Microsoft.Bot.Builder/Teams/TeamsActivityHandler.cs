@@ -433,12 +433,12 @@ namespace Microsoft.Bot.Builder.Teams
             {
                 var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
 
-                if (turnContext.Activity.MembersAdded != null)
+                if (turnContext.Activity.MembersAdded?.Count > 0)
                 {
                     return OnTeamsMembersAddedDispatchAsync(turnContext.Activity.MembersAdded, channelData?.Team, turnContext, cancellationToken);
                 }
 
-                if (turnContext.Activity.MembersRemoved != null)
+                if (turnContext.Activity.MembersRemoved?.Count > 0)
                 {
                     return OnTeamsMembersRemovedDispatchAsync(turnContext.Activity.MembersRemoved, channelData?.Team, turnContext, cancellationToken);
                 }
