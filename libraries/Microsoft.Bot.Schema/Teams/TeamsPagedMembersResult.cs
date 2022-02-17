@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
         {
             ContinuationToken = continuationToken;
             var teamsChannelAccounts = members.Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
-            Members = teamsChannelAccounts.ToList() ?? new List<TeamsChannelAccount>();
+            Members = teamsChannelAccounts?.ToList() ?? new List<TeamsChannelAccount>();
         }
 
         /// <summary>
