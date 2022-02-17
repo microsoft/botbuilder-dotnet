@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// The context associated with QnA.  Used to mark if the current prompt is relevant with a previous question or not.

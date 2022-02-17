@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -135,7 +136,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// An object with metadata, source filters and corresponding operators.
         /// </value>
         [JsonProperty("filters")]
-        public Models.Filters Filters { get; set; }
+        public Filters Filters { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether Flag to enable Query over Unstructured Sources (Optional).

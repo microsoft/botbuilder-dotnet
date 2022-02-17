@@ -7,6 +7,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;

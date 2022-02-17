@@ -5,9 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     /// <summary>
     /// Message activity card builder for QnAMaker dialogs.

@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -154,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// An object with metadata, source filters and corresponding operators.
         /// </value>
         [JsonProperty("filters")]
-        public ObjectExpression<Models.Filters> Filters { get; set; }
+        public ObjectExpression<Filters> Filters { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
@@ -202,7 +203,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             var metadataFilter = new Models.MetadataFilter(
                     new List<KeyValuePair<string, string>>(),
                     JoinOperator.AND.ToString());
-            var newFilters = new Models.Filters(
+            var newFilters = new Filters(
                 metadataFilter,
                 new List<string>(),
                 JoinOperator.OR.ToString());

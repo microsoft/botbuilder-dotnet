@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     /// <summary>
     /// Helper class for Generate Answer API.
@@ -188,7 +188,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
                 hydratedOptions.StrictFiltersJoinOperator = queryOptions.StrictFiltersJoinOperator;
-                hydratedOptions.EnablePreciseAnswer = queryOptions.EnablePreciseAnswer;
             }
 
             return hydratedOptions;
@@ -197,13 +196,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
-            AnswerSpanRequest answerSpanRequest = null;
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
@@ -228,13 +220,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            AnswerSpanRequest answerSpanRequest = null;
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = messageActivity,

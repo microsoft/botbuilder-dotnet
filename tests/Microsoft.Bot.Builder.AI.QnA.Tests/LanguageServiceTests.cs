@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Tests;
+using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -65,9 +66,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetFeedbackUrl())
               .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false},\"includeUnstructuredSources\":true}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false},\"includeUnstructuredSources\":true}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
                .Respond("application/json", GetResponse("LanguageService_TopNAnswer.json"));
             return CreateLanguageServiceActionDialog(mockHttp);
         }
@@ -145,9 +146,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
 
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false},\"includeUnstructuredSources\":true}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("LanguageService_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false},\"includeUnstructuredSources\":true}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
                 .Respond("application/json", GetResponse("LanguageService_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateLanguageServiceActionDialog(mockHttp);

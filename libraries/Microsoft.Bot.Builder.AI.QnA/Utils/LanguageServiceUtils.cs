@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.AI.QnA.Models;
+using Microsoft.Bot.Builder.AI.QnA.Models.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     /// <summary>
     /// LanguageServiceUtils - Helper class for Language service query knowledgebase and update suggestions api.
@@ -183,10 +185,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryKBAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/language/:query-knowledgebases?projectName={_endpoint.KnowledgeBaseId}&deploymentName=production&{ApiVersionQueryParam}";
-            var answerSpanRequest = new AnswerSpanRequest
-            {
-                Enable = options.EnablePreciseAnswer
-            };
 
             var jsonRequest = JsonConvert.SerializeObject(
                 new
@@ -198,7 +196,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     context = options.Context,
                     qnaId = options.QnAId,
                     rankerType = options.RankerType,
-                    answerSpanRequest = answerSpanRequest,
+                    answerSpanRequest = new { enable = true },
                     includeUnstructuredSources = options.IncludeUnstructuredSources
                 }, Formatting.None);
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
@@ -211,7 +209,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task UpdateActiveLearningFeedbackRecordsAsync(FeedbackRecords feedbackRecords)
         {
             var requestUrl = $"{_endpoint.Host}/language/query-knowledgebases/projects/{_endpoint.KnowledgeBaseId}/feedback?{ApiVersionQueryParam}";
-            var jsonRequest = JsonConvert.SerializeObject(new FeedbackRequest(feedbackRecords.Records.ToList()));
+            var jsonRequest = JsonConvert.SerializeObject(new FeedbackRecordsRequest(feedbackRecords.Records.ToList()));
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
@@ -297,13 +295,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A promise representing the async operation.</returns>
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            AnswerSpanRequest answerSpanRequest = null;
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = messageActivity,
@@ -317,7 +308,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 IsTest = options.IsTest,
                 RankerType = options.RankerType,
                 Filters = options.Filters,
-                AnswerSpanRequest = answerSpanRequest,
+                EnablePreciseAnswer = options.EnablePreciseAnswer,
                 IncludeUnstructuredSources = options.IncludeUnstructuredSources
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);

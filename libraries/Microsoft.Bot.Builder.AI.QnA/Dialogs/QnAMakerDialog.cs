@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -91,10 +92,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="top">The maximum number of answers to return from the knowledge base.</param>
         /// <param name="cardNoMatchResponse">The activity to send the user if they select the no match option
         /// on an active learning card.</param>
-        /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
+        /// <param name="strictFilters">QnA Maker <see cref="Metadata"/> with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
-        /// <param name="filters">filters - for metadata and sources.</param>
-        /// <param name="qnAServiceType">Optional qna Service type empty/v2/language.</param>
+        /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnaServiceType"/>, empty or null for legacy QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -113,7 +114,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
-            Models.Filters filters = null,
+            Filters filters = null,
             string qnAServiceType = "",
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
@@ -179,7 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
-            Models.Filters filters = null,
+            Filters filters = null,
             string qnAServiceType = "",
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
@@ -359,16 +360,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets enablePreciseAnswer. 
+        /// Gets or sets a value indicating whether to include short answer in response. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to enable Precise Answer or not. 
+        /// True or false to include short answer in response. 
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether whether to include unstructured sources in search for answers. 
+        /// Gets or sets a value indicating whether to include unstructured sources in search for answers. 
         /// </summary>
         /// <value>
         /// A value indicating whether to include unstructured sources. 
@@ -383,21 +384,21 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// An object with metadata, source filters and corresponding operators.
         /// </value>
         [JsonProperty("filters")]
-        public ObjectExpression<Models.Filters> Filters { get; set; }
+        public ObjectExpression<Filters> Filters { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets displayPreciseAnswerOnly. 
+        /// Gets or sets a value indicating whether to display only Precise Answer in response. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to display Precise Answer Only or Both. 
+        /// A value indicating whether to display Short Answer Only or Both. 
         /// </value>
         [JsonProperty("displayPreciseAnswerOnly")]
         public bool DisplayPreciseAnswerOnly { get; set; }
 
         /// <summary>
-        /// Gets or sets qna service type.
+        /// Gets or sets QnA Service type.
         /// </summary>
-        /// <value> Qna service type.</value>
+        /// <value>Valid value <see cref="Constants.LanguageQnaServiceType"/>, empty or null for legacy QnAMaker.</value>
         [JsonProperty("qnAServiceType")]
         public StringExpression QnAServiceType { get; set; }
 

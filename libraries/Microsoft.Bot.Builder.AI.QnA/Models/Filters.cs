@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
-    /// <summary> filters over knowledge base. </summary>
+    /// <summary> Filters over knowledge base. </summary>
     public class Filters
     {
         /// <summary>

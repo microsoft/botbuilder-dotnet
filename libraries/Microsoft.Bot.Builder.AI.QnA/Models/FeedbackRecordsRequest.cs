@@ -4,16 +4,16 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Models
+namespace Microsoft.Bot.Builder.AI.QnA.Models.Models
 {
     /// <summary> Active learning feedback records request. </summary>
-    public class FeedbackRequest
+    public class FeedbackRecordsRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeedbackRequest"/> class.
+        /// Initializes a new instance of the <see cref="FeedbackRecordsRequest"/> class.
         /// </summary>
         /// <param name="records">FeedbackRecords.</param>
-        public FeedbackRequest(List<FeedbackRecord> records)
+        public FeedbackRecordsRequest(List<FeedbackRecord> records)
         {
             Records = records;
         }

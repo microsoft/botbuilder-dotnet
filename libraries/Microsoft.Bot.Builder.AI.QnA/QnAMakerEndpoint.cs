@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets the QnAServiceType.
         /// </summary>
         /// <value>
-        /// QnAServiceType V2 or language.
+        /// Valid value <see cref="Constants.LanguageQnaServiceType"/>, empty or null for legacy QnAMaker.
         /// </value>
         [JsonProperty("qnAServiceType")]
         public string QnAServiceType { get; set; }

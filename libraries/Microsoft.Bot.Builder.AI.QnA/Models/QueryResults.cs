@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// Contains answers for a user query.

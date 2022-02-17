@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// This class represents all the trace info that we collect from the QnAMaker Middleware.
@@ -127,16 +128,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// An array of string.
         /// </value>
         [JsonProperty("filters")]
-        public Models.Filters Filters { get; set; }
+        public Filters Filters { get; set; }
 
         /// <summary>
-        /// Gets or sets AnswerSpanRequest.
+        /// Gets or sets a value indicating whether to enable or disable Answer Span prediction.
         /// </summary>
         /// <value>
-        /// The AnswerSpanRequest.
+        /// True or False.
         /// </value>
-        [JsonProperty("answerSpanRequest")]
-        public AnswerSpanRequest AnswerSpanRequest { get; set; }
+        [JsonProperty("enablePreciseAnswer")]
+        public bool EnablePreciseAnswer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable Query over Unstructured Sources (Optional).
