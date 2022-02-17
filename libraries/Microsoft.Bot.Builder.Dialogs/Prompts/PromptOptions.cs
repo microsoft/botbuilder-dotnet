@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="PromptOptions"/> class.
         /// </summary>
-        /// <param name="prompt">The initial prompt to send the user as and <see cref="Activity"/>.</param>
+        /// <param name="prompt">The initial prompt to send the user as an <see cref="Activity"/>.</param>
         /// <param name="choices">The list of available choices.</param>
-        public PromptOptions(Activity prompt = null, IList<Choice> choices = null)
+        public PromptOptions(Activity prompt = default, IList<Choice> choices = default)
         {
             Prompt = prompt;
             Choices = choices;
