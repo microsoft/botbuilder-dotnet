@@ -16,6 +16,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
         /// <summary>
         /// QnaServiceType for Language Service.
         /// </summary>
-        public const string LanguageQnaServiceType = "language";
+        public const string LanguageQnAServiceType = "language";
     }
 }
