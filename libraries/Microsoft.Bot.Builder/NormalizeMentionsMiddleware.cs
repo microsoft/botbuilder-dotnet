@@ -114,8 +114,11 @@ namespace Microsoft.Bot.Builder
                     if (activity.Entities != null)
                     {
                         // strip entity.mention records for recipient id.
-                        activity.Entities = activity.Entities.Where(entity => entity.Type == "mention" &&
+                        var filteredEntities = activity.Entities.Where(entity => entity.Type == "mention" &&
                            ((dynamic)entity.Properties["mentioned"]).id != activity.Recipient.Id).ToList();
+
+                        activity.Entities.Clear();
+                        ((List<Entity>)activity.Entities).AddRange(filteredEntities);
                     }
                 }
 
