@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     prompt.SuggestedActions = msg.SuggestedActions;
                 }
 
-                if (msg.Attachments?.Count > 0)
+                if (msg.Attachments.Any())
                 {
                     ((List<Attachment>)prompt.Attachments).AddRange(msg.Attachments);
                 }

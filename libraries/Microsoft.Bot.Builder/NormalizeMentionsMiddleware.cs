@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder
                     // strip recipient mention tags and text.
                     activity.RemoveRecipientMention();
 
-                    if (activity.Entities?.Count > 0)
+                    if (activity.Entities.Any())
                     {
                         // strip entity.mention records for recipient id.
                         var filteredEntities = activity.Entities.Where(entity => entity.Type == "mention" &&
