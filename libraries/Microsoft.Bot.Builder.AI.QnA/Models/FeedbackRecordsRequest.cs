@@ -10,19 +10,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models.Models
     public class FeedbackRecordsRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeedbackRecordsRequest"/> class.
-        /// </summary>
-        /// <param name="records">FeedbackRecords.</param>
-        public FeedbackRecordsRequest(List<FeedbackRecord> records)
-        {
-            Records = records;
-        }
-
-        /// <summary>
         /// Gets FeedbackRecords.
         /// </summary>
         /// <value>FeedbackRecords.</value>
         [JsonProperty("records")]
-        public List<FeedbackRecord> Records { get; }
+        public List<FeedbackRecord> Records { get; } = new List<FeedbackRecord>();
     }
 }

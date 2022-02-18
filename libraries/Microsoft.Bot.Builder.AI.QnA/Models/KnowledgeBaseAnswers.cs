@@ -12,16 +12,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
     public class KnowledgeBaseAnswers
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="KnowledgeBaseAnswers"/> class. Initializes a new instance of answers.
-        /// </summary>
-        /// <param name="answers">The answers for a user query,
-        /// sorted in decreasing order of ranking score.</param>
-        public KnowledgeBaseAnswers(List<KnowledgeBaseAnswer> answers)
-        {
-            Answers = answers;
-        }
-
-        /// <summary>
         /// Gets the answers for a user query,
         /// sorted in decreasing order of ranking score.
         /// </summary>
@@ -30,6 +20,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
         /// sorted in decreasing order of ranking score.
         /// </value>
         [JsonProperty("answers")]
-        public List<KnowledgeBaseAnswer> Answers { get; }
+        public List<KnowledgeBaseAnswer> Answers { get; } = new List<KnowledgeBaseAnswer>();
     }
 }
