@@ -235,9 +235,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Str
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Tests.Client", "tests\Microsoft.Bot.Connector.Streaming.Tests.Client\Microsoft.Bot.Connector.Streaming.Tests.Client.csproj", "{2E5AD07C-4F6E-4B6B-BEFE-9FBE9F789161}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Perf", "tests\Microsoft.Bot.Connector.Streaming.Perf\Microsoft.Bot.Connector.Streaming.Perf.csproj", "{B49A3201-5BEE-426C-A082-D92D52172E06}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QnABotAllFeatures", "..\bot-c#\QnABotAllFeatures.csproj", "{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Connector.Streaming.Perf", "tests\Microsoft.Bot.Connector.Streaming.Perf\Microsoft.Bot.Connector.Streaming.Perf.csproj", "{B49A3201-5BEE-426C-A082-D92D52172E06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -935,14 +933,6 @@ Global
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{2901C88E-20AE-4ACE-A97C-A7515A5B3A81}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
