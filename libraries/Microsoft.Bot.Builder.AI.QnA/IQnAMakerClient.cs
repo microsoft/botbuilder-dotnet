@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        Task<QueryResult[]> GetAnswersAsync(
+        Task<Collection<QueryResult>> GetAnswersAsync(
                                         ITurnContext turnContext,
                                         QnAMakerOptions options,
                                         Dictionary<string, string> telemetryProperties,

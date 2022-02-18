@@ -123,7 +123,9 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(conversationId));
             }
 
-            var pagedResult = new PagedResult<IActivity>();
+            var items = Array.Empty<IActivity>();
+            var token = string.Empty;
+
             lock (_channels)
             {
                 Dictionary<string, List<IActivity>> channel;
@@ -134,7 +136,7 @@ namespace Microsoft.Bot.Builder
                     {
                         if (continuationToken != null)
                         {
-                            pagedResult.Items = transcript
+                            items = transcript
                                 .OrderBy(a => a.Timestamp)
                                 .Where(a => a.Timestamp >= startDate)
                                 .SkipWhile(a => a.Id != continuationToken)
@@ -142,27 +144,32 @@ namespace Microsoft.Bot.Builder
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Length == 20)
+                            if (items.Length == 20)
                             {
-                                pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                                token = items.Last().Id;
                             }
                         }
                         else
                         {
-                            pagedResult.Items = transcript
+                            items = transcript
                                 .OrderBy(a => a.Timestamp)
                                 .Where(a => a.Timestamp >= startDate)
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Length == 20)
+                            if (items.Length == 20)
                             {
-                                pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                               token = items.Last().Id;
                             }
                         }
                     }
                 }
             }
+
+            var pagedResult = new PagedResult<IActivity>(items)
+            {
+                ContinuationToken = string.IsNullOrEmpty(token) ? null : token
+            };
 
             return Task.FromResult(pagedResult);
         }
@@ -213,14 +220,16 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(channelId));
             }
 
-            var pagedResult = new PagedResult<TranscriptInfo>();
+            var items = Array.Empty<TranscriptInfo>();
+            var token = string.Empty;
+
             lock (_channels)
             {
                 if (_channels.TryGetValue(channelId, out var channel))
                 {
                     if (continuationToken != null)
                     {
-                        pagedResult.Items = channel.Select(c => new TranscriptInfo()
+                        items = channel.Select(c => new TranscriptInfo()
                         {
                             ChannelId = channelId,
                             Id = c.Key,
@@ -232,14 +241,14 @@ namespace Microsoft.Bot.Builder
                         .Take(20)
                         .ToArray();
 
-                        if (pagedResult.Items.Length == 20)
+                        if (items.Length == 20)
                         {
-                            pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                            token = items.Last().Id;
                         }
                     }
                     else
                     {
-                        pagedResult.Items = channel.Select(
+                        items = channel.Select(
                             c => new TranscriptInfo
                             {
                                 ChannelId = channelId,
@@ -250,14 +259,18 @@ namespace Microsoft.Bot.Builder
                             .Take(20)
                             .ToArray();
 
-                        if (pagedResult.Items.Length == 20)
+                        if (items.Length == 20)
                         {
-                            pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                            token = items.Last().Id;
                         }
                     }
                 }
             }
 
+            var pagedResult = new PagedResult<TranscriptInfo>(items)
+            {
+                ContinuationToken = string.IsNullOrEmpty(token) ? null : token
+            };
             return Task.FromResult(pagedResult);
         }
     }

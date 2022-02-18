@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Connector.Tests
                 var attachmentId = response.Id;
                 var stream = await client.Attachments.GetAttachmentAsync(attachmentId, "original");
 
-                var expectedAsString = Convert.ToBase64String(attachment.OriginalBase64, Base64FormattingOptions.None);
+                var expectedAsString = Convert.ToBase64String(attachment.OriginalBase64.ToArray(), Base64FormattingOptions.None);
                 
                 stream.Position = 0;
                 var length = stream.Length > int.MaxValue ? int.MaxValue : Convert.ToInt32(stream.Length);
