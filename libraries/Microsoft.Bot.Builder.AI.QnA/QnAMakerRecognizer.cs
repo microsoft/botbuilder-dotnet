@@ -207,19 +207,22 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
 
             // Calling QnAMaker to get response.
             var qnaClient = await GetQnAMakerClientAsync(dialogContext).ConfigureAwait(false);
+            var qnaMakerOptions = new QnAMakerOptions
+            {
+                Context = Context,
+                ScoreThreshold = (float)Threshold,
+                Top = Top,
+                QnAId = QnAId,
+                RankerType = RankerType,
+                IsTest = IsTest,
+                StrictFiltersJoinOperator = StrictFiltersJoinOperator
+            };
+            
+            filters.ForEach(qnaMakerOptions.StrictFilters.Add);
+
             var answers = await qnaClient.GetAnswersAsync(
                 dialogContext.Context,
-                new QnAMakerOptions
-                {
-                    Context = Context,
-                    ScoreThreshold = (float)Threshold,
-                    StrictFilters = filters.ToArray(),
-                    Top = Top,
-                    QnAId = QnAId,
-                    RankerType = RankerType,
-                    IsTest = IsTest,
-                    StrictFiltersJoinOperator = StrictFiltersJoinOperator
-                },
+                qnaMakerOptions,
                 null).ConfigureAwait(false);
 
             if (answers.Any())

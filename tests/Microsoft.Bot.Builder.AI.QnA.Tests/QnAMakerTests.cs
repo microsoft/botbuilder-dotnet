@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -282,9 +283,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
             Assert.NotNull(results);
-            Assert.Equal(4, results.Length);
+            Assert.Equal(4, results.Count);
 
-            var filteredResults = qna.GetLowScoreVariation(results);
+            var filteredResults = qna.GetLowScoreVariation(results.ToArray());
             Assert.NotNull(filteredResults);
             Assert.Equal(3, filteredResults.Length);
 
@@ -294,9 +295,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
            
             results = await qna.GetAnswersAsync(GetContext("Q11"));
             Assert.NotNull(results);
-            Assert.Equal(4, results.Length);
+            Assert.Equal(4, results.Count);
 
-            filteredResults = qna.GetLowScoreVariation(results);
+            filteredResults = qna.GetLowScoreVariation(results.ToArray());
             Assert.NotNull(filteredResults);
             Assert.Equal(3, filteredResults.Length);
         }
@@ -363,12 +364,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var options = new QnAMakerOptions
             {
-                StrictFilters = new Metadata[]
-                {
-                    new Metadata() { Name = "topic", Value = "value" },
-                },
                 Top = 1,
             };
+
+            options.StrictFilters.Add(new Metadata()
+            {
+                Name = "topic",
+                Value = "value",
+            });
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), options);
             Assert.NotNull(results);
@@ -543,7 +546,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
             Assert.NotNull(results);
-            Assert.Equal(2, results.Length);
+            Assert.Equal(2, results.Count);
             Assert.NotEqual(1, results[0].Score);
         }
 
@@ -851,7 +854,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaMakerOptions);
             Assert.NotNull(results);
-            Assert.Equal(2, results.Length);
+            Assert.Equal(2, results.Count);
         }
 
         [Fact]
@@ -883,46 +886,41 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var oneFilteredOption = new QnAMakerOptions
             {
                 Top = 30,
-                StrictFilters = new Metadata[]
-                {
-                    new Metadata
-                    {
-                        Name = "movie",
-                        Value = "disney",
-                    },
-                },
             };
+
+            oneFilteredOption.StrictFilters.Add(new Metadata
+            {
+                Name = "movie",
+                Value = "disney",
+            });
 
             var twoStrictFiltersOptions = new QnAMakerOptions
             {
                 Top = 30,
-                StrictFilters = new Metadata[]
-                {
-                    new Metadata()
-                    {
-                        Name = "movie",
-                        Value = "disney",
-                    },
-                    new Metadata()
-                    {
-                        Name = "home",
-                        Value = "floating",
-                    },
-                },
             };
+
+            twoStrictFiltersOptions.StrictFilters.Add(new Metadata()
+            {
+                Name = "movie",
+                Value = "disney",
+            });
+            twoStrictFiltersOptions.StrictFilters.Add(new Metadata()
+            {
+                Name = "home",
+                Value = "floating",
+            });
+
             var allChangedRequestOptions = new QnAMakerOptions
             {
                 Top = 2000,
                 ScoreThreshold = 0.42F,
-                StrictFilters = new Metadata[]
-                {
-                    new Metadata()
-                    {
-                        Name = "dog",
-                        Value = "samoyed",
-                    },
-                },
             };
+
+            allChangedRequestOptions.StrictFilters.Add(new Metadata()
+            {
+                Name = "dog",
+                Value = "samoyed",
+            });
 
             var context = GetContext("up");
 
@@ -973,21 +971,20 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var oneFilteredOption = new QnAMakerOptions()
             {
                 Top = 30,
-                StrictFilters = new Metadata[]
-                {
-                    new Metadata()
-                    {
-                        Name = "movie",
-                        Value = "disney",
-                    },
-                    new Metadata()
-                    {
-                        Name = "production",
-                        Value = "Walden",
-                    },
-                },
                 StrictFiltersJoinOperator = JoinOperator.OR
             };
+
+            oneFilteredOption.StrictFilters.Add(new Metadata()
+            {
+                Name = "movie",
+                Value = "disney",
+            });
+            oneFilteredOption.StrictFilters.Add(new Metadata()
+            {
+                Name = "production",
+                Value = "Walden",
+            });
+
             var qna = GetQnAMaker(
                             interceptHttp,
                             new QnAMakerEndpoint
@@ -1001,7 +998,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var context = GetContext("up");
             var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
             var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
-            Assert.Equal(2, oneFilteredOption.StrictFilters.Length);
+            Assert.Equal(2, oneFilteredOption.StrictFilters.Count);
             Assert.Equal(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
         }
 

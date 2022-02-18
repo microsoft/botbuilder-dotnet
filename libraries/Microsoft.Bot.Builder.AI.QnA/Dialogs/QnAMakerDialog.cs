@@ -435,16 +435,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <remarks>If the task is successful, the result contains the QnA Maker options to use.</remarks>
         protected virtual Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)
         {
-            return Task.FromResult(new QnAMakerOptions
+            var qnaMakerOptions = new QnAMakerOptions
             {
                 ScoreThreshold = Threshold,
-                StrictFilters = StrictFilters?.ToArray(),
                 Top = Top,
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = RankerType,
                 IsTest = IsTest
-            });
+            };
+
+            StrictFilters.ForEach(qnaMakerOptions.StrictFilters.Add);
+
+            return Task.FromResult(qnaMakerOptions);
         }
 
         /// <summary>
@@ -581,9 +584,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             if (response.Answers.Any() && response.Answers.First().Score <= (ActiveLearningUtils.MaximumScoreForLowScoreVariation / 100))
             {
                 // Get filtered list of the response that support low score variation criteria.
-                response.Answers = qnaClient.GetLowScoreVariation(response.Answers);
+                var filteredAnswers = qnaClient.GetLowScoreVariation(response.Answers.ToArray());
 
-                if (response.Answers.Length > 1 && isActiveLearningEnabled)
+                response.Answers.Clear();
+                filteredAnswers.ToList().ForEach(response.Answers.Add);
+                
+                if (response.Answers.Count > 1 && isActiveLearningEnabled)
                 {
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
@@ -686,7 +692,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                 var answer = response.First();
 
-                if (answer.Context != null && answer.Context.Prompts.Length > 0)
+                if (answer.Context != null && answer.Context.Prompts.Count > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
                     var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
