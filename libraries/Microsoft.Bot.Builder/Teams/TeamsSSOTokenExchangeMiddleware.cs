@@ -82,6 +82,20 @@ namespace Microsoft.Bot.Builder.Teams
             await next(cancellationToken).ConfigureAwait(false);
         }
 
+        private static async Task SendInvokeResponseAsync(ITurnContext turnContext, object body = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK, CancellationToken cancellationToken = default)
+        {
+            await turnContext.SendActivityAsync(
+                new Activity
+                {
+                    Type = ActivityTypesEx.InvokeResponse,
+                    Value = new InvokeResponse
+                    {
+                        Status = (int)httpStatusCode,
+                        Body = body,
+                    },
+                }, cancellationToken).ConfigureAwait(false);
+        }
+
         private async Task<bool> DeduplicatedTokenExchangeIdAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // Create a StoreItem with Etag of the unique 'signin/tokenExchange' request
@@ -110,20 +124,6 @@ namespace Microsoft.Bot.Builder.Teams
             }
 
             return true;
-        }
-
-        private async Task SendInvokeResponseAsync(ITurnContext turnContext, object body = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK, CancellationToken cancellationToken = default)
-        {
-            await turnContext.SendActivityAsync(
-                new Activity
-                {
-                    Type = ActivityTypesEx.InvokeResponse,
-                    Value = new InvokeResponse
-                    {
-                        Status = (int)httpStatusCode,
-                        Body = body,
-                    },
-                }, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<bool> ExchangedTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken)

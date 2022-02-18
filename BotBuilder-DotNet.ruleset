@@ -4,7 +4,6 @@
     <Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->
     <Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->
     <Rule Id="CA1308" Action="None" /> <!-- Normalize strings to uppercase (most of our operations are normalized on lowercase -->
-    <Rule Id="CA1822" Action="None" /> <!-- Ignore Mark members as static -->
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
     <Rule Id="CA1303" Action="None" /> <!-- DoNotPassLiteralsAsLocalizedParameters -->
