@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 QnAServiceType = QnAServiceType?.GetValue(dc.State)
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            if (endpoint.QnAServiceType == "language")
+            if (endpoint.QnAServiceType == Constants.LanguageQnAServiceType)
             {
                 return new CustomQuestionAnswering(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
             }
