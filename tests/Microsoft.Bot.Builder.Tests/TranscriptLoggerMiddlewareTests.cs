@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     Assert.Equal("bar", ((Activity)activity).Text);
                     var activities = await transcriptStore.GetTranscriptActivitiesAsync(activity.ChannelId, conversationId);
-                    Assert.Equal(2, activities.Items.Length);
+                    Assert.Equal(2, activities.Items.Count);
                 })
                 .Send(new Activity(ActivityTypes.Event) { Name = ActivityEventNames.ContinueConversation })
                 .AssertReply(async activity =>
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Tests
                     // Ensure the event hasn't been added to the transcript.
                     var activities = await transcriptStore.GetTranscriptActivitiesAsync(activity.ChannelId, conversationId);
                     Assert.DoesNotContain(activities.Items, a => ((Activity)a).Type == ActivityTypes.Event && ((Activity)a).Name == ActivityEventNames.ContinueConversation);
-                    Assert.Equal(3, activities.Items.Length);
+                    Assert.Equal(3, activities.Items.Count);
                 })
                 .StartTestAsync();
         }

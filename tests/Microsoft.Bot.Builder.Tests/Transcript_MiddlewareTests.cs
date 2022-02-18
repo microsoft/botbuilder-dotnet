@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal(3, pagedResult.Items.Count);
             Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.NotNull(pagedResult.Items[1].AsMessageDeleteActivity());
             Assert.Equal(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.Equal(6, pagedResult.Items.Length);
+            Assert.Equal(6, pagedResult.Items.Count);
             Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.NotNull(pagedResult.Items[1].AsTypingActivity());
             Assert.Equal("echo:foo", pagedResult.Items[2].AsMessageActivity().Text);
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.Equal(20, pagedResult.Items.Length);
+            Assert.Equal(20, pagedResult.Items.Count);
             Assert.Equal("inbound message to TestFlow", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.NotNull(pagedResult.Items[1].AsMessageActivity());
             Assert.Equal("I am an activity with an Id.", pagedResult.Items[1].AsMessageActivity().Text);
@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal(3, pagedResult.Items.Count);
             Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
             Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
@@ -291,14 +291,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Perform some queries
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, dateTimeStartOffset1.DateTime);
-            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal(3, pagedResult.Items.Count);
             Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
             Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
 
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MinValue);
-            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal(3, pagedResult.Items.Count);
             Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
             Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
