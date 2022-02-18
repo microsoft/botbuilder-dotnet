@@ -139,9 +139,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             {
                 options.Filters = new Filters
                 {
-                    MetadataFilter = new MetadataFilter(
-                        new List<KeyValuePair<string, string>>(),
-                        JoinOperator.AND.ToString())
+                    MetadataFilter = new MetadataFilter()
+                    {
+                        LogicalOperation = JoinOperator.AND.ToString()
+                    }
                 };
             }
 

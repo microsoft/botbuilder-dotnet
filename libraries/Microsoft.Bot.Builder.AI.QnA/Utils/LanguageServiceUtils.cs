@@ -62,13 +62,17 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
                 return null;
             }
 
-            var metadataFilter = new MetadataFilter(
-                metadata.Select(m => { return new KeyValuePair<string, string>(key: m.Name, value: m.Value); }).ToList(),
-                metadataFiltersJoinOperation);
-            return new Filters(
-                metadataFilter,
-                new List<string>(),
-                JoinOperator.OR.ToString());
+            var metadataFilter = new MetadataFilter()
+            {
+                LogicalOperation = metadataFiltersJoinOperation
+            };
+            metadataFilter.Metadata.AddRange(metadata.Select(m => { return new KeyValuePair<string, string>(key: m.Name, value: m.Value); }).ToList());
+
+            return new Filters()
+            {
+                MetadataFilter = metadataFilter,
+                LogicalOperation = JoinOperator.OR.ToString()
+            };
         }
 
         /// <summary>
@@ -156,9 +160,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             {
                 options.Filters = new Filters
                 {
-                    MetadataFilter = new MetadataFilter(
-                        new List<KeyValuePair<string, string>>(),
-                        JoinOperator.AND.ToString())
+                    MetadataFilter = new MetadataFilter()
+                    {
+                        LogicalOperation = JoinOperator.AND.ToString()
+                    }
                 };
             }
 
@@ -196,7 +201,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
                     context = options.Context,
                     qnaId = options.QnAId,
                     rankerType = options.RankerType,
-                    answerSpanRequest = new { enable = true },
+                    answerSpanRequest = new { enable = options.EnablePreciseAnswer },
                     includeUnstructuredSources = options.IncludeUnstructuredSources
                 }, Formatting.None);
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
@@ -209,7 +214,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         private async Task UpdateActiveLearningFeedbackRecordsAsync(FeedbackRecords feedbackRecords)
         {
             var requestUrl = $"{_endpoint.Host}/language/query-knowledgebases/projects/{_endpoint.KnowledgeBaseId}/feedback?{ApiVersionQueryParam}";
-            var jsonRequest = JsonConvert.SerializeObject(new FeedbackRecordsRequest(feedbackRecords.Records.ToList()));
+
+            var feedbackRecordsRequest = new FeedbackRecordsRequest();
+            feedbackRecordsRequest.Records.AddRange(feedbackRecords.Records.ToList());
+
+            var jsonRequest = JsonConvert.SerializeObject(feedbackRecordsRequest);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
