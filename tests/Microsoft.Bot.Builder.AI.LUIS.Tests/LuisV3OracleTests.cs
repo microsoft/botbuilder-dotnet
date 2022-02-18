@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
         private readonly string testData = Path.Combine(new string[] { "..", "..", "..", "..", "Microsoft.Bot.Builder.AI.LUIS.Tests", "TestData" });
 
-        private readonly Dictionary<string, IntentScore> _intents = new ()
+        private readonly Dictionary<string, IntentScore> _intents = new Dictionary<string, IntentScore>()
         {
             { "Test", new IntentScore { Score = 0.2 } },
             { "Greeting", new IntentScore { Score = 0.4 } },
