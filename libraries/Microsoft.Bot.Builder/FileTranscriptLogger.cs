@@ -137,9 +137,9 @@ namespace Microsoft.Bot.Builder
             var transcriptFile = GetTranscriptFile(channelId, conversationId);
 
             var transcript = await LoadTranscriptAsync(transcriptFile).ConfigureAwait(false);
-            var result = new PagedResult<IActivity>();
+            var items = transcript.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
+            var result = new PagedResult<IActivity>(items);
             result.ContinuationToken = null;
-            result.Items = transcript.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
             return result;
         }
 
@@ -165,9 +165,8 @@ namespace Microsoft.Bot.Builder
                 });
             }
 
-            return Task.FromResult(new PagedResult<TranscriptInfo>()
+            return Task.FromResult(new PagedResult<TranscriptInfo>(transcripts.ToArray())
             {
-                Items = transcripts.ToArray(),
                 ContinuationToken = null,
             });
         }

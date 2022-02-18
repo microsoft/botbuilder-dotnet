@@ -173,7 +173,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
             {
                 var cleanChanel = Guid.NewGuid().ToString();
 
-                var loggedPagedResult = new PagedResult<IActivity>();
                 var activities = new List<IActivity>();
 
                 for (var i = 0; i < ConversationIds.Length; i++)
@@ -185,14 +184,14 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                     activities.Add(a);
                 }
 
-                loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0]).Result;
+                var loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0]).Result;
                 var ct = loggedPagedResult.ContinuationToken;
-                Assert.Equal(20, loggedPagedResult.Items.Length);
+                Assert.Equal(20, loggedPagedResult.Items.Count);
                 Assert.NotNull(ct);
                 Assert.True(loggedPagedResult.ContinuationToken.Length > 0);
                 loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0], ct).Result;
                 ct = loggedPagedResult.ContinuationToken;
-                Assert.Equal(10, loggedPagedResult.Items.Length);
+                Assert.Equal(10, loggedPagedResult.Items.Count);
                 Assert.Null(ct);
             }
         }
@@ -202,7 +201,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                var loggedActivities = new PagedResult<IActivity>();
                 int i;
                 for (i = 0; i < ConversationSpecialIds.Length; i++)
                 {
@@ -210,7 +208,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                     await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
                 }
 
-                loggedActivities =
+                var loggedActivities =
                     await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]);
                 Assert.Empty(loggedActivities.Items);
             }
@@ -262,7 +260,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                     .StartTestAsync();
 
                 var pagedResult = await GetPagedResultAsync(conversation, 6);
-                Assert.Equal(6, pagedResult.Items.Length);
+                Assert.Equal(6, pagedResult.Items.Count);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.NotNull(pagedResult.Items[1].AsTypingActivity());
                 Assert.Equal("echo:foo", pagedResult.Items[2].AsMessageActivity().Text);
@@ -310,7 +308,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                     .StartTestAsync();
 
                 var pagedResult = await GetPagedResultAsync(conversation, 3);
-                Assert.Equal(3, pagedResult.Items.Length);
+                Assert.Equal(3, pagedResult.Items.Count);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
                 Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
@@ -340,7 +338,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                 await Task.Delay(3000);
 
                 var pagedResult = await GetPagedResultAsync(conversation, 2);
-                Assert.Equal(2, pagedResult.Items.Length);
+                Assert.Equal(2, pagedResult.Items.Count);
                 Assert.Equal(fooId, pagedResult.Items[0].AsMessageActivity().Id);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.StartsWith("g_", pagedResult.Items[1].AsMessageActivity().Id);
@@ -386,14 +384,14 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
 
                 // Perform some queries
                 var pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, dateTimeStartOffset1.DateTime);
-                Assert.Equal(3, pagedResult.Items.Length);
+                Assert.Equal(3, pagedResult.Items.Count);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
                 Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
 
                 // Perform some queries
                 pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MinValue);
-                Assert.Equal(3, pagedResult.Items.Length);
+                Assert.Equal(3, pagedResult.Items.Count);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
                 Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
@@ -433,7 +431,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                     .StartTestAsync();
 
                 var pagedResult = await GetPagedResultAsync(conversation, 3);
-                Assert.Equal(3, pagedResult.Items.Length);
+                Assert.Equal(3, pagedResult.Items.Count);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.NotNull(pagedResult.Items[1].AsMessageDeleteActivity());
                 Assert.Equal(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
@@ -478,7 +476,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                 try
                 {
                     pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-                    if (pagedResult.Items.Length >= expectedLength)
+                    if (pagedResult.Items.Count >= expectedLength)
                     {
                         break;
                     }

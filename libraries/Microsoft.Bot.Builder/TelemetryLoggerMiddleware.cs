@@ -120,6 +120,38 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Fills event properties for the <see cref="TelemetryLoggerConstants.BotMsgDeleteEvent"/> event.
+        /// </summary>
+        /// <param name="activity">The Activity object deleted by bot.</param>
+        /// <param name="additionalProperties">Additional properties to add to the event.</param>
+        /// <returns>The properties and their values to log when the bot deletes a message it sent previously.</returns>
+        protected static Task<Dictionary<string, string>> FillDeleteEventPropertiesAsync(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
+        {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
+            var properties = new Dictionary<string, string>()
+                {
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
+                    { TelemetryConstants.ActivityTypeProperty, activity.Type },
+                };
+
+            // Additional Properties can override "stock" properties.
+            if (additionalProperties != null)
+            {
+                return Task.FromResult(additionalProperties.Concat(properties)
+                           .GroupBy(kv => kv.Key)
+                           .ToDictionary(g => g.Key, g => g.First().Value));
+            }
+
+            return Task.FromResult(properties);
+        }
+
+        /// <summary>
         /// Uses the telemetry client's
         /// <see cref="IBotTelemetryClient.TrackEvent(string, IDictionary{string, string}, IDictionary{string, double})"/> method to
         /// log telemetry data when a message is received from the user.
@@ -327,38 +359,6 @@ namespace Microsoft.Bot.Builder
             {
                 properties.Add(TelemetryConstants.TextProperty, activity.Text);
             }
-
-            // Additional Properties can override "stock" properties.
-            if (additionalProperties != null)
-            {
-                return Task.FromResult(additionalProperties.Concat(properties)
-                           .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value));
-            }
-
-            return Task.FromResult(properties);
-        }
-
-        /// <summary>
-        /// Fills event properties for the <see cref="TelemetryLoggerConstants.BotMsgDeleteEvent"/> event.
-        /// </summary>
-        /// <param name="activity">The Activity object deleted by bot.</param>
-        /// <param name="additionalProperties">Additional properties to add to the event.</param>
-        /// <returns>The properties and their values to log when the bot deletes a message it sent previously.</returns>
-        protected Task<Dictionary<string, string>> FillDeleteEventPropertiesAsync(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
-        {
-            if (activity == null)
-            {
-                return Task.FromResult(new Dictionary<string, string>());
-            }
-
-            var properties = new Dictionary<string, string>()
-                {
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
-                    { TelemetryConstants.ActivityTypeProperty, activity.Type },
-                };
 
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)

@@ -234,6 +234,28 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// This is a helper to create the ClaimsIdentity structure from an appId that will be added to the TurnContext.
+        /// It is intended for use in proactive and named-pipe scenarios.
+        /// </summary>
+        /// <param name="botAppId">The bot's application id.</param>
+        /// <returns>A <see cref="ClaimsIdentity"/> with the audience and appId claims set to the appId.</returns>
+        protected static ClaimsIdentity CreateClaimsIdentity(string botAppId)
+        {
+            if (botAppId == null)
+            {
+                botAppId = string.Empty;
+            }
+
+            // Hand craft Claims Identity.
+            return new ClaimsIdentity(new List<Claim>
+            {
+                // Adding claims for both Emulator and Channel.
+                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+            });
+        }
+
+        /// <summary>
         /// Gets the correct streaming connector factory that is processing the given activity.
         /// </summary>
         /// <param name="activity">The activity that is being processed.</param>
@@ -331,29 +353,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        /// <summary>
-        /// This is a helper to create the ClaimsIdentity structure from an appId that will be added to the TurnContext.
-        /// It is intended for use in proactive and named-pipe scenarios.
-        /// </summary>
-        /// <param name="botAppId">The bot's application id.</param>
-        /// <returns>A <see cref="ClaimsIdentity"/> with the audience and appId claims set to the appId.</returns>
-        protected ClaimsIdentity CreateClaimsIdentity(string botAppId)
-        {
-            if (botAppId == null)
-            {
-                botAppId = string.Empty;
-            }
-
-            // Hand craft Claims Identity.
-            return new ClaimsIdentity(new List<Claim>
-            {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
-            });
-        }
-
-        private Activity CreateCreateActivity(ConversationResourceResponse createConversationResult, string channelId, string serviceUrl, ConversationParameters conversationParameters)
+        private static Activity CreateCreateActivity(ConversationResourceResponse createConversationResult, string channelId, string serviceUrl, ConversationParameters conversationParameters)
         {
             // Create a conversation update activity to represent the result.
             var activity = Activity.CreateEventActivity();
@@ -367,27 +367,14 @@ namespace Microsoft.Bot.Builder
             return (Activity)activity;
         }
 
-        private TurnContext CreateTurnContext(Activity activity, ClaimsIdentity claimsIdentity, string oauthScope, IConnectorClient connectorClient, UserTokenClient userTokenClient, BotCallbackHandler callback, ConnectorFactory connectorFactory)
-        {
-            var turnContext = new TurnContext(this, activity);
-            turnContext.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-            turnContext.TurnState.Add(connectorClient);
-            turnContext.TurnState.Add(userTokenClient);
-            turnContext.TurnState.Add(callback);
-            turnContext.TurnState.Add(connectorFactory);
-            turnContext.TurnState.Set(OAuthScopeKey, oauthScope); // in non-skills scenarios the oauth scope value here will be null, so use Set
-
-            return turnContext;
-        }
-
-        private void ValidateContinuationActivity(Activity continuationActivity)
+        private static void ValidateContinuationActivity(Activity continuationActivity)
         {
             _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
             _ = continuationActivity.Conversation ?? throw new ArgumentException("The continuation Activity should contain a Conversation value.");
             _ = continuationActivity.ServiceUrl ?? throw new ArgumentException("The continuation Activity should contain a ServiceUrl value.");
         }
 
-        private InvokeResponse ProcessTurnResults(TurnContext turnContext)
+        private static InvokeResponse ProcessTurnResults(TurnContext turnContext)
         {
             // Handle ExpectedReplies scenarios where the all the activities have been buffered and sent back at once in an invoke response.
             if (turnContext.Activity.DeliveryMode == DeliveryModes.ExpectReplies)
@@ -409,6 +396,19 @@ namespace Microsoft.Bot.Builder
 
             // No body to return.
             return null;
+        }
+
+        private TurnContext CreateTurnContext(Activity activity, ClaimsIdentity claimsIdentity, string oauthScope, IConnectorClient connectorClient, UserTokenClient userTokenClient, BotCallbackHandler callback, ConnectorFactory connectorFactory)
+        {
+            var turnContext = new TurnContext(this, activity);
+            turnContext.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+            turnContext.TurnState.Add(connectorClient);
+            turnContext.TurnState.Add(userTokenClient);
+            turnContext.TurnState.Add(callback);
+            turnContext.TurnState.Add(connectorFactory);
+            turnContext.TurnState.Set(OAuthScopeKey, oauthScope); // in non-skills scenarios the oauth scope value here will be null, so use Set
+
+            return turnContext;
         }
     }
 }
