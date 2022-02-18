@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -14,20 +15,27 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedBotState"/> class.
         /// </summary>
+        public CachedBotState()
+            : this(new CachedBotStateDictionary())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CachedBotState"/> class.
+        /// </summary>
         /// <param name="state">Initial state dictionary to use for this <see cref="CachedBotState"/>.</param>
         public CachedBotState(IDictionary<string, object> state)
+            : this(new CachedBotStateDictionary(state))
         {
-            State = new CachedBotStateDictionary(state);
-            Hash = ComputeHash(State);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedBotState"/> class.
         /// </summary>
         /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
-        public CachedBotState(CachedBotStateDictionary state = null)
+        public CachedBotState(CachedBotStateDictionary state)
         {
-            State = state ?? new CachedBotStateDictionary();
+            State = state ?? throw new ArgumentNullException(nameof(state));
             Hash = ComputeHash(State);
         }
 

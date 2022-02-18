@@ -18,16 +18,13 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB Partitioned")]
-    public class CosmosDbPartitionStorageTests : StorageTestsBase, IAsyncLifetime, IClassFixture<CosmosDbPartitionStorageFixture>
+    [Collection("CosmosDb Storage Tests Collection")]
+    public class CosmosDbPartitionStorageTests : StorageTestsBase, IAsyncLifetime
     {
-        // Endpoint and Authkey for the CosmosDB Emulator running locally
-        private const string CosmosServiceEndpoint = "https://localhost:8081";
-        private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-        private const string CosmosDatabaseName = "test-CosmosDbPartitionStorageTests";
         private const string CosmosCollectionName = "bot-storage";
         private IStorage _storage;
 
-        public CosmosDbPartitionStorageTests()
+        public CosmosDbPartitionStorageTests(CosmosDbPartitionStorageFixture fixture)
         {
             _storage = GetStorage();
         }
@@ -425,20 +422,20 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
                 return new CosmosDbPartitionedStorage(
                     new CosmosDbPartitionedStorageOptions
                     {
-                        AuthKey = CosmosAuthKey,
+                        AuthKey = CosmosDbTestConstants.CosmosAuthKey,
                         ContainerId = CosmosCollectionName,
-                        CosmosDbEndpoint = CosmosServiceEndpoint,
-                        DatabaseId = CosmosDatabaseName,
+                        CosmosDbEndpoint = CosmosDbTestConstants.CosmosServiceEndpoint,
+                        DatabaseId = CosmosDbTestConstants.CosmosDatabaseName,
                     });
             }
 
             return new CosmosDbPartitionedStorage(
                     new CosmosDbPartitionedStorageOptions
                     {
-                        AuthKey = CosmosAuthKey,
+                        AuthKey = CosmosDbTestConstants.CosmosAuthKey,
                         ContainerId = CosmosCollectionName,
-                        CosmosDbEndpoint = CosmosServiceEndpoint,
-                        DatabaseId = CosmosDatabaseName,
+                        CosmosDbEndpoint = CosmosDbTestConstants.CosmosServiceEndpoint,
+                        DatabaseId = CosmosDbTestConstants.CosmosDatabaseName,
                     }, jsonSerializer);
         }
     }

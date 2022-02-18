@@ -136,6 +136,7 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
             updatePocoItem.Count++;
             updatePocoStoreItem.Count++;
 
+            var wasEtag = updatePocoStoreItem.ETag;
             await storage.WriteAsync(loadedStoreItems);
 
             var reloadedStoreItems = new CachedBotStateDictionary(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
@@ -144,7 +145,9 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
             var reloadedUpdatePocoStoreItem = reloadedStoreItems.MapValueTo<PocoStoreItem>("pocoStoreItem");
 
             Assert.NotNull(reloadedUpdatePocoStoreItem.ETag);
-            Assert.NotEqual(updatePocoStoreItem.ETag, reloadedUpdatePocoStoreItem.ETag);
+
+            Assert.NotEqual(updatePocoStoreItem.ETag, wasEtag);
+            Assert.Equal(updatePocoStoreItem.ETag, reloadedUpdatePocoStoreItem.ETag);
             Assert.Equal(2, reloeadedUpdatePocoItem.Count);
             Assert.Equal(2, reloadedUpdatePocoStoreItem.Count);
 
@@ -166,6 +169,7 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
             bool threwException = false;
             try
             {
+                updatePocoStoreItem.ETag = wasEtag;
                 await storage.WriteAsync(new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } });
             }
             catch
@@ -246,7 +250,8 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
 
             var updatePocoItem = loadedStoreItems["pocoItem"] as JObject;
             var updatePocoStoreItem = loadedStoreItems["pocoStoreItem"] as JObject;
-            Assert.NotNull(updatePocoStoreItem.Value<string>("ETag"));
+            var wasEtag = updatePocoStoreItem.Value<string>("ETag");
+            Assert.NotNull(wasEtag);
 
             // 2nd write should work, because we have new etag, or no etag
             updatePocoItem["Count"] = updatePocoItem.Value<int>("Count") + 1;
@@ -260,7 +265,8 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
             var reloadedUpdatePocoStoreItem = reloadedStoreItems["pocoStoreItem"] as JObject;
 
             Assert.NotNull(reloadedUpdatePocoStoreItem.Value<string>("ETag"));
-            Assert.NotEqual(updatePocoStoreItem.Value<string>("ETag"), reloadedUpdatePocoStoreItem.Value<string>("ETag"));
+            
+            Assert.Equal(updatePocoStoreItem.Value<string>("ETag"), reloadedUpdatePocoStoreItem.Value<string>("ETag"));
             Assert.Equal(2, reloeadedUpdatePocoItem.Value<int>("Count"));
             Assert.Equal(2, reloadedUpdatePocoStoreItem.Value<int>("Count"));
 
@@ -285,7 +291,7 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
             bool threwException = false;
             try
             {
-                //updatePocoStoreItem["ETag"] = "*";
+                updatePocoStoreItem["ETag"] = updatePocoStoreItem;
                 await storage.WriteAsync(new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } });
             }
             catch

@@ -163,15 +163,15 @@ namespace Microsoft.Bot.Builder
         {
             if (newValue is IStoreItem newStoreItem)
             {
-                SetETag(newState, oldStateETag, newStoreItem.ETag);
+                newStoreItem.ETag = SetETag(newState, oldStateETag, newStoreItem.ETag);
             }
             else if (newValue is JObject asJobject && asJobject.ContainsKey("ETag"))
             {
-                SetETag(newState, oldStateETag, asJobject.Value<string>("ETag"));
+                asJobject["ETag"] = SetETag(newState, oldStateETag, asJobject.Value<string>("ETag"));
             }
         }
 
-        private void SetETag(JObject state, string oldStateETag, string newEtag)
+        private string SetETag(JObject state, string oldStateETag, string newEtag)
         {
             if (oldStateETag != null
                     &&
@@ -179,10 +179,17 @@ namespace Microsoft.Bot.Builder
                     &&
                newEtag != oldStateETag)
             {
-                throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newEtag}\r\nCurrent: {oldStateETag}");
+                throw new State.StoreItemETagException($"Etag conflict. \r\n\r\nOriginal: {newEtag}\r\nCurrent: {oldStateETag}");
             }
 
-            state["ETag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
+            if (newEtag?.Length == 0)
+            {
+                throw new State.StoreItemETagException("etag empty");
+            }
+
+            var etag = (_eTag++).ToString(CultureInfo.InvariantCulture);
+            state["ETag"] = etag;
+            return etag;
         }
     }
 }

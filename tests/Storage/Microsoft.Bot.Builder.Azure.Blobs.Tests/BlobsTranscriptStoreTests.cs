@@ -79,6 +79,14 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
                         return;
                     }
                 }
+                catch (RequestFailedException ex)
+                {
+                    // 12.10.0 throws RequestFailedException
+                    if (ex.Status == 400 && ex.Message.StartsWith("Service request failed."))
+                    {
+                        return;
+                    }
+                }
 
                 throw new XunitException("Should have thrown an error");
             }

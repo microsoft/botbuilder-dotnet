@@ -86,27 +86,31 @@ namespace Microsoft.Bot.Builder
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-
+                
                 if (val is IDictionary<string, object> asDictionary)
                 {
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asDictionary);
+                    cachedState = new CachedBotState(asDictionary);
+                    cachedState.State.ETag = ETagHelper.GetETagOrNull(val);
                 }
                 else if (val is JObject asJobject)
                 {
                     // If types are not used by storage serialization, and Newtonsoft is the serializer
                     // the item found will be a JObject.
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asJobject.ToObject<IDictionary<string, object>>());
+                    cachedState = new CachedBotState(asJobject.ToObject<IDictionary<string, object>>());
+                    cachedState.State.ETag = ETagHelper.GetETagOrNull(val);
                 }
                 else if (val == null)
                 {
                     // This is the case where the dictionary did not exist in the store.
-                    turnContext.TurnState[_contextServiceKey] = new CachedBotState();
+                    cachedState = new CachedBotState();
                 }
                 else
                 {
                     // This should never happen
                     throw new InvalidOperationException("Data is not in the correct format for BotState.");
                 }
+
+                turnContext.TurnState[_contextServiceKey] = cachedState;
             }
         }
 
@@ -128,11 +132,13 @@ namespace Microsoft.Bot.Builder
             if (cachedState != null && (force || cachedState.IsChanged()))
             {
                 var key = GetStorageKey(turnContext);
-                var changes = new Dictionary<string, object>
+                var changes = new Dictionary<string, object>()
                 {
                     { key, cachedState.State },
                 };
+                
                 await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
+
                 cachedState.Hash = CachedBotState.ComputeHash(cachedState.State);
                 return;
             }
@@ -155,7 +161,14 @@ namespace Microsoft.Bot.Builder
             BotAssert.ContextNotNull(turnContext);
 
             // Explicitly setting the hash will mean IsChanged is always true. And that will force a Save.
-            turnContext.TurnState[_contextServiceKey] = new CachedBotState { Hash = string.Empty };
+            var newState = new CachedBotState { Hash = string.Empty };
+            var cachedState = GetCachedState(turnContext);
+            if (cachedState != null)
+            {
+                newState.State.ETag = cachedState.State.ETag;
+            }
+
+            turnContext.TurnState[_contextServiceKey] = newState;
 
             return Task.CompletedTask;
         }

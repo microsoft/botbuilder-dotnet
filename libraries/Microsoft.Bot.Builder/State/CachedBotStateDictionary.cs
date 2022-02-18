@@ -10,17 +10,18 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Internal cached bot state dictionary with etag support.
+    /// Internal cached bot state dictionary.
     /// </summary>
-    public class CachedBotStateDictionary : Dictionary<string, object>
+    public class CachedBotStateDictionary : Dictionary<string, object>, IStoreItem
     {
         private static JsonSerializer _coerceSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.None };
+        private string _etag;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedBotStateDictionary"/> class.
         /// </summary>
-        public CachedBotStateDictionary() 
-            : base()
+        public CachedBotStateDictionary()
+            : base(StringComparer.InvariantCultureIgnoreCase)
         { 
         }
 
@@ -31,6 +32,26 @@ namespace Microsoft.Bot.Builder
         public CachedBotStateDictionary(IDictionary<string, object> state)
             : base(state)
         {
+        }
+
+        /// <inheritdoc/>
+        public string ETag
+        {
+            get
+            {
+                // If the _etag field is empty, look for etag inside the dictionary
+                if (string.IsNullOrEmpty(_etag) && this.TryGetValue("ETag", out object etag))
+                {
+                    _etag = etag.ToString();
+                }
+
+                return _etag;
+            }
+
+            set
+            {
+                _etag = value;
+            }
         }
 
         /// <summary>

@@ -136,20 +136,9 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
                     var documentStoreItem = readItemResponse.Resource;
                     var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
 
-                    if (item is IStoreItem storeItem)
-                    {
-                        storeItem.ETag = documentStoreItem.ETag;
-                        storeItems.Add(documentStoreItem.RealId, storeItem);
-                    }
-                    else if (item is JObject asJobject)
-                    {
-                        asJobject["ETag"] = documentStoreItem.ETag;
-                        storeItems.Add(documentStoreItem.RealId, item);
-                    }
-                    else
-                    {
-                        storeItems.Add(documentStoreItem.RealId, item);
-                    }
+                    ETagHelper.UpdateETag(item, documentStoreItem.ETag);
+
+                    storeItems.Add(documentStoreItem.RealId, item);
                 }
                 catch (CosmosException exception)
                 {
@@ -207,35 +196,44 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
                     Document = json,
                 };
 
-                var etag = StorageExtensions.GetETagOrNull(change.Value);
+                var etag = ETagHelper.GetETagOrNull(change.Value);
                 try
                 {
                     if (etag == null || etag == "*")
                     {
                         // if new item or * then insert or replace unconditionally
-                        await _container.UpsertItemAsync(
+                        var result = await _container.UpsertItemAsync(
                                 documentChange,
                                 GetPartitionKey(documentChange.PartitionKey),
                                 cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
+
+                        ETagHelper.UpdateETag(change.Value, result.ETag.ToString());
                     }
                     else if (etag.Length > 0)
                     {
                         // if we have an etag, do opt. concurrency replace
-                        await _container.UpsertItemAsync(
+                        var result = await _container.UpsertItemAsync(
                                 documentChange,
                                 GetPartitionKey(documentChange.PartitionKey),
                                 new ItemRequestOptions() { IfMatchEtag = etag, },
                                 cancellationToken)
                             .ConfigureAwait(false);
+
+                        ETagHelper.UpdateETag(change.Value, result.ETag.ToString());
                     }
                     else
                     {
-                        throw new ArgumentException("etag empty");
+                        throw new State.StoreItemETagException("etag empty");
                     }
                 }
                 catch (CosmosException ex)
                 {
+                    if (ex.StatusCode == HttpStatusCode.PreconditionFailed && etag != null && etag != "*")
+                    {
+                        throw new State.StoreItemETagException($"Etag conflict.", ex);
+                    }
+
                     // This check could potentially be performed before even attempting to upsert the item
                     // so that a request wouldn't be made to Cosmos if it's expected to fail.
                     // However, performing the check here ensures that this custom exception is only thrown

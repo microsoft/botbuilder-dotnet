@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,10 +12,6 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 {
     public class CosmosDbPartitionStorageFixture : IAsyncLifetime
     {
-        private const string CosmosServiceEndpoint = "https://localhost:8081";
-        private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-        private const string CosmosDatabaseName = "test-CosmosDbPartitionStorageTests";
-
         private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
 
         private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
@@ -47,11 +46,11 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
             if (HasEmulator.Value)
             {
                 var client = new CosmosClient(
-                    CosmosServiceEndpoint,
-                    CosmosAuthKey,
+                    CosmosDbTestConstants.CosmosServiceEndpoint,
+                    CosmosDbTestConstants.CosmosAuthKey,
                     new CosmosClientOptions());
 
-                await client.CreateDatabaseIfNotExistsAsync(CosmosDatabaseName);
+                await client.CreateDatabaseIfNotExistsAsync(CosmosDbTestConstants.CosmosDatabaseName);
             }
         }
 
@@ -60,12 +59,12 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
             if (HasEmulator.Value)
             {
                 var client = new CosmosClient(
-                    CosmosServiceEndpoint,
-                    CosmosAuthKey,
+                    CosmosDbTestConstants.CosmosServiceEndpoint,
+                    CosmosDbTestConstants.CosmosAuthKey,
                     new CosmosClientOptions());
                 try
                 {
-                    await client.GetDatabase(CosmosDatabaseName).DeleteAsync();
+                    await client.GetDatabase(CosmosDbTestConstants.CosmosDatabaseName).DeleteAsync();
                 }
                 catch (Exception ex)
                 {

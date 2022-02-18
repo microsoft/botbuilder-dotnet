@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            
+
             _options = options;
 
             // Triggers a check for the existence of the container
@@ -159,22 +159,22 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 var newValue = keyValuePair.Value;
 
-                string eTag = _options.EnforceEtag ? StorageExtensions.GetETagOrNull(newValue) : eTag = "*";
-                
+                string eTag = _options.EnforceEtag ? ETagHelper.GetETagOrNull(newValue) : "*";
+
                 // Empty string etag is not allowed, for consistency among IStorage implementations
                 if (_options.EnforceEtag && eTag?.Length == 0)
                 {
-                    throw new ArgumentException("etag empty");
+                    throw new State.StoreItemETagException("etag empty");
                 }
-                
+
                 // "*" eTag in IStoreItem converts to null condition for AccessCondition
                 var accessCondition = (!string.IsNullOrEmpty(eTag) && eTag != "*")
                     ? new BlobRequestConditions() { IfMatch = new ETag(eTag) }
                     : null;
-               
+
                 var blobName = GetBlobName(keyValuePair.Key);
                 var blobReference = _containerClient.GetBlobClient(blobName);
-
+                
                 try
                 {
                     using var memoryStream = new MemoryStream();
@@ -183,15 +183,46 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     await streamWriter.FlushAsync().ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
 
-                    await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _options.StorageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    Response<BlobContentInfo> result;
+                    try
+                    {
+                        result = await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _options.StorageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (RequestFailedException ex)
+                        when (ex.Status == (int)HttpStatusCode.PreconditionFailed
+                        && ex.ErrorCode == BlobErrorCode.ConditionNotMet)
+                    {
+                        // If we received an etag violation (ConditionNotMet), ensure the record actually exists since blobs storage will not create
+                        // the record if it does not exist and an etag was provided.
+                        if (!string.IsNullOrEmpty(eTag) && eTag != "*")
+                        {
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            result = await blobReference.UploadAsync(memoryStream, conditions: new BlobRequestConditions() { IfNoneMatch = new ETag("*") }, transferOptions: _options.StorageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    if (_options.EnforceEtag)
+                    {
+                        ETagHelper.UpdateETag(newValue, result.Value.ETag.ToString());
+                    }
                 }
                 catch (RequestFailedException ex)
-                when (ex.Status == (int)HttpStatusCode.BadRequest
-                && ex.ErrorCode == BlobErrorCode.InvalidBlockList)
+                    when (ex.Status == (int)HttpStatusCode.BadRequest
+                    && ex.ErrorCode == BlobErrorCode.InvalidBlockList)
                 {
                     throw new InvalidOperationException(
                         $"An error occurred while trying to write an object. The underlying '{BlobErrorCode.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
                         ex);
+                }
+                catch (RequestFailedException ex)
+                   when (ex.Status == (int)HttpStatusCode.Conflict
+                   && ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
+                {
+                    throw new State.StoreItemETagException("Etag conflict.", ex);
                 }
             }
         }
@@ -219,13 +250,16 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         {
                             var obj = _options.JsonSerializer.Deserialize(jsonReader);
 
-                            if (obj is IStoreItem storeItem)
+                            if (_options.EnforceEtag)
                             {
-                                storeItem.ETag = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
-                            }
-                            else if (obj is JObject asJobject)
-                            {
-                                asJobject["ETag"] = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
+                                if (obj is IStoreItem storeItem)
+                                {
+                                    storeItem.ETag = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
+                                }
+                                else if (obj is JObject asJobject)
+                                {
+                                    asJobject["ETag"] = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
+                                }
                             }
 
                             return obj;

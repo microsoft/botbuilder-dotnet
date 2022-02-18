@@ -11,9 +11,9 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Tests.Common.Storage
 {
-    public class TeamsSSOTokenExchangeMiddlewareTests
+    public abstract class TeamsSSOTokenExchangeMiddlewareTestsBase
     {
         private const string ConnectionName = "ConnectionName";
         private const string FakeExchangeableItem = "Fake token";
@@ -24,18 +24,24 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public void ConstructorValidation()
         {
+            var storage = GetStorage();
             Assert.Throws<ArgumentNullException>(() => new TeamsSSOTokenExchangeMiddleware(null, ConnectionName));
-            Assert.Throws<ArgumentNullException>(() => new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), null));
-            Assert.Throws<ArgumentNullException>(() => new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), string.Empty));
+            Assert.Throws<ArgumentNullException>(() => new TeamsSSOTokenExchangeMiddleware(storage, null));
+            Assert.Throws<ArgumentNullException>(() => new TeamsSSOTokenExchangeMiddleware(storage, string.Empty));
+        }
+
+        public virtual IStorage GetStorage()
+        {
+            return new MemoryStorage();
         }
 
         [Fact]
-        public async Task TokenExchanged_OnTurnFires()
+        public virtual async Task TokenExchanged_OnTurnFires()
         {
             // Arrange
             bool wasCalled = false;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
-               .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
+               .Use(new TeamsSSOTokenExchangeMiddleware(GetStorage(), ConnectionName));
             
             adapter.AddExchangeableToken(ConnectionName, Channels.Msteams, TeamsUserId, FakeExchangeableItem, Token);
 
@@ -57,12 +63,12 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        public async Task TokenExchanged_SecondSendsInvokeResponse()
+        public virtual async Task TokenExchanged_SecondSendsInvokeResponse()
         {
             // Arrange
             int calledCount = 0;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
-               .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
+               .Use(new TeamsSSOTokenExchangeMiddleware(GetStorage(), ConnectionName));
 
             adapter.AddExchangeableToken(ConnectionName, Channels.Msteams, TeamsUserId, FakeExchangeableItem, Token);
 
@@ -95,12 +101,12 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        public async Task TokenNotExchanged_PreconditionFailed()
+        public virtual async Task TokenNotExchanged_PreconditionFailed()
         {
             // Arrange
             bool wasCalled = false;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
-               .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
+               .Use(new TeamsSSOTokenExchangeMiddleware(GetStorage(), ConnectionName));
 
             // since this test does not setup adapter.AddExchangeableToken, the exchange will not happen
 
@@ -127,12 +133,12 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        public async Task TokenNotExchanged_DirectLineChannel()
+        public virtual async Task TokenNotExchanged_DirectLineChannel()
         {
             // Arrange
             bool wasCalled = false;
             var adapter = new TeamsSSOAdapter(CreateConversationReference(Channels.Directline))
-               .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
+               .Use(new TeamsSSOTokenExchangeMiddleware(GetStorage(), ConnectionName));
 
             // Act
             await new TestFlow(adapter, async (context, cancellationToken) =>
