@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="strictFilters">QnA Maker <see cref="Metadata"/> with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
         /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
-        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnaServiceType"/>, empty or null for legacy QnAMaker.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnAServiceType"/>, empty or null for legacy QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -132,8 +132,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.StrictFilters = strictFilters;
             this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
             this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
-            this.Filters = filters;
-            this.QnAServiceType = qnAServiceType;
+            Filters = filters;
+            QnAServiceType = qnAServiceType;
             this.HttpClient = httpClient;
 
             // add waterfall steps
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// Gets or sets QnA Service type.
         /// </summary>
-        /// <value>Valid value <see cref="Constants.LanguageQnaServiceType"/>, empty or null for legacy QnAMaker.</value>
+        /// <value>Valid value <see cref="Constants.LanguageQnAServiceType"/>, empty or null for legacy QnAMaker.</value>
         [JsonProperty("qnAServiceType")]
         public StringExpression QnAServiceType { get; set; }
 
@@ -525,11 +525,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             {
                 EndpointKey = this.EndpointKey.GetValue(dc.State),
                 Host = this.HostName.GetValue(dc.State),
-                KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State),
-                QnAServiceType = this.QnAServiceType?.GetValue(dc.State)
+                KnowledgeBaseId = KnowledgeBaseId.GetValue(dc.State),
+                QnAServiceType = QnAServiceType?.GetValue(dc.State)
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+            if (endpoint.QnAServiceType == "language")
+            {
+                return new CustomQuestionAnswering(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+            }
+            else
+            {
+                return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+            }
         }
 
         /// <summary>
@@ -548,9 +555,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = this.RankerType?.GetValue(dc.State),
-                IsTest = this.IsTest,
-                EnablePreciseAnswer = this.EnablePreciseAnswer,
-                Filters = this.Filters?.GetValue(dc.State)
+                IsTest = IsTest,
+                EnablePreciseAnswer = EnablePreciseAnswer,
+                Filters = Filters?.GetValue(dc.State)
             });
         }
 
@@ -567,8 +574,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
-                DisplayPreciseAnswerOnly = this.DisplayPreciseAnswerOnly
+                CardNoMatchResponse = await CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
+                DisplayPreciseAnswerOnly = DisplayPreciseAnswerOnly
             };
         }
 
