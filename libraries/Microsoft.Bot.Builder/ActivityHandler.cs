@@ -741,7 +741,7 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        private AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
+        private static AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
         {
             if (activity.Value == null)
             {
@@ -785,7 +785,7 @@ namespace Microsoft.Bot.Builder
             return invokeValue;
         }
 
-        private AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
+        private static AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
         {
             return new AdaptiveCardInvokeResponse()
             {
