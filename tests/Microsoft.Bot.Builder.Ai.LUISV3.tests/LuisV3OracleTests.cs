@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -29,12 +28,6 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
     {
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
         private string testData = Path.Combine(new string[] { "..", "..", "..", "..", "Microsoft.Bot.Builder.AI.LUIS.Tests", "TestData" });
-
-        private readonly Dictionary<string, IntentScore> _intents = new ()
-        {
-            { "Test", new IntentScore { Score = 0.2 } },
-            { "Greeting", new IntentScore { Score = 0.4 } },
-        };
 
         [Fact]
         public void LuisRecognizer_Timeout()
@@ -231,7 +224,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         public void TopIntentReturnsTopIntent()
         {
             var results = new RecognizerResult();
-            _intents.ToList().ForEach(results.Intents.Add);
+            results.Intents.Add("Test", new IntentScore { Score = 0.2 });
+            results.Intents.Add("Greeting", new IntentScore { Score = 0.4 });
 
             var greetingIntent = LuisRecognizer.TopIntent(results);
             Assert.Equal("Greeting", greetingIntent);
@@ -241,7 +235,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         public void TopIntentReturnsDefaultIntentIfMinScoreIsHigher()
         {
             var results = new RecognizerResult();
-            _intents.ToList().ForEach(results.Intents.Add);
+            results.Intents.Add("Test", new IntentScore { Score = 0.2 });
+            results.Intents.Add("Greeting", new IntentScore { Score = 0.4 });
 
             var defaultIntent = LuisRecognizer.TopIntent(results, minScore: 0.5);
             Assert.Equal("None", defaultIntent);
@@ -251,7 +246,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         public void TopIntentReturnsDefaultIntentIfProvided()
         {
             var results = new RecognizerResult();
-            _intents.ToList().ForEach(results.Intents.Add);
+            results.Intents.Add("Test", new IntentScore { Score = 0.2 });
+            results.Intents.Add("Greeting", new IntentScore { Score = 0.4 });
 
             var defaultIntent = LuisRecognizer.TopIntent(results, "Test2", 0.5);
             Assert.Equal("Test2", defaultIntent);
@@ -268,7 +264,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         public void TopIntentReturnsTopIntentIfScoreEqualsMinScore()
         {
             var results = new RecognizerResult();
-            _intents.ToList().ForEach(results.Intents.Add);
+            results.Intents.Add("Test", new IntentScore { Score = 0.2 });
+            results.Intents.Add("Greeting", new IntentScore { Score = 0.4 });
 
             var defaultIntent = LuisRecognizer.TopIntent(results, minScore: 0.4);
             Assert.Equal("Greeting", defaultIntent);
