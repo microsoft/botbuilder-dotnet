@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder
             {
                 if (!string.IsNullOrWhiteSpace(activity.From?.Name))
                 {
-                    properties.Add(TelemetryConstants.FromNameProperty, activity.From?.Name);
+                    properties.Add(TelemetryConstants.FromNameProperty, activity.From.Name);
                 }
 
                 if (!string.IsNullOrWhiteSpace(activity.Text))

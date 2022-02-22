@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-                var value = Value?.EvaluateExpression(dc.State);
+                var value = Value.EvaluateExpression(dc.State);
                 return await EndParentDialogAsync(dc, value, cancellationToken).ConfigureAwait(false);
             }
 

@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return null;
             }
 
-            string[] parts = authorizationHeader?.Split(' ');
+            string[] parts = authorizationHeader.Split(' ');
             if (parts.Length == 2)
             {
                 return await GetIdentityAsync(parts[0], parts[1], channelId, requiredEndorsements).ConfigureAwait(false);

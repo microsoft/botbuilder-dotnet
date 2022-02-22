@@ -853,7 +853,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
         {
             var exchangableValue = !string.IsNullOrEmpty(exchangeRequest?.Token) ?
-                exchangeRequest?.Token :
+                exchangeRequest.Token :
                 exchangeRequest?.Uri;
 
             var key = new ExchangableTokenKey()

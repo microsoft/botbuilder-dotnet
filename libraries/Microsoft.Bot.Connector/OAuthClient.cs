@@ -40,10 +40,7 @@ namespace Microsoft.Bot.Connector
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -69,10 +66,7 @@ namespace Microsoft.Bot.Connector
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -99,10 +93,7 @@ namespace Microsoft.Bot.Connector
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -135,10 +126,7 @@ namespace Microsoft.Bot.Connector
 
             BaseUri = baseUri;
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -174,10 +162,7 @@ namespace Microsoft.Bot.Connector
 
             BaseUri = baseUri;
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary> Initializes a new instance of the <see cref="OAuthClient"/> class. </summary>

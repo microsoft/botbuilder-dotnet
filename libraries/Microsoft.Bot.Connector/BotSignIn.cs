@@ -84,10 +84,7 @@ namespace Microsoft.Bot.Connector
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/botsignin/GetSignInUrl").ToString();
             List<string> queryParameters = new List<string>();
-            if (state != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state)));
-            }
+            queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state)));
 
             if (codeChallenge != null)
             {

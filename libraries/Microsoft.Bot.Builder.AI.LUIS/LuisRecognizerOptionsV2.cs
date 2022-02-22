@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 return null;
             }
 
-            var utterance = turnContext.Activity?.AsMessageActivity()?.Text;
+            var utterance = turnContext.Activity.AsMessageActivity()?.Text;
             RecognizerResult recognizerResult;
             LuisResult luisResult = null;
 
