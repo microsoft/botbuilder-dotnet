@@ -140,11 +140,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             var choiceStyle = options.Style ?? Style;
             if (isRetry && options.RetryPrompt != null)
             {
-                prompt = AppendChoices(options.RetryPrompt, channelId, choices, choiceStyle, choiceOptions);
+                prompt = AppendChoices(options.RetryPrompt, channelId, choices, choiceStyle, choiceOptions, cancellationToken);
             }
             else
             {
-                prompt = AppendChoices(options.Prompt, channelId, choices, choiceStyle, choiceOptions);
+                prompt = AppendChoices(options.Prompt, channelId, choices, choiceStyle, choiceOptions, cancellationToken);
             }
 
             // Send prompt

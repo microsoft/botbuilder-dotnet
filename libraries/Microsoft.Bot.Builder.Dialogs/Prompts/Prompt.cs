@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // Perform base recognition
                 var state = dc.ActiveDialog.State;
-                var recognized = await OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
+                var recognized = await OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], cancellationToken).ConfigureAwait(false);
                 return recognized.Succeeded;
             }
 

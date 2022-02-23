@@ -403,7 +403,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                     uri.Path += $"/versions/{options.Version}/predict";
                 }
 
-                var response = await DefaultHttpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                var response = await DefaultHttpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json"), cancellationToken).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
                 luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 var prediction = (JObject)luisResponse["prediction"];

@@ -42,7 +42,9 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             {
                 ReadResult result;
 
+#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods
                 result = await input.ReadAsync().ConfigureAwait(false);
+#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods
 
                 if (result.IsCanceled)
                 {
@@ -67,7 +69,9 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                                 {
                                     input.AdvanceTo(buffer.Start, buffer.End);
 
+#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods
                                     result = await input.ReadAsync().ConfigureAwait(false);
+#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods
 
                                     if (result.IsCanceled)
                                     {
@@ -164,7 +168,8 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
             await WriteAsync(
                 header: responseHeader,
-                writeFunc: async pipeWriter => await pipeWriter.WriteAsync(responseBytes).ConfigureAwait(false)).ConfigureAwait(false);
+                writeFunc: async pipeWriter => await pipeWriter.WriteAsync(responseBytes).ConfigureAwait(false),
+                cancellationToken).ConfigureAwait(false);
         }
 
         public virtual async Task SendRequestAsync(Guid id, RequestPayload request, CancellationToken cancellationToken)
@@ -186,7 +191,8 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
             await WriteAsync(
                 header: requestHeader,
-                writeFunc: async pipeWriter => await pipeWriter.WriteAsync(requestBytes).ConfigureAwait(false)).ConfigureAwait(false);
+                writeFunc: async pipeWriter => await pipeWriter.WriteAsync(requestBytes).ConfigureAwait(false),
+                cancellationToken).ConfigureAwait(false);
         }
 
         public virtual async Task SendStreamAsync(Guid id, Stream stream, CancellationToken cancellationToken)
@@ -212,7 +218,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     End = true
                 };
 
-                await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
+                await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter), cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -321,7 +327,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 try
                 {
                     HeaderSerializer.Serialize(header, _sendHeaderBuffer, 0);
-                    await output.WriteAsync(_sendHeaderBuffer).ConfigureAwait(false);
+                    await output.WriteAsync(_sendHeaderBuffer, cancellationToken).ConfigureAwait(false);
                     await writeFunc(output).ConfigureAwait(false);
                 }
                 finally

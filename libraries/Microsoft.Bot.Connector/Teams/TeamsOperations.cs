@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/teams/{teamId}/conversations").ToString();
             url = url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
 
-            return await GetResponseAsync<ConversationList>(url, shouldTrace, invocationId).ConfigureAwait(false);
+            return await GetResponseAsync<ConversationList>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/teams/{teamId}").ToString();
             url = url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
 
-            return await GetResponseAsync<TeamDetails>(url, shouldTrace, invocationId).ConfigureAwait(false);
+            return await GetResponseAsync<TeamDetails>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}").ToString();
             url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
 
-            return await GetResponseAsync<MeetingInfo>(url, shouldTrace, invocationId, customHeaders).ConfigureAwait(false);
+            return await GetResponseAsync<MeetingInfo>(url, shouldTrace, invocationId, customHeaders, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Connector.Teams
             url = url.Replace("{participantId}", System.Uri.EscapeDataString(participantId));
             url = url.Replace("{tenantId}", System.Uri.EscapeDataString(tenantId));
 
-            return await GetResponseAsync<TeamsMeetingParticipant>(url, shouldTrace, invocationId).ConfigureAwait(false);
+            return await GetResponseAsync<TeamsMeetingParticipant>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string url, bool shouldTrace, string invocationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))

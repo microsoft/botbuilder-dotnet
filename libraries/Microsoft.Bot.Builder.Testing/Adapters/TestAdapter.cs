@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     // more realistic tests.
                     var delayMs = Convert.ToInt32(activity.Value, CultureInfo.InvariantCulture);
 
-                    await Task.Delay(delayMs).ConfigureAwait(false);
+                    await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
                 }
                 else if (activity.Type == ActivityTypes.Trace)
                 {

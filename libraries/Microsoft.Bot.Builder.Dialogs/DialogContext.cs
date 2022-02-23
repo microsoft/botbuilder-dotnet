@@ -428,7 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             }
 
                             // End the active dialog
-                            await dialogContext.EndActiveDialogAsync(DialogReason.CancelCalled).ConfigureAwait(false);
+                            await dialogContext.EndActiveDialogAsync(DialogReason.CancelCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {

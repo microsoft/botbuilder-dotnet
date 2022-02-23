@@ -490,7 +490,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
 
-                return await stepContext.EndDialogAsync().ConfigureAwait(false);
+                return await stepContext.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // If previous QnAId is present, replace the dialog
@@ -519,7 +519,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 }
             }
 
-            return await stepContext.EndDialogAsync().ConfigureAwait(false);
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private static void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
@@ -599,7 +599,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                     // Get active learning suggestion card activity.
                     var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                     stepContext.ActiveDialog.State[Options] = dialogOptions;
                     stepContext.ActiveDialog.State[SuggestedQuestionsData] = suggestedQuestions;
@@ -666,7 +666,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                         await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
 
-                    return await stepContext.EndDialogAsync().ConfigureAwait(false);
+                    return await stepContext.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -708,7 +708,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                     // Get multi-turn prompts card activity.
                     var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
