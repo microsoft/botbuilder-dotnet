@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     /// <summary>
     /// Active learning helper class.
@@ -26,7 +27,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <value>
         /// Maximum Score For Low Score Variation.
-        /// </value>                        
+        /// </value>
         public static double MaximumScoreForLowScoreVariation { get; set; } = 95.0;
 
         /// <summary>

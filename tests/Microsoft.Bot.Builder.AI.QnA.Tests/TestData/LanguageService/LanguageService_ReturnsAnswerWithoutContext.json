@@ -1,0 +1,32 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "Where can I buy home appliances?"
+      ],
+      "answer": "Any Walmart store",
+      "confidenceScore": 0.68,
+      "id": 56,
+      "source": "Editorial",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": false,
+        "prompts": []
+      }
+    },
+    {
+      "questions": [
+        "Where can I buy cleaning products?"
+      ],
+      "answer": "Any DIY store",
+      "confidenceScore": 0.56,
+      "id": 55,
+      "source": "Editorial",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": false,
+        "prompts": []
+      }
+    }
+  ]
+}

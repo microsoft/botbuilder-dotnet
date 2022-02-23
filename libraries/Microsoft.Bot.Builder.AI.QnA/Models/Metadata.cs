@@ -4,7 +4,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// Represents the Metadata object sent as part of QnA Maker requests.

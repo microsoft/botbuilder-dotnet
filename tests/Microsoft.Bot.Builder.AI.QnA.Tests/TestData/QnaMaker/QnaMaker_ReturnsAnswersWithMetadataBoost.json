@@ -1,0 +1,19 @@
+{
+    "answers": [
+        {
+            "questions": [
+                "Who loves me?"
+            ],
+            "answer": "Kiki",
+            "score": 100,
+            "id": 29,
+            "source": "Editorial",
+            "metadata": [
+                {
+                    "name": "artist",
+                    "value": "drake"
+                }
+            ]
+        }
+    ]
+}

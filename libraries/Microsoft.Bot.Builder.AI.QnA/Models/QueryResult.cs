@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// Represents an individual result from a knowledge base query.
@@ -80,5 +80,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty(PropertyName = "context")]
         public QnAResponseContext Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets AnswerSpan of the previous turn.
+        /// </summary>
+        /// <value>
+        /// The answerspan value.
+        /// </value>
+        [JsonProperty("answerSpan")]
+        public AnswerSpanResponse AnswerSpan { get; set; }
     }
 }

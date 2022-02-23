@@ -1,0 +1,25 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "What happens when I enable precise answer?"
+      ],
+      "answer": "The precise answering feature introduced, allows you to get the precise short answer from the best candidate answer passage present in the knowledge base for any user query. This feature uses a deep learning model at runtime, which understands the intent of the user query and detects the precise short answer from the answer passage, if there is a short answer present as a fact in the answer passage.",
+      "confidenceScore": 1,
+      "id": 5,
+      "source": "Editorial",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": true,
+        "prompts": [
+        ]
+      },
+      "answerSpan": {
+        "text": "The precise answering feature allows you to get the precise short answer from the best candidate answer passage using a deep learning model at runtime.",
+        "confidenceScore": 0.1562,
+        "offset": 355,
+        "length": 434
+      }
+    }
+  ]
+}
