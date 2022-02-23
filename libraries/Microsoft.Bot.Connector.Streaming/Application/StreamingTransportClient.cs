@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         }
 
         /// <inheritdoc />
-        public event DisconnectedEventHandler Disconnected;
+        public event EventHandler<DisconnectedEventArgs> Disconnected;
 
         /// <inheritdoc />
         public bool IsConnected { get; private set; } = false;

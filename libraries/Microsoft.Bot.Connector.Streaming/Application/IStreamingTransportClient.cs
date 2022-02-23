@@ -10,13 +10,6 @@ using Microsoft.Bot.Connector.Streaming.Payloads;
 namespace Microsoft.Bot.Connector.Streaming.Application
 {
     /// <summary>
-    /// Delegate used to setup actions to be taken when disconnection events are triggered.
-    /// </summary>
-    /// <param name="sender">The source of the disconnection event.</param>
-    /// <param name="e">The arguments specified by the disconnection event.</param>
-    public delegate void DisconnectedEventHandler(object sender, DisconnectedEventArgs e);
-
-    /// <summary>
     /// Implemented by clients compatible with the Bot Framework Protocol 3 with Streaming Extensions.
     /// </summary>
     public interface IStreamingTransportClient : IDisposable
@@ -24,7 +17,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// <summary>
         /// An event used to signal when the underlying connection has disconnected.
         /// </summary>
-        event DisconnectedEventHandler Disconnected;
+        event EventHandler<DisconnectedEventArgs> Disconnected;
 
         /// <summary>
         /// Gets a value indicating whether this client is currently connected.
