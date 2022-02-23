@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
     /// <summary>
     /// Implemented by stream attachments compatible with the Bot Framework Protocol 3 with Streaming Extensions.
     /// </summary>
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
     public interface IContentStream
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
     {
         /// <summary>
         /// Gets a guid to use as the unique identifier of this ContentStream.

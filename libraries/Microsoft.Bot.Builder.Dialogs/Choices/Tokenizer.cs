@@ -34,7 +34,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <remarks>This is an exact port of the JavaScript implementation of the algorithm except that here
         /// the .NET library functions are used in place of the JavaScript string code point functions.</remarks>
 #pragma warning disable CA1002 // Do not expose generic lists
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
         public static List<Token> DefaultTokenizerImpl(string text, string locale = null)
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
 #pragma warning restore CA1002 // Do not expose generic lists
         {
             var tokens = new List<Token>();

@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Additional values for ActivityTypes beyond the auto-generated ActivityTypes class.
     /// </summary>
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
     public static class ActivityTypesEx
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
     {
         /// <summary>
         /// The type value for delay activities.

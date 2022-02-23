@@ -10,7 +10,9 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
     /// An attachment contained within a <see cref="StreamingRequest"/>'s stream collection,
     /// which itself contains any form of media item.
     /// </summary>
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
     public class ResponseMessageStream
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseMessageStream"/> class.

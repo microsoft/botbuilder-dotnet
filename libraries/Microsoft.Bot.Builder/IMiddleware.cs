@@ -14,7 +14,9 @@ namespace Microsoft.Bot.Builder
     /// <param name="cancellationToken">A cancellation token that can be used by other objects
     /// or threads to receive notice of cancellation.</param>
     /// <returns>A task that represents the work queued to execute.</returns>
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
     public delegate Task NextDelegate(CancellationToken cancellationToken);
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
 
     /// <summary>
     /// Represents middleware that can operate on incoming activities.
