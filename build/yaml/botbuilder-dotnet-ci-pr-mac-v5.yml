@@ -24,7 +24,7 @@ steps:
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
-    arguments: '-v diag'
+    arguments: '-v detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
