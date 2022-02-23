@@ -201,7 +201,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets the Dialogs of the set.
         /// </summary>
         /// <returns>A collection of <see cref="Dialog"/>.</returns>
+#pragma warning disable CA1024 // Use properties where appropriate
         public IEnumerable<Dialog> GetDialogs()
+#pragma warning restore CA1024 // Use properties where appropriate
         {
             return _dialogs.Values;
         }

@@ -131,7 +131,9 @@ namespace Microsoft.Bot.Connector
 
         /// <summary>Gets a description of the operating system of the Azure Bot Service.</summary>
         /// <returns>A description of the operating system of the Azure Bot Service.</returns>
+#pragma warning disable CA1024 // Use properties where appropriate
         public static string GetOsVersion()
+#pragma warning restore CA1024 // Use properties where appropriate
         {
             return System.Runtime.InteropServices.RuntimeInformation.OSDescription;
         }
