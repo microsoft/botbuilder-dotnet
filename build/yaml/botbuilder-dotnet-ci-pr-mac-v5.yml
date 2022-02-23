@@ -38,7 +38,7 @@ steps:
 
 - powershell: |
    cd ..
-   tree -a -f -s -i -D
+   ls -ARl
   displayName: dir workspace
   continueOnError: true
   condition: succeededOrFailed()
