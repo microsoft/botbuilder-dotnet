@@ -11,23 +11,10 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB TeamsSSOTokenExchangeMiddleware")]
     [Collection("CosmosDb Storage Tests Collection")]
-    public class CosmosDbTeamsSSOTokenExchangeMiddlewareTests : TeamsSSOTokenExchangeMiddlewareTestsBase, IAsyncLifetime
+    public class CosmosDbTeamsSSOTokenExchangeMiddlewareTests : TeamsSSOTokenExchangeMiddlewareTestsBase
     {
         private const string CosmosCollectionName = "testteamssso";
-
-        public CosmosDbTeamsSSOTokenExchangeMiddlewareTests(CosmosDbPartitionStorageFixture fixture)
-        {
-        }
-
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
+        private static IStorage _storage;
 
         [IgnoreOnNoEmulatorFact]
         public override Task TokenExchanged_OnTurnFires()
@@ -55,6 +42,11 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
 
         public override IStorage GetStorage()
         {
+            if (_storage != null)
+            {
+                return _storage;
+            }
+
             using (var client = new CosmosClient(
                     CosmosDbTestConstants.CosmosServiceEndpoint,
                     CosmosDbTestConstants.CosmosAuthKey,
@@ -64,7 +56,7 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
                 client.CreateDatabaseIfNotExistsAsync(CosmosDbTestConstants.CosmosDatabaseName).GetAwaiter().GetResult();
             }
 
-            return new CosmosDbPartitionedStorage(
+            _storage = new CosmosDbPartitionedStorage(
                 new CosmosDbPartitionedStorageOptions
                 {
                     AuthKey = CosmosDbTestConstants.CosmosAuthKey,
@@ -72,6 +64,8 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
                     CosmosDbEndpoint = CosmosDbTestConstants.CosmosServiceEndpoint,
                     DatabaseId = CosmosDbTestConstants.CosmosDatabaseName,
                 });
+
+            return _storage;
         }
     }
 }

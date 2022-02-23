@@ -82,13 +82,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Initialize prompt state
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
-            state[PersistedState] = new Dictionary<string, object>
+            var persistedState = new Dictionary<string, object>
             {
                 { Prompt<int>.AttemptCountKey, 0 },
             };
+            state[PersistedState] = persistedState;
 
             // Send initial prompt
-            await OnPromptAsync(dc.Context, state.MapValueTo<IDictionary<string, object>>(PersistedState), state.MapValueTo<PromptOptions>(PersistedOptions), false, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, persistedState, opt, false, cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
