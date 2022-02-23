@@ -12,6 +12,16 @@ namespace Microsoft.Bot.Builder.State
     public class StoreItemETagException : InvalidOperationException
     {
         /// <summary>
+        /// Exception message for <see cref="StoreItemETagException"/> when the ETag is an empty string.
+        /// </summary>
+        public const string ETagShouldNotBeEmptyExceptionMessage = "ETag should not be an empty string.";
+
+        /// <summary>
+        /// Exception message for <see cref="StoreItemETagException"/> when the ETag does not match the expected value.
+        /// </summary>
+        public const string ETagConflictExceptionMessage = "ETag conflict. ETag is expected to match the original value.";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StoreItemETagException"/> class.
         /// </summary>
         public StoreItemETagException()

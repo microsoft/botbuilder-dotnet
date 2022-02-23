@@ -11,6 +11,7 @@ using System.Web;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Bot.Builder.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -164,7 +165,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 // Empty string etag is not allowed, for consistency among IStorage implementations
                 if (_options.EnforceEtag && eTag?.Length == 0)
                 {
-                    throw new State.StoreItemETagException("etag empty");
+                    throw new StoreItemETagException(StoreItemETagException.ETagShouldNotBeEmptyExceptionMessage);
                 }
 
                 // "*" eTag in IStoreItem converts to null condition for AccessCondition
@@ -222,7 +223,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                    when (ex.Status == (int)HttpStatusCode.Conflict
                    && ex.ErrorCode == BlobErrorCode.BlobAlreadyExists)
                 {
-                    throw new State.StoreItemETagException("Etag conflict.", ex);
+                    throw new StoreItemETagException(StoreItemETagException.ETagConflictExceptionMessage, ex);
                 }
             }
         }

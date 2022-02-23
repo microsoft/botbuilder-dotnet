@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Bot.Builder.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -224,14 +225,14 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
                     }
                     else
                     {
-                        throw new State.StoreItemETagException("etag empty");
+                        throw new StoreItemETagException(StoreItemETagException.ETagShouldNotBeEmptyExceptionMessage);
                     }
                 }
                 catch (CosmosException ex)
                 {
                     if (ex.StatusCode == HttpStatusCode.PreconditionFailed && etag != null && etag != "*")
                     {
-                        throw new State.StoreItemETagException($"Etag conflict.", ex);
+                        throw new StoreItemETagException(StoreItemETagException.ETagConflictExceptionMessage, ex);
                     }
 
                     // This check could potentially be performed before even attempting to upsert the item

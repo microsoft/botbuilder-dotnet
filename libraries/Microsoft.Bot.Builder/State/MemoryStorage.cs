@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.State;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -179,12 +180,12 @@ namespace Microsoft.Bot.Builder
                     &&
                newEtag != oldStateETag)
             {
-                throw new State.StoreItemETagException($"Etag conflict. \r\n\r\nOriginal: {newEtag}\r\nCurrent: {oldStateETag}");
+                throw new StoreItemETagException($"{StoreItemETagException.ETagConflictExceptionMessage} \r\n\r\nOriginal: {newEtag}\r\nCurrent: {oldStateETag}");
             }
 
             if (newEtag?.Length == 0)
             {
-                throw new State.StoreItemETagException("etag empty");
+                throw new StoreItemETagException(StoreItemETagException.ETagShouldNotBeEmptyExceptionMessage);
             }
 
             var etag = (_eTag++).ToString(CultureInfo.InvariantCulture);
