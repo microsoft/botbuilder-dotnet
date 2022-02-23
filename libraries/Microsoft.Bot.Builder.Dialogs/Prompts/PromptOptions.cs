@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -35,7 +36,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The list of available choices.</value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<Choice> Choices { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the <see cref="ListStyle"/> for a <see cref="ChoicePrompt"/>.
@@ -52,5 +52,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>Additional options for use with a prompt validator.</value>
         public object Validations { get; set; }
+
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined by the <see cref="Activity"/> type but that
+        /// might appear in the serialized REST JSON object.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public JObject Properties { get; set; } = new JObject();
+
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }
