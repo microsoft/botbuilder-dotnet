@@ -19,7 +19,11 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
+#pragma warning disable CA2327 // Do not use insecure JsonSerializerSettings
+#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
         private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
+#pragma warning restore CA2327 // Do not use insecure JsonSerializerSettings
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;

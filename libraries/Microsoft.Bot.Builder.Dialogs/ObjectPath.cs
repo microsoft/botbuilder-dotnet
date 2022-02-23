@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -17,7 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
+#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
+#pragma warning disable CA2327 // Do not use insecure JsonSerializerSettings
         private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+#pragma warning restore CA2327 // Do not use insecure JsonSerializerSettings
+#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
 
         private static readonly JsonSerializerSettings _expressionCaseSettings = new JsonSerializerSettings
         {

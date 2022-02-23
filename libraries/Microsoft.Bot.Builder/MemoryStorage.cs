@@ -16,11 +16,15 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class MemoryStorage : IStorage
     {
+#pragma warning disable CA2329 // Do not deserialize with JsonSerializer using an insecure configuration
         private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer()
         {
+#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
             TypeNameHandling = TypeNameHandling.All,
+#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
             ReferenceLoopHandling = ReferenceLoopHandling.Error,
         };
+#pragma warning restore CA2329 // Do not deserialize with JsonSerializer using an insecure configuration
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
         private readonly JsonSerializer _stateJsonSerializer;

@@ -75,10 +75,14 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _storageTransferOptions = storageTransferOptions;
 
+#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
+#pragma warning disable CA2327 // Do not use insecure JsonSerializerSettings
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                 {
                                                     TypeNameHandling = TypeNameHandling.All,
                                                 });
+#pragma warning restore CA2327 // Do not use insecure JsonSerializerSettings
+#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
 
             // Triggers a check for the existence of the container
             _checkForContainerExistence = 1;
