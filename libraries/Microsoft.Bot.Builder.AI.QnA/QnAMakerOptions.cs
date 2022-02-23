@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// This property allows users to set Timeout without having to pass in a custom HttpClient to QnAMaker class constructor.
         /// If using custom HttpClient, then set Timeout value in HttpClient instead of QnAMakerOptions.Timeout.
         /// </remarks>
-        [JsonProperty("timeout")] 
+        [JsonProperty("timeout")]
         public double Timeout { get; set; }
 
         /// <summary>
@@ -113,12 +114,35 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets <see cref="StrictFilters"/> join operator.
+        /// Gets or sets strictFiltersJoinOperator - join operator on metadata strict filters.
         /// </summary>
-        /// <value>
-        /// A value used for join operation of StrictFilters <see cref="StrictFilters"/>.
-        /// </value>
+        /// <value>StrictFiltersJoinOperator - join operator on metadata strict filters.</value>
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether enable Precise Answer.
+        /// </summary>
+        /// <value>
+        /// To enable Precise Answer or not.
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public bool EnablePreciseAnswer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public Filters Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether Flag to enable Query over Unstructured Sources (Optional).
+        /// </summary>
+        /// <value> Flag to enable Query over Unstructured Sources.</value>
+        [JsonProperty("includeUnstructuredSources")]
+        public bool IncludeUnstructuredSources { get; set; } = true;
     }
 }

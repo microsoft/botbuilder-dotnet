@@ -10,7 +10,7 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.AI.QnA
+namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     /// <summary>
     /// Helper for HTTP requests.
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private static void SetHeaders(HttpRequestMessage request, QnAMakerEndpoint endpoint)
         {
             request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
-            request.Headers.Add("Ocp-Apim-Subscription-Key", endpoint.EndpointKey); 
+            request.Headers.Add("Ocp-Apim-Subscription-Key", endpoint.EndpointKey);
             request.Headers.UserAgent.Add(botBuilderInfo);
             request.Headers.UserAgent.Add(platformInfo);
         }

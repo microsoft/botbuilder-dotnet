@@ -30,7 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\*">
+    <None Update="TestData\LanguageService\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\QnaMaker\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

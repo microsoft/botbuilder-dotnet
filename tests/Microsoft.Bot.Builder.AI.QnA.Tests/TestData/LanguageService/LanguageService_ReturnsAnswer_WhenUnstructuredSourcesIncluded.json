@@ -1,0 +1,16 @@
+{
+  "answers": [
+    {
+      "answer": "Machine learning refers to statistical modeling techniques that have powered recent excitement in the software and services marketplace.",
+      "confidenceScore": 1,
+      "id": 5,
+      "source": "https://github.com/Azure-Samples/cognitive-services-sample-data-files/blob/master/qna-maker/data-source-formats/sample-unstructured-paper.pdf",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": true,
+        "prompts": [
+        ]
+      }
+    }
+  ]
+}

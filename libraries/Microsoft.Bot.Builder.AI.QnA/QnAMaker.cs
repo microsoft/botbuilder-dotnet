@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.QnA.Models;
+using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 
@@ -216,14 +218,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (string.IsNullOrEmpty(turnContext.Activity.Text))
             {
-                throw new ArgumentException("Null or empty text");
+                throw new ArgumentException("Question cannot be null or empty text");
             }
 
-            var result = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            QueryResults results;
 
-            await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+            results = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
-            return result;
+            await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+
+            return results;
         }
 
         /// <summary>
