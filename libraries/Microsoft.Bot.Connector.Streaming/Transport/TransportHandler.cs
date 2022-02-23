@@ -338,16 +338,16 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
         private static class Log
         {
             private static readonly Action<ILogger, Guid, char, int, bool, Exception> _payloadReceived =
-                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(1, nameof(PayloadReceived)), "Payload received. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(1, nameof(PayloadReceived)), "Payload received. Header: ID {Guid} Type {Char} Payload length:{Int32}. End :{Boolean}.");
 
             private static readonly Action<ILogger, Exception> _readFrameFailed =
                 LoggerMessage.Define(LogLevel.Error, new EventId(2, nameof(ReadFrameFailed)), "Failed to read frame from transport.");
 
             private static readonly Action<ILogger, Guid, char, int, bool, Exception> _payloadSending =
-                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(3, nameof(SendingPayload)), "Sending Payload. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(3, nameof(SendingPayload)), "Sending Payload. Header: ID {Guid} Type {Char} Payload length:{Int32}. End :{Boolean}.");
 
             private static readonly Action<ILogger, Guid, char, int, bool, Exception> _semaphoreTimeOut =
-                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: ID {Guid} Type {Char} Payload length:{Int32}. End :{Boolean}.");
 
             private static readonly Action<ILogger, Exception> _listenError =
                 LoggerMessage.Define(LogLevel.Error, new EventId(5, nameof(ListenError)), "TransportHandler encountered an error and will stop listening.");

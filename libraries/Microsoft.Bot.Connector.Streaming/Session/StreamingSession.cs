@@ -501,10 +501,10 @@ namespace Microsoft.Bot.Connector.Streaming.Session
         private class Log
         {
             private static readonly Action<ILogger, Guid, char, int, bool, Exception> _orphanedStream =
-                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(1, nameof(OrphanedStream)), "Stream has no associated payload. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(1, nameof(OrphanedStream)), "Stream has no associated payload. Header: ID {Guid} Type {Char} Payload length:{Int32}. End :{Boolean}.");
 
             private static readonly Action<ILogger, Guid, char, int, bool, Exception> _payloadReceived =
-                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(2, nameof(PayloadReceived)), "Payload received in session. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}..");
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(2, nameof(PayloadReceived)), "Payload received in session. Header: ID {Guid} Type {Char} Payload length:{Int32}. End :{Boolean}..");
 
             public static void OrphanedStream(ILogger logger, Header header) => _orphanedStream(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
 
