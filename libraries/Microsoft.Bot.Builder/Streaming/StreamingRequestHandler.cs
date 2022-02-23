@@ -372,7 +372,9 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="sender">The source of the disconnection event.</param>
         /// <param name="e">The arguments specified by the disconnection event.</param>
+#pragma warning disable CA2109 // Review visible event handlers
         protected virtual void ServerDisconnected(object sender, DisconnectedEventArgs e)
+#pragma warning restore CA2109 // Review visible event handlers
         {
             // Subtypes can override this method to add logging when an underlying transport server is disconnected
         }
