@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Called from constructors in derived classes to initialize the <see cref="Dialog"/> class.
         /// </summary>
         /// <param name="dialogId">The ID to assign to this dialog.</param>
-        public Dialog(string dialogId = null)
+        protected Dialog(string dialogId = null)
         {
             Id = dialogId;
             _telemetryClient = NullBotTelemetryClient.Instance;

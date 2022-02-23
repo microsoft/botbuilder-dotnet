@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// custom validation for this prompt.</param>
         /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
         /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.</remarks>
-        public Prompt(string dialogId, PromptValidator<T> validator = null)
+        protected Prompt(string dialogId, PromptValidator<T> validator = null)
             : base(dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="storage"/> or <paramref name="contextServiceKey"/>
         /// is <c>null</c>.</exception>
         /// <seealso cref="ITurnContext"/>
-        public BotState(IStorage storage, string contextServiceKey)
+        protected BotState(IStorage storage, string contextServiceKey)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _contextServiceKey = contextServiceKey ?? throw new ArgumentNullException(nameof(contextServiceKey));
