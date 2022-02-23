@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Connector
         /// <value>
         /// When using the Emulator, whether to emulate the OAuthCard behavior or use connected flows.
         /// </value>
-        public static bool EmulateOAuthCards { get; set; } = false;
+        public static bool EmulateOAuthCards { get; set; }
 
         /// <summary>
         /// Send a dummy OAuth card when the bot is being used on the Emulator for testing without fetching a real token.

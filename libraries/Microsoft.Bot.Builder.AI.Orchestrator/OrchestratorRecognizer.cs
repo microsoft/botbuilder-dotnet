@@ -41,9 +41,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, OrchestratorDictionaryEntry> orchestratorMap = new ConcurrentDictionary<string, OrchestratorDictionaryEntry>();
-        private OrchestratorDictionaryEntry _orchestrator = null;
-        private ILabelResolver _resolver = null;
-        private bool _isResolverMockup = false;
+        private OrchestratorDictionaryEntry _orchestrator;
+        private ILabelResolver _resolver;
+        private bool _isResolverMockup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.

@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// ChannelAuthTenant.
         /// </value>
-        public string ChannelAuthTenant { get; set; } = null;
+        public string ChannelAuthTenant { get; set; }
 
         /// <summary>
         /// Gets or sets the OauthScope.
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// OauthScope.
         /// </value>
-        public string OauthScope { get; set; } = null;
+        public string OauthScope { get; set; }
 
         /// <summary>
         /// Gets or sets the CustomHttpClient.
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// CustomHttpClient.
         /// </value>
-        public HttpClient CustomHttpClient { get; set; } = null;
+        public HttpClient CustomHttpClient { get; set; }
 
         /// <summary>
         /// Gets or sets the Logger.
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// Logger.
         /// </value>
-        public ILogger Logger { get; set; } = null;
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this parameter, if true,

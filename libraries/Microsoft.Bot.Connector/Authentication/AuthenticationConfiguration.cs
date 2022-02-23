@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// An <see cref="ClaimsValidator"/> instance used to validate the identity claims.
         /// </value>
-        public virtual ClaimsValidator ClaimsValidator { get; set; } = null;
+        public virtual ClaimsValidator ClaimsValidator { get; set; }
 
         /// <summary>
         /// Gets or sets a collection of valid JWT token issuers.

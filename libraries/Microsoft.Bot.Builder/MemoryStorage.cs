@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
         private readonly JsonSerializer _stateJsonSerializer;
         private readonly Dictionary<string, JObject> _memory;
         private readonly object _syncroot = new object();
-        private int _eTag = 0;
+        private int _eTag;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MemoryStorage"/> class.

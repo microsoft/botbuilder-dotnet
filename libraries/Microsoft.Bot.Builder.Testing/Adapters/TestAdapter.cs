@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly IDictionary<ExchangableTokenKey, string> _exchangableToken = new Dictionary<ExchangableTokenKey, string>();
         private readonly IList<TokenMagicCode> _magicCodes = new List<TokenMagicCode>();
 
-        private int _nextId = 0;
+        private int _nextId;
         private Queue<TaskCompletionSource<IActivity>> _queuedRequests = new Queue<TaskCompletionSource<IActivity>>();
 
         /// <summary>

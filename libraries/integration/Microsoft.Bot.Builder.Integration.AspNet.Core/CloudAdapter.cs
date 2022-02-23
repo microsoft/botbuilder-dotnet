@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             private class StreamingConnectorFactory : ConnectorFactory
             {
                 private readonly StreamingRequestHandler _requestHandler;
-                private string _serviceUrl = null;
+                private string _serviceUrl;
 
                 public StreamingConnectorFactory(StreamingRequestHandler requestHandler)
                 {

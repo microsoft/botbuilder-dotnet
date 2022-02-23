@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
         /// </summary>
         /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
-        public bool LogPersonalInformation { get; set; } = false;
+        public bool LogPersonalInformation { get; set; }
 
         /// <summary>
         /// Gets or sets the handler for sending http calls.

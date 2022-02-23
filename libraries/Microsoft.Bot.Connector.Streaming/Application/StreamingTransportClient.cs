@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private StreamingSession _session;
 
         private CancellationTokenSource _disconnectCts;
-        private volatile bool _disposed = false;
+        private volatile bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingTransportClient"/> class.
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         public event DisconnectedEventHandler Disconnected;
 
         /// <inheritdoc />
-        public bool IsConnected { get; private set; } = false;
+        public bool IsConnected { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="ILogger"/> instance for the streaming client.

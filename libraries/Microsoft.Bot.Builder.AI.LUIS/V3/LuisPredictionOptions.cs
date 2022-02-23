@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// <value>
         /// True for returning all intents.
         /// </value>
-        public bool IncludeAllIntents { get; set; } = false;
+        public bool IncludeAllIntents { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not instance data should be included in response.
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// <value>
         /// A value indicating whether or not instance data should be included in response.
         /// </value>
-        public bool IncludeInstanceData { get; set; } = false;
+        public bool IncludeInstanceData { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether API results should be included.

@@ -52,13 +52,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
         /// </summary>
         /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
-        public bool LogPersonalInformation { get; set; } = false;
+        public bool LogPersonalInformation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether flag to indicate if full results from the LUIS API should be returned with the recognizer result.
         /// </summary>
         /// <value>A value indicating whether full results from the LUIS API should be returned with the recognizer result.</value>
-        public bool IncludeAPIResults { get; set; } = false;
+        public bool IncludeAPIResults { get; set; }
 
         // Support original ITurnContext
         internal abstract Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken);

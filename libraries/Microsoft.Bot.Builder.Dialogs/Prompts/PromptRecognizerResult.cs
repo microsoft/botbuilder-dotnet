@@ -35,6 +35,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The default value is `false`.
         /// </value>
-        public bool AllowInterruption { get; set; } = false;
+        public bool AllowInterruption { get; set; }
     }
 }

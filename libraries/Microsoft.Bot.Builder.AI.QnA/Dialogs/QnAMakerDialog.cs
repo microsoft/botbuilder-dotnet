@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <value>
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
-        public bool LogPersonalInformation { get; set; } = false;
+        public bool LogPersonalInformation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
