@@ -96,7 +96,9 @@ namespace Microsoft.Bot.Builder.Skills
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
 
+#pragma warning disable CA1508 // Avoid dead conditional code
             return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+#pragma warning restore CA1508 // Avoid dead conditional code
         }
 
         private static void ApplySkillActivityToTurnContext(ITurnContext turnContext, Activity activity)
@@ -165,7 +167,9 @@ namespace Microsoft.Bot.Builder.Skills
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
 
+#pragma warning disable CA1508 // Avoid dead conditional code
             return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+#pragma warning restore CA1508 // Avoid dead conditional code
         }
 
         private async Task<SkillConversationReference> GetSkillConversationReferenceAsync(string conversationId, CancellationToken cancellationToken)

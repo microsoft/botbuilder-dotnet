@@ -183,23 +183,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<AttachmentInfo>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<AttachmentInfo>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)

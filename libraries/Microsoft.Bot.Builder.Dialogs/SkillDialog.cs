@@ -213,10 +213,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
+#pragma warning disable CA1508 // Avoid dead conditional code
             if (!(options is BeginSkillDialogOptions dialogArgs))
             {
                 throw new ArgumentException($"Unable to cast {nameof(options)} to {nameof(BeginSkillDialogOptions)}", nameof(options));
             }
+#pragma warning restore CA1508 // Avoid dead conditional code
 
             if (dialogArgs.Activity == null)
             {

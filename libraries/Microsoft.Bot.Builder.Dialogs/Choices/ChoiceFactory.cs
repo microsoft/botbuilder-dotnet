@@ -116,11 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 txtBuilder.Append(title);
                 if (index == choices.Count - 2)
                 {
-                    connector = (index == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty;
+                    connector = index == 0 ? opt.InlineOr : opt.InlineOrMore;
                 }
                 else
                 {
-                    connector = opt.InlineSeparator ?? string.Empty;
+                    connector = opt.InlineSeparator;
                 }
             }
 

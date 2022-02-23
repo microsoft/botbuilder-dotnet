@@ -58,10 +58,7 @@ namespace Microsoft.Bot.Connector.Teams
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -88,10 +85,7 @@ namespace Microsoft.Bot.Connector.Teams
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -124,10 +118,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             BaseUri = baseUri;
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -163,10 +154,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             BaseUri = baseUri;
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>

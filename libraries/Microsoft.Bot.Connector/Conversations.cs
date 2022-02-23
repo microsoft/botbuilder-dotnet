@@ -190,23 +190,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationsResult>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationsResult>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)
@@ -313,12 +310,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (parameters != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)
@@ -546,12 +540,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (activity != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)
@@ -773,12 +764,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (transcript != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(transcript, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(transcript, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)
@@ -1010,12 +998,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (activity != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)
@@ -1255,12 +1240,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (activity != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)
@@ -1688,23 +1670,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)
@@ -1867,23 +1846,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ChannelAccount>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ChannelAccount>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)
@@ -2067,23 +2043,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<PagedMembersResult>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<PagedMembersResult>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)
@@ -2404,23 +2377,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)
@@ -2522,12 +2492,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (attachmentUpload != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(attachmentUpload, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(attachmentUpload, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)

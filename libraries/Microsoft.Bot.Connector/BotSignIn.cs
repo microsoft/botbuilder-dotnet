@@ -83,11 +83,10 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/botsignin/GetSignInUrl").ToString();
-            List<string> queryParameters = new List<string>();
-            if (state != null)
+            var queryParameters = new List<string>
             {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state)));
-            }
+                string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state))
+            };
 
             if (codeChallenge != null)
             {
@@ -190,24 +189,21 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                // MANUAL SWAGGER UPDATE
+                result.Body = responseContent;
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    // MANUAL SWAGGER UPDATE
-                    result.Body = responseContent;
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)

@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder
         {
             if (lgResult is string lgStringResult)
             {
-                return BuildActivityFromText(lgStringResult?.Trim());
+                return BuildActivityFromText(lgStringResult.Trim());
             }
 
             try

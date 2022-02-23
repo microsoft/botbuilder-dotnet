@@ -391,37 +391,34 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
                         cosmosClientOptions);
                 }
 
-                if (_container == null)
+                if (!_cosmosDbStorageOptions.CompatibilityMode)
                 {
-                    if (!_cosmosDbStorageOptions.CompatibilityMode)
+                    await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    try
+                    {
+                        _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
+                            
+                        // This will throw if the container does not exist. 
+                        var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
+
+                        // Containers created with CosmosDbStorage had no partition key set, so the default was '/_partitionKey'.
+                        var partitionKeyPath = readContainer.Resource.PartitionKeyPath;
+                        if (partitionKeyPath == "/_partitionKey")
+                        {
+                            _compatibilityModePartitionKey = true;
+                        }
+                        else if (partitionKeyPath != DocumentStoreItem.PartitionKeyPath)
+                        {
+                            // We are not supporting custom Partition Key Paths
+                            throw new InvalidOperationException($"Custom Partition Key Paths are not supported. {_cosmosDbStorageOptions.ContainerId} has a custom Partition Key Path of {partitionKeyPath}.");
+                        }
+                    }
+                    catch (CosmosException)
                     {
                         await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
-                            
-                            // This will throw if the container does not exist. 
-                            var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
-
-                            // Containers created with CosmosDbStorage had no partition key set, so the default was '/_partitionKey'.
-                            var partitionKeyPath = readContainer.Resource.PartitionKeyPath;
-                            if (partitionKeyPath == "/_partitionKey")
-                            {
-                                _compatibilityModePartitionKey = true;
-                            }
-                            else if (partitionKeyPath != DocumentStoreItem.PartitionKeyPath)
-                            {
-                                // We are not supporting custom Partition Key Paths
-                                throw new InvalidOperationException($"Custom Partition Key Paths are not supported. {_cosmosDbStorageOptions.ContainerId} has a custom Partition Key Path of {partitionKeyPath}.");
-                            }
-                        }
-                        catch (CosmosException)
-                        {
-                            await CreateContainerIfNotExistsAsync().ConfigureAwait(false);
-                        }
                     }
                 }
             }

@@ -40,10 +40,7 @@ namespace Microsoft.Bot.Connector
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -69,10 +66,7 @@ namespace Microsoft.Bot.Connector
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -99,10 +93,7 @@ namespace Microsoft.Bot.Connector
             }
 
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -135,10 +126,7 @@ namespace Microsoft.Bot.Connector
 
             BaseUri = baseUri;
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary>
@@ -174,10 +162,7 @@ namespace Microsoft.Bot.Connector
 
             BaseUri = baseUri;
             Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
+            Credentials.InitializeServiceClient(this);
         }
 
         /// <summary> Initializes a new instance of the <see cref="OAuthClient"/> class. </summary>
@@ -342,21 +327,12 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = this.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/usertoken/exchange").ToString();
-            List<string> queryParameters = new List<string>();
-            if (userId != null)
+            var queryParameters = new List<string>
             {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)));
-            }
-
-            if (connectionName != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName)));
-            }
-
-            if (channelId != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "channelId={0}", System.Uri.EscapeDataString(channelId)));
-            }
+                string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)),
+                string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName)),
+                string.Format(CultureInfo.InvariantCulture, "channelId={0}", System.Uri.EscapeDataString(channelId))
+            };
 
             if (queryParameters.Count > 0)
             {
@@ -385,12 +361,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (exchangeRequest != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(exchangeRequest, this.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(exchangeRequest, this.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (this.Credentials != null)
@@ -558,11 +531,10 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = this.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/botsignin/GetSignInResource").ToString();
-            List<string> queryParameters = new List<string>();
-            if (state != null)
+            var queryParameters = new List<string>
             {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state)));
-            }
+                string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state))
+            };
 
             if (codeChallenge != null)
             {
@@ -664,30 +636,27 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<SignInResource>(responseContent, this.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                if (System.Uri.TryCreate(responseContent, System.UriKind.Absolute, out _))
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<SignInResource>(responseContent, this.DeserializationSettings);
+                    // if the response is an uri, the service contract is incorrect.
+                    result.Body = new SignInResource(responseContent);
                 }
-                catch (JsonException ex)
+                else
                 {
-                    if (System.Uri.TryCreate(responseContent, System.UriKind.Absolute, out _))
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        // if the response is an uri, the service contract is incorrect.
-                        result.Body = new SignInResource(responseContent);
+                        httpResponse.Dispose();
                     }
-                    else
-                    {
-                        httpRequest.Dispose();
-                        if (httpResponse != null)
-                        {
-                            httpResponse.Dispose();
-                        }
 
-                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                    }
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 

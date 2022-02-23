@@ -75,16 +75,11 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/usertoken/GetToken").ToString();
-            List<string> queryParameters = new List<string>();
-            if (userId != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)));
-            }
-
-            if (connectionName != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName)));
-            }
+            var queryParameters = new List<string>
+            { 
+                string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)),
+                string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName))
+            };
 
             if (channelId != null)
             {
@@ -280,16 +275,11 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/usertoken/GetAadTokens").ToString();
-            List<string> queryParameters = new List<string>();
-            if (userId != null)
+            var queryParameters = new List<string>
             {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)));
-            }
-
-            if (connectionName != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName)));
-            }
+                string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)),
+                string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName))
+            };
 
             if (channelId != null)
             {
@@ -323,12 +313,9 @@ namespace Microsoft.Bot.Connector
 
             // Serialize Request
             string requestContent = null;
-            if (aadResourceUrls != null)
-            {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(aadResourceUrls, Client.SerializationSettings);
-                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
-                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
+            requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(aadResourceUrls, Client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
             // Set Credentials
             if (Client.Credentials != null)
@@ -392,23 +379,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IDictionary<string, TokenResponse>>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IDictionary<string, TokenResponse>>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)
@@ -454,11 +438,10 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/usertoken/SignOut").ToString();
-            List<string> queryParameters = new List<string>();
-            if (userId != null)
-            {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)));
-            }
+            var queryParameters = new List<string>
+            { 
+                string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId))
+            };
 
             if (connectionName != null)
             {
@@ -622,11 +605,10 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/usertoken/GetTokenStatus").ToString();
-            List<string> queryParameters = new List<string>();
-            if (userId != null)
+            var queryParameters = new List<string>
             {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)));
-            }
+                string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId))
+            };
 
             if (channelId != null)
             {
@@ -728,23 +710,20 @@ namespace Microsoft.Bot.Connector
             result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)statusCode == 200)
+            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            try
             {
-                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
+                result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<TokenStatus>>(responseContent, Client.DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<TokenStatus>>(responseContent, Client.DeserializationSettings);
+                    httpResponse.Dispose();
                 }
-                catch (JsonException ex)
-                {
-                    httpRequest.Dispose();
-                    if (httpResponse != null)
-                    {
-                        httpResponse.Dispose();
-                    }
 
-                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
-                }
+                throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
             }
 
             if (shouldTrace)

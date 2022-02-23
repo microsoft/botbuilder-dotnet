@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (result is ErrorResponse errorResponse)
             {
-                throw new InvalidOperationException($"Unable to exchange token: ({errorResponse?.Error?.Code}) {errorResponse?.Error?.Message}");
+                throw new InvalidOperationException($"Unable to exchange token: ({errorResponse.Error?.Code}) {errorResponse.Error?.Message}");
             }
             else if (result is TokenResponse tokenResponse)
             {
