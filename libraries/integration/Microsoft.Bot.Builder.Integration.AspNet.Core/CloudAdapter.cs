@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 }
             }
 
-            throw new ApplicationException($"No streaming connection found for activity: {activity}");
+            throw new InvalidOperationException($"No streaming connection found for activity: {activity}");
         }
 
         /// <summary>

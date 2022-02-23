@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Null(validContinuation.Exception);
             Assert.True(invalidContinuation.IsFaulted);
             Assert.NotEmpty(invalidContinuation.Exception.InnerExceptions);
-            Assert.True(invalidContinuation.Exception.InnerExceptions[0] is ApplicationException);
+            Assert.True(invalidContinuation.Exception.InnerExceptions[0] is InvalidOperationException);
         }
 
         [Fact]

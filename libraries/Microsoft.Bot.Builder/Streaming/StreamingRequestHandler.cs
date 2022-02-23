@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
             else
             {
-                throw new Exception($"Failed to send request through streaming transport. Status code: {serverResponse.StatusCode}.");
+                throw new InvalidOperationException($"Failed to send request through streaming transport. Status code: {serverResponse.StatusCode}.");
             }
         }
 
