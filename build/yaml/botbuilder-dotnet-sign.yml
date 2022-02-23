@@ -21,8 +21,8 @@ variables:
   MSBuildArguments: -p:PublishRepositoryUrl=true -p:GeneratePackages=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
   Packaging.EnableSBOMSigning: true
   Parameters.solution: Microsoft.Bot.Builder.sln
-#  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-daily.preview.${Build.BuildNumber}.{CommitHash} Consumed by projects in Microsoft.Bot.Builder.sln.
-#  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-daily.${Build.BuildNumber}.{CommitHash} Consumed by projects in Microsoft.Bot.Builder.sln.
+#  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-daily.preview.{BuildNumber}.{CommitHash} Consumed by projects in Microsoft.Bot.Builder.sln.
+#  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-daily.{BuildNumber}.{CommitHash} Consumed by projects in Microsoft.Bot.Builder.sln.
 
 jobs:
 - job: Build_and_Sign
