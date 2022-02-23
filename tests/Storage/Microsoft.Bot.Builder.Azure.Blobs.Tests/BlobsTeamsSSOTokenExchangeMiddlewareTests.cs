@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Microsoft.Bot.Builder.Tests.Common.Storage;
 
@@ -12,6 +13,46 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
         private const string ContainerName = "testteamssso";
         private static IStorage _storage;
         private static object _storageLock = new object();
+
+        public override Task TokenExchanged_OnTurnFires()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                return base.TokenExchanged_OnTurnFires();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public override Task TokenExchanged_SecondSendsInvokeResponse()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                return base.TokenExchanged_SecondSendsInvokeResponse();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public override Task TokenNotExchanged_DirectLineChannel()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                return base.TokenNotExchanged_DirectLineChannel();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public override Task TokenNotExchanged_PreconditionFailed()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                return base.TokenNotExchanged_PreconditionFailed();
+            }
+
+            return Task.CompletedTask;
+        }
 
         public override IStorage GetStorage()
         {
