@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Tests.Common.Storage
         private const string Token = "token";
 
         [Fact]
-        public void ConstructorValidation()
+        public virtual void ConstructorValidation()
         {
             var storage = GetStorage();
             Assert.Throws<ArgumentNullException>(() => new TeamsSSOTokenExchangeMiddleware(null, ConnectionName));

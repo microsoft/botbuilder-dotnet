@@ -17,6 +17,12 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos.Tests
         private static IStorage _storage;
 
         [IgnoreOnNoEmulatorFact]
+        public override void ConstructorValidation()
+        {
+            base.ConstructorValidation();
+        }
+
+        [IgnoreOnNoEmulatorFact]
         public override Task TokenExchanged_OnTurnFires()
         {
             return base.TokenExchanged_OnTurnFires();

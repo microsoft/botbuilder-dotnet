@@ -14,6 +14,14 @@ namespace Microsoft.Bot.Builder.Azure.Blobs.Tests
         private static IStorage _storage;
         private static object _storageLock = new object();
 
+        public override void ConstructorValidation()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                base.ConstructorValidation();
+            }
+        }
+
         public override Task TokenExchanged_OnTurnFires()
         {
             if (StorageEmulatorHelper.CheckEmulator())
