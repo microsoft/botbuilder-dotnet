@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="state">Dictionary representing cached bot state.</param>
         public CachedBotStateDictionary(IDictionary<string, object> state)
-            : base(state)
+            : base(state, StringComparer.InvariantCultureIgnoreCase)
         {
         }
 
