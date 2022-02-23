@@ -197,6 +197,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private static TokenValidationParameters GetEmulatorTokenValidationParameters()
         {
+#pragma warning disable CA5404 // Do not disable token validation checks
             return new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -215,6 +216,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
             };
+#pragma warning restore CA5404 // Do not disable token validation checks
         }
 
         private static bool IsTokenFromEmulator(string authHeader)
@@ -323,6 +325,7 @@ namespace Microsoft.Bot.Connector.Authentication
         // The following code is based on SkillValidation.AuthenticateChannelToken
         private async Task<ClaimsIdentity> AuthenticateSkillTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
         {
+#pragma warning disable CA5404 // Do not disable token validation checks
             var skillTokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -341,6 +344,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true
             };
+#pragma warning restore CA5404 // Do not disable token validation checks
 
             // Add allowed token issuers from configuration (if present)
             if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
@@ -495,6 +499,7 @@ namespace Microsoft.Bot.Connector.Authentication
         // The following code is based on GovernmentChannelValidation.AuthenticateChannelToken
         private async Task<ClaimsIdentity> AuthenticateChannelTokenAsync(string authHeader, string serviceUrl, string channelId, CancellationToken cancellationToken)
         {
+#pragma warning disable CA5404 // Do not disable token validation checks
             var channelTokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -505,6 +510,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 RequireSignedTokens = true,
                 ValidateIssuerSigningKey = true,
             };
+#pragma warning restore CA5404 // Do not disable token validation checks
 
             // Add allowed token issuers from configuration (if present)
             if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
