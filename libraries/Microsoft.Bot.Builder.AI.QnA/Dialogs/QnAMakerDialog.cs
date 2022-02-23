@@ -501,7 +501,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         }
 
         /// <summary>
-        /// Gets an <see cref="IQnAMakerClient"/> to use to access the QnA Maker knowledge base.
+        /// Gets an <see cref="IQnAMakerClient"/> to use to access the QnA Maker knowledge base or Custom Question Answering.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -529,14 +529,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 QnAServiceType = QnAServiceType?.GetValue(dc.State)
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            if (endpoint.QnAServiceType == Constants.LanguageQnAServiceType)
-            {
-                return new CustomQuestionAnswering(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
-            }
-            else
-            {
-                return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
-            }
+
+            return QnAClientFactory.CreateQnAClient(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
         }
 
         /// <summary>
