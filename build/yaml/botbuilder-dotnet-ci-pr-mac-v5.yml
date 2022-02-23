@@ -34,6 +34,12 @@ steps:
      Tests/**/*Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.Streaming.Tests.csproj
-     
     arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
+
+- powershell: |
+   cd ..
+   tree -a -f -s -i -D
+  displayName: Dir Workspace
+  continueOnError: true
+  condition: succeededOrFailed()
 
