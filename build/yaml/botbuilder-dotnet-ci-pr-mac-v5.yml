@@ -39,7 +39,7 @@ steps:
 - powershell: |
    cd ..
    tree -a -f -s -i -D
-  displayName: Dir Workspace
+  displayName: dir workspace
   continueOnError: true
   condition: succeededOrFailed()
 
