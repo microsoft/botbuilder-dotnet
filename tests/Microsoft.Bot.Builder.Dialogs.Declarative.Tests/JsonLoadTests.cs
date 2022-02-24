@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
+using Microsoft.Bot.Builder.AI.QnA.Models;
+using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
