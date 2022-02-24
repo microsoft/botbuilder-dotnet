@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using LoggerLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -119,7 +120,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 retryExceptionHandler: (ex, ct) => HandleAdalException(ex, ct)).ConfigureAwait(false);
 
             watch.Stop();
-            logger?.LogInformation($"GetTokenAsync: Acquired token using ADAL in {watch.ElapsedMilliseconds}.");
+            Log.AcquiredToken(logger, nameof(GetTokenAsync), watch.ElapsedMilliseconds);
 
             return result;
         }
@@ -234,7 +235,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // We should not be hitting this after switching to SemaphoreSlim, but if we do hit it everything will keep working.
                 // Logging to have clear knowledge of whether this is happening.
-                logger?.LogWarning("Attempted to release a full semaphore.");
+                Log.AttemptedSemaphoreRelease(logger);
             }
 
             // Any exception other than SemaphoreFullException should be thrown right away
@@ -332,6 +333,26 @@ namespace Microsoft.Bot.Connector.Authentication
                     ReleaseSemaphore();
                 }
             }
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="AdalAuthenticator"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LoggerLogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, long, Exception> _acquiredToken =
+                LoggerMessage.Define<string, long>(LoggerLogLevel.Information, new EventId(1, nameof(AcquiredToken)), "{String}: Acquired token using ADAL in {Int64}.");
+
+            private static readonly Action<ILogger, Exception> _attemptedSemaphoreRelease =
+                LoggerMessage.Define(LoggerLogLevel.Warning, new EventId(2, nameof(AttemptedSemaphoreRelease)), "Attempted to release a full semaphore.");
+
+            public static void AcquiredToken(ILogger logger, string name, long elapsedMilliseconds) => _acquiredToken(logger, name, elapsedMilliseconds, null);
+
+            public static void AttemptedSemaphoreRelease(ILogger logger) => _attemptedSemaphoreRelease(logger, null);
         }
     }
 }

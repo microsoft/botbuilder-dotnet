@@ -90,9 +90,9 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <returns>A task that completes once the server is no longer listening.</returns>
         public virtual async Task ListenAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Streaming request handler started listening");
+            Log.ListeningStarted(_logger);
             await _innerConnection.ListenAsync(this, cancellationToken).ConfigureAwait(false);
-            _logger.LogInformation("Streaming request handler completed listening");
+            Log.ListeningCompleted(_logger);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.SetBody($"Request body missing or malformed");
-                _logger.LogError("Request body missing or malformed: " + ex.Message);
+                Log.RequestBodyMissing(_logger, "BadRequest", response.StatusCode, ex);
 
                 return response;
             }
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.SetBody(ex.ToString());
-                _logger.LogError(ex.ToString());
+                Log.ProcessingRequestError(_logger, "InternalServerError", response.StatusCode, ex);
             }
 
             return response;
@@ -438,7 +438,7 @@ namespace Microsoft.Bot.Builder.Streaming
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                _logger.LogError("Request missing verb and/or path.");
+                Log.RequestMissingCustomPaths(_logger, "BadRequest", response.StatusCode);
 
                 return response;
             }
@@ -453,6 +453,41 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="StreamingRequestHandler"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, Exception> _listeningStarted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(ListeningStarted)), "Streaming request handler started listening.");
+
+            private static readonly Action<ILogger, Exception> _listeningCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(ListeningCompleted)), "Streaming request handler completed listening.");
+
+            private static readonly Action<ILogger, string, int, Exception> _requestBodyMissing =
+                LoggerMessage.Define<string, int>(LogLevel.Error, new EventId(3, nameof(RequestBodyMissing)), "{String}: Request body missing or malformed. Status code: {Int32}.");
+
+            private static readonly Action<ILogger, string, int, Exception> _processingRequestError =
+                LoggerMessage.Define<string, int>(LogLevel.Error, new EventId(4, nameof(ProcessingRequestError)), "{String}: An error ocurred while processing the request. Status code: {Int32}.");
+
+            private static readonly Action<ILogger, string, int, Exception> _requestMissingCustomPaths =
+                LoggerMessage.Define<string, int>(LogLevel.Error, new EventId(5, nameof(RequestMissingCustomPaths)), "{String}: Request missing verb and/or path. Status code: {Int32}.");
+
+            public static void ListeningStarted(ILogger logger) => _listeningStarted(logger, null);
+
+            public static void ListeningCompleted(ILogger logger) => _listeningCompleted(logger, null);
+
+            public static void RequestBodyMissing(ILogger logger, string statusName, int statusCode, Exception ex) => _requestBodyMissing(logger, statusName, statusCode, ex);
+
+            public static void ProcessingRequestError(ILogger logger, string statusName, int statusCode, Exception ex) => _processingRequestError(logger, statusName, statusCode, ex);
+
+            public static void RequestMissingCustomPaths(ILogger logger, string statusName, int statusCode) => _requestMissingCustomPaths(logger, statusName, statusCode, null);
         }
     }
 }

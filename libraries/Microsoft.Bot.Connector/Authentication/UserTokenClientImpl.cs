@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = userId ?? throw new ArgumentNullException(nameof(userId));
             _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
 
-            _logger.LogInformation($"GetTokenAsync ConnectionName: {connectionName}");
+            Log.ConnectionName(_logger, nameof(GetUserTokenAsync), connectionName);
             return await _client.UserToken.GetTokenAsync(userId, connectionName, channelId, magicCode, cancellationToken).ConfigureAwait(false);
         }
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
             _ = activity ?? throw new ArgumentNullException(nameof(activity));
 
-            _logger.LogInformation($"GetSignInResourceAsync ConnectionName: {connectionName}");
+            Log.ConnectionName(_logger, nameof(GetSignInResourceAsync), connectionName);
             var state = CreateTokenExchangeState(_appId, connectionName, activity);
             return await _client.GetSignInResourceAsync(state, null, null, finalRedirect, cancellationToken).ConfigureAwait(false);
         }
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = userId ?? throw new ArgumentNullException(nameof(userId));
             _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
 
-            _logger.LogInformation($"SignOutAsync ConnectionName: {connectionName}");
+            Log.ConnectionName(_logger, nameof(SignOutUserAsync), connectionName);
             await _client.UserToken.SignOutAsync(userId, connectionName, channelId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = userId ?? throw new ArgumentNullException(nameof(userId));
             _ = channelId ?? throw new ArgumentNullException(nameof(channelId));
 
-            _logger.LogInformation("GetTokenStatusAsync");
+            Log.TokenStatus(_logger, nameof(GetTokenStatusAsync));
             var result = await _client.UserToken.GetTokenStatusAsync(userId, channelId, includeFilter, cancellationToken).ConfigureAwait(false);
             return result?.ToArray();
         }
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = userId ?? throw new ArgumentNullException(nameof(userId));
             _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
 
-            _logger.LogInformation($"GetAadTokensAsync ConnectionName: {connectionName}");
+            Log.ConnectionName(_logger, nameof(GetAadTokensAsync), connectionName);
             return (Dictionary<string, TokenResponse>)await _client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls(resourceUrls?.ToList()), channelId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = userId ?? throw new ArgumentNullException(nameof(userId));
             _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
 
-            _logger.LogInformation($"ExchangeAsyncAsync ConnectionName: {connectionName}");
+            Log.ConnectionName(_logger, nameof(ExchangeTokenAsync), connectionName);
             var result = await _client.ExchangeAsyncAsync(userId, connectionName, channelId, exchangeRequest, cancellationToken).ConfigureAwait(false);
 
             if (result is ErrorResponse errorResponse)
@@ -153,6 +153,26 @@ namespace Microsoft.Bot.Connector.Authentication
             _httpClient?.Dispose();
             base.Dispose(disposing);
             _disposed = true;
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="UserTokenClientImpl"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, string, Exception> _connectionName =
+                LoggerMessage.Define<string, string>(LogLevel.Information, new EventId(1, nameof(ConnectionName)), "{String} ConnectionName: {String}.");
+
+            private static readonly Action<ILogger, string, Exception> _tokenStatus =
+                LoggerMessage.Define<string>(LogLevel.Information, new EventId(2, nameof(TokenStatus)), "{String}: Gathering the user token status.");
+
+            public static void ConnectionName(ILogger logger, string name, string connectionName) => _connectionName(logger, name, connectionName, null);
+
+            public static void TokenStatus(ILogger logger, string name) => _tokenStatus(logger, name, null);
         }
     }
 }

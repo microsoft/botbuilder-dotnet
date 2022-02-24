@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
             }
 
-            Logger.LogInformation($"SendActivitiesAsync for {activities.Length} activities.");
+            Log.SendingActivities(Logger, nameof(SendActivitiesAsync), activities.Length);
 
             var responses = new ResourceResponse[activities.Length];
 
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder
                 activity.Id = null;
                 var response = default(ResourceResponse);
 
-                Logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
+                Log.SendingActivity(Logger, nameof(SendActivitiesAsync), activity);
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder
             _ = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             _ = activity ?? throw new ArgumentNullException(nameof(activity));
 
-            Logger.LogInformation($"UpdateActivityAsync ActivityId: {activity.Id}");
+            Log.UpdatingActivity(Logger, nameof(UpdateActivityAsync), activity);
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder
             _ = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             _ = reference ?? throw new ArgumentNullException(nameof(reference));
 
-            Logger.LogInformation($"DeleteActivityAsync Conversation Id: {reference.Conversation.Id}, ActivityId: {reference.ActivityId}");
+            Log.DeletingActivity(Logger, nameof(DeleteActivityAsync), reference);
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder
             _ = conversationParameters ?? throw new ArgumentNullException(nameof(conversationParameters));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
 
-            Logger.LogInformation($"CreateConversationAsync for channel: {channelId}");
+            Log.CreatingConversation(Logger, nameof(CreateConversationAsync), channelId);
 
             // Create a ClaimsIdentity, to create the connector and for adding to the turn context.
             var claimsIdentity = CreateClaimsIdentity(botAppId);
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         protected async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            Logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {continuationActivity.Conversation.Id}");
+            Log.ProcessingProactive(Logger, nameof(ProcessProactiveAsync), continuationActivity);
 
             // Create the connector factory.
             var connectorFactory = continuationActivity.IsFromStreamingConnection()
@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute. Containing the InvokeResponse if there is one.</returns>
         protected async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            Logger.LogInformation($"ProcessActivityAsync");
+            Log.ProcessingActivity(Logger, nameof(ProcessActivityAsync), activity);
 
             // Authenticate the inbound request, extracting parameters and create a ConnectorFactory for creating a Connector for outbound requests.
             var authenticateRequestResult = await BotFrameworkAuthentication.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
@@ -409,6 +409,51 @@ namespace Microsoft.Bot.Builder
             turnContext.TurnState.Set(OAuthScopeKey, oauthScope); // in non-skills scenarios the oauth scope value here will be null, so use Set
 
             return turnContext;
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="CloudAdapterBase"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, int, Exception> _sendingActivities =
+                LoggerMessage.Define<string, int>(LogLevel.Information, new EventId(1, nameof(SendingActivities)), "{String}: Sending {Int32} activities.");
+
+            private static readonly Action<ILogger, string, string, Exception> _sendingActivity =
+                LoggerMessage.Define<string, string>(LogLevel.Information, new EventId(2, nameof(SendingActivity)), "{String}: Sending activity. ReplyToId: {String}.");
+
+            private static readonly Action<ILogger, string, string, Exception> _updatingActivity =
+                LoggerMessage.Define<string, string>(LogLevel.Information, new EventId(3, nameof(UpdatingActivity)), "{String}: Updating activity. ActivityId: {String}.");
+
+            private static readonly Action<ILogger, string, string, string, Exception> _deletingActivity =
+                LoggerMessage.Define<string, string, string>(LogLevel.Information, new EventId(4, nameof(DeletingActivity)), "{String}: Deleting activity. Conversation Id: {String}, ActivityId: {String}.");
+
+            private static readonly Action<ILogger, string, string, Exception> _creatingConversation =
+                LoggerMessage.Define<string, string>(LogLevel.Information, new EventId(5, nameof(CreatingConversation)), "{String}: Creating conversation. Channel Id: {String}.");
+
+            private static readonly Action<ILogger, string, string, Exception> _processingProactive =
+                LoggerMessage.Define<string, string>(LogLevel.Information, new EventId(6, nameof(ProcessingProactive)), "{String}: Processing proactive. Conversation Id: {String}.");
+
+            private static readonly Action<ILogger, string, string, Exception> _processingActivity =
+                LoggerMessage.Define<string, string>(LogLevel.Information, new EventId(7, nameof(ProcessingActivity)), "{String}: Processing activity. ActivityId: {String}.");
+
+            public static void SendingActivities(ILogger logger, string name, int size) => _sendingActivities(logger, name, size, null);
+
+            public static void SendingActivity(ILogger logger, string name, Activity activity) => _sendingActivity(logger, name, activity.ReplyToId, null);
+
+            public static void UpdatingActivity(ILogger logger, string name, Activity activity) => _updatingActivity(logger, name, activity.Id, null);
+
+            public static void DeletingActivity(ILogger logger, string name, ConversationReference reference) => _deletingActivity(logger, name, reference.Conversation.Id, reference.ActivityId, null);
+
+            public static void CreatingConversation(ILogger logger, string name, string channelId) => _creatingConversation(logger, name, channelId, null);
+
+            public static void ProcessingProactive(ILogger logger, string name, Activity activity) => _processingProactive(logger, name, activity.Conversation.Id, null);
+
+            public static void ProcessingActivity(ILogger logger, string name, Activity activity) => _processingActivity(logger, name, activity.Id, null);
         }
     }
 }

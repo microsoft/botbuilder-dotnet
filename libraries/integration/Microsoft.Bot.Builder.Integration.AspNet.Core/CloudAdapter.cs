@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (string.IsNullOrEmpty(activity?.Type))
                     {
                         httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                        Logger.LogWarning("BadRequest: Missing activity or activity type.");
+                        Log.ActivityMissing(Logger, "BadRequest", httpResponse.StatusCode);
                         return;
                     }
 
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
         {
-            Logger.LogInformation($"Received request for web socket connect.");
+            Log.WebSocketRequestReceived(Logger);
 
             // Grab the auth header from the inbound http request
             var authHeader = httpRequest.Headers["Authorization"];
@@ -335,6 +335,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
+        /// <summary>
+        /// Log messages for <see cref="CloudAdapter"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
         private class Log
         {
             private static readonly Action<ILogger, Exception> _webSocketConnectionStarted =
@@ -343,9 +350,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             private static readonly Action<ILogger, Exception> _webSocketConnectionCompleted =
                 LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(WebSocketConnectionCompleted)), "WebSocket connection completed.");
 
+            private static readonly Action<ILogger, string, int, Exception> _activityMissing =
+                LoggerMessage.Define<string, int>(LogLevel.Warning, new EventId(3, nameof(ActivityMissing)), "{String}: Missing activity or activity type. Status code: {Int32}");
+
+            private static readonly Action<ILogger, Exception> _webSocketRequestReceived =
+                LoggerMessage.Define(LogLevel.Information, new EventId(4, nameof(WebSocketRequestReceived)), "Received request for web socket connect.");
+
             public static void WebSocketConnectionStarted(ILogger logger) => _webSocketConnectionStarted(logger, null);
 
             public static void WebSocketConnectionCompleted(ILogger logger) => _webSocketConnectionCompleted(logger, null);
+
+            public static void ActivityMissing(ILogger logger, string statusName, int statusCode) => _activityMissing(logger, statusName, statusCode, null);
+
+            public static void WebSocketRequestReceived(ILogger logger) => _webSocketRequestReceived(logger, null);
         }
     }
 }

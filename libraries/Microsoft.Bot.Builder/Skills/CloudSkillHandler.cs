@@ -175,9 +175,9 @@ namespace Microsoft.Bot.Builder.Skills
             {
                 skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
             }
-            catch (NotImplementedException)
+            catch (NotImplementedException ex)
             {
-                _logger.LogWarning("Got NotImplementedException when trying to call GetSkillConversationReferenceAsync() on the ConversationIdFactory, attempting to use deprecated GetConversationReferenceAsync() method instead.");
+                Log.SkillConversationReferenceNotImplemented(_logger, ex);
 
                 // Attempt to get SkillConversationReference using deprecated method.
                 // this catch should be removed once we remove the deprecated method. 
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Skills
 
             if (skillConversationReference == null)
             {
-                _logger.LogError($"Unable to get skill conversation reference for conversationId {conversationId}.");
+                Log.SkillConversationReferenceNotFound(_logger, conversationId);
                 throw new KeyNotFoundException();
             }
 
@@ -205,6 +205,26 @@ namespace Microsoft.Bot.Builder.Skills
         {
             ApplySkillActivityToTurnContext(turnContext, activity);
             await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="CloudSkillHandler"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, Exception> _skillConversationReferenceNotImplemented =
+                LoggerMessage.Define(LogLevel.Warning, new EventId(1, nameof(SkillConversationReferenceNotImplemented)), "Got NotImplementedException when trying to call GetSkillConversationReferenceAsync() on the ConversationIdFactory, attempting to use deprecated GetConversationReferenceAsync() method instead.");
+
+            private static readonly Action<ILogger, string, Exception> _skillConversationReferenceNotFound =
+                LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, nameof(SkillConversationReferenceNotFound)), "Unable to get skill conversation reference for conversationId {String}.");
+
+            public static void SkillConversationReferenceNotImplemented(ILogger logger, NotImplementedException ex) => _skillConversationReferenceNotImplemented(logger, ex);
+
+            public static void SkillConversationReferenceNotFound(ILogger logger, string conversationId) => _skillConversationReferenceNotFound(logger, conversationId, null);
         }
     }
 }

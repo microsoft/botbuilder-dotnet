@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 .ConfigureAwait(false);
 
             watch.Stop();
-            _logger.LogInformation($"GetTokenAsync: Acquired token using MSI in {watch.ElapsedMilliseconds}.");
+            Log.AcquiredToken(_logger, nameof(GetTokenAsync), watch.ElapsedMilliseconds);
 
             return result;
         }
@@ -77,11 +77,31 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private RetryParams HandleTokenProviderException(Exception e, int retryCount)
         {
-            _logger.LogError(e, "Exception when trying to acquire token using MSI!");
+            Log.AcquiringTokenFailed(_logger, e);
 
             return e is AzureServiceTokenProviderException // BadRequest
                 ? RetryParams.StopRetrying
                 : RetryParams.DefaultBackOff(retryCount);
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="ManagedIdentityAuthenticator"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, long, Exception> _acquiredToken =
+                LoggerMessage.Define<string, long>(LogLevel.Information, new EventId(1, nameof(AcquiredToken)), "{String}: Acquired token using MSI in {Int64}.");
+
+            private static readonly Action<ILogger, Exception> _acquiringTokenFailed =
+                LoggerMessage.Define(LogLevel.Error, new EventId(2, nameof(AcquiringTokenFailed)), "Exception when trying to acquire token using MSI!.");
+
+            public static void AcquiredToken(ILogger logger, string name, long elapsedMilliseconds) => _acquiredToken(logger, name, elapsedMilliseconds, null);
+
+            public static void AcquiringTokenFailed(ILogger logger, Exception ex) => _acquiringTokenFailed(logger, ex);
         }
     }
 }

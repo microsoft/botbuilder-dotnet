@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var token = await _authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(token.AccessToken))
             {
-                Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");
+                Log.EmptyToken(Logger, $"{GetType().FullName}.ProcessHttpRequestAsync()");
             }
 
             return token.AccessToken;
@@ -196,6 +196,21 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="AppCredentials"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, Exception> _emptyToken =
+                LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, nameof(EmptyToken)), "{String}: got empty token from call to the configured IAuthenticator.");
+
+            public static void EmptyToken(ILogger logger, string name) => _emptyToken(logger, name, null);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = conversationId ?? throw new ArgumentNullException(nameof(conversationId));
             _ = activity ?? throw new ArgumentNullException(nameof(activity));
 
-            _logger.LogInformation($"post to skill '{toBotId}' at '{toUrl}'");
+            Log.PostToSkill(_logger, toBotId, toUrl);
 
             var credentials = await _credentialsFactory.CreateCredentialsAsync(fromBotId, toBotId, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
 
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Connector.Authentication
                         else
                         {
                             // Otherwise we can assume we don't have a T to deserialize - so just log the content so it's not lost.
-                            _logger.LogError($"Bot Framework call failed to '{toUrl}' returning '{(int)httpResponseMessage.StatusCode}' and '{content}'");
+                            Log.PostToSkillFailed(_logger, toUrl, (int)httpResponseMessage.StatusCode, content);
 
                             // We want to at least propogate the status code because that is what InvokeResponse expects.
                             return new InvokeResponse<T>
@@ -132,6 +132,26 @@ namespace Microsoft.Bot.Connector.Authentication
             _httpClient.Dispose();
             base.Dispose(disposing);
             _disposed = true;
+        }
+
+        /// <summary>
+        /// Log messages for <see cref="BotFrameworkClientImpl"/>.
+        /// </summary>
+        /// <remarks>
+        /// Messages implemented using <see cref="LoggerMessage.Define(LogLevel, EventId, string)"/> to maximize performance.
+        /// For more information, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-5.0.
+        /// </remarks>
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, Uri, Exception> _postToSkill =
+                LoggerMessage.Define<string, Uri>(LogLevel.Information, new EventId(1, nameof(PostToSkill)), "Post to skill '{String}' at '{Uri}'.");
+
+            private static readonly Action<ILogger, Uri, int, string, Exception> _postToSkillFailed =
+                LoggerMessage.Define<Uri, int, string>(LogLevel.Error, new EventId(2, nameof(PostToSkillFailed)), "Bot Framework call failed to '{Uri}' returning '{Int32}' and '{String}'.");
+
+            public static void PostToSkill(ILogger logger, string botId, Uri url) => _postToSkill(logger, botId, url, null);
+
+            public static void PostToSkillFailed(ILogger logger, Uri url, int statusCode, string content) => _postToSkillFailed(logger, url, statusCode, content, null);
         }
     }
 }
