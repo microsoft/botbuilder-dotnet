@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string KnowledgeBaseId { get; set; }
 
         /// <summary>
-        /// Gets or sets the QnAServiceType.
+        /// Gets or sets the QnAServiceType to query QnAMaker or Language Service knowledgeBase.
         /// </summary>
         /// <value>
         /// Valid value <see cref="Constants.LanguageQnAServiceType"/>, empty or null for legacy QnAMaker.

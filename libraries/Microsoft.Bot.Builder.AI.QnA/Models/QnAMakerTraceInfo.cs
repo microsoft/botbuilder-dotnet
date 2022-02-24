@@ -134,15 +134,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets a value indicating whether to enable or disable Answer Span prediction.
         /// </summary>
         /// <value>
-        /// True or False.
+        /// True or False, defaults to False.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to enable Query over Unstructured Sources (Optional).
+        /// Gets or sets a value indicating whether to enable Query over Unstructured Sources.
         /// </summary>
-        /// <value>A value indicating whether to enable Query over Unstructured Sources.</value>
+        /// <value>True/False, defaults to False.</value>
         [JsonProperty("includeUnstructuredSources")]
         public bool IncludeUnstructuredSources { get; set; }
     }

@@ -12,8 +12,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
         /// <value>Dictionary of &lt;string&gt;.</value>
         public List<KeyValuePair<string, string>> Metadata { get; } = new List<KeyValuePair<string, string>>();
 
-        /// <summary> Gets or sets to &apos;OR&apos; for joining metadata using &apos;OR&apos; operation. (Optional).</summary>
-        /// <value> For joining metadata using &apos;OR&apos; operation.</value>
+        /// <summary> Gets or sets logical operation for metadata filters.</summary>
+        /// <value>OR/AND, defaults to OR.</value>
         public string LogicalOperation { get; set; }
     }
 }

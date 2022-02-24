@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public QnAResponseContext Context { get; set; }
 
         /// <summary>
-        /// Gets or sets AnswerSpan Object of QnA.
+        /// Gets or sets <see cref="AnswerSpanResponse"/> object for precise answer in response .
         /// </summary>
         /// <value>
         /// Object containing <see cref="AnswerSpanResponse"/>.

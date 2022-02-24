@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
     public static class Constants
     {
         /// <summary>
-        /// SourceFilterMetadataKey - Source filter Metadata key.
+        /// Sets Key to Source filters, which are added to StrictFilters, extracted from filters.
         /// </summary>
         public const string SourceFilterMetadataKey = "source_name_metadata";
 

@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public static HttpClient DefaultHttpClient { get; } = new HttpClient();
 
         /// <summary>
-        /// Gets a value indicating whether determines whether to log personal information that came from the user.
+        /// Gets a value indicating whether to log personal information that came from the user.
         /// </summary>
         /// <value>If true, will log personal information into the IBotTelemetryClient.TrackEvent method; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; }

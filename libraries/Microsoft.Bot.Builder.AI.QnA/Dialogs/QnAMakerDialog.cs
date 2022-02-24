@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
         /// <param name="filters">Filters that include metadata and sources.</param>
-        /// <param name="qnAServiceType">QnA Service type empty/v2/language.</param>
+        /// <param name="qnAServiceType">QnA Service type empty/language.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -719,7 +719,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                         await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                         ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
-
                         stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
                     }

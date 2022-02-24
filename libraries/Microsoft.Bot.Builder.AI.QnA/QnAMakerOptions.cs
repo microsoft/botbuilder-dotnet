@@ -114,17 +114,17 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets strictFiltersJoinOperator - join operator on metadata strict filters.
+        /// Gets or sets logical operation (OR/AND) for strict filters.
         /// </summary>
-        /// <value>StrictFiltersJoinOperator - join operator on metadata strict filters.</value>
+        /// <value>logical operation (OR/AND) for strict filters.</value>
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether enable Precise Answer.
+        /// Gets or sets a value indicating whether to include precise answer in response.
         /// </summary>
         /// <value>
-        /// To enable Precise Answer or not.
+        /// True/False, defaults to false.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }
@@ -139,9 +139,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Filters Filters { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether Flag to enable Query over Unstructured Sources (Optional).
+        /// Gets or sets a value indicating whether to include Unstructured Sources from the Knowledge Base to query.
         /// </summary>
-        /// <value> Flag to enable Query over Unstructured Sources.</value>
+        /// <value> Flag to enable Query over Unstructured Sources. True/False, defaults to False.</value>
         [JsonProperty("includeUnstructuredSources")]
         public bool IncludeUnstructuredSources { get; set; } = true;
     }
