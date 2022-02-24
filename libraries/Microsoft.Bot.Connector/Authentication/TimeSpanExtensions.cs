@@ -27,7 +27,9 @@ namespace Microsoft.Bot.Connector.Authentication
             // The reason for this is that if there are multiple threads about to retry
             // at the same time, it can overload the server again and trigger throttling again.
             // By adding a bit of random noise, we distribute requests a across time.
+#pragma warning disable CA5394 // Do not use insecure randomness
             return delay + TimeSpan.FromMilliseconds(_random.NextDouble() * delay.TotalMilliseconds * multiplier);
+#pragma warning restore CA5394 // Do not use insecure randomness
         }
     }
 }
