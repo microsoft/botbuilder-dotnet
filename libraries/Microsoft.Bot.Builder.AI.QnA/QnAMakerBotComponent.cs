@@ -3,8 +3,6 @@
 
 using System.Collections.Generic;
 using AdaptiveExpressions.Converters;
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;

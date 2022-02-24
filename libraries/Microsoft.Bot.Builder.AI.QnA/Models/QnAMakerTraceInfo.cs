@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Models
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// This class represents all the trace info that we collect from the QnAMaker Middleware.

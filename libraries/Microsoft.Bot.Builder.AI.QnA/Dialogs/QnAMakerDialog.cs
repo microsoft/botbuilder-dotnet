@@ -15,7 +15,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// A dialog that supports multi-step and adaptive-learning QnA Maker services.

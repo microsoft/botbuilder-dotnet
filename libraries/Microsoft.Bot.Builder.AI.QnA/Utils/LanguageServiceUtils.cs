@@ -6,9 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.AI.QnA.Models;
-using Microsoft.Bot.Builder.AI.QnA.Models.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 

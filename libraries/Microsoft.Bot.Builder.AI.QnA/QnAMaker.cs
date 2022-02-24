@@ -8,8 +8,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Models;
-using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 

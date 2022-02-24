@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Defines Dialog Options for QnAMakerDialog.

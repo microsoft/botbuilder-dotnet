@@ -10,7 +10,7 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Utils
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Helper for HTTP requests.

@@ -7,10 +7,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA.Models;
+using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Utils
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Helper class for Generate Answer API.

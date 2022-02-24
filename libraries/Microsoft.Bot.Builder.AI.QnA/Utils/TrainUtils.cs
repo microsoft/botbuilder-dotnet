@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Utils
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Helper class for train API.

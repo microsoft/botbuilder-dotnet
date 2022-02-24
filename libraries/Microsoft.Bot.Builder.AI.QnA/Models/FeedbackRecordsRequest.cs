@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Models.Models
+namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary> Active learning feedback records request. </summary>
     public class FeedbackRecordsRequest

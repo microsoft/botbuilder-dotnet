@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Prompt Object.
