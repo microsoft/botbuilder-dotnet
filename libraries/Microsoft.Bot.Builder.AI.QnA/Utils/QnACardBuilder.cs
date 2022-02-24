@@ -79,8 +79,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Get Card for MultiTurn scenario. (Can be deprected from 4.10.0 release of sdk).
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnAPromptsCard(QueryResult result)
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cardNoMatchText without breaking binary compat) 
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+#pragma warning restore CA1801 // Review unused parameters
+
         {
             return GetQnADefaultResponse(result, true);
         }
