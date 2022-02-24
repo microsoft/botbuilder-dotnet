@@ -13,10 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Tests;
-using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -2459,7 +2457,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                         Dictionary<string, double> telemetryMetrics = null,
                                         CancellationToken cancellationToken = default(CancellationToken))
             {
-                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
 
                 // Add my property
                 eventData.Properties.Add("MyImportantProperty", "myImportantValue");

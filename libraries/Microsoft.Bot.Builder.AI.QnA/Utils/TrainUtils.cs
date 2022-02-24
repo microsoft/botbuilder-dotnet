@@ -4,7 +4,6 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
