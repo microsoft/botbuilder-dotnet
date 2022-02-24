@@ -6,16 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.AI.QnA.Models;
-using Microsoft.Bot.Builder.AI.QnA.Models.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     /// <summary>
-    /// LanguageServiceUtils - Helper class for Language service query knowledgebase and update suggestions api.
+    /// Helper class for Language service query knowledgebase and update suggestions api.
     /// </summary>
     internal class LanguageServiceUtils
     {
@@ -76,7 +74,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         }
 
         /// <summary>
-        /// QueryKnowledgeBaseAsync.
+        /// Generates an answer from the knowledge base.
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
         /// <param name="messageActivity">Message activity of the turn context.</param>
@@ -102,7 +100,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             var hydratedOptions = HydrateOptions(options);
             ValidateOptions(hydratedOptions);
 
-            var result = await QueryKBAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
+            var result = await QueryKbAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
             await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers, hydratedOptions).ConfigureAwait(false);
 
@@ -187,7 +185,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             };
         }
 
-        private async Task<QueryResults> QueryKBAsync(Activity messageActivity, QnAMakerOptions options)
+        private async Task<QueryResults> QueryKbAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/language/:query-knowledgebases?projectName={_endpoint.KnowledgeBaseId}&deploymentName=production&{ApiVersionQueryParam}";
 
@@ -221,7 +219,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             var jsonRequest = JsonConvert.SerializeObject(feedbackRecordsRequest);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
-            var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
+            await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
         }
 
         /// <summary>
