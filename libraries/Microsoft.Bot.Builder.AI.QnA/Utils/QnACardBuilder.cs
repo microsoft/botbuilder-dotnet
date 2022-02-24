@@ -82,9 +82,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
 #pragma warning disable CA1801 // Review unused parameters (we can't remove cardNoMatchText without breaking binary compat) 
-        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText = "")
 #pragma warning restore CA1801 // Review unused parameters
-
         {
             return GetQnADefaultResponse(result, true);
         }
