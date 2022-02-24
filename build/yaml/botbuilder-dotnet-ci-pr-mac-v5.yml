@@ -29,7 +29,6 @@ steps:
   displayName: 'dotnet build'
   inputs:
     projects: Microsoft.Bot.Builder.sln
-    arguments: '-v detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
@@ -41,9 +40,9 @@ steps:
      !Tests/**/Microsoft.Bot.Builder.Streaming.Tests.csproj
     arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
 
-- powershell: |
+- script: |
    cd ..
-   ls -ARl
+   ls -R
   displayName: dir workspace
   continueOnError: true
   condition: succeededOrFailed()
