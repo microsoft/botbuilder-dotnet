@@ -46,11 +46,10 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Dialogs
             // Running a prompt here means the next WaterfallStep will be run when the users response is received.
             return await stepContext.PromptAsync(
                 nameof(ChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("Please enter your mode of transport."),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Car", "Bus", "Bicycle" }),
-                }, cancellationToken);
+                new PromptOptions(
+                    prompt: MessageFactory.Text("Please enter your mode of transport."),
+                    choices: ChoiceFactory.ToChoices(new List<string> { "Car", "Bus", "Bicycle" })),
+                cancellationToken);
         }
 
         private static async Task<DialogTurnResult> NameActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
