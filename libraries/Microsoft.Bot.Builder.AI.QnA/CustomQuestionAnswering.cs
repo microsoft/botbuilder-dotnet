@@ -8,9 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
-using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -59,14 +57,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
             }
 
-            if (httpClient == null)
-            {
-                _httpClient = DefaultHttpClient;
-            }
-            else
-            {
-                _httpClient = httpClient;
-            }
+            _httpClient = httpClient ?? DefaultHttpClient;
 
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
@@ -172,9 +163,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Question cannot be null or empty text");
             }
 
-            QueryResults results;
-
-            results = await _languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            QueryResults results = await _languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
@@ -215,9 +204,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                    ITurnContext turnContext,
                    Dictionary<string, string> telemetryProperties = null,
                    Dictionary<string, double> telemetryMetrics = null,
-                   CancellationToken cancellationToken = default(CancellationToken))
+                   CancellationToken cancellationToken = default)
         {
-            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
 
             // Track the event
             TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
@@ -231,12 +220,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Properties to add/override for the event.</param>
         /// <param name="telemetryMetrics">Metrics to add/override for the event.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
         /// <returns>A tuple of Properties and Metrics that will be sent to the IBotTelemetryClient.TrackEvent method for the QnAMessage event.  The properties and metrics returned the standard properties logged with any properties passed from the GetAnswersAsync method.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat) 
-        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var properties = new Dictionary<string, string>();
             var metrics = new Dictionary<string, double>();

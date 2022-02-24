@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Utils
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Active learning helper class.

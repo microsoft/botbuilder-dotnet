@@ -4,11 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Utils
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Message activity card builder for QnAMaker dialogs.
@@ -81,8 +79,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// Get Card for MultiTurn scenario. (Can be deprected from 4.10.0 release of sdk).
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnAPromptsCard(QueryResult result)
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cardNoMatchText without breaking binary compat) 
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText = "")
+#pragma warning restore CA1801 // Review unused parameters
         {
             return GetQnADefaultResponse(result, true);
         }
@@ -91,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// Get Card for Default QnA Maker scenario.
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
-        /// <param name="displayPreciseAnswerOnly">renderingchoice.</param>
+        /// <param name="displayPreciseAnswerOnly">Choice to render precise answer.</param>
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
         {

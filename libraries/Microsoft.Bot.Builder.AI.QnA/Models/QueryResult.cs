@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Models
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Represents an individual result from a knowledge base query.
@@ -82,10 +83,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
         public QnAResponseContext Context { get; set; }
 
         /// <summary>
-        /// Gets or sets AnswerSpan of the previous turn.
+        /// Gets or sets AnswerSpan Object of QnA.
         /// </summary>
         /// <value>
-        /// The answerspan value.
+        /// Object containing <see cref="AnswerSpanResponse"/>.
         /// </value>
         [JsonProperty("answerSpan")]
         public AnswerSpanResponse AnswerSpan { get; set; }

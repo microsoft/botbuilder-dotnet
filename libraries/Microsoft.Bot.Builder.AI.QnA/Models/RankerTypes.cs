@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.AI.QnA.Models
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Enumeration of types of ranking.

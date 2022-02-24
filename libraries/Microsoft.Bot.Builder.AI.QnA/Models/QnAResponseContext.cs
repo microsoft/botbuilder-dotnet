@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Models
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// The context associated with QnA.  Used to mark if the qna response has related prompts to display.
