@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 if (dc.ActiveDialog.State.TryGetValue(SuggestedQuestionsData, out object value))
                 {
                     var suggestedQuestions = value as List<string>; 
-                    if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
+                    if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Equals(question, reply.Trim(), StringComparison.OrdinalIgnoreCase)))
                     {
                         // it matches one of the suggested actions, we like that.
                         return true;
