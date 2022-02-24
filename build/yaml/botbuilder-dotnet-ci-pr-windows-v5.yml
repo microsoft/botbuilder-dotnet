@@ -49,3 +49,10 @@ steps:
     codeCoverageEnabled: true
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

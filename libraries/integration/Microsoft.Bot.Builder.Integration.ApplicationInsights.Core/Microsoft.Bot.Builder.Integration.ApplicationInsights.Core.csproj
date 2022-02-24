@@ -25,14 +25,14 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.22" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Explicitly set dependency to the latest version, because we have a transient dependency brought by Microsoft.ApplicationInsights.AspNetCore and can't fix by updating runtime, since it's not a framework reference"-->
     <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
-    <PackageReference Include="System.Net.Security" Version="4.3.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
+    <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
