@@ -42,7 +42,7 @@ steps:
 
 - script: |
    cd ..
-   ls -R
+   ls -ARl
   displayName: dir workspace
   continueOnError: true
   condition: succeededOrFailed()
