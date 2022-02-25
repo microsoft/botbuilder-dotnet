@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         public PagedMembersResult(string continuationToken = default, IList<ChannelAccount> members = default)
         {
             ContinuationToken = continuationToken;
-            Members = members;
+            Members = members ?? new List<ChannelAccount>();
             CustomInit();
         }
 
@@ -39,13 +39,11 @@ namespace Microsoft.Bot.Schema
         public string ContinuationToken { get; set; }
 
         /// <summary>
-        /// Gets or sets the Channel Accounts.
+        /// Gets the Channel Accounts.
         /// </summary>
         /// <value>The Channel Accounts.</value>
         [JsonProperty(PropertyName = "members")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<ChannelAccount> Members { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ChannelAccount> Members { get; private set; } = new List<ChannelAccount>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

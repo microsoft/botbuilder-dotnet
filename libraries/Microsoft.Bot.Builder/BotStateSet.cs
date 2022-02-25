@@ -24,12 +24,10 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets or sets the BotStates list for the BotStateSet.
+        /// Gets the BotStates list for the BotStateSet.
         /// </summary>
         /// <value>The BotState objects managed by this class.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public List<BotState> BotStates { get; set; } = new List<BotState>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        public List<BotState> BotStates { get; } = new List<BotState>();
 
         /// <summary>
         /// Adds a bot state object to the set.

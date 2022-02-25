@@ -50,29 +50,32 @@ namespace Microsoft.Bot.Schema.Tests
                     new List<Entity>() { new Entity() },
                     false,
                 };
+
+                var entity = new Entity()
+                {
+                    Type = "mention",
+                };
+                entity.Properties.Merge(new JObject()
+                { 
+                    {
+                        "Mentioned",
+                        new JObject()
+                        {
+                            { "Id", "ChannelAccountId" },
+                            { "Name", "AccountName" },
+                            { "Properties", new JObject() },
+                            { "Role", "ChannelAccountRole" },
+                        }
+                    },
+                    { "Text", "text" },
+                    { "Type", "mention" },
+                });
+
                 yield return new object[]
                 {
                     new List<Entity>()
                     {
-                        new Entity()
-                        {
-                            Type = "mention",
-                            Properties = new JObject()
-                            {
-                                { 
-                                    "Mentioned",
-                                    new JObject()
-                                    {
-                                        { "Id", "ChannelAccountId" },
-                                        { "Name", "AccountName" },
-                                        { "Properties", new JObject() },
-                                        { "Role", "ChannelAccountRole" },
-                                    }
-                                },
-                                { "Text", "text" },
-                                { "Type", "mention" },
-                            },
-                        }
+                        entity
                     },
                     true
                 };

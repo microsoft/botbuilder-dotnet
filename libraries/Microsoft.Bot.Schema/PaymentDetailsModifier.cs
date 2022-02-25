@@ -39,21 +39,19 @@ namespace Microsoft.Bot.Schema
         /// methods.</param>
         public PaymentDetailsModifier(IList<string> supportedMethods = default, PaymentItem total = default, IList<PaymentItem> additionalDisplayItems = default, object data = default)
         {
-            SupportedMethods = supportedMethods;
+            SupportedMethods = supportedMethods ?? new List<string>();
             Total = total;
-            AdditionalDisplayItems = additionalDisplayItems;
+            AdditionalDisplayItems = additionalDisplayItems ?? new List<PaymentItem>();
             Data = data;
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets contains a sequence of payment method identifiers.
+        /// Gets contains a sequence of payment method identifiers.
         /// </summary>
         /// <value>The supported method identifiers.</value>
         [JsonProperty(PropertyName = "supportedMethods")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<string> SupportedMethods { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> SupportedMethods { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets this value overrides the total field in the
@@ -65,15 +63,13 @@ namespace Microsoft.Bot.Schema
         public PaymentItem Total { get; set; }
 
         /// <summary>
-        /// Gets or sets provides additional display items that are appended to
+        /// Gets provides additional display items that are appended to
         /// the displayItems field in the PaymentDetails dictionary for the
         /// payment method identifiers in the supportedMethods field.
         /// </summary>
         /// <value>The additional display items that are appended to the displayItems field in PaymentDetails.</value>
         [JsonProperty(PropertyName = "additionalDisplayItems")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<PaymentItem> AdditionalDisplayItems { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<PaymentItem> AdditionalDisplayItems { get; private set; } = new List<PaymentItem>();
 
         /// <summary>
         /// Gets or sets a JSON-serializable object that provides optional

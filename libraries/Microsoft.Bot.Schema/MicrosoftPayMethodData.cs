@@ -38,8 +38,8 @@ namespace Microsoft.Bot.Schema
         public MicrosoftPayMethodData(string merchantId = default, IList<string> supportedNetworks = default, IList<string> supportedTypes = default)
         {
             MerchantId = merchantId;
-            SupportedNetworks = supportedNetworks;
-            SupportedTypes = supportedTypes;
+            SupportedNetworks = supportedNetworks ?? new List<string>();
+            SupportedTypes = supportedTypes ?? new List<string>();
         }
 
         /// <summary>
@@ -72,23 +72,19 @@ namespace Microsoft.Bot.Schema
         public string Mode { get; set; }
 
         /// <summary>
-        /// Gets or sets supported payment networks (e.g., "visa" and
+        /// Gets supported payment networks (e.g., "visa" and
         /// "mastercard").
         /// </summary>
         /// <value>The supported payment networks.</value>
         [JsonProperty(PropertyName = "supportedNetworks")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<string> SupportedNetworks { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> SupportedNetworks { get; private set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets supported payment types (e.g., "credit").
+        /// Gets supported payment types (e.g., "credit").
         /// </summary>
         /// <value>The supported payment types.</value>
         [JsonProperty(PropertyName = "supportedTypes")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<string> SupportedTypes { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> SupportedTypes { get; private set; } = new List<string>();
 
         /// <summary>
         /// Get Microsoft Pay method data.
@@ -96,9 +92,9 @@ namespace Microsoft.Bot.Schema
         /// <returns>Payment method data.</returns>
         public PaymentMethodData ToPaymentMethodData()
         {
-            return new PaymentMethodData
+            var supportedMethods = new List<string> { MethodName };
+            return new PaymentMethodData(supportedMethods: supportedMethods)
             {
-                SupportedMethods = new List<string> { MethodName },
                 Data = this,
             };
         }
