@@ -587,15 +587,15 @@ namespace Microsoft.Bot.Connector.Tests
             {
                 Title = "A static image",
                 Subtitle = "JPEG image",
-                Images = new CardImage[] { new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" } }
             };
+            heroCardStatic.Images.Add(new CardImage() { Url = "https://docs.microsoft.com/bot-framework/media/designing-bots/core/dialogs-screens.png" });
 
             var heroCardAnimation = new HeroCard()
             {
                 Title = "An animation",
                 Subtitle = "GIF image",
-                Images = new CardImage[] { new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" } },
             };
+            heroCardAnimation.Images.Add(new CardImage() { Url = "http://i.giphy.com/Ki55RUbOV5njy.gif" });
 
             var activity = new Activity()
             {

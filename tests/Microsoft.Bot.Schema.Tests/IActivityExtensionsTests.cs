@@ -49,13 +49,7 @@ namespace Microsoft.Bot.Schema.Tests
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Recipient = new ChannelAccount
-                {
-                    Id = "ChannelAccountId",
-                    Name = "ChannelAccountName",
-                    Properties = new JObject { { "Name", "Value" } },
-                    Role = "ChannelAccountRole",
-                }
+                Recipient = recipient,
             };
             ((List<Entity>)message.Entities).AddRange(entities);
 

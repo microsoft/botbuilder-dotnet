@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets a list of choices for the user to choose from, for use with a <see cref="ChoicePrompt"/>.
         /// </summary>
         /// <value>The list of available choices.</value>
-        public IList<Choice> Choices { get; } = new List<Choice>();
+        public IList<Choice> Choices { get; private set; } = new List<Choice>();
 
         /// <summary>
         /// Gets or sets the <see cref="ListStyle"/> for a <see cref="ChoicePrompt"/>.

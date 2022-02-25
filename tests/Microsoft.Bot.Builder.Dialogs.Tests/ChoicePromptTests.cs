@@ -350,11 +350,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                         await dc.PromptAsync(
                             "ChoicePrompt",
-                            new PromptOptions
-                            {
-                                Prompt = prompt,
-                                Choices = _colorChoices,
-                            },
+                            new PromptOptions(
+                                prompt: prompt,
+                                choices: _colorChoices),
                             cancellationToken);
                     }
                 })
