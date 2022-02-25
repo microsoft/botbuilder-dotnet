@@ -30,18 +30,16 @@ namespace Microsoft.Bot.Schema.Teams
         public O365ConnectorCardViewAction(string type = default, string name = default, string id = default, IList<string> target = default)
             : base(type, name, id)
         {
-            Target = target;
+            Target = target ?? new List<string>();
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets target urls, only the first url effective for card button.
+        /// Gets target urls, only the first url effective for card button.
         /// </summary>
         /// <value>The target URLs.</value>
         [JsonProperty(PropertyName = "target")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<string> Target { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> Target { get; private set; } = new List<string>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

@@ -20,15 +20,13 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets adaptive cards for this card tab response.
+        /// Gets adaptive cards for this card tab response.
         /// </summary>
         /// <value>
         /// Cards for this <see cref="TabResponse"/>.
         /// </value>
         [JsonProperty(PropertyName = "cards")]
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IList<TabResponseCard> Cards { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<TabResponseCard> Cards { get; private set; } = new List<TabResponseCard>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

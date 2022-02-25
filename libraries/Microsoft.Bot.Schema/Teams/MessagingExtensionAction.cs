@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Schema.Teams
             CommandId = commandId;
             CommandContext = commandContext;
             BotMessagePreviewAction = botMessagePreviewAction;
-            BotActivityPreview = botActivityPreview;
+            BotActivityPreview = botActivityPreview ?? new List<Activity>();
             MessagePayload = messagePayload;
             CustomInit();
         }
@@ -70,13 +70,11 @@ namespace Microsoft.Bot.Schema.Teams
         public string BotMessagePreviewAction { get; set; }
 
         /// <summary>
-        /// Gets or sets the bot activity preview.
+        /// Gets the bot activity preview.
         /// </summary>
         /// <value>The bot activity preview.</value>
         [JsonProperty(PropertyName = "botActivityPreview")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<Activity> BotActivityPreview { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<Activity> BotActivityPreview { get; private set; } = new List<Activity>();
 
         /// <summary>
         /// Gets or sets message content sent as part of the command request.

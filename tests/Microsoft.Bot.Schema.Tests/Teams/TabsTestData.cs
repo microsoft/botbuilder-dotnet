@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         {
             public IEnumerator<object[]> GetEnumerator()
             {
-                yield return new object[] { null };
+                yield return new object[] { new List<TabResponseCard>() };
                 yield return new object[]
                 {
                     new List<TabResponseCard>()
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             public IEnumerator<object[]> GetEnumerator()
             {
                 // string tabType, JObject properties
-                yield return new object[] { null, null };
+                yield return new object[] { null, new JObject() };
                 yield return new object[]
                 {
                     "pdf",
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         {
             public IEnumerator<object[]> GetEnumerator()
             {
-                yield return new object[] { null };
+                yield return new object[] { new List<CardAction>() };
                 yield return new object[]
                 { 
                     new List<CardAction>()
