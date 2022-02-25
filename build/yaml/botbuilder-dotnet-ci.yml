@@ -48,7 +48,6 @@ stages:
       inputs:
         packageType: sdk
         version: 2.1.818
-        installationPath: $(Agent.ToolsDirectory)/dotnet
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
   - job: Debug_Windows_Configuration_31
@@ -69,7 +68,6 @@ stages:
       inputs:
         packageType: sdk
         version: 2.1.818
-        installationPath: $(Agent.ToolsDirectory)/dotnet
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
     - template: ci-component-detection-steps.yml
