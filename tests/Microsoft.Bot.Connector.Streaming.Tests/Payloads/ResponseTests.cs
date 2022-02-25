@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
         {
             var r = new StreamingResponse();
             Assert.Equal(0, r.StatusCode);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var s = new StringContent("hi");
             var s2 = new StringContent("hello");
 
-            r.Streams = new List<ResponseMessageStream> { new ResponseMessageStream { Content = s2 } };
+            r.Streams.AddRange(new List<ResponseMessageStream> { new ResponseMessageStream { Content = s2 } });
 
             r.AddStream(s);
 
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var r = StreamingResponse.NotFound();
 
             Assert.Equal((int)HttpStatusCode.NotFound, r.StatusCode);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var r = StreamingResponse.Forbidden();
 
             Assert.Equal((int)HttpStatusCode.Forbidden, r.StatusCode);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var r = StreamingResponse.OK();
 
             Assert.Equal((int)HttpStatusCode.OK, r.StatusCode);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var r = StreamingResponse.InternalServerError();
 
             Assert.Equal((int)HttpStatusCode.InternalServerError, r.StatusCode);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -224,7 +224,6 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
         public void ReceiveBase_ReadBodyAsString_NoContent_EmptyString()
         {
             var r = new ReceiveResponse();
-            r.Streams = new List<IContentStream>();
 
             var result = r.ReadBodyAsString();
 
@@ -241,10 +240,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var mockContentStream = new Mock<IContentStream>();
             mockContentStream.Setup(e => e.Stream).Returns(stream);
 
-            var response = new ReceiveResponse
-            {
-                Streams = new List<IContentStream> { mockContentStream.Object }
-            };
+            var response = new ReceiveResponse();
+            response.Streams.AddRange(new List<IContentStream> { mockContentStream.Object });
+
             var result = response.ReadBodyAsJson<Activity>();
 
             Assert.NotNull(result);
@@ -274,10 +272,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var mockContentStream = new Mock<IContentStream>();
             mockContentStream.Setup(e => e.Stream).Returns(stream);
 
-            var response = new ReceiveResponse
-            {
-                Streams = new List<IContentStream> { mockContentStream.Object }
-            };
+            var response = new ReceiveResponse();
+            response.Streams.AddRange(new List<IContentStream> { mockContentStream.Object });
+
             var result = response.ReadBodyAsString();
 
             Assert.NotNull(result);

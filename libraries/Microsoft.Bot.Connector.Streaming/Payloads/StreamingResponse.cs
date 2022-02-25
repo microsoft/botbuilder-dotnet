@@ -24,14 +24,12 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
         public int StatusCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of streams attached to this response.
+        /// Gets the collection of streams attached to this response.
         /// </summary>
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="ResponseMessageStream"/>.
         /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only
-        public List<ResponseMessageStream> Streams { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public List<ResponseMessageStream> Streams { get; private set; } = new List<ResponseMessageStream>();
 
         /// <summary>
         /// Creates a response indicating the requested resource was not found.

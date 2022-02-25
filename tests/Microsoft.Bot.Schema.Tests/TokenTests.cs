@@ -22,8 +22,8 @@ namespace Microsoft.Bot.Schema.Tests
                 Id = id,
                 ConnectionName = connectionName,
                 Token = token,
-                Properties = properties
             };
+            tokenExchangeInvokeRequest.Properties.Merge(properties);
 
             Assert.NotNull(tokenExchangeInvokeRequest);
             Assert.IsType<TokenExchangeInvokeRequest>(tokenExchangeInvokeRequest);
@@ -46,8 +46,8 @@ namespace Microsoft.Bot.Schema.Tests
                 Id = id,
                 ConnectionName = connectionName,
                 FailureDetail = failureDetail,
-                Properties = properties,
             };
+            tokenExchangeInvokeResponse.Properties.Merge(properties);
 
             Assert.NotNull(tokenExchangeInvokeResponse);
             Assert.IsType<TokenExchangeInvokeResponse>(tokenExchangeInvokeResponse);
@@ -206,10 +206,7 @@ namespace Microsoft.Bot.Schema.Tests
             var expiration = "expiration";
             var properties = new JObject();
 
-            var tokenResponse = new TokenResponse(channelId, connectionName, token, expiration)
-            {
-                Properties = properties
-            };
+            var tokenResponse = new TokenResponse(channelId, connectionName, token, expiration, properties);
 
             Assert.NotNull(tokenResponse);
             Assert.IsType<TokenResponse>(tokenResponse);

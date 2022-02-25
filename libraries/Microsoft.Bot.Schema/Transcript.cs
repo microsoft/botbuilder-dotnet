@@ -26,19 +26,17 @@ namespace Microsoft.Bot.Schema
         /// to the Transcript schema.</param>
         public Transcript(IList<Activity> activities = default)
         {
-            Activities = activities;
+            Activities = activities ?? new List<Activity>();
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets a collection of Activities that conforms to the
+        /// Gets a collection of Activities that conforms to the
         /// Transcript schema.
         /// </summary>
         /// <value>A collection of activities that conforms to the Transcript schema.</value>
         [JsonProperty(PropertyName = "activities")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<Activity> Activities { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<Activity> Activities { get; private set; } = new List<Activity>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
