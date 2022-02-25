@@ -43,6 +43,12 @@ stages:
       BuildConfiguration: Debug-Windows
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
     steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 2.1'
+      inputs:
+        packageType: sdk
+        version: 2.1.818
+        installationPath: $(Agent.ToolsDirectory)/dotnet
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
   - job: Debug_Windows_Configuration_31
@@ -58,6 +64,12 @@ stages:
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
       PublishCoverage: false
     steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 2.1'
+      inputs:
+        packageType: sdk
+        version: 2.1.818
+        installationPath: $(Agent.ToolsDirectory)/dotnet
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
     - template: ci-component-detection-steps.yml
