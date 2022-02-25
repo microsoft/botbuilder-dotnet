@@ -29,8 +29,8 @@ namespace Microsoft.Bot.Schema
             Title = title;
             Subtitle = subtitle;
             Text = text;
-            Images = images;
-            Buttons = buttons;
+            Images = images ?? new List<CardImage>();
+            Buttons = buttons ?? new List<CardAction>();
             Tap = tap;
             CustomInit();
         }
@@ -50,19 +50,15 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
-        /// <summary>Gets or sets list of images for the card.</summary>
+        /// <summary>Gets list of images for the card.</summary>
         /// <value>A list of images for the card.</value>
         [JsonProperty(PropertyName = "images")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<CardImage> Images { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardImage> Images { get; private set; } = new List<CardImage>();
 
-        /// <summary>Gets or sets set of actions applicable to the current card.</summary>
+        /// <summary>Gets set of actions applicable to the current card.</summary>
         /// <value>The actions applicable to the current card.</value>
         [JsonProperty(PropertyName = "buttons")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<CardAction> Buttons { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>Gets or sets this action will be activated when user taps on the card itself.</summary>
         /// <value>The action that will activate when user taps card.</value>

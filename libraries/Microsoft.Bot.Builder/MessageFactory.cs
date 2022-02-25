@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder
             var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
+            ma.SuggestedActions = new SuggestedActions(actions: cardActions.ToList());
 
             return ma;
         }

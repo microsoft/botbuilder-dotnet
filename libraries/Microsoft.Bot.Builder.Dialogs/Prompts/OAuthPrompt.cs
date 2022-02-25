@@ -116,21 +116,22 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
                     var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
+                    var buttons = new[]
+                    {
+                        new CardAction
+                        {
+                            Title = settings.Title,
+                            Value = signInResource.SignInLink,
+                            Type = ActionTypes.Signin,
+                        },
+                    };
+
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
-                        Content = new SigninCard
+                        Content = new SigninCard(buttons: buttons)
                         {
                             Text = settings.Text,
-                            Buttons = new[]
-                            {
-                                new CardAction
-                                {
-                                    Title = settings.Title,
-                                    Value = signInResource.SignInLink,
-                                    Type = ActionTypes.Signin,
-                                },
-                            },
                         },
                     });
                 }
@@ -160,23 +161,24 @@ namespace Microsoft.Bot.Builder.Dialogs
                     value = null;
                 }
 
+                var buttons = new[]
+                {
+                    new CardAction
+                    {
+                        Title = settings.Title,
+                        Text = settings.Text,
+                        Type = cardActionType,
+                        Value = value
+                    },
+                };
+
                 prompt.Attachments.Add(new Attachment
                 {
                     ContentType = OAuthCard.ContentType,
-                    Content = new OAuthCard
+                    Content = new OAuthCard(buttons: buttons)
                     {
                         Text = settings.Text,
                         ConnectionName = settings.ConnectionName,
-                        Buttons = new[]
-                        {
-                            new CardAction
-                            {
-                                Title = settings.Title,
-                                Text = settings.Text,
-                                Type = cardActionType,
-                                Value = value
-                            },
-                        },
                         TokenExchangeResource = signInResource.TokenExchangeResource,
                     },
                 });
