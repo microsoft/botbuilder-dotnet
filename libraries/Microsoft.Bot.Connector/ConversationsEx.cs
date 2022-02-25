@@ -175,22 +175,26 @@ namespace Microsoft.Bot.Connector
 
         private static ConversationParameters GetDirectParameters(string botId, string userId, Activity activity)
         {
-            return new ConversationParameters()
+            var convParameters = new ConversationParameters()
             {
                 Bot = new ChannelAccount(botId),
-                Members = new ChannelAccount[] { new ChannelAccount(userId) },
                 Activity = activity,
             };
+            convParameters.Members.Add(new ChannelAccount(userId));
+
+            return convParameters;
         }
 
         private static ConversationParameters GetDirectParameters(ChannelAccount bot, ChannelAccount user, Activity activity)
         {
-            return new ConversationParameters()
+            var convParameters = new ConversationParameters()
             {
                 Bot = bot,
-                Members = new ChannelAccount[] { user },
                 Activity = activity,
             };
+            convParameters.Members.Add(user);
+
+            return convParameters;
         }
     }
 }

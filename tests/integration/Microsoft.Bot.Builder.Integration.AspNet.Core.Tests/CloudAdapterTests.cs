@@ -738,7 +738,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 IsGroup = false,
                 Bot = new ChannelAccount { },
-                Members = new ChannelAccount[] { },
                 TenantId = "tenantId",
             };
 

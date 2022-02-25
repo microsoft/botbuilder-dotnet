@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
 
             _logger.LogInformation($"GetAadTokensAsync ConnectionName: {connectionName}");
-            return (Dictionary<string, TokenResponse>)await _client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls() { ResourceUrls = resourceUrls?.ToList() }, channelId, cancellationToken).ConfigureAwait(false);
+            return (Dictionary<string, TokenResponse>)await _client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls(resourceUrls?.ToList()), channelId, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<TokenResponse> ExchangeTokenAsync(string userId, string connectionName, string channelId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken)
