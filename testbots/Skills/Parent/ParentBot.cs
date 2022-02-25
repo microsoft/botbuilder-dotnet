@@ -89,7 +89,7 @@ namespace Microsoft.BotBuilderSamples
                             cloneActivity,
                             cancellationToken);
 
-                        if (response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
+                        if (response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities.Count() > 0)
                         {
                             var activities = response1.Body.Activities.ToArray();
                             if (!(await InterceptOAuthCards(activities, turnContext, cancellationToken)))
@@ -122,7 +122,7 @@ namespace Microsoft.BotBuilderSamples
 
                 if (response.Status == (int)HttpStatusCode.OK)
                 {
-                    await turnContext.SendActivitiesAsync(response.Body?.Activities?.ToArray(), cancellationToken);
+                    await turnContext.SendActivitiesAsync(response.Body?.Activities.ToArray(), cancellationToken);
                 }
             }
 

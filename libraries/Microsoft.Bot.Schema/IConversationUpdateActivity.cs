@@ -11,20 +11,16 @@ namespace Microsoft.Bot.Schema
     public interface IConversationUpdateActivity : IActivity
     {
         /// <summary>
-        /// Gets or Sets Members added to the conversation.
+        /// Gets Members added to the conversation.
         /// </summary>
         /// <value>List of ChannelAccount.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        IList<ChannelAccount> MembersAdded { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        IList<ChannelAccount> MembersAdded { get; }
 
         /// <summary>
-        /// Gets or Sets Members removed from the conversation.
+        /// Gets Members removed from the conversation.
         /// </summary>
         /// <value>List of ChannelAccount.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        IList<ChannelAccount> MembersRemoved { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        IList<ChannelAccount> MembersRemoved { get; }
 
         /// <summary>
         /// Gets or Sets The conversation's updated topic name.

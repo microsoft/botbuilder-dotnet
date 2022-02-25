@@ -28,7 +28,9 @@ namespace Microsoft.Bot.Schema.Tests
             {
                 yield return new object[] { new Activity() { Text = "text" }, true };
                 yield return new object[] { new Activity() { Summary = "summary" }, true };
-                yield return new object[] { new Activity() { Attachments = GetAttachments() }, true };
+                var activity = new Activity();
+                ((List<Attachment>)activity.Attachments).AddRange(GetAttachments());
+                yield return new object[] { activity, true };
                 yield return new object[] { new Activity() { ChannelData = new MyChannelData() }, true };
                 yield return new object[] { new Activity(), false };
             }
@@ -56,7 +58,7 @@ namespace Microsoft.Bot.Schema.Tests
                     Type = "mention",
                 };
                 entity.Properties.Merge(new JObject()
-                { 
+                {
                     {
                         "Mentioned",
                         new JObject()

@@ -167,40 +167,36 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
             // Arrange
-            var activities = new[]
+            var activity = new Activity
             {
-                new Activity
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    Type = ActivityTypes.Message,
-                    From = new ChannelAccount { Id = "testUser" },
-                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
-                    Recipient = new ChannelAccount { Id = "testBot" },
-                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
-                    ChannelId = "test",
-                    Text = "1"
-                },
-                new Activity
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    Type = ActivityTypes.Message,
-                    From = new ChannelAccount { Id = "testUser" },
-                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
-                    Recipient = new ChannelAccount { Id = "testBot" },
-                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
-                    ChannelId = "test",
-                    Text = "2",
-                    Attachments = new List<Attachment>
-                    {
-                        new Attachment
-                        {
-                            Name = @"Resources\architecture-resize.png",
-                            ContentType = "image/png",
-                            ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
-                        }
-                    }
-                }
+                Id = Guid.NewGuid().ToString("N"),
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = "testUser" },
+                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                Recipient = new ChannelAccount { Id = "testBot" },
+                ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                ChannelId = "test",
+                Text = "1"
             };
+            var activityWithAttachment = new Activity
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = "testUser" },
+                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                Recipient = new ChannelAccount { Id = "testBot" },
+                ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                ChannelId = "test",
+                Text = "2",
+            };
+            activityWithAttachment.Attachments.Add(new Attachment
+            {
+                Name = @"Resources\architecture-resize.png",
+                ContentType = "image/png",
+                ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
+            });
+
+            var activities = new[] { activity, activityWithAttachment };
 
             var verifiedResponses = activities.ToDictionary(a => a.Id, a => false);
 
@@ -210,15 +206,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 {
                     case "1":
                         var response1 = MessageFactory.Text("Echo: 1");
-                        response1.Attachments = new List<Attachment>
-                        {
+                        response1.Attachments.Add(
                             new Attachment
                             {
                                 Name = @"Resources\architecture-resize.png",
                                 ContentType = "image/png",
                                 ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
-                            }
-                        };
+                            });
                         return turnContext.SendActivityAsync(response1, cancellationToken);
 
                     case "2":
@@ -299,42 +293,36 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
-            var activities = new[]
+            var activity = new Activity
             {
-                new Activity
-                {
-                    Id = Guid.NewGuid().ToString("N"),
-                    Type = ActivityTypes.Message,
-                    From = new ChannelAccount { Id = "testUser" },
-                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
-                    Recipient = new ChannelAccount { Id = "testBot" },
-                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
-                    ChannelId = "test",
-                    Text = "hi",
-                    Attachments = new List<Attachment>
-                    {
-                        new Attachment
-                        {
-                            Name = @"Resources\architecture-resize.png",
-                            ContentType = "image/png",
-                            ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
-                        }
-                    }
-                }
+                Id = Guid.NewGuid().ToString("N"),
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = "testUser" },
+                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                Recipient = new ChannelAccount { Id = "testBot" },
+                ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                ChannelId = "test",
+                Text = "hi",
             };
+            activity.Attachments.Add(new Attachment
+            {
+                Name = @"Resources\architecture-resize.png",
+                ContentType = "image/png",
+                ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
+            });
+
+            var activities = new[] { activity };
 
             var bot = new StreamingTestBot((turnContext, cancellationToken) =>
             {
                 var response = MessageFactory.Text("Echo: hi");
-                response.Attachments = new List<Attachment>
-                {
+                response.Attachments.Add(
                     new Attachment
                     {
                         Name = @"Resources\architecture-resize.png",
                         ContentType = "image/png",
                         ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
-                    }
-                };
+                    });
                 return turnContext.SendActivityAsync(response, cancellationToken);
             });
 

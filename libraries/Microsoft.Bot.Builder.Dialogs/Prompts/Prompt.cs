@@ -323,16 +323,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     prompt.SuggestedActions = msg.SuggestedActions;
                 }
 
-                if (msg.Attachments != null && msg.Attachments.Any())
+                if (msg.Attachments.Any())
                 {
-                    if (prompt.Attachments == null)
-                    {
-                        prompt.Attachments = msg.Attachments;
-                    }
-                    else
-                    {
-                        prompt.Attachments = prompt.Attachments.Concat(msg.Attachments).ToList();
-                    }
+                    ((List<Attachment>)prompt.Attachments).AddRange(msg.Attachments);
                 }
 
                 return prompt;

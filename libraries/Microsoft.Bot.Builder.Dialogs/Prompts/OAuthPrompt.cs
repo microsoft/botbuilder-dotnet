@@ -105,11 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Ensure prompt initialized
             prompt ??= Activity.CreateMessageActivity();
 
-            if (prompt.Attachments == null)
-            {
-                prompt.Attachments = new List<Attachment>();
-            }
-
             // Append appropriate card if missing
             if (!ChannelSupportsOAuthCard(turnContext.Activity.ChannelId))
             {

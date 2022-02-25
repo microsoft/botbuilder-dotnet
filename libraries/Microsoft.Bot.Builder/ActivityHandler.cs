@@ -179,14 +179,14 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnMembersRemovedAsync(IList{ChannelAccount}, ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
         protected virtual Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.MembersAdded != null)
+            if (turnContext.Activity.MembersAdded.Any())
             {
                 if (turnContext.Activity.MembersAdded.Any(m => m.Id != turnContext.Activity.Recipient?.Id))
                 {
                     return OnMembersAddedAsync(turnContext.Activity.MembersAdded, turnContext, cancellationToken);
                 }
             }
-            else if (turnContext.Activity.MembersRemoved != null)
+            else if (turnContext.Activity.MembersRemoved.Any())
             {
                 if (turnContext.Activity.MembersRemoved.Any(m => m.Id != turnContext.Activity.Recipient?.Id))
                 {
@@ -273,18 +273,18 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnReactionsChangedAsync(IList{MessageReaction}, IList{MessageReaction}, ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
         protected virtual async Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.ReactionsRemoved != null && turnContext.Activity.ReactionsAdded != null)
+            if (turnContext.Activity.ReactionsRemoved.Any() && turnContext.Activity.ReactionsAdded.Any())
             {
                 await OnReactionsChangedAsync(turnContext.Activity.ReactionsAdded, turnContext.Activity.ReactionsRemoved, turnContext, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                if (turnContext.Activity.ReactionsAdded != null)
+                if (turnContext.Activity.ReactionsAdded.Any())
                 {
                     await OnReactionsAddedAsync(turnContext.Activity.ReactionsAdded, turnContext, cancellationToken).ConfigureAwait(false);
                 }
 
-                if (turnContext.Activity.ReactionsRemoved != null)
+                if (turnContext.Activity.ReactionsRemoved.Any())
                 {
                     await OnReactionsRemovedAsync(turnContext.Activity.ReactionsRemoved, turnContext, cancellationToken).ConfigureAwait(false);
                 }

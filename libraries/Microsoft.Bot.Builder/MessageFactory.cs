@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder
         {
             var ma = Activity.CreateMessageActivity();
             ma.AttachmentLayout = attachmentLayout;
-            ma.Attachments = attachments.ToList();
+            ((List<Attachment>)ma.Attachments).AddRange(attachments.ToList());
             SetTextAndSpeak(ma, text, ssml, inputHint);
             return ma;
         }

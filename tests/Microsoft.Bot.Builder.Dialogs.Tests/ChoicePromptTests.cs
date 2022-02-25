@@ -345,7 +345,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         // Create mock attachment for testing.
                         var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
-                        var prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Attachments = new List<Attachment> { attachment } };
+                        var prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" };
+                        prompt.Attachments.Add(attachment);
 
                         await dc.PromptAsync(
                             "ChoicePrompt",

@@ -604,7 +604,10 @@ namespace Microsoft.Bot.Connector.Tests
                 From = Bot,
                 Name = "acticity",
                 Text = "TEST Send Card to Conversation",
-                Attachments = new Attachment[]
+            };
+
+            ((List<Attachment>)activity.Attachments).AddRange(
+                new List<Attachment>()
                 {
                     new Attachment()
                     {
@@ -615,9 +618,8 @@ namespace Microsoft.Bot.Connector.Tests
                     {
                         ContentType = HeroCard.ContentType,
                         Content = heroCardAnimation,
-                    }
-                }
-            };
+                    },
+                });
 
             var createMessage = new ConversationParameters()
             {

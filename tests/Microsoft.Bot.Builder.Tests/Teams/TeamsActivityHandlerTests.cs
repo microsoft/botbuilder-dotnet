@@ -33,10 +33,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "bot" },
-                },
                 Recipient = new ChannelAccount { Id = "bot" },
                 ChannelData = new TeamsChannelData
                 {
@@ -48,6 +44,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 ChannelId = Channels.Msteams,
             };
+            activity.MembersAdded.Add(new ChannelAccount { Id = "bot" });
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
@@ -76,10 +73,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "id-1" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
                 ChannelData = new TeamsChannelData
                 {
@@ -91,6 +84,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 ChannelId = Channels.Msteams,
             };
+            activity.MembersAdded.Add(new ChannelAccount { Id = "id-1" });
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
@@ -119,14 +113,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "id-1" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
                 Conversation = new ConversationAccount { Id = "conversation-id" },
                 ChannelId = Channels.Msteams,
             };
+            activity.MembersAdded.Add(new ChannelAccount { Id = "id-1" });
 
             var turnContext = new TurnContext(new SimpleAdapter(), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
@@ -152,22 +143,20 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             customHttpClient.BaseAddress = baseUri;
             var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
 
+            var account = new TeamsChannelAccount
+            {
+                Id = "id-1",
+                Name = "name-1",
+                AadObjectId = "aadobject-1",
+                Email = "test@microsoft.com",
+                GivenName = "given-1",
+                Surname = "surname-1",
+                UserPrincipalName = "t@microsoft.com",
+            };
+
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
-                {
-                    new TeamsChannelAccount
-                    {
-                        Id = "id-1",
-                        Name = "name-1",
-                        AadObjectId = "aadobject-1",
-                        Email = "test@microsoft.com",
-                        GivenName = "given-1",
-                        Surname = "surname-1",
-                        UserPrincipalName = "t@microsoft.com",
-                    },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
                 ChannelData = new TeamsChannelData
                 {
@@ -179,6 +168,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 ChannelId = Channels.Msteams,
             };
+            activity.MembersAdded.Add(account);
 
             // code taken from connector - i.e. the send or serialize side
             var serializationSettings = new JsonSerializerSettings();
@@ -222,14 +212,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersRemoved = new List<ChannelAccount>
-                {
-                    new ChannelAccount { Id = "a" },
-                },
                 Recipient = new ChannelAccount { Id = "b" },
                 ChannelData = new TeamsChannelData { EventType = "teamMemberRemoved" },
                 ChannelId = Channels.Msteams,
             };
+            activity.MembersRemoved.Add(new ChannelAccount { Id = "a" });
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act

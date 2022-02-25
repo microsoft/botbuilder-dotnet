@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Bots
         private Activity CreateResponse(IActivity activity, Attachment attachment)
         {
             var response = ((Activity)activity).CreateReply();
-            response.Attachments = new List<Attachment>() { attachment };
+            response.Attachments.Add(attachment);
             return response;
         }
     }

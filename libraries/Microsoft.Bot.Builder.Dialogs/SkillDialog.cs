@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Apply conversation reference and common properties from incoming activity before sending.
                 activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
                 activity.ChannelData = turnContext.Activity.ChannelData;
-                activity.Properties = turnContext.Activity.Properties;
+                activity.Properties.Merge(turnContext.Activity.Properties);
 
                 var skillConversationId = (string)instance.State[SkillConversationIdStateKey];
 
@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             Activity eocActivity = null;
-            if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities != null && response.Body.Activities.Any())
+            if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities.Any())
             {
                 // Track sent invoke responses, so more than one is not sent.
                 bool sentInvokeResponse = false;
