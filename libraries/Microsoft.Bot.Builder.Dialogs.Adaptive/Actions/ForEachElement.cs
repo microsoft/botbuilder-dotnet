@@ -241,7 +241,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private bool ShouldEndDialog(DialogTurnResult turnResult, out DialogTurnResult finalTurnResult)
         {
             finalTurnResult = turnResult;
-            
+
+            // Insure BreakLoop ends the dialog
+            if (finalTurnResult.Status == DialogTurnStatus.Complete
+                && finalTurnResult.Result is ActionScopeResult asr
+                && asr.ActionScopeCommand == ActionScopeCommands.BreakLoop)
+            {
+                return true;
+            }
+
             // If a descendant dialog multiple levels below this container ended stack processing,
             // the result will be nested.
             while (finalTurnResult.Result != null 
