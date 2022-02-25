@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -115,9 +116,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
-                Intents = LuisUtil.GetIntents(luisResult),
-                Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, PredictionOptions.IncludeInstanceData ?? true, utterance),
             };
+            LuisUtil.GetIntents(luisResult).ToList().ForEach(recognizerResult.Intents.Add);
+            recognizerResult.Entities.Merge(LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, PredictionOptions.IncludeInstanceData ?? true, utterance));
             LuisUtil.AddProperties(luisResult, recognizerResult);
             if (IncludeAPIResults)
             {

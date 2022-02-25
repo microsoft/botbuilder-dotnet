@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(result));
             }
 
-            if (result.Intents == null)
+            if (result.Intents.Count == 0)
             {
                 throw new InvalidOperationException(nameof(result.Intents));
             }

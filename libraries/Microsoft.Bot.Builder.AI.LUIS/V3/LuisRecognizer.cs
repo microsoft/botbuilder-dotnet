@@ -350,9 +350,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 recognizerResult = new RecognizerResult
                 {
                     Text = utterance,
-                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
-                    Entities = new JObject(),
                 };
+                recognizerResult.Intents.Add(string.Empty, new IntentScore() { Score = 1.0 });
             }
             else
             {
@@ -375,7 +374,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 content.Add("options", queryOptions);
 
                 var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-                if (options.DynamicLists != null)
+                if (options.DynamicLists.Any())
                 {
                     foreach (var list in options.DynamicLists)
                     {
@@ -385,7 +384,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                     content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
                 }
 
-                if (options.ExternalEntities != null)
+                if (options.ExternalEntities.Any())
                 {
                     foreach (var entity in options.ExternalEntities)
                     {
@@ -412,9 +411,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 {
                     Text = utterance,
                     AlteredText = prediction["alteredQuery"]?.Value<string>(),
-                    Intents = LuisUtil.GetIntents(prediction),
-                    Entities = LuisUtil.ExtractEntitiesAndMetadata(prediction),
                 };
+                LuisUtil.GetIntents(prediction).ToList().ForEach(recognizerResult.Intents.Add);
+                recognizerResult.Entities.Merge(LuisUtil.ExtractEntitiesAndMetadata(prediction));
                 LuisUtil.AddProperties(prediction, recognizerResult);
                 if (options.IncludeAPIResults)
                 {
