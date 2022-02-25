@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -244,7 +245,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 };
                 await context.SendActivityAsync(typingActivity);
                 await Task.Delay(500);
-                await context.SendActivityAsync("echo:" + context.Activity.Text);
+                await context.SendActivityAsync("echo:" + context.Activity.Text, cancellationToken: ct);
             })
                 .Send("how do I clean the stove?")
                     .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
@@ -2346,6 +2347,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
+                    QnAServiceType = "language"
                 },
                 new QnAMakerOptions
                 {

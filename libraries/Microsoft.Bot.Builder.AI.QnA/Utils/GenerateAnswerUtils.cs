@@ -238,9 +238,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
         }
 
-        // Get Metatdata in legacy format from filters object
         private Metadata[] GetMetadataFromFilters(Filters filters)
         {
+            // Get Metatdata in legacy format from filters object
             // Union metadata and source filters
             return filters?.MetadataFilter?.Metadata?.Select(kvp => new Metadata { Name = kvp.Key, Value = kvp.Value })
                     .Union(filters?.SourceFilter?.Select(s => new Metadata { Name = Constants.SourceFilterMetadataKey, Value = s })).ToArray();

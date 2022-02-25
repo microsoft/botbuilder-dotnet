@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get Card for MultiTurn scenario. (Can be deprected from 4.10.0 release of sdk).
+        /// Get Card for MultiTurn scenario. (Can be deprecated from 4.10.0 release of sdk).
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="cardNoMatchText">No match text.</param>

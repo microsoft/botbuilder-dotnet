@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public QnARequestContext Context { get; set; }
 
         /// <summary>
-        /// Gets or sets QnA Id of the current question asked (if availble).
+        /// Gets or sets QnA Id of the current question asked (if available).
         /// </summary>
         /// <value>
         /// Id of the current question asked.

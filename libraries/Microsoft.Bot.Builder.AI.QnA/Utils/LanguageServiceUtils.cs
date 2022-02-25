@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
 
         private readonly IBotTelemetryClient _telemetryClient;
         private readonly HttpClient _httpClient;
+        private readonly QnAMakerOptions _options;
         private readonly QnAMakerEndpoint _endpoint;
 
         /// <summary>
@@ -35,16 +36,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             _telemetryClient = telemetryClient;
             _endpoint = endpoint;
             _httpClient = httpClient;
-            Options = options ?? new QnAMakerOptions();
-            ValidateOptions(Options);
+            _options = options ?? new QnAMakerOptions();
+            ValidateOptions(_options);
             _httpClient = httpClient;
         }
-
-        /// <summary>
-        /// Gets or sets qnA Maker options.
-        /// </summary>
-        /// <value>The options for QnAMaker.</value>
-        private QnAMakerOptions Options { get; set; }
 
         /// <summary>
         /// Converts array of metadata, array of sources and corresponding join operations to LanguageService input format - an object of <see cref="Filters"/>.
@@ -229,7 +224,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(Options));
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(_options));
 
             if (queryOptions != null)
             {
@@ -292,14 +287,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             };
         }
 
-        /// <summary>
-        /// EmitTraceInfoAsync - Duplaicated code.
-        /// </summary>
-        /// <param name="turnContext">Turn Context for the current turn of conversation with the user.</param>
-        /// <param name="messageActivity">Message activity of the turn context.</param>
-        /// <param name="result">Answers returned by QnA Maker.</param>
-        /// <param name="options">(Optional) The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
-        /// <returns>A promise representing the async operation.</returns>
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
             var traceInfo = new QnAMakerTraceInfo
