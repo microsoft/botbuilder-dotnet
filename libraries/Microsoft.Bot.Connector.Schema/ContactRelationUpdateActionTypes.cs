@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// Defines values for ContactRelationUpdateActionTypes.

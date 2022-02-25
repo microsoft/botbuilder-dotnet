@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.Bot.Schema.Teams
+namespace Microsoft.Bot.Connector.Schema.Teams
 {
     /// <summary>
     /// Content type for <see cref="O365ConnectorCard"/>.

@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Schema.Teams
+namespace Microsoft.Bot.Connector.Schema.Teams
 {
     /// <summary>
     /// Attachment extensions.

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Schema.Teams
+namespace Microsoft.Bot.Connector.Schema.Teams
 {
     /// <summary>
     /// General information about a Teams meeting.

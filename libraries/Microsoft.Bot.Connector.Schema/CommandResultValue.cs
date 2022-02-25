@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// The value field of a <see cref="ICommandResultActivity"/> contains metadata related to a command result.

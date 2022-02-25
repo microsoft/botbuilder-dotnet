@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// Different shipping types. See http://www.w3.org/TR/payment-request/#dom-paymentoptions-shippingtype for more information.

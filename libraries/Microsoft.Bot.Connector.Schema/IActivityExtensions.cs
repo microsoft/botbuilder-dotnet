@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// Provides additional methods to work with <see cref="IActivity"/>.

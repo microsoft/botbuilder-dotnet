@@ -4,7 +4,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// Helper functions for Message Activities.

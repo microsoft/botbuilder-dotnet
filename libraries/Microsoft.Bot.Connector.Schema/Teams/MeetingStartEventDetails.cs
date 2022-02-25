@@ -3,7 +3,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Schema.Teams
+namespace Microsoft.Bot.Connector.Schema.Teams
 {
     /// <summary>
     /// Specific details of a Teams meeting start event.

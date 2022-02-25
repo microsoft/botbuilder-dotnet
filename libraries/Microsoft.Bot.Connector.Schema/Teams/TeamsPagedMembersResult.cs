@@ -6,7 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Schema.Teams
+namespace Microsoft.Bot.Connector.Schema.Teams
 {
     /// <summary>
     /// Represents a wrapper for a Teams members query result.

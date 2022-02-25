@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// Defines the structure that arrives in the Activity.Value for Invoke activity with Name of 'adaptiveCard/action'.

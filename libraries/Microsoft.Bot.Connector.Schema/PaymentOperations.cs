@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>
     /// Names for invocable operations in the payment callback protocol.
