@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var watch = Stopwatch.StartNew();
 
             var result = await Retry
-                .Run(() => AcquireTokenAsync(forceRefresh), HandleTokenProviderException)
+                .RunAsync(() => AcquireTokenAsync(forceRefresh), HandleTokenProviderException)
                 .ConfigureAwait(false);
 
             watch.Stop();

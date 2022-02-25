@@ -53,23 +53,25 @@ namespace Microsoft.Bot.Connector.Authentication
             var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
 
             // Apply the appropriate addressing to the newly created Activity.
+            var conversation = new ConversationAccount
+            {
+                Id = activityClone.Conversation.Id,
+                Name = activityClone.Conversation.Name,
+                ConversationType = activityClone.Conversation.ConversationType,
+                AadObjectId = activityClone.Conversation.AadObjectId,
+                IsGroup = activityClone.Conversation.IsGroup,
+                Role = activityClone.Conversation.Role,
+                TenantId = activityClone.Conversation.TenantId,
+            };
+            conversation.Properties.Merge(activityClone.Conversation.Properties);
+
             activityClone.RelatesTo = new ConversationReference
             {
                 ServiceUrl = activityClone.ServiceUrl,
                 ActivityId = activityClone.Id,
                 ChannelId = activityClone.ChannelId,
                 Locale = activityClone.Locale,
-                Conversation = new ConversationAccount
-                {
-                    Id = activityClone.Conversation.Id,
-                    Name = activityClone.Conversation.Name,
-                    ConversationType = activityClone.Conversation.ConversationType,
-                    AadObjectId = activityClone.Conversation.AadObjectId,
-                    IsGroup = activityClone.Conversation.IsGroup,
-                    Properties = activityClone.Conversation.Properties,
-                    Role = activityClone.Conversation.Role,
-                    TenantId = activityClone.Conversation.TenantId,
-                }
+                Conversation = conversation,
             };
             activityClone.Conversation.Id = conversationId;
             activityClone.ServiceUrl = serviceUrl.ToString();

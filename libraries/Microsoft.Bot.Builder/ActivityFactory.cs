@@ -141,10 +141,7 @@ namespace Microsoft.Bot.Builder
         {
             var actions = NormalizedToList(value);
 
-            var suggestedActions = new SuggestedActions()
-            {
-                Actions = GetCardActions(actions)
-            };
+            var suggestedActions = new SuggestedActions(actions: GetCardActions(actions));
 
             return suggestedActions;
         }

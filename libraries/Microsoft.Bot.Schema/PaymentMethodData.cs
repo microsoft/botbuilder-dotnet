@@ -33,20 +33,18 @@ namespace Microsoft.Bot.Schema
         /// methods.</param>
         public PaymentMethodData(IList<string> supportedMethods = default, object data = default)
         {
-            SupportedMethods = supportedMethods;
+            SupportedMethods = supportedMethods ?? new List<string>();
             Data = data;
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets required sequence of strings containing payment method
+        /// Gets required sequence of strings containing payment method
         /// identifiers for payment methods that the merchant web site accepts.
         /// </summary>
         /// <value>The supported payment methods.</value>
         [JsonProperty(PropertyName = "supportedMethods")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<string> SupportedMethods { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> SupportedMethods { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets a JSON-serializable object that provides optional

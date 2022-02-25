@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -63,7 +64,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 if (matches.Entities != null && matches.Entities.Count > 0)
                 {
                     options = new LuisV3.LuisPredictionOptions(options);
-                    options.ExternalEntities = new List<LuisV3.ExternalEntity>();
+                    options.ExternalEntities.Clear();
                     var entities = matches.Entities;
                     var instance = entities["$instance"].ToObject<JObject>();
                     if (instance != null)
@@ -130,7 +131,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             content.Add("options", queryOptions);
 
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-            if (options.DynamicLists != null)
+            if (options.DynamicLists.Any())
             {
                 foreach (var list in options.DynamicLists)
                 {
@@ -140,7 +141,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
             }
 
-            if (options.ExternalEntities != null)
+            if (options.ExternalEntities.Any())
             {
                 foreach (var entity in options.ExternalEntities)
                 {
@@ -226,9 +227,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 Text = utterance,
                 AlteredText = prediction["alteredQuery"]?.Value<string>(),
-                Intents = LuisV3.LuisUtil.GetIntents(prediction),
-                Entities = LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction)
             };
+            LuisV3.LuisUtil.GetIntents(prediction).ToList().ForEach(recognizerResult.Intents.Add);
+            recognizerResult.Entities.Merge(LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction));
 
             LuisV3.LuisUtil.AddProperties(prediction, recognizerResult);
             if (IncludeAPIResults)

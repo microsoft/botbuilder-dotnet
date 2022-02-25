@@ -38,6 +38,14 @@ namespace Microsoft.Bot.Schema.Tests
         [ClassData(typeof(MentionsData))]
         public void DetectsMentionedRecipient(List<Entity> entities, bool expectsMention)
         {
+            var recipient = new ChannelAccount
+            {
+                Id = "ChannelAccountId",
+                Name = "ChannelAccountName",
+                Role = "ChannelAccountRole",
+            };
+            recipient.Properties.Add("Name", "Value");
+
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,

@@ -14,10 +14,8 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         [ClassData(typeof(TabSuggestedActionsTestData))]
         public void TabSuggestedActionsInits(IList<CardAction> actions)
         {
-            var suggestedActions = new TabSuggestedActions()
-            {
-                Actions = actions
-            };
+            var suggestedActions = new TabSuggestedActions();
+            ((List<CardAction>)suggestedActions.Actions).AddRange(actions);
 
             Assert.NotNull(suggestedActions);
             Assert.IsType<TabSuggestedActions>(suggestedActions);

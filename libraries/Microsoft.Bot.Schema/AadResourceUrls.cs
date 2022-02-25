@@ -27,18 +27,16 @@ namespace Microsoft.Bot.Schema
         /// <param name="resourceUrls">The URLs to the resource you want to connect to.</param>
         public AadResourceUrls(IList<string> resourceUrls = default)
         {
-            ResourceUrls = resourceUrls;
+            ResourceUrls = resourceUrls ?? new List<string>();
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets the URLs to the resource you want to connect to.
+        /// Gets the URLs to the resource you want to connect to.
         /// </summary>
         /// <value>The URLs to the resources you want to connect to.</value>
         [JsonProperty(PropertyName = "resourceUrls")]
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IList<string> ResourceUrls { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<string> ResourceUrls { get; private set; } = new List<string>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

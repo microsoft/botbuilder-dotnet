@@ -43,10 +43,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var mockContentStream = new Mock<IContentStream>();
             mockContentStream.Setup(e => e.Stream).Returns(stream);
 
-            var request = new ReceiveRequest
-            {
-                Streams = new List<IContentStream> { mockContentStream.Object }
-            };
+            var request = new ReceiveRequest();
+            request.Streams.AddRange(new List<IContentStream> { mockContentStream.Object });
+            
             var result = request.ReadBodyAsJson<Activity>();
 
             Assert.NotNull(result);
@@ -112,7 +111,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Payloads
             var s = new StringContent("hi");
             var s2 = new StringContent("hello");
 
-            r.Streams = new List<ResponseMessageStream> { new ResponseMessageStream { Content = s2 } };
+            r.Streams.AddRange(new List<ResponseMessageStream> { new ResponseMessageStream { Content = s2 } });
 
             r.AddStream(s);
 

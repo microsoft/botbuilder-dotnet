@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     synonyms.Add(new SortedValue { Value = choice.Action.Title, Index = index });
                 }
 
-                if (choice.Synonyms != null)
+                if (choice.Synonyms.Any())
                 {
                     foreach (var synonym in choice.Synonyms)
                     {

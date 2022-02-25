@@ -172,10 +172,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Push new instance onto stack
-                var instance = new DialogInstance
+                var instance = new DialogInstance()
                 {
                     Id = dialogId,
-                    State = new Dictionary<string, object>(),
                 };
 
                 Stack.Insert(0, instance);

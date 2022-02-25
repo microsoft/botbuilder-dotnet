@@ -165,10 +165,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             {
                 Verb = "GET",
                 Path = "api/version",
-                Streams = new List<IContentStream>()
             };
 
-            request.Streams = StreamingDataGenerator.CreateStreams(requestId, streamLength, streamCount, chunkCount);
+            request.Streams.AddRange(StreamingDataGenerator.CreateStreams(requestId, streamLength, streamCount, chunkCount));
 
             var requestHandler = new Mock<RequestHandler>();
 
@@ -230,7 +229,6 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             {
                 Verb = "GET",
                 Path = "api/version",
-                Streams = new List<ResponseMessageStream>()
             };
 
             request.AddStream(new StringContent("Hello human, I'm Bender!"));
@@ -259,7 +257,8 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 (Guid requestId, RequestModel requestPayload, CancellationToken cancellationToken) =>
                 {
                     responseHeader = new Header() { Id = requestId, Type = PayloadTypes.Response };
-                    response = new ReceiveResponse() { StatusCode = 200, Streams = StreamingDataGenerator.CreateStreams(requestId, streamLength, streamCount, chunkCount, PayloadTypes.Response) };
+                    response = new ReceiveResponse() { StatusCode = 200, };
+                    response.Streams.AddRange(StreamingDataGenerator.CreateStreams(requestId, streamLength, streamCount, chunkCount, PayloadTypes.Response));
 
                     session.ReceiveResponse(responseHeader, response);
 

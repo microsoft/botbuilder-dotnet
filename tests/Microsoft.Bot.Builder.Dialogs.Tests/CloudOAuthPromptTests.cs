@@ -329,7 +329,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(0, new DialogInstance { Id = "OAuthPrompt", State = new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddMinutes(-5) } } });
+                var dialogInstance = new DialogInstance()
+                {
+                    Id = "OAuthPrompt",
+                };
+                dialogInstance.State.Add("expires", DateTime.UtcNow.AddMinutes(-5));
+
+                dialogContext.Stack.Insert(0, dialogInstance);
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -408,19 +414,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(
-                    0,
-                    new DialogInstance
-                    {
-                        Id = "OAuthPrompt",
-                        State = new Dictionary<string, object>
-                        {
-                            { "expires", DateTime.UtcNow.AddHours(8) },
-                            { "caller", null },
-                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
-                            { "options", new PromptOptions() }
-                        }
-                    });
+                var dialogInstance = new DialogInstance()
+                {
+                    Id = "OAuthPrompt",
+                };
+                var states = new Dictionary<string, object>
+                {
+                    { "expires", DateTime.UtcNow.AddHours(8) },
+                    { "caller", null },
+                    { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                    { "options", new PromptOptions() }
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
+
+                dialogContext.Stack.Insert(0, dialogInstance);
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -496,19 +503,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(
-                    0,
-                    new DialogInstance
-                    {
-                        Id = "OAuthPrompt",
-                        State = new Dictionary<string, object>
-                        {
-                            { "expires", DateTime.UtcNow.AddHours(8) },
-                            { "caller", null },
-                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
-                            { "options", new PromptOptions() }
-                        }
-                    });
+                var dialogInstance = new DialogInstance()
+                {
+                    Id = "OAuthPrompt",
+                };
+                var states = new Dictionary<string, object>
+                {
+                    { "expires", DateTime.UtcNow.AddHours(8) },
+                    { "caller", null },
+                    { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                    { "options", new PromptOptions() }
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
+
+                dialogContext.Stack.Insert(0, dialogInstance);
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -598,19 +606,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(
-                    0,
-                    new DialogInstance
-                    {
-                        Id = "OAuthPrompt",
-                        State = new Dictionary<string, object>
-                        {
-                            { "expires", DateTime.UtcNow.AddHours(8) },
-                            { "caller", null },
-                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
-                            { "options", new PromptOptions() }
-                        }
-                    });
+                var dialogInstance = new DialogInstance()
+                {
+                    Id = "OAuthPrompt",
+                };
+                var states = new Dictionary<string, object>
+                {
+                    { "expires", DateTime.UtcNow.AddHours(8) },
+                    { "caller", null },
+                    { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                    { "options", new PromptOptions() }
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
+
+                dialogContext.Stack.Insert(0, dialogInstance);
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -692,19 +701,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(
-                    0,
-                    new DialogInstance
-                    {
-                        Id = "OAuthPrompt",
-                        State = new Dictionary<string, object>
-                        {
-                            { "expires", DateTime.UtcNow.AddHours(8) },
-                            { "caller", null },
-                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
-                            { "options", new PromptOptions() }
-                        }
-                    });
+                var dialogInstance = new DialogInstance()
+                {
+                    Id = "OAuthPrompt",
+                };
+                var states = new Dictionary<string, object>
+                {
+                    { "expires", DateTime.UtcNow.AddHours(8) },
+                    { "caller", null },
+                    { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                    { "options", new PromptOptions() }
+                };
+                states.ToList().ForEach(dialogInstance.State.Add);
+
+                dialogContext.Stack.Insert(0, dialogInstance);
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };

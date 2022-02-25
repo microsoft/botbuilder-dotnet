@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var watch = Stopwatch.StartNew();
 
-            var result = await Retry.Run(
+            var result = await Retry.RunAsync(
                 task: () => AcquireTokenAsync(forceRefresh),
                 retryExceptionHandler: (ex, ct) => HandleAdalException(ex, ct)).ConfigureAwait(false);
 

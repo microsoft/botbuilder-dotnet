@@ -22,10 +22,7 @@ namespace Microsoft.Bot.Schema.Tests
             var tenantId = "tenantId";
             var props = new JObject();
 
-            var convoAccount = new ConversationAccount(isGroup, conversationType, id, name, aadObjectId, role, tenantId)
-            {
-                Properties = props
-            };
+            var convoAccount = new ConversationAccount(isGroup, conversationType, id, name, aadObjectId, role, tenantId);
 
             Assert.NotNull(convoAccount);
             Assert.IsType<ConversationAccount>(convoAccount);

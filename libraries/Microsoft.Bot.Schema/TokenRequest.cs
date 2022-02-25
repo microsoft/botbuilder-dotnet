@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Schema
         public TokenRequest(string provider = default, IDictionary<string, object> settings = default)
         {
             Provider = provider;
-            Settings = settings;
+            Settings = settings ?? new Dictionary<string, object>();
             CustomInit();
         }
 
@@ -41,14 +41,12 @@ namespace Microsoft.Bot.Schema
         public string Provider { get; set; }
 
         /// <summary>
-        /// Gets or sets a collection of settings for the specific provider for
+        /// Gets a collection of settings for the specific provider for
         /// this request.
         /// </summary>
         /// <value>The collection of settings for the specific provider for this request.</value>
         [JsonProperty(PropertyName = "settings")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IDictionary<string, object> Settings { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, object> Settings { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

@@ -23,7 +23,7 @@
     <!-- Force System.Text.Encodings.Web to a safe version. -->
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />

@@ -101,6 +101,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
+            var actions = new List<CardAction>
+            {
+                new CardAction() { Title = "Red", Type = ActionTypes.ImBack, Value = "Red", Image = "https://via.placeholder.com/20/FF0000?text=R", ImageAltText = "R" },
+                new CardAction() { Title = "Yellow", Type = ActionTypes.ImBack, Value = "Yellow", Image = "https://via.placeholder.com/20/FFFF00?text=Y", ImageAltText = "Y" },
+                new CardAction() { Title = "Blue", Type = ActionTypes.ImBack, Value = "Blue", Image = "https://via.placeholder.com/20/0000FF?text=B", ImageAltText = "B" }
+            };
+
             // Arrange
             var activities = new[]
             {
@@ -114,15 +121,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                     ServiceUrl = "wss://InvalidServiceUrl/api/messages",
                     ChannelId = "test",
                     Text = "hi",
-                    SuggestedActions = new SuggestedActions
-                    {
-                        Actions = new List<CardAction>
-                        {
-                            new CardAction() { Title = "Red", Type = ActionTypes.ImBack, Value = "Red", Image = "https://via.placeholder.com/20/FF0000?text=R", ImageAltText = "R" },
-                            new CardAction() { Title = "Yellow", Type = ActionTypes.ImBack, Value = "Yellow", Image = "https://via.placeholder.com/20/FFFF00?text=Y", ImageAltText = "Y" },
-                            new CardAction() { Title = "Blue", Type = ActionTypes.ImBack, Value = "Blue", Image = "https://via.placeholder.com/20/0000FF?text=B", ImageAltText = "B" }
-                        }
-                    }
+                    SuggestedActions = new SuggestedActions(actions: actions)
                 }
             };
 

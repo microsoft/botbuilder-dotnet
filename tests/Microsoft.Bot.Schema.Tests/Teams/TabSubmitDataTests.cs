@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         {
             var submitData = new TabSubmitData()
             {
-                Type = tabType,
-                Properties = properties
+                Type = tabType
             };
+            submitData.Properties.Merge(properties);
 
             Assert.NotNull(submitData);
             Assert.IsType<TabSubmitData>(submitData);

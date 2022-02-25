@@ -475,7 +475,7 @@ namespace Microsoft.Bot.Connector
             httpRequest.RequestUri = new Uri(tokenUrl);
 
             // Serialize Request
-            string requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(new AadResourceUrls() { ResourceUrls = resourceUrls }, _client.SerializationSettings);
+            string requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(new AadResourceUrls(resourceUrls), _client.SerializationSettings);
             httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
             httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
