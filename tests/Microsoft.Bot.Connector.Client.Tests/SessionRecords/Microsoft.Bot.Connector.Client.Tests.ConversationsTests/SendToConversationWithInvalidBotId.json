@@ -1,0 +1,105 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    }\r\n  ]\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "125"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"BKGSYSTFG:TKGSUQHQE:DKE8NUG92\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "45"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|79ee704b000f2246987f02c907510b97.3642c801_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:33 GMT"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/BKGSYSTFG%3ATKGSUQHQE%3ADKE8NUG92M/activities",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQktHU1lTVEZHJTNBVEtHU1VRSFFFJTNBREtFOE5VRzkyTS9hY3Rpdml0aWVz",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"B21S8SG7K:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n  },\r\n  \"text\": \"TEST Send to Conversation\",\r\n  \"name\": \"acticity\"\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "197"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "",
+      "ResponseHeaders": {
+        "Expires": [
+          "-1"
+        ],
+        "Content-Length": [
+          "0"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|3dc01c1c4d155e47837f525a0958b3e5.e7f4328a_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:33 GMT"
+        ]
+      },
+      "StatusCode": 403
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}
