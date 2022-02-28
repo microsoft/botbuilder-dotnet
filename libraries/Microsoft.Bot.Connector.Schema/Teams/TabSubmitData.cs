@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
     /// <summary>
     /// Invoke ('tab/submit') request value payload data.
     /// </summary>

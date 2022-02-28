@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Schema.Teams;
+
 namespace Microsoft.Bot.Connector.Client.Teams
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Connector.Schema.Teams;
-
     /// <summary>
     /// Extension methods for TeamsOperations.
     /// </summary>

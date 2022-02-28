@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Request payload to be sent to the Bot Framework Token Service for Single Sign On.
     /// If the URI is set to a custom scope, then Token Service will exchange the token in its cache for a token targeting the custom scope and return it in the response.

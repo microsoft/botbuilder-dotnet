@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Response schema sent back from Bot Framework Token Service required to initiate a user single sign on.
     /// </summary>

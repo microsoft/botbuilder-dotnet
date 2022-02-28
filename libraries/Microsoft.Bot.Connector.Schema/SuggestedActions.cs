@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// SuggestedActions that can be performed.
     /// </summary>

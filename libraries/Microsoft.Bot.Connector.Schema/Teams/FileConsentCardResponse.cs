@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Represents the value of the invoke activity sent when the user acts on
     /// a file consent card.

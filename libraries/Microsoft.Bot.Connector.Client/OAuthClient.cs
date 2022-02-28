@@ -1,21 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Globalization;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Client.Authentication;
+using Microsoft.Bot.Connector.Schema;
+using Microsoft.Rest;
+using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Client
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Connector.Client.Authentication;
-    using Microsoft.Bot.Connector.Schema;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
-    using Newtonsoft.Json;
-
     /// <summary> An OAuth client class that implements <see cref="IOAuthClient"/>. </summary>
     public partial class OAuthClient : ServiceClient<OAuthClient>, IOAuthClient
     {

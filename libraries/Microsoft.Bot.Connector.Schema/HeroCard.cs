@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// A Hero card (card with a single, large image).
     /// </summary>

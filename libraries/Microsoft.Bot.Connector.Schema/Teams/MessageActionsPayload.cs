@@ -1,14 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Represents the individual message within a chat or channel where a
     /// message actions is taken.

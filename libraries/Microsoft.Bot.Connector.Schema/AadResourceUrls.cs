@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Schema of the target resource for which the Bot Framework Token Service would exchange a cached token for a user. This class applies only to AAD V1 connections.
     /// </summary>

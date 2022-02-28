@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Represents the reaction of a user to a message.
     /// </summary>

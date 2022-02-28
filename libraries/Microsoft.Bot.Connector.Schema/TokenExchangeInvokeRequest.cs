@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
     /// <summary>
     /// A request to exchange a token.
     /// </summary>

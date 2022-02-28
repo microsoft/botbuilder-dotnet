@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System.Linq;
-    using Newtonsoft.Json;
-
     /// <summary>An image on a card.</summary>
     public partial class CardImage
     {

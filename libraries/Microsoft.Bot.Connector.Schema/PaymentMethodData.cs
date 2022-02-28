@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Indicates a set of supported payment methods and any associated payment
     /// method specific data for those methods.

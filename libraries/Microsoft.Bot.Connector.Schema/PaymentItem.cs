@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Schema
 {
-    using System;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Indicates what the payment request is for and the value asked for.
     /// </summary>

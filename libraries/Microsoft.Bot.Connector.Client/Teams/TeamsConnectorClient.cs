@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Net.Http;
+using Microsoft.Rest;
+using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Client.Teams
 {
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// ﻿﻿The Bot Connector REST API extension for Microsoft Teams allows your
     /// bot to perform extended operations on to Microsoft Teams channel

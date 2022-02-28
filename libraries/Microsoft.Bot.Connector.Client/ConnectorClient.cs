@@ -1,17 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Net.Http;
+using Microsoft.Rest;
+using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Connector.Client
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Http;
-    using Microsoft.Bot.Connector.Schema;
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// The Bot Connector REST API allows your bot to send and receive messages
     /// to channels configured in the

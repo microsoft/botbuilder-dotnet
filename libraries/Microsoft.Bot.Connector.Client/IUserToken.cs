@@ -1,15 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Schema;
+using Microsoft.Rest;
+
 namespace Microsoft.Bot.Connector.Client
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Connector.Schema;
-    using Microsoft.Rest;
-
     /// <summary>
     /// UserToken operations.
     /// </summary>

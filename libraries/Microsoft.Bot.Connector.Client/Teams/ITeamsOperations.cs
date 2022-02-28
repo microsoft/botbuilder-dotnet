@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Schema.Teams;
+using Microsoft.Rest;
+
 namespace Microsoft.Bot.Connector.Client.Teams
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Connector.Schema.Teams;
-    using Microsoft.Rest;
-
     /// <summary>
     /// TeamsOperations operations.
     /// </summary>
