@@ -21,24 +21,24 @@ variables:
   MSBuildArguments: -p:PublishRepositoryUrl=true -p:GeneratePackages=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
   Packaging.EnableSBOMSigning: true
   Parameters.solution: Microsoft.Bot.Builder.sln
-#  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-preview-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
-#  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-$(Build.BuildNumber) Consumed by projects in Microsoft.Bot.Builder.sln.
+#  Variable 'PreviewPackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-daily.preview.{BuildNumber}.{CommitHash} Consumed by projects in Microsoft.Bot.Builder.sln.
+#  Variable 'ReleasePackageVersion' is defined in Azure, settable at queue time. Value: 5.0.0-daily.{BuildNumber}.{CommitHash} Consumed by projects in Microsoft.Bot.Builder.sln.
 
 jobs:
 - job: Build_and_Sign
   steps:
   - powershell: |
-     # Replace {DateStamp} and {CommitHash} tokens with the actual values in vars ReleasePackageVersion and PreviewPackageVersion
-     $dateStamp = (Get-Date -format "yyyyMMdd");
+     # Replace {BuildNumber} and {CommitHash} tokens with the actual values in vars ReleasePackageVersion and PreviewPackageVersion
+     $buildNumber = "$(Build.BuildNumber)";
      $commitHash = "$(Build.SourceVersion)".SubString(0,7);
 
      "Raw ReleasePackageVersion = $(ReleasePackageVersion)";
-     $v = "$(ReleasePackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     $v = "$(ReleasePackageVersion)".Replace("{BuildNumber}",$buildNumber).Replace("{CommitHash}",$commitHash);
      Write-Host "##vso[task.setvariable variable=ReleasePackageVersion;]$v";
      "Resolved ReleasePackageVersion = $v";
 
      "Raw PreviewPackageVersion = $(PreviewPackageVersion)";
-     $ppv = "$(PreviewPackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     $ppv = "$(PreviewPackageVersion)".Replace("{BuildNumber}",$buildNumber).Replace("{CommitHash}",$commitHash);
      Write-Host "##vso[task.setvariable variable=PreviewPackageVersion;]$ppv";
      "Resolved PreviewPackageVersion = $ppv";
     displayName: 'Resolve package version variables'
