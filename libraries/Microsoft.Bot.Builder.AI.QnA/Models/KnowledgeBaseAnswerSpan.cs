@@ -14,7 +14,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
         /// Gets or sets the short answer text.
         /// </summary>
         /// <value>
-        /// The short 
+        /// The short answer text.
+        /// </value>
         [JsonProperty("text")]
         public string Text { get; set; }
 
