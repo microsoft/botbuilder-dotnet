@@ -1,0 +1,18 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    //"MicrosoftAppPassword": "afk7Q~eXX96u5RF2KHvhSQrAid6I68cnS1d2k",
+    "luis:endpointKey": "5bcd7d1766da49819c0860022a54bd7a",
+    "SkillHostEndpoint": "http://127.0.0.1:3980/api/skills",
+    "MicrosoftAppType": "",
+    "MicrosoftAppId": "",
+    "MicrosoftAppPassword": "",
+    "MicrosoftAppTenantId": "",
+    "LuisAppId": "d686054a-1ca9-457f-a949-d578728e3e2e",
+    "LuisAPIKey": "5bcd7d1766da49819c0860022a54bd7a",
+    "LuisAPIHostName": "westus.api.cognitive.microsoft.com"
+  },
+  "ConnectionStrings": {}
+}
