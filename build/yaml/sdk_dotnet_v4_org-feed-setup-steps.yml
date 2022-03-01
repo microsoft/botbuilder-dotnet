@@ -1,4 +1,5 @@
 # Create nuget.config for resolving dependencies exclusively from SDK_Dotnet_V4_org feed.
+# Skip this if PR is from a fork, as forks do not have access to our private feed.
 steps:
 - powershell: |
     $file = "$(Build.SourcesDirectory)\nuget.config";
@@ -20,3 +21,4 @@ steps:
     New-Item -Path $file -ItemType "file" -Value $content -Force;
     '-------------'; get-content "$file"; '===================';
   displayName: Create nuget.config for SDK_Dotnet_V4_org feed
+  condition: and(succeeded(), ne(variables['System.PullRequest.IsFork'], 'True'))
