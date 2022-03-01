@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomQuestionAnswering"/> class.
         /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
+        /// <param name="endpoint">The <see cref="QnAMakerEndpoint"/> of the knowledge base to query.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the QnA Maker knowledge base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to Language Service.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
@@ -73,8 +73,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomQuestionAnswering"/> class.
         /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="endpoint">The <see cref="QnAMakerEndpoint"/> of the knowledge base to query.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
         public CustomQuestionAnswering(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Gets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
+        /// Gets the <see cref="HttpClient"/> to be used when calling the Custom Question Answering API.
         /// </summary>
         /// <value>
         /// A instance of <see cref="HttpClient"/>.
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Generates an answer from the knowledge base.
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Language Service knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
         {
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Generates an answer from the knowledge base.
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Language Service knowledge base. If null, constructor option is used for this instance.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Generates an answer from the knowledge base.
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Language Service knowledge base. If null, constructor option is used for this instance.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Filters the ambiguous question for active learning.
         /// </summary>
-        /// <param name="queryResult">User query output.</param>
+        /// <param name="queryResult">An array of <see cref="QueryResult"/> which is the user query output.</param>
         /// <returns>Filtered array of ambiguous question.</returns>
         public QueryResult[] GetLowScoreVariation(QueryResult[] queryResult)
         {
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Send feedback to the knowledge base.
         /// </summary>
-        /// <param name="feedbackRecords">Feedback records.</param>
+        /// <param name="feedbackRecords">An array of <see cref="FeedbackRecord"/>.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Executed when a result is returned from QnA Maker.
+        /// Executed when a result is returned from Custom Question Answering.
         /// </summary>
         /// <param name="queryResults">An array of <see cref="QueryResult"/>.</param>
         /// <param name="turnContext">The <see cref="TurnContext"/>.</param>
@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Fills the event properties and metrics for the QnaMessage event for telemetry.
         /// These properties are logged when the QnA GetAnswers method is called.
         /// </summary>
-        /// <param name="queryResults">QnA service results.</param>
+        /// <param name="queryResults">An array of <see cref="QueryResult"/> which is the user query output.</param>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Properties to add/override for the event.</param>
         /// <param name="telemetryMetrics">Metrics to add/override for the event.</param>

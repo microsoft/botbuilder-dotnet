@@ -114,9 +114,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets logical operation (OR/AND) for strict filters.
+        /// Gets or sets logical operation (OR/AND) for <see cref="StrictFilters"/>.
         /// </summary>
-        /// <value>logical operation (OR/AND) for strict filters.</value>
+        /// <value>logical operation (OR/AND) for <see cref="StrictFilters"/>.</value>
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
 

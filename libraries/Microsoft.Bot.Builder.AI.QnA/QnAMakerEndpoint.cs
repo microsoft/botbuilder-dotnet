@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets the QnAServiceType to query QnAMaker or Language Service knowledgeBase.
         /// </summary>
         /// <value>
-        /// Valid value <see cref="Constants.LanguageQnAServiceType"/>, empty or null for legacy QnAMaker.
+        /// Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.
         /// </value>
         [JsonProperty("qnAServiceType")]
         public string QnAServiceType { get; set; }

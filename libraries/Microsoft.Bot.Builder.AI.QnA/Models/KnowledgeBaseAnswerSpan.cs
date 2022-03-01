@@ -6,42 +6,41 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
-    /// Gets or sets AnswerSpan of the previous turn.
+    /// Gets or sets short answer of query from Knowledge Base.
     /// </summary>
     public class KnowledgeBaseAnswerSpan
     {
         /// <summary>
-        /// Gets or sets the answer text.
+        /// Gets or sets the short answer text.
         /// </summary>
         /// <value>
-        /// The answer text.
-        /// </value>
+        /// The short 
         [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the answer score.
+        /// Gets or sets the confidence in short answer.
         /// </summary>
         /// <value>
-        /// The answer score.
+        /// The confidence in short answer.
         /// </value>
         [JsonProperty("confidenceScore")]
         public float ConfidenceScore { get; set; }
 
         /// <summary>
-        /// Gets or sets the answer startIndex.
+        /// Gets or sets the short answer startIndex in long answer.
         /// </summary>
         /// <value>
-        /// The answer startIndex.
+        /// The short answer startIndex in long answer.
         /// </value>
         [JsonProperty("offset")]
         public int Offset { get; set; }
 
         /// <summary>
-        /// Gets or sets the answer endIndex.
+        /// Gets or sets the short answer length in long answer.
         /// </summary>
         /// <value>
-        /// The answer endIndex.
+        /// The short answer length in long answer.
         /// </value>
         [JsonProperty("length")]
         public int Length { get; set; }

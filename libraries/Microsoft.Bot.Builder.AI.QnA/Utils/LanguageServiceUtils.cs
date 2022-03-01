@@ -27,10 +27,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageServiceUtils"/> class.
         /// </summary>
-        /// <param name="telemetryClient">Telemetry client.</param>
+        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="endpoint">Language Service endpoint details.</param>
-        /// <param name="options">QnA Maker options.</param>
-        /// <param name="httpClient">Http client.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="httpClient">A client with which to talk to Language Service.</param>
         public LanguageServiceUtils(IBotTelemetryClient telemetryClient, HttpClient httpClient, QnAMakerEndpoint endpoint, QnAMakerOptions options)
         {
             _telemetryClient = telemetryClient;
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <summary>
         /// Converts array of metadata, array of sources and corresponding join operations to LanguageService input format - an object of <see cref="Filters"/>.
         /// </summary>
-        /// <param name="metadata">Array of metadata.</param>
+        /// <param name="metadata">Array of <see cref="Metadata"/>.</param>
         /// <param name="metadataFiltersJoinOperation">Metadata Compound Operation.</param>
         /// <remarks>Required for bot codes working with legacy metadata filters.</remarks>
         /// <returns>An object of <see cref="Filters"/>.</returns>
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// </summary>
         /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
         /// <param name="messageActivity">Message activity of the turn context.</param>
-        /// <param name="options">The options for the Language Service knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Language Service knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public async Task<QueryResults> QueryKnowledgeBaseAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <summary>
         /// Call to Update Active Learning Feedback.
         /// </summary>
-        /// <param name="feedbackRecords">Feedback record list.</param>
+        /// <param name="feedbackRecords">An array of <see cref="FeedbackRecord"/>.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task UpdateActiveLearningFeedbackAsync(FeedbackRecords feedbackRecords)
         {
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <summary>
         /// ValidateOptions - duplaicated and modified code from GenerateAnswerUtils class.
         /// </summary>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="options">The options for the Language Service knowledge base.</param>
         private static void ValidateOptions(QnAMakerOptions options)
         {
             if (options.Top == 0)
@@ -218,10 +218,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         }
 
         /// <summary>
-        /// Combines QnAMakerOptions passed into the QnAMaker constructor with the options passed as arguments into GetAnswersAsync().
+        /// Combines <see cref="QnAMakerOptions"/> passed into the <see cref="CustomQuestionAnswering"/> constructor with the options passed as arguments into GetAnswersAsync().
         /// </summary>
-        /// <param name="queryOptions">The options for the QnA Maker knowledge base.</param>
-        /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
+        /// <param name="queryOptions">The <see cref="QnAMakerOptions"/> for the QnA Maker knowledge base.</param>
+        /// <returns>Return modified options for the Language Service knowledge base.</returns>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
             var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(_options));

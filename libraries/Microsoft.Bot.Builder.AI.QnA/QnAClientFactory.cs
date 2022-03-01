@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets an <see cref="IQnAMakerClient"/> to use to access the QnA Maker knowledge base or Custom Question Answering.
         /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="endpoint">The <see cref="QnAMakerEndpoint"/> of the knowledge base to query.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>

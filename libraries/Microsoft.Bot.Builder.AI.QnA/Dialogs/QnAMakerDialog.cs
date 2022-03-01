@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="strictFilters">QnA Maker <see cref="Metadata"/> with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
         /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
-        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnAServiceType"/>, empty or null for legacy QnAMaker.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -161,8 +161,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// on an active learning card.</param>
         /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
-        /// <param name="filters">Filters that include metadata and sources.</param>
-        /// <param name="qnAServiceType">QnA Service type empty/language.</param>
+        /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether to include short answer in response. 
         /// </summary>
         /// <value>
-        /// True or false to include short answer in response. 
+        /// True or false to include short answer in response, defaults to false. 
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether to include unstructured sources in search for answers. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to include unstructured sources. 
+        /// True/False indicating whether to include unstructured sources, defaults to false. 
         /// </value>
         [JsonProperty("includeUnstructuredSources")]
         public bool IncludeUnstructuredSources { get; set; }
@@ -396,9 +396,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public bool DisplayPreciseAnswerOnly { get; set; }
 
         /// <summary>
-        /// Gets or sets QnA Service type.
+        /// Gets or sets QnA Service type to query either QnAMaker or Language Service Knowledge Base.
         /// </summary>
-        /// <value>Valid value <see cref="Constants.LanguageQnAServiceType"/>, empty or null for legacy QnAMaker.</value>
+        /// <value>Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.</value>
         [JsonProperty("qnAServiceType")]
         public StringExpression QnAServiceType { get; set; }
 

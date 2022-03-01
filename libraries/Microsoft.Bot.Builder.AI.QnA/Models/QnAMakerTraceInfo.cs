@@ -122,10 +122,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
 #pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
-        /// Gets or sets the list of sources used to filter QnA Maker to filter results.
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
         /// </summary>
         /// <value>
-        /// An array of string.
+        /// An object with metadata, source filters and corresponding operators.
         /// </value>
         [JsonProperty("filters")]
         public Filters Filters { get; set; }
