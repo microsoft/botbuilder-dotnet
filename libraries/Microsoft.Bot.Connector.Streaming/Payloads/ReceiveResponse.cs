@@ -25,6 +25,8 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="IContentStream"/> containing information on streams attached to this response.
         /// </value>
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<IContentStream> Streams { get; private set; } = new List<IContentStream>();
+#pragma warning restore CA1002 // Do not expose generic lists
     }
 }

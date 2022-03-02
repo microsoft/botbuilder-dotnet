@@ -104,7 +104,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             string cardNoMatchText = DefaultCardNoMatchText,
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
+#pragma warning disable CA1002 // Do not expose generic lists
             List<Metadata> strictFilters = null,
+#pragma warning restore CA1002 // Do not expose generic lists
             HttpClient httpClient = null)
             : base(dialogId)
         {
@@ -157,7 +159,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             string cardNoMatchText = DefaultCardNoMatchText,
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
+#pragma warning disable CA1002 // Do not expose generic lists
             List<Metadata> strictFilters = null,
+#pragma warning restore CA1002 // Do not expose generic lists
             HttpClient httpClient = null)
             : this(
                 nameof(QnAMakerDialog),
@@ -281,7 +285,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// The QnA Maker metadata with which to filter or boost queries to the knowledge base
         /// or an expression which evaluates to the QnA Maker metadata.
         /// </value>
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<Metadata> StrictFilters { get; }
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets the flag to determine if personal information should be logged in telemetry.

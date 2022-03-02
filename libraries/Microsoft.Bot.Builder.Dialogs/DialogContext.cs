@@ -78,7 +78,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The current dialog stack.
         /// </value>
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<DialogInstance> Stack { get; private set; }
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Gets or sets the parent <see cref="DialogContext"/>, if any. Used when searching for the ID of a dialog to start.

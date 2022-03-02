@@ -42,7 +42,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="qnaSearchResults">List of QnaSearch results.</param>
         /// <returns>List of filtered qnaSearch results.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static List<QueryResult> GetLowScoreVariation(List<QueryResult> qnaSearchResults)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             var filteredQnaSearchResult = new List<QueryResult>();
 

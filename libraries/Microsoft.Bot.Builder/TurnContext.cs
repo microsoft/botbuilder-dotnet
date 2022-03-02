@@ -146,7 +146,9 @@ namespace Microsoft.Bot.Builder
         /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'expectReplies'.
         /// </summary>
         /// <value>A list of activities.</value>
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<Activity> BufferedReplyActivities { get; } = new List<Activity>();
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Adds a response handler for send activity operations.

@@ -74,7 +74,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value>Dynamic lists.</value>
         [JsonProperty("dynamicLists")]
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<Luis.DynamicList> DynamicLists { get; } = new List<Luis.DynamicList>();
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Gets or sets LUIS prediction options.

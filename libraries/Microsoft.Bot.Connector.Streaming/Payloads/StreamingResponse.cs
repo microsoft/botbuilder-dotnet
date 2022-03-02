@@ -29,7 +29,9 @@ namespace Microsoft.Bot.Connector.Streaming.Payloads
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="ResponseMessageStream"/>.
         /// </value>
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<ResponseMessageStream> Streams { get; private set; } = new List<ResponseMessageStream>();
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Creates a response indicating the requested resource was not found.

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -475,7 +475,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="segments">Path segments.</param>
         /// <param name="eval">True to evaluate resulting segments.</param>
         /// <returns>True if it was able to resolve all nested references.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static bool TryResolvePath(object obj, string propertyPath, out List<object> segments, bool eval = false)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             var soFar = new List<object>();
             segments = soFar;

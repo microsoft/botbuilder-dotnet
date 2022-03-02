@@ -21,7 +21,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="cardTitle">Title of the cards.</param>
         /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static IMessageActivity GetSuggestionsCard(List<string> suggestionsList, string cardTitle, string cardNoMatchText)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             if (suggestionsList == null)
             {

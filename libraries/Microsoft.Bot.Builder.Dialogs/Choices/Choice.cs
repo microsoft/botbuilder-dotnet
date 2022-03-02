@@ -49,6 +49,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// The list of synonyms to recognize in addition to the value.
         /// </value>
         [JsonProperty("synonyms")]
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<string> Synonyms { get; private set; } = new List<string>();
+#pragma warning restore CA1002 // Do not expose generic lists
     }
 }

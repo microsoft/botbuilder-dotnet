@@ -23,7 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <param name="choices">The list of choices.</param>
         /// <param name="options">Optional, options to control the recognition strategy.</param>
         /// <returns>A list of found choices, sorted by most relevant first.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<string> choices, FindChoicesOptions options = null)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             return RecognizeChoices(utterance, choices.Select(s => new Choice { Value = s }).ToList(), options);
         }
@@ -35,7 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <param name="list">The list of choices.</param>
         /// <param name="options">Optional, options to control the recognition strategy.</param>
         /// <returns>A list of found choices, sorted by most relevant first.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<Choice> list, FindChoicesOptions options = null)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             utterance ??= string.Empty;
 

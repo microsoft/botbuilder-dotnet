@@ -27,7 +27,9 @@ namespace Microsoft.Bot.Builder
         /// Gets the BotStates list for the BotStateSet.
         /// </summary>
         /// <value>The BotState objects managed by this class.</value>
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<BotState> BotStates { get; } = new List<BotState>();
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Adds a bot state object to the set.

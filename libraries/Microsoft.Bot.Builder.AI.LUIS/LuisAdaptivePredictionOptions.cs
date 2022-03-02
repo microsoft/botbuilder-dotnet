@@ -63,7 +63,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// External entities recognized in query.
         /// </value>
         [JsonProperty("externalEntities")]
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<ExternalEntity> ExternalEntities { get; } = new List<ExternalEntity>();
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Gets or sets a value indicating whether external entities should override other means of recognizing entities.

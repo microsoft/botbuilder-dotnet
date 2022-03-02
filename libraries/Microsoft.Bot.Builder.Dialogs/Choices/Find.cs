@@ -19,7 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <param name="choices">The list of choices.</param>
         /// <param name="options">Optional, options to control the recognition strategy.</param>
         /// <returns>A list of found choices, sorted by most relevant first.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<string> choices, FindChoicesOptions options = null)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             if (choices == null)
             {
@@ -36,7 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <param name="choices">The list of choices.</param>
         /// <param name="options">Optional, options to control the recognition strategy.</param>
         /// <returns>A list of found choices, sorted by most relevant first.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<Choice> choices, FindChoicesOptions options = null)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             if (choices == null)
             {
@@ -101,7 +105,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <param name="values">The values.</param>
         /// <param name="options">The options for the search.</param>
         /// <returns>A list of found values.</returns>
+#pragma warning disable CA1002 // Do not expose generic lists
         public static List<ModelResult<FoundValue>> FindValues(string utterance, List<SortedValue> values, FindValuesOptions options = null)
+#pragma warning restore CA1002 // Do not expose generic lists
         {
             if (FindExactMatch(utterance, values) is ModelResult<FoundValue> exactMatch)
             {

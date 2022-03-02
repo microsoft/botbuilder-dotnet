@@ -130,7 +130,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// </summary>
         /// <value>An expression to evaluate for pairs of metadata.</value>
         [JsonProperty("metadata")]
+#pragma warning disable CA1002 // Do not expose generic lists
         public List<Metadata> Metadata { get; }
+#pragma warning restore CA1002 // Do not expose generic lists
 
         /// <summary>
         /// Gets or sets an expression to evaluate to set the context.
