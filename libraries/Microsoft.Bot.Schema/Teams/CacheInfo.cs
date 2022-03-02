@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// A cache info object which notifies Teams how long an object should be cached for.
     /// </summary>
-    public partial class CacheInfo
+    public class CacheInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CacheInfo"/> class.
-        /// </summary>
-        public CacheInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CacheInfo"/> class.
         /// </summary>
@@ -27,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             CacheType = cacheType;
             CacheDuration = cacheDuration;
-            CustomInit();
         }
 
         /// <summary>
@@ -43,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The time in seconds for which the cached object should remain in the cache.</value>
         [JsonProperty(PropertyName = "cacheDuration")]
         public int CacheDuration { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

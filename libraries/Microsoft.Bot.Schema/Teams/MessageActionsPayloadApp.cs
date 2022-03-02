@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents an application entity.
     /// </summary>
-    public partial class MessageActionsPayloadApp
+    public class MessageActionsPayloadApp
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadApp"/> class.
-        /// </summary>
-        public MessageActionsPayloadApp()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadApp"/> class.
         /// </summary>
@@ -33,7 +24,6 @@ namespace Microsoft.Bot.Schema.Teams
             ApplicationIdentityType = applicationIdentityType;
             Id = id;
             DisplayName = displayName;
-            CustomInit();
         }
 
         /// <summary>
@@ -58,10 +48,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The plaintext display name of the application.</value>
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

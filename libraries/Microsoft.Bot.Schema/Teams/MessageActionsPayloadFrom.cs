@@ -3,23 +3,14 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents a user, application, or conversation type that either sent
     /// or was referenced in a message.
     /// </summary>
-    public partial class MessageActionsPayloadFrom
+    public class MessageActionsPayloadFrom
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadFrom"/> class.
-        /// </summary>
-        public MessageActionsPayloadFrom()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadFrom"/> class.
         /// </summary>
@@ -32,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             User = user;
             Application = application;
             Conversation = conversation;
-            CustomInit();
         }
 
         /// <summary>
@@ -55,10 +45,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The conversation details.</value>
         [JsonProperty(PropertyName = "conversation")]
         public MessageActionsPayloadConversation Conversation { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

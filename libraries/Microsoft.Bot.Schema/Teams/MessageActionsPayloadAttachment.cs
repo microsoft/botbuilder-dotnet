@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the attachment in a message.
     /// </summary>
-    public partial class MessageActionsPayloadAttachment
+    public class MessageActionsPayloadAttachment
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadAttachment"/> class.
-        /// </summary>
-        public MessageActionsPayloadAttachment()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadAttachment"/> class.
         /// </summary>
@@ -40,7 +31,6 @@ namespace Microsoft.Bot.Schema.Teams
             Content = content;
             Name = name;
             ThumbnailUrl = thumbnailUrl;
-            CustomInit();
         }
 
         /// <summary>
@@ -90,10 +80,5 @@ namespace Microsoft.Bot.Schema.Teams
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string ThumbnailUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specific details of a Teams meeting end event.
     /// </summary>
-    public partial class MeetingEndEventDetails : MeetingEventDetails
+    public class MeetingEndEventDetails : MeetingEventDetails
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeetingEndEventDetails"/> class.
-        /// </summary>
-        public MeetingEndEventDetails()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingEndEventDetails"/> class.
         /// </summary>
@@ -35,8 +27,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base(id, joinUrl, title, meetingType)
         {
             EndTime = endTime;
-
-            CustomInit();
         }
 
         /// <summary>
@@ -47,10 +37,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "EndTime")]
         public DateTime EndTime { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

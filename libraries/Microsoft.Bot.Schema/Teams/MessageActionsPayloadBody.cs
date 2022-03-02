@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Plaintext/HTML representation of the content of the message.
     /// </summary>
-    public partial class MessageActionsPayloadBody
+    public class MessageActionsPayloadBody
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadBody"/> class.
-        /// </summary>
-        public MessageActionsPayloadBody()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadBody"/> class.
         /// </summary>
@@ -29,7 +20,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             ContentType = contentType;
             Content = content;
-            CustomInit();
         }
 
         /// <summary>
@@ -46,10 +36,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The content of the body.</value>
         [JsonProperty(PropertyName = "content")]
         public string Content { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

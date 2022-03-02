@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Teams meeting participant details.
     /// </summary>
-    public partial class MeetingParticipantInfo
+    public class MeetingParticipantInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeetingParticipantInfo"/> class.
-        /// </summary>
-        public MeetingParticipantInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingParticipantInfo"/> class.
         /// </summary>
@@ -27,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         { 
             Role = role;
             InMeeting = inMeeting;
-            CustomInit();
         }
         
         /// <summary>
@@ -47,10 +38,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "role")]
         public string Role { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

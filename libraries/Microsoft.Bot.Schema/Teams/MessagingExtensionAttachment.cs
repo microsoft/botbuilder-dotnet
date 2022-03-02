@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Messaging extension attachment.
     /// </summary>
-    public partial class MessagingExtensionAttachment : Attachment
+    public class MessagingExtensionAttachment : Attachment
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionAttachment"/> class.
-        /// </summary>
-        public MessagingExtensionAttachment()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionAttachment"/> class.
         /// </summary>
@@ -32,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base(contentType, contentUrl, content, name, thumbnailUrl)
         {
             Preview = preview;
-            CustomInit();
         }
 
         /// <summary>
@@ -41,10 +31,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The preview.</value>
         [JsonProperty(PropertyName = "preview")]
         public Attachment Preview { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -7,16 +7,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// General information about a Teams meeting.
     /// </summary>
-    public partial class MeetingInfo
+    public class MeetingInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeetingInfo"/> class.
-        /// </summary>
-        public MeetingInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingInfo"/> class.
         /// </summary>
@@ -28,7 +20,6 @@ namespace Microsoft.Bot.Schema.Teams
             Details = details;
             Conversation = conversation;
             Organizer = organizer;
-            CustomInit();
         }
 
         /// <summary>
@@ -57,10 +48,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "organizer")]
         public TeamsChannelAccount Organizer { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

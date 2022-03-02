@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Invoke request body type for app-based link query.
     /// </summary>
-    public partial class AppBasedLinkQuery
+    public class AppBasedLinkQuery
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppBasedLinkQuery"/> class.
-        /// </summary>
-        public AppBasedLinkQuery()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the  <see cref="AppBasedLinkQuery"/> class.
         /// </summary>
@@ -25,7 +17,6 @@ namespace Microsoft.Bot.Schema.Teams
         public AppBasedLinkQuery(string url = default)
         {
             Url = url;
-            CustomInit();
         }
 
         /// <summary>
@@ -43,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The state, which is the magic code for OAuth Flow.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the entity that was mentioned in the message.
     /// </summary>
-    public partial class MessageActionsPayloadMention
+    public class MessageActionsPayloadMention
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadMention"/> class.
-        /// </summary>
-        public MessageActionsPayloadMention()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadMention"/> class.
         /// </summary>
@@ -32,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             Id = id;
             MentionText = mentionText;
             Mentioned = mentioned;
-            CustomInit();
         }
 
         /// <summary>
@@ -55,10 +45,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>Details of the mentioned entity.</value>
         [JsonProperty(PropertyName = "mentioned")]
         public MessageActionsPayloadFrom Mentioned { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

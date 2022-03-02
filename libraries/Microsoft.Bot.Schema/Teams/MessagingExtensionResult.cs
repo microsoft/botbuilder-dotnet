@@ -3,24 +3,14 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Messaging extension result.
     /// </summary>
-    public partial class MessagingExtensionResult
+    public class MessagingExtensionResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionResult"/> class.
-        /// </summary>
-        public MessagingExtensionResult()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionResult"/> class.
         /// </summary>
@@ -41,7 +31,6 @@ namespace Microsoft.Bot.Schema.Teams
             SuggestedActions = suggestedActions;
             Text = text;
             ActivityPreview = activityPreview;
-            CustomInit();
         }
 
         /// <summary>
@@ -88,10 +77,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The message activity to preview.</value>
         [JsonProperty(PropertyName = "activityPreview")]
         public Activity ActivityPreview { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

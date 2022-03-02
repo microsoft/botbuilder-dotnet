@@ -3,24 +3,14 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Messaging extension query.
     /// </summary>
-    public partial class MessagingExtensionQuery
+    public class MessagingExtensionQuery
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionQuery"/> class.
-        /// </summary>
-        public MessagingExtensionQuery()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionQuery"/> class.
         /// </summary>
@@ -34,7 +24,6 @@ namespace Microsoft.Bot.Schema.Teams
             Parameters = parameters ?? new List<MessagingExtensionParameter>();
             QueryOptions = queryOptions;
             State = state;
-            CustomInit();
         }
 
         /// <summary>
@@ -65,10 +54,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The state parameter passed back to the bot after authentication/configuration flow.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

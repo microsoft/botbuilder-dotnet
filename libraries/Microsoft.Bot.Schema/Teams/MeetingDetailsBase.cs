@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specific details of a Teams meeting.
     /// </summary>
-    public partial class MeetingDetailsBase
+    public class MeetingDetailsBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeetingDetailsBase"/> class.
-        /// </summary>
-        internal MeetingDetailsBase()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingDetailsBase"/> class.
         /// </summary>
@@ -32,8 +24,6 @@ namespace Microsoft.Bot.Schema.Teams
             Id = id;
             JoinUrl = joinUrl;
             Title = title;
-
-            CustomInit();
         }
 
         /// <summary>
@@ -62,10 +52,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

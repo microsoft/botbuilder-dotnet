@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents a team or channel entity.
     /// </summary>
-    public partial class MessageActionsPayloadConversation
+    public class MessageActionsPayloadConversation
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadConversation"/> class.
-        /// </summary>
-        public MessageActionsPayloadConversation()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadConversation"/> class.
         /// </summary>
@@ -33,7 +24,6 @@ namespace Microsoft.Bot.Schema.Teams
             ConversationIdentityType = conversationIdentityType;
             Id = id;
             DisplayName = displayName;
-            CustomInit();
         }
 
         /// <summary>
@@ -58,10 +48,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The plaintext display name of the team or channel.</value>
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

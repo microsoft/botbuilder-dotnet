@@ -4,25 +4,15 @@
 namespace Microsoft.Bot.Schema.Teams
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the individual message within a chat or channel where a
     /// message actions is taken.
     /// </summary>
-    public partial class MessageActionsPayload
+    public class MessageActionsPayload
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayload"/> class.
-        /// </summary>
-        public MessageActionsPayload()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayload"/> class.
         /// </summary>
@@ -72,7 +62,6 @@ namespace Microsoft.Bot.Schema.Teams
             Attachments = attachments ?? new List<MessageActionsPayloadAttachment>();
             Mentions = mentions ?? new List<MessageActionsPayloadMention>();
             Reactions = reactions ?? new List<MessageActionsPayloadReaction>();
-            CustomInit();
         }
 
         /// <summary>
@@ -197,10 +186,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The link back to the message.</value>
         [JsonProperty(PropertyName = "linkToMessage")]
         public Uri LinkToMessage { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specific details of a Teams meeting.
     /// </summary>
-    public partial class MeetingDetails : MeetingDetailsBase
+    public class MeetingDetails : MeetingDetailsBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeetingDetails"/> class.
-        /// </summary>
-        public MeetingDetails()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingDetails"/> class.
         /// </summary>
@@ -42,8 +34,6 @@ namespace Microsoft.Bot.Schema.Teams
             ScheduledStartTime = scheduledStartTime;
             ScheduledEndTime = scheduledEndTime;
             Type = type;
-
-            CustomInit();
         }
 
         /// <summary>
@@ -81,10 +71,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

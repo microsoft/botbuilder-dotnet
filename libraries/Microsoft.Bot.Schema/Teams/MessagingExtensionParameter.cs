@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Messaging extension query parameters.
     /// </summary>
-    public partial class MessagingExtensionParameter
+    public class MessagingExtensionParameter
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionParameter"/> class.
-        /// </summary>
-        public MessagingExtensionParameter()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionParameter"/> class.
         /// </summary>
@@ -27,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Name = name;
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -43,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The value of the parameter.</value>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

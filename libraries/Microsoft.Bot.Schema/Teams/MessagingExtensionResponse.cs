@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Messaging extension response.
     /// </summary>
-    public partial class MessagingExtensionResponse
+    public class MessagingExtensionResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionResponse"/> class.
-        /// </summary>
-        public MessagingExtensionResponse()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionResponse"/> class.
         /// </summary>
@@ -26,7 +17,6 @@ namespace Microsoft.Bot.Schema.Teams
         public MessagingExtensionResponse(MessagingExtensionResult composeExtension = default)
         {
             ComposeExtension = composeExtension;
-            CustomInit();
         }
 
         /// <summary>
@@ -43,10 +33,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The <see cref="CacheInfo"/> for this <see cref="MessagingExtensionResponse"/>.</value>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

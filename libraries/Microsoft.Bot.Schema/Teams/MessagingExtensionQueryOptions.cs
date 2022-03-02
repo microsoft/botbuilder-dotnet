@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Messaging extension query options.
     /// </summary>
-    public partial class MessagingExtensionQueryOptions
+    public class MessagingExtensionQueryOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionQueryOptions"/> class.
-        /// </summary>
-        public MessagingExtensionQueryOptions()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionQueryOptions"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Skip = skip;
             Count = count;
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The number of entities to fetch.</value>
         [JsonProperty(PropertyName = "count")]
         public int? Count { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -10,16 +10,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// Represents the value of the invoke activity sent when the user acts on
     /// a file consent card.
     /// </summary>
-    public partial class FileConsentCardResponse
+    public class FileConsentCardResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileConsentCardResponse"/> class.
-        /// </summary>
-        public FileConsentCardResponse()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FileConsentCardResponse"/> class.
         /// </summary>
@@ -34,7 +26,6 @@ namespace Microsoft.Bot.Schema.Teams
             Action = action;
             Context = context;
             UploadInfo = uploadInfo;
-            CustomInit();
         }
 
         /// <summary>
@@ -59,10 +50,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The information about the file to be uploaded.</value>
         [JsonProperty(PropertyName = "uploadInfo")]
         public FileUploadInfo UploadInfo { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

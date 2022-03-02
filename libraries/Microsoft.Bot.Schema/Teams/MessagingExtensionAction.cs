@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Messaging extension action.
     /// </summary>
-    public partial class MessagingExtensionAction : TaskModuleRequest
+    public class MessagingExtensionAction : TaskModuleRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionAction"/> class.
-        /// </summary>
-        public MessagingExtensionAction()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionAction"/> class.
         /// </summary>
@@ -43,7 +35,6 @@ namespace Microsoft.Bot.Schema.Teams
             BotMessagePreviewAction = botMessagePreviewAction;
             BotActivityPreview = botActivityPreview ?? new List<Activity>();
             MessagePayload = messagePayload;
-            CustomInit();
         }
 
         /// <summary>
@@ -89,10 +80,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The state parameter passed back to the bot after authentication flow.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

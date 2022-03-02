@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Messaging extension Actions (Only when type is auth or config).
     /// </summary>
-    public partial class MessagingExtensionSuggestedAction
+    public class MessagingExtensionSuggestedAction
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessagingExtensionSuggestedAction"/> class.
-        /// </summary>
-        public MessagingExtensionSuggestedAction()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionSuggestedAction"/> class.
         /// </summary>
@@ -26,7 +18,6 @@ namespace Microsoft.Bot.Schema.Teams
         public MessagingExtensionSuggestedAction(IList<CardAction> actions = default)
         {
             Actions = actions ?? new List<CardAction>();
-            CustomInit();
         }
 
         /// <summary>
@@ -35,10 +26,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The actions.</value>
         [JsonProperty(PropertyName = "actions")]
         public IList<CardAction> Actions { get; private set; } = new List<CardAction>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

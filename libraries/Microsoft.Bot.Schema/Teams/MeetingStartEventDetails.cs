@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specific details of a Teams meeting start event.
     /// </summary>
-    public partial class MeetingStartEventDetails : MeetingEventDetails
+    public class MeetingStartEventDetails : MeetingEventDetails
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeetingStartEventDetails"/> class.
-        /// </summary>
-        public MeetingStartEventDetails()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingStartEventDetails"/> class.
         /// </summary>
@@ -35,8 +27,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base(id, joinUrl, title, meetingType)
         {
             StartTime = startTime;
-
-            CustomInit();
         }
 
         /// <summary>
@@ -47,10 +37,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "StartTime")]
         public DateTime StartTime { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

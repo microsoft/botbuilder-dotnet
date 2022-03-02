@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the reaction of a user to a message.
     /// </summary>
-    public partial class MessageActionsPayloadReaction
+    public class MessageActionsPayloadReaction
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageActionsPayloadReaction"/> class.
-        /// </summary>
-        public MessageActionsPayloadReaction()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadReaction"/> class.
         /// </summary>
@@ -34,7 +25,6 @@ namespace Microsoft.Bot.Schema.Teams
             ReactionType = reactionType;
             CreatedDateTime = createdDateTime;
             User = user;
-            CustomInit();
         }
 
         /// <summary>
@@ -59,10 +49,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The user with which the reaction is associated.</value>
         [JsonProperty(PropertyName = "user")]
         public MessageActionsPayloadFrom User { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

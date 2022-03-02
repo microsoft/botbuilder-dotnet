@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// A channel info object which describes the channel.
     /// </summary>
-    public partial class ChannelInfo
+    public class ChannelInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelInfo"/> class.
-        /// </summary>
-        public ChannelInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelInfo"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Id = id;
             Name = name;
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The channel name.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
