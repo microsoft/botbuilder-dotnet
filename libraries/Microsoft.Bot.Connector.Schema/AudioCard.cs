@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -83,19 +84,17 @@ namespace Microsoft.Bot.Connector.Schema
         /// content.
         /// </summary>
         /// <value>The media URLs of this card.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("media")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MediaUrl> Media { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets actions on this card.
         /// </summary>
         /// <value>The actions on this card.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("buttons")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this content may be shared with others (default:true).
@@ -145,6 +144,8 @@ namespace Microsoft.Bot.Connector.Schema
         public object Value { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

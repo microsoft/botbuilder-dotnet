@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Thumbnail URL.
     /// </summary>
-    public partial class ThumbnailUrl
+    public class ThumbnailUrl
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ThumbnailUrl"/> class.
@@ -51,6 +51,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

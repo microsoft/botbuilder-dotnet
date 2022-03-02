@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// A type containing information for single sign-on.
     /// </summary>
-    public partial class SignInResource
+    public class SignInResource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SignInResource"/> class.
@@ -47,6 +47,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Conversations result.
     /// </summary>
-    public partial class ConversationsResult
+    public class ConversationsResult
     {
         /// <summary>Initializes a new instance of the <see cref="ConversationsResult"/> class.</summary>
         public ConversationsResult()
@@ -34,12 +35,13 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets list of conversations.</summary>
         /// <value>A list of conversations.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("conversations")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ConversationMembers> Conversations { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

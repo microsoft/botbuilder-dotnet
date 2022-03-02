@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Messaging extension attachment.
     /// </summary>
-    public partial class MessagingExtensionAttachment : Attachment
+    public class MessagingExtensionAttachment : Attachment
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionAttachment"/> class.
@@ -44,6 +44,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

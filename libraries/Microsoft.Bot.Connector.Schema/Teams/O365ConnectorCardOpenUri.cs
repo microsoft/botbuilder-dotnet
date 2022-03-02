@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -39,14 +40,15 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets target OS/URLs.
         /// </summary>
         /// <value>The target OS/URLs.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("targets")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardOpenUriTarget> Targets { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

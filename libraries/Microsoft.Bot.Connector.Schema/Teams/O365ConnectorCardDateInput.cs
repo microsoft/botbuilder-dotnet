@@ -50,6 +50,8 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

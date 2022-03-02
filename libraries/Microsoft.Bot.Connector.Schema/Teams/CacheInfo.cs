@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// A cache info object which notifies Teams how long an object should be cached for.
     /// </summary>
-    public partial class CacheInfo
+    public class CacheInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CacheInfo"/> class.
@@ -47,6 +47,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

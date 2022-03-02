@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Task Module Response with continue action.
     /// </summary>
-    public partial class TaskModuleContinueResponse : TaskModuleResponseBase
+    public class TaskModuleContinueResponse : TaskModuleResponseBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleContinueResponse"/> class.
@@ -40,6 +40,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

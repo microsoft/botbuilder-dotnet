@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary> Attachment data. </summary>
-    public partial class AttachmentData
+    public class AttachmentData
     {
         /// <summary>Initializes a new instance of the <see cref="AttachmentData"/> class.</summary>
         public AttachmentData()
@@ -53,6 +53,8 @@ namespace Microsoft.Bot.Connector.Schema
 #pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

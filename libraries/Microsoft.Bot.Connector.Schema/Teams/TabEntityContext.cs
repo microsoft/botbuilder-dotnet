@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Current TabRequest entity context, or 'tabEntityId'.
     /// </summary>
-    public partial class TabEntityContext
+    public class TabEntityContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TabEntityContext"/> class.
@@ -30,6 +30,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

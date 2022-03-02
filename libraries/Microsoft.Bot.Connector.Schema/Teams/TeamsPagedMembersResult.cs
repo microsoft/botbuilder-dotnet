@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -50,9 +51,8 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The channel accounts.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("members")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<TeamsChannelAccount> Members { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

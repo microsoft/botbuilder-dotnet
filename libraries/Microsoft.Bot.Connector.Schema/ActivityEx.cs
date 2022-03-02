@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -52,10 +53,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <remarks>With this, properties not represented in the defined type are not dropped when
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonExtensionData]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Creates an instance of the <see cref="Activity"/> class as an <see cref="IMessageActivity"/> object.
@@ -425,7 +425,7 @@ namespace Microsoft.Bot.Connector.Schema
                 return (TypeT)ChannelData;
             }
 
-            return ((Dictionary<string, JsonElement>)ChannelData).ToObject<TypeT>();
+            return ChannelData.ToObject<TypeT>();
         }
 
         /// <summary>

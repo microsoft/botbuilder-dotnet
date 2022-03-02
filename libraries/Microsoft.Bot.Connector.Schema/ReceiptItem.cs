@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// An item on a receipt card.
     /// </summary>
-    public partial class ReceiptItem
+    public class ReceiptItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ReceiptItem"/> class.
@@ -98,6 +98,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

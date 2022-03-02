@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// Object representing error information.
     /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords (Cannot change without breaking backwards compatibility.)
-    public partial class Error
+    public class Error
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
         /// <summary>Initializes a new instance of the <see cref="Error"/> class.</summary>
@@ -46,6 +46,8 @@ namespace Microsoft.Bot.Connector.Schema
         public InnerHttpError InnerHttpError { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

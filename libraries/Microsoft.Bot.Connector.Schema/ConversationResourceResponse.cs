@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>A response containing a resource.</summary>
-    public partial class ConversationResourceResponse
+    public class ConversationResourceResponse
     {
         /// <summary>Initializes a new instance of the <see cref="ConversationResourceResponse"/> class.</summary>
         public ConversationResourceResponse()
@@ -44,6 +44,8 @@ namespace Microsoft.Bot.Connector.Schema
         public string Id { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

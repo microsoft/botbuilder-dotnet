@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Signin state (part of signin action auth flow) verification invoke query.
     /// </summary>
-    public partial class SigninStateVerificationQuery
+    public class SigninStateVerificationQuery
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SigninStateVerificationQuery"/> class.
@@ -42,6 +42,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

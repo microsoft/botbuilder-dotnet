@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Envelope for cards for a Tab request.
     /// </summary>
-    public partial class TabResponseCard
+    public class TabResponseCard
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TabResponseCard"/> class.
@@ -30,6 +30,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

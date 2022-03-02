@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Response of messaging extension action.
     /// </summary>
-    public partial class MessagingExtensionActionResponse
+    public class MessagingExtensionActionResponse
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionActionResponse"/> class.
@@ -56,6 +56,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

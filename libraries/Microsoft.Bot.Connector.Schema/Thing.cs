@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Thing (entity type: "https://schema.org/Thing").
     /// </summary>
-    public partial class Thing
+    public class Thing
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Thing"/> class.
@@ -47,6 +47,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

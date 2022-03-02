@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Specific details of a Teams meeting end event.
     /// </summary>
-    public partial class MeetingEndEventDetails : MeetingEventDetails
+    public class MeetingEndEventDetails : MeetingEventDetails
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingEndEventDetails"/> class.
@@ -52,6 +52,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

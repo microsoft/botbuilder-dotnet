@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Response schema sent back from Bot Framework Token Service required to initiate a user single sign on.
     /// </summary>
-    public partial class TokenExchangeResource
+    public class TokenExchangeResource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenExchangeResource"/> class.
@@ -59,6 +59,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

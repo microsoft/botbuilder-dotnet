@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// rendered with default style information with some delimiter between
     /// them. So there is no need for developer to specify style information.
     /// </summary>
-    public partial class Fact
+    public class Fact
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Fact"/> class.
@@ -50,6 +50,8 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

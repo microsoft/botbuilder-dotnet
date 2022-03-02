@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Specifies if a notification is to be sent for the mentions.
     /// </summary>
-    public partial class NotificationInfo
+    public class NotificationInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationInfo"/> class.
@@ -57,6 +57,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Messaging extension result.
     /// </summary>
-    public partial class MessagingExtensionResult
+    public class MessagingExtensionResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionResult"/> class.
@@ -62,10 +63,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets (Only when type is result) Attachments.
         /// </summary>
         /// <value>The attachments.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("attachments")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionAttachment> Attachments { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the suggested actions.
@@ -92,6 +92,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

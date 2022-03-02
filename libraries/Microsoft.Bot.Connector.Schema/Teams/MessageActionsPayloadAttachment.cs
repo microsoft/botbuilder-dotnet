@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Represents the attachment in a message.
     /// </summary>
-    public partial class MessageActionsPayloadAttachment
+    public class MessageActionsPayloadAttachment
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadAttachment"/> class.
@@ -93,6 +93,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

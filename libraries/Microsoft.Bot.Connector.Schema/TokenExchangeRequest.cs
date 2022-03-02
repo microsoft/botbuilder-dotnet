@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// If the URI is set to a custom scope, then Token Service will exchange the token in its cache for a token targeting the custom scope and return it in the response.
     /// If a Token is sent in the payload, then Token Service will exchange the token for a token targetting the scopes specified in the corresponding OAauth connection.
     /// </summary>
-    public partial class TokenExchangeRequest
+    public class TokenExchangeRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenExchangeRequest"/> class.
@@ -51,6 +51,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Represents a team or channel entity.
     /// </summary>
-    public partial class MessageActionsPayloadConversation
+    public class MessageActionsPayloadConversation
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadConversation"/> class.
@@ -61,6 +61,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

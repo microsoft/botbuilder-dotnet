@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// General information about a Teams meeting.
     /// </summary>
-    public partial class MeetingInfo
+    public class MeetingInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingInfo"/> class.
@@ -62,6 +62,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

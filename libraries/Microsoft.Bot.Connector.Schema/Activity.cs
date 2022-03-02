@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -296,10 +297,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of members added to the conversation.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("membersAdded")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ChannelAccount> MembersAdded { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of members removed from the
@@ -308,10 +308,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of members removed from the conversation.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("membersRemoved")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ChannelAccount> MembersRemoved { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of reactions added to the conversation.
@@ -319,10 +318,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of reactions added to the conversation.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("reactionsAdded")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<MessageReaction> ReactionsAdded { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of reactions removed from the
@@ -331,10 +329,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of reactions removed from the conversation.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("reactionsRemoved")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<MessageReaction> ReactionsRemoved { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the updated topic name of the conversation.
@@ -420,10 +417,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The attachments for the activity.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("attachments")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<Attachment> Attachments { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the entities that were mentioned in the message.
@@ -431,10 +427,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The entities that were mentioned in the message.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("entities")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<Entity> Entities { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets channel-specific content.
@@ -567,10 +562,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// List of phrases and references that speech and language-priming systems should listen for.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("listenFor")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<string> ListenFor { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of text fragments to highlight when the
@@ -580,10 +574,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// The collection of text fragments to highlight when the
         /// activity contains a ReplyToId value.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("textHighlights")]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<TextHighlight> TextHighlights { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets an optional programmatic action accompanying this
@@ -614,6 +607,8 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

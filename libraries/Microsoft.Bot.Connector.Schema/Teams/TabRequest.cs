@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Invoke ('tab/fetch') request value payload.
     /// </summary>
-    public partial class TabRequest
+    public class TabRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TabRequest"/> class.
@@ -48,6 +48,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

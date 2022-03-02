@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Describes a team.
     /// </summary>
-    public partial class TeamInfo
+    public class TeamInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamInfo"/> class.
@@ -54,6 +54,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

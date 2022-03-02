@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// A response containing a resource ID.
     /// </summary>
-    public partial class ResourceResponse
+    public class ResourceResponse
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceResponse"/> class.
@@ -38,6 +38,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

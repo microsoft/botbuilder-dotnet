@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -45,9 +46,8 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Extension data for overflow of properties.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonExtensionData]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
-#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

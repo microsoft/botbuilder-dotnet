@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>An image on a card.</summary>
-    public partial class CardImage
+    public class CardImage
     {
         /// <summary>Initializes a new instance of the <see cref="CardImage"/> class.</summary>
         public CardImage()
@@ -44,6 +44,8 @@ namespace Microsoft.Bot.Connector.Schema
         public CardAction Tap { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

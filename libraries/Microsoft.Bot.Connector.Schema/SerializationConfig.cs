@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -16,7 +18,8 @@ namespace Microsoft.Bot.Connector.Schema
         /// </summary>
         public static readonly JsonSerializerOptions DefaultSerializeOptions = new JsonSerializerOptions
         {
-            IgnoreNullValues = true
+            IgnoreNullValues = true,
+            Converters = { new UtcDateTimeConverter() }
         };
 
         /// <summary>
@@ -25,7 +28,21 @@ namespace Microsoft.Bot.Connector.Schema
         public static readonly JsonSerializerOptions DefaultDeserializeOptions = new JsonSerializerOptions
         {
             IgnoreNullValues = true,
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            Converters = { new UtcDateTimeConverter() }
         };
+
+        private class UtcDateTimeConverter : JsonConverter<DateTime>
+        {
+            public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.GetDateTime().ToUniversalTime();
+            }
+
+            public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToUniversalTime());
+            }
+        }
     }
 }

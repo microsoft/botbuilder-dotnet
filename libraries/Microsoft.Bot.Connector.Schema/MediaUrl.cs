@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Media URL.
     /// </summary>
-    public partial class MediaUrl
+    public class MediaUrl
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaUrl"/> class.
@@ -51,6 +51,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

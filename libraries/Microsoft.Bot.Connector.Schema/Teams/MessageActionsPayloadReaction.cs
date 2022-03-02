@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Represents the reaction of a user to a message.
     /// </summary>
-    public partial class MessageActionsPayloadReaction
+    public class MessageActionsPayloadReaction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageActionsPayloadReaction"/> class.
@@ -62,6 +62,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Attachment View name and size.
     /// </summary>
-    public partial class AttachmentView
+    public class AttachmentView
     {
         /// <summary>Initializes a new instance of the <see cref="AttachmentView"/> class.</summary>
         public AttachmentView()
@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Connector.Schema
         public int? Size { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

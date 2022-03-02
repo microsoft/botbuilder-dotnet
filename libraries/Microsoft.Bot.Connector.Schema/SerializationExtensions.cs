@@ -18,18 +18,23 @@ namespace Microsoft.Bot.Connector.Schema
         /// <returns>A dictionary of JSON elements keyed by property name.</returns>
         public static Dictionary<string, JsonElement> ToJsonElements(this object value)
         {
+            if (value == null)
+            {
+                return new Dictionary<string, JsonElement>();
+            }
+
+            if (value is Dictionary<string, JsonElement> result)
+            {
+                return result;
+            }
+
             var elements = new Dictionary<string, JsonElement>();
 
-            if (value != null)
+            using (var document = value is string json ? JsonDocument.Parse(json) : JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions)))
             {
-                using (var document = value is string json
-                           ? JsonDocument.Parse(json)
-                           : JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions)))
+                foreach (var property in document.RootElement.Clone().EnumerateObject())
                 {
-                    foreach (var property in document.RootElement.Clone().EnumerateObject())
-                    {
-                        elements.Add(property.Name, property.Value);
-                    }
+                    elements.Add(property.Name, property.Value);
                 }
             }
 
@@ -47,6 +52,11 @@ namespace Microsoft.Bot.Connector.Schema
             if (value == null)
             {
                 return default;
+            }
+
+            if (value is T result)
+            {
+                return result;
             }
 
             return value is string json

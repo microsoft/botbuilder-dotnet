@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Supplementary parameter for media events.
     /// </summary>
-    public partial class MediaEventValue
+    public class MediaEventValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaEventValue"/> class.
@@ -40,6 +40,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

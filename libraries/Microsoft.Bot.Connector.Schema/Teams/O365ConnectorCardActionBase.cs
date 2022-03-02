@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// O365 connector card action base.
     /// </summary>
-    public partial class O365ConnectorCardActionBase
+    public class O365ConnectorCardActionBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardActionBase"/> class.
@@ -59,6 +59,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

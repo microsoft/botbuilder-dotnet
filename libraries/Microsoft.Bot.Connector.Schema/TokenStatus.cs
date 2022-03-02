@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// The status of a particular token.
     /// </summary>
-    public partial class TokenStatus
+    public class TokenStatus
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenStatus"/> class.
@@ -71,6 +71,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

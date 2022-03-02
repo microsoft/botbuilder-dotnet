@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Envelope for cards for a <see cref="TabResponse"/>.
     /// </summary>
-    public partial class TabResponseCards
+    public class TabResponseCards
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TabResponseCards"/> class.
@@ -25,14 +26,16 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Cards for this <see cref="TabResponse"/>.
         /// </value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("cards")]
-#pragma warning disable CA2227 // Collection properties should be read only
         public IList<TabResponseCard> Cards { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

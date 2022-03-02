@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -18,8 +19,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or Sets Indicates the sections of text in the referenced message to highlight.
         /// </summary>
         /// <value>TextHighlights.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         IList<TextHighlight> TextHighlights { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

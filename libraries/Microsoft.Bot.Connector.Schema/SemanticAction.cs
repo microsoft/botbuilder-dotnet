@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Represents a reference to a programmatic action.
     /// </summary>
-    public partial class SemanticAction
+    public class SemanticAction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SemanticAction"/> class.
@@ -42,10 +43,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets entities associated with this action.
         /// </summary>
         /// <value>The entities associated with this action.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("entities")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IDictionary<string, Entity> Entities { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets state of this action. Allowed values: `start`,
@@ -58,6 +58,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

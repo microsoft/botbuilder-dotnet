@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,7 +11,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Response schema sent back from Bot Framework Token Service, in response to a request to get or exchange a token for a user.
     /// </summary>
-    public partial class TokenResponse
+    public class TokenResponse
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenResponse"/> class.
@@ -63,19 +64,21 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>The expiration.</value>
         [JsonPropertyName("expiration")]
         public string Expiration { get; set; }
-        
+
         /// <summary>
         /// Gets or sets extra propreties.
         /// </summary>
         /// <value>The extra properties.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonExtensionData]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

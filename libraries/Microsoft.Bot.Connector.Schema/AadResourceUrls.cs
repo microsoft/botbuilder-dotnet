@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Schema of the target resource for which the Bot Framework Token Service would exchange a cached token for a user. This class applies only to AAD V1 connections.
     /// </summary>
-    public partial class AadResourceUrls
+    public class AadResourceUrls
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AadResourceUrls"/> class.
@@ -33,14 +34,15 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the URLs to the resource you want to connect to.
         /// </summary>
         /// <value>The URLs to the resources you want to connect to.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("resourceUrls")]
-#pragma warning disable CA2227 // Collection properties should be read only
         public IList<string> ResourceUrls { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

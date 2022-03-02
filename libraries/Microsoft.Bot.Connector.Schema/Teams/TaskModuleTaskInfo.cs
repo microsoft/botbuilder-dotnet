@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Metadata for a Task Module.
     /// </summary>
-    public partial class TaskModuleTaskInfo
+    public class TaskModuleTaskInfo
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleTaskInfo"/> class.
@@ -105,6 +105,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

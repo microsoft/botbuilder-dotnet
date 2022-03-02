@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Refers to a substring of content within another field.
     /// </summary>
-    public partial class TextHighlight
+    public class TextHighlight
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TextHighlight"/> class.
@@ -49,6 +49,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

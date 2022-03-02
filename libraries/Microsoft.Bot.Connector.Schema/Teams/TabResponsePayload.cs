@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Payload for Tab Response.
     /// </summary>
-    public partial class TabResponsePayload
+    public class TabResponsePayload
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TabResponsePayload"/> class.
@@ -50,6 +50,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

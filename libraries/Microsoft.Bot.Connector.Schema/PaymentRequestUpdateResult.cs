@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// A result object from a Payment Request Update invoke operation.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentRequestUpdateResult
+    public class PaymentRequestUpdateResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentRequestUpdateResult"/> class.
@@ -40,6 +40,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

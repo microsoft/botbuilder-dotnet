@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// O365 connector card image.
     /// </summary>
-    public partial class O365ConnectorCardImage
+    public class O365ConnectorCardImage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardImage"/> class.
@@ -47,6 +47,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// Represents the value of the invoke activity sent when the user acts on
     /// a file consent card.
     /// </summary>
-    public partial class FileConsentCardResponse
+    public class FileConsentCardResponse
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FileConsentCardResponse"/> class.
@@ -62,6 +62,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

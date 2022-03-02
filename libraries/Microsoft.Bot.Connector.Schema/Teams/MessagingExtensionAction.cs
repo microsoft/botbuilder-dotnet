@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Messaging extension action.
     /// </summary>
-    public partial class MessagingExtensionAction : TaskModuleRequest
+    public class MessagingExtensionAction : TaskModuleRequest
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionAction"/> class.
@@ -73,10 +74,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the bot activity preview.
         /// </summary>
         /// <value>The bot activity preview.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("botActivityPreview")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Activity> BotActivityPreview { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets message content sent as part of the command request.
@@ -95,6 +95,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -14,17 +15,15 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or Sets Members added to the conversation.
         /// </summary>
         /// <value>List of ChannelAccount.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         IList<ChannelAccount> MembersAdded { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or Sets Members removed from the conversation.
         /// </summary>
         /// <value>List of ChannelAccount.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         IList<ChannelAccount> MembersRemoved { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or Sets The conversation's updated topic name.

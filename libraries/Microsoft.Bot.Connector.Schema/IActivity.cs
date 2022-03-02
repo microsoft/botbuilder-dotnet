@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -102,9 +103,8 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         IList<Entity> Entities { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets channel-specific payload.

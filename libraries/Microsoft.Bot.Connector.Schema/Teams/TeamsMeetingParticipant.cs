@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Teams meeting participant information, detailing user Azure Active Directory and meeting participant details.
     /// </summary>
-    public partial class TeamsMeetingParticipant
+    public class TeamsMeetingParticipant
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsMeetingParticipant"/> class.
@@ -62,6 +62,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

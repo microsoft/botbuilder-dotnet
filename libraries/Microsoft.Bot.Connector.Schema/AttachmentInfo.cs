@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
     /// <summary>Metadata for an attachment.</summary>
-    public partial class AttachmentInfo
+    public class AttachmentInfo
     {
         /// <summary>Initializes a new instance of the <see cref="AttachmentInfo"/> class.</summary>
         public AttachmentInfo()
@@ -39,12 +40,13 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets attachment views.</summary>
         /// <value> The attachment views.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("views")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<AttachmentView> Views { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

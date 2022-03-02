@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// An HTTP API response.
     /// </summary>
-    public partial class ErrorResponse
+    public class ErrorResponse
     {
         /// <summary>Initializes a new instance of the <see cref="ErrorResponse"/> class.</summary>
         public ErrorResponse()
@@ -32,6 +32,8 @@ namespace Microsoft.Bot.Connector.Schema
         public Error Error { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+        }
     }
 }

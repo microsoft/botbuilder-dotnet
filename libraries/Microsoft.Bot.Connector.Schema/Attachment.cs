@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -71,10 +72,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <remarks>With this, properties not represented in the defined type are not dropped when
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonExtensionData]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets (OPTIONAL) Thumbnail associated with attachment.

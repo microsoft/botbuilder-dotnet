@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -9,7 +10,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
     /// <summary>
     /// Messaging extension query.
     /// </summary>
-    public partial class MessagingExtensionQuery
+    public class MessagingExtensionQuery
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingExtensionQuery"/> class.
@@ -46,10 +47,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets parameters for the query.
         /// </summary>
         /// <value>The parameters for the query.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("parameters")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionParameter> Parameters { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the query options.
@@ -69,6 +69,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

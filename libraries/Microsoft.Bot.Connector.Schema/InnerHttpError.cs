@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// <summary>
     /// Object representing inner http error.
     /// </summary>
-    public partial class InnerHttpError
+    public class InnerHttpError
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InnerHttpError"/> class.
@@ -47,6 +47,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

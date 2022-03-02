@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -11,7 +12,7 @@ namespace Microsoft.Bot.Connector.Schema
     /// Address within a Payment Request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentAddress
+    public class PaymentAddress
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentAddress"/> class.
@@ -82,10 +83,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// office box number.
         /// </summary>
         /// <value>The most specific part of the address.</value>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Property setter is required for the collection to be deserialized")]
         [JsonPropertyName("addressLine")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<string> AddressLine { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this is the top level administrative subdivision of
@@ -163,6 +163,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
