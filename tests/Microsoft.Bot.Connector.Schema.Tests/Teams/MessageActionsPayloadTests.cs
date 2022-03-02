@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.Bot.Connector.Schema.Teams;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests.Teams
@@ -90,8 +90,8 @@ namespace Microsoft.Bot.Connector.Schema.Tests.Teams
         public void TestSerializationDeserialization()
         {
             var payload = CreateActionPayload();
-            var serializedPayload = JsonConvert.SerializeObject(payload);
-            var deserializedPayload = JsonConvert.DeserializeObject<MessageActionsPayload>(serializedPayload);
+            var serializedPayload = JsonSerializer.Serialize(payload, SerializationConfig.DefaultSerializeOptions);
+            var deserializedPayload = JsonSerializer.Deserialize<MessageActionsPayload>(serializedPayload, SerializationConfig.DefaultDeserializeOptions);
 
             Assert.Equal(payload.Id, deserializedPayload.Id);
             Assert.Equal(payload.ReplyToId, deserializedPayload.ReplyToId);

@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Xunit;
 using static Microsoft.Bot.Connector.Schema.Tests.ActivityTestData;
 
@@ -67,8 +66,8 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             };
             var lst = new List<Entity>();
 
-            var output = JsonConvert.SerializeObject(mention);
-            var entity = JsonConvert.DeserializeObject<Entity>(output);
+            var output = JsonSerializer.Serialize(mention, SerializationConfig.DefaultSerializeOptions);
+            var entity = JsonSerializer.Deserialize<Entity>(output, SerializationConfig.DefaultDeserializeOptions);
             lst.Add(entity);
             activity.Entities = lst;
 
@@ -95,8 +94,8 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             };
             var lst = new List<Entity>();
 
-            var output = JsonConvert.SerializeObject(mention);
-            var entity = JsonConvert.DeserializeObject<Entity>(output);
+            var output = JsonSerializer.Serialize(mention, SerializationConfig.DefaultSerializeOptions);
+            var entity = JsonSerializer.Deserialize<Entity>(output, SerializationConfig.DefaultDeserializeOptions);
             lst.Add(entity);
             activity.Entities = lst;
 
@@ -468,12 +467,12 @@ namespace Microsoft.Bot.Connector.Schema.Tests
         {
             var activity = new Activity()
             {
-                Properties = new JObject()
+                Properties = new Dictionary<string, JsonElement>()
             };
 
             var props = activity.Properties;
             Assert.NotNull(props);
-            Assert.IsType<JObject>(props);
+            Assert.IsType<Dictionary<string, JsonElement>>(props);
         }
 
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
@@ -483,7 +482,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             {
                 Id = "ChannelAccount_Id_1",
                 Name = "ChannelAccount_Name_1",
-                Properties = new JObject { { "Name", "Value" } },
+                Properties = new { Name = "Value" }.ToJsonElements(),
                 Role = "ChannelAccount_Role_1",
             }
             : null;
@@ -492,7 +491,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             {
                 Id = "ChannelAccount_Id_2",
                 Name = "ChannelAccount_Name_2",
-                Properties = new JObject { { "Name", "Value" } },
+                Properties = new { Name = "Value" }.ToJsonElements(),
                 Role = "ChannelAccount_Role_2",
             }
             : null;
@@ -503,7 +502,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
                 Id = "123",
                 IsGroup = true,
                 Name = "Name",
-                Properties = new JObject { { "Name", "Value" } },
+                Properties = new { Name = "Value" }.ToJsonElements(),
                 Role = "ConversationAccount_Role",
             };
 
@@ -559,7 +558,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
 
         private bool GetExpectedTryGetChannelDataResult(object channelData)
         {
-            return channelData?.GetType() == typeof(JObject) || channelData?.GetType() == typeof(MyChannelData);
+            return channelData != null;
         }
     }
 }

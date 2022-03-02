@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             var aadObjectId = "aadObjectId";
             var role = "role";
             var tenantId = "tenantId";
-            var props = new JObject();
+            var props = new Dictionary<string, JsonElement>();
 
             var convoAccount = new ConversationAccount(isGroup, conversationType, id, name, aadObjectId, role, tenantId)
             {

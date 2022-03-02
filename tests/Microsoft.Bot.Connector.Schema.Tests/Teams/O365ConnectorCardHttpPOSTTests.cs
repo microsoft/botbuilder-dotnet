@@ -1,8 +1,8 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using Microsoft.Bot.Connector.Schema.Teams;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests.Teams
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests.Teams
             var type = "HttpPOST";
             var name = "Order Yoga Pants";
             var id = "orderYogaPants";
-            var body = new JObject() { { "color", "red" } }.ToString();
+            var body = JsonSerializer.Serialize(new { color = "red" }, SerializationConfig.DefaultSerializeOptions);
 
             var httpPOST = new O365ConnectorCardHttpPOST(type, name, id, body);
 

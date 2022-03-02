@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using static Microsoft.Bot.Connector.Schema.Tests.ActivityTestData;
 
@@ -46,12 +45,12 @@ namespace Microsoft.Bot.Connector.Schema.Tests
                 {
                     Id = "ChannelAccountId",
                     Name = "ChannelAccountName",
-                    Properties = new JObject { { "Name", "Value" } },
+                    Properties = new { Name = "Value" }.ToJsonElements(),
                     Role = "ChannelAccountRole",
                 }
             };
 
-            var mentionsRecipient = ActivityExtensions.MentionsRecipient(message);
+            var mentionsRecipient = message.MentionsRecipient();
 
             Assert.Equal(expectsMention, mentionsRecipient);
         }

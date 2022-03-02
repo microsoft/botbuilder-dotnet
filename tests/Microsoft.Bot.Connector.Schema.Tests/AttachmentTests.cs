@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests
@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             var content = new { };
             var name = "name";
             var thumbnailUrl = "thumbnailUrl";
-            var properties = new JObject();
+            var properties = new Dictionary<string, JsonElement>();
 
             var attachment = new Attachment(contentType, contentUrl, content, name, thumbnailUrl)
             {

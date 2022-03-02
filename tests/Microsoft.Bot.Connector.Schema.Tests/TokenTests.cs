@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             var id = "id";
             var connectionName = "connectionName";
             var token = "token";
-            var properties = new JObject();
+            var properties = new Dictionary<string, JsonElement>();
 
             var tokenExchangeInvokeRequest = new TokenExchangeInvokeRequest()
             {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             var id = "id";
             var connectionName = "connectionName";
             var failureDetail = "failureDetail";
-            var properties = new JObject();
+            var properties = new Dictionary<string, JsonElement>();
 
             var tokenExchangeInvokeResponse = new TokenExchangeInvokeResponse()
             {
@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             var connectionName = "connectionName";
             var token = "token";
             var expiration = "expiration";
-            var properties = new JObject();
+            var properties = new Dictionary<string, JsonElement>();
 
             var tokenResponse = new TokenResponse(channelId, connectionName, token, expiration)
             {

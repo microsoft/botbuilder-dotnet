@@ -47,7 +47,6 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// </summary>
         private void CustomInit()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

@@ -3,7 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests
@@ -37,20 +37,15 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             var entity = new Entity();
             Assert.Null(entity.Type);
 
-            var type = typeof(JObject).Name;
-            var obj = new JObject()
-            {
-                { "Name", "Esper" },
-                { "Eyes", "Brown" },
-                { "Type", type }
-            };
+            var type = typeof(Dictionary<string, JsonElement>).Name;
+            var obj = new { Name = "Esper", Eyes = "Brown", Type = type }.ToJsonElements();
 
             entity.SetAs(obj);
             var properties = entity.Properties;
 
             Assert.Equal(type, entity.Type);
-            Assert.Equal(obj.Value<string>("Name"), properties.Value<string>("Name"));
-            Assert.Equal(obj.Value<string>("Eyes"), properties.Value<string>("Eyes"));
+            Assert.Equal(obj["Name"].GetString(), properties["Name"].GetString());
+            Assert.Equal(obj["Eyes"].GetString(), properties["Eyes"].GetString());
         }
 
         [Fact]
@@ -88,7 +83,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             {
                 yield return new object[] { Entity, null, false };
                 yield return new object[] { Entity, Entity, true };
-                yield return new object[] { Entity, new JObject(), false };
+                yield return new object[] { Entity, new Dictionary<string, JsonElement>(), false };
                 yield return new object[] { Entity, new Entity("color"), true };
                 yield return new object[] { Entity, new Entity("flamingo"), false };
             }

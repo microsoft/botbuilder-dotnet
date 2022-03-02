@@ -3,7 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Tests
 {
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests
         {
             public IEnumerator<object[]> GetEnumerator()
             {
-                yield return new object[] { new JObject() };
+                yield return new object[] { new Dictionary<string, JsonElement>() };
                 yield return new object[] { null };
                 yield return new object[] { new Dictionary<string, string>() };
                 yield return new object[] { new MyChannelData() };
@@ -47,33 +47,26 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             {
                 yield return new object[]
                 {
-                    new List<Entity>() { new Entity() },
-                    false,
+                    new List<Entity> { new Entity() },
+                    false
                 };
+
+                var mention = new
+                {
+                    Mentioned = new
+                    {
+                        Id = "ChannelAccountId",
+                        Name = "AccountName",
+                        Properties = new Dictionary<string, JsonElement>(),
+                        Role = "ChannelAccountRole"
+                    },
+                    Text = "text",
+                    Type = "mention"
+                };
+
                 yield return new object[]
                 {
-                    new List<Entity>()
-                    {
-                        new Entity()
-                        {
-                            Type = "mention",
-                            Properties = new JObject()
-                            {
-                                { 
-                                    "Mentioned",
-                                    new JObject()
-                                    {
-                                        { "Id", "ChannelAccountId" },
-                                        { "Name", "AccountName" },
-                                        { "Properties", new JObject() },
-                                        { "Role", "ChannelAccountRole" },
-                                    }
-                                },
-                                { "Text", "text" },
-                                { "Type", "mention" },
-                            },
-                        }
-                    },
+                    new List<Entity> { new Entity { Type = "mention", Properties = mention.ToJsonElements() } },
                     true
                 };
             }

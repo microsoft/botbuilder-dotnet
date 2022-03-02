@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Connector.Schema.Teams;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests.Teams
@@ -12,7 +11,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests.Teams
         [Fact]
         public void TaskModuleRequestInits()
         {
-            var data = new JObject() { { "key", "value" } };
+            var data = new { key = "value" }.ToJsonElements();
             var context = new TaskModuleRequestContext();
             var tabEntityContext = new TabEntityContext();
 

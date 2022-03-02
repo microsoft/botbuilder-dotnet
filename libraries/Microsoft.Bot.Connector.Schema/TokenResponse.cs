@@ -78,7 +78,6 @@ namespace Microsoft.Bot.Connector.Schema
         /// </summary>
         private void CustomInit()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

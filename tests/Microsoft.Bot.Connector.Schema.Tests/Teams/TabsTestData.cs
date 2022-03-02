@@ -4,7 +4,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Connector.Schema.Teams;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema.Tests.Teams
 {
@@ -115,7 +114,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests.Teams
                 yield return new object[]
                 {
                     "pdf",
-                    new JObject() { { "key", "value" } },
+                    new { key = "value" }.ToJsonElements(),
                 };
             }
 

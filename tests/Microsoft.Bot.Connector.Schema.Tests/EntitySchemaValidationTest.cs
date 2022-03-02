@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Schema.Tests
@@ -24,9 +24,9 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             };
 
             Assert.Equal("GeoCoordinates", geoCoordinates.Type);
-            string serialized = JsonConvert.SerializeObject(geoCoordinates);
+            string serialized = JsonSerializer.Serialize(geoCoordinates, SerializationConfig.DefaultSerializeOptions);
 
-            Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
+            Entity deserializedEntity = JsonSerializer.Deserialize<Entity>(serialized, SerializationConfig.DefaultDeserializeOptions);
             Assert.Equal(deserializedEntity.Type, geoCoordinates.Type);
             var geo = deserializedEntity.GetAs<GeoCoordinates>();
             Assert.Equal(geo.Type, geoCoordinates.Type);
@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             };
 
             Assert.Equal("mention", mentionEntity.Type);
-            string serialized = JsonConvert.SerializeObject(mentionEntity);
+            string serialized = JsonSerializer.Serialize(mentionEntity, SerializationConfig.DefaultSerializeOptions);
 
-            Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
+            Entity deserializedEntity = JsonSerializer.Deserialize<Entity>(serialized, SerializationConfig.DefaultDeserializeOptions);
             Assert.Equal(deserializedEntity.Type, mentionEntity.Type);
             var mentionDeserialized = deserializedEntity.GetAs<Mention>();
             Assert.Equal(mentionDeserialized.Type, mentionEntity.Type);
@@ -64,9 +64,9 @@ namespace Microsoft.Bot.Connector.Schema.Tests
             };
 
             Assert.Equal("Place", placeEntity.Type);
-            string serialized = JsonConvert.SerializeObject(placeEntity);
+            string serialized = JsonSerializer.Serialize(placeEntity, SerializationConfig.DefaultSerializeOptions);
 
-            Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
+            Entity deserializedEntity = JsonSerializer.Deserialize<Entity>(serialized, SerializationConfig.DefaultDeserializeOptions);
             Assert.Equal(deserializedEntity.Type, placeEntity.Type);
             var placeDeserialized = deserializedEntity.GetAs<Place>();
             Assert.Equal(placeDeserialized.Type, placeEntity.Type);

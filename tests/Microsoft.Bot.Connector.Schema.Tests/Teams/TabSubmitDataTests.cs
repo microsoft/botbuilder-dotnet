@@ -1,8 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.Bot.Connector.Schema.Teams;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using static Microsoft.Bot.Connector.Schema.Tests.Teams.TabsTestData;
 
@@ -12,7 +13,7 @@ namespace Microsoft.Bot.Connector.Schema.Tests.Teams
     {
         [Theory]
         [ClassData(typeof(TabSubmitDataTestData))]
-        public void TabSubmitDataInits(string tabType, JObject properties)
+        public void TabSubmitDataInits(string tabType, Dictionary<string, JsonElement> properties)
         {
             var submitData = new TabSubmitData()
             {
