@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The action of this adaptive card invoke action value.
         /// </value>
-        [JsonProperty("action")]
+        [JsonPropertyName("action")]
         public AdaptiveCardInvokeAction Action { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The <see cref="AdaptiveCardAuthentication"/> for this adaptive card invoke action value.
         /// </value>
-        [JsonProperty("authentication")]
+        [JsonPropertyName("authentication")]
         public AdaptiveCardAuthentication Authentication { get; set; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The 'state' or magic code for an OAuth flow.
         /// </value>
-        [JsonProperty("state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
     }
 }

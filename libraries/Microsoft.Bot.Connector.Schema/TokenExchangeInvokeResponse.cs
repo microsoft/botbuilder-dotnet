@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The id from the TokenExchangeInvokeRequest.
         /// </value>
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The connection name.
         /// </value>
-        [JsonProperty("connectionName")]
+        [JsonPropertyName("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The details of why the token exchange failed.
         /// </value>
-        [JsonProperty("failureDetail")]
+        [JsonPropertyName("failureDetail")]
         public string FailureDetail { get; set; }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The connection name that was used.
         /// </value>
-        [JsonProperty("connectionName")]
+        [JsonPropertyName("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A reference to the conversation.
         /// </value>
-        [JsonProperty("conversation")]
+        [JsonPropertyName("conversation")]
         public ConversationReference Conversation { get; set; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A reference to a related parent conversation conversation.
         /// </value>
-        [JsonProperty("relatesTo")]
+        [JsonPropertyName("relatesTo")]
         public ConversationReference RelatesTo { get; set; }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The URL of the bot messaging endpoint.
         /// </value>
-        [JsonProperty("botUrl")]
+        [JsonPropertyName("botUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public string BotUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The bot's registered application ID.
         /// </value>
-        [JsonProperty("msAppId")]
+        [JsonPropertyName("msAppId")]
         public string MsAppId { get; set; }
     }
 }

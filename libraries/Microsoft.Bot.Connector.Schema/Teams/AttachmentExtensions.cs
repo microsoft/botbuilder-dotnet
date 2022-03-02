@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
                 ContentUrl = attachment.ContentUrl,
                 Name = attachment.Name,
                 ThumbnailUrl = attachment.ThumbnailUrl,
-                Preview = previewAttachment ?? Dictionary<string, JsonElement>.FromObject(attachment).ToObject<Attachment>(),
+                Preview = previewAttachment ?? attachment,
             };
         }
     }

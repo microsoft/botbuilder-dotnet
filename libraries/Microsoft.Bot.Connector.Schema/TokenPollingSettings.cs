@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Login timeout value.
         /// </value>
-        [JsonProperty("timeout")]
+        [JsonPropertyName("timeout")]
         public int Timeout { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// /// <value>
         /// Time interval between successive requests.
         /// </value>
-        [JsonProperty("interval")]
+        [JsonPropertyName("interval")]
         public int Interval { get; set; }
     }
 }

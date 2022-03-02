@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The Type of this Adaptive Card Invoke Action.
         /// </value>
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The Id of this Adaptive Card Invoke Action.
         /// </value>
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The Verb of this adaptive card action invoke.
         /// </value>
-        [JsonProperty("verb")]
+        [JsonPropertyName("verb")]
         public string Verb { get; set; }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The Data of this adaptive card action invoke.
         /// </value>
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public object Data { get; set; }
     }
 }

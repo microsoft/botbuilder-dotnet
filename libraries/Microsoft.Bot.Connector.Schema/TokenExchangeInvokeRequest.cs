@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The id from the OAuthCard.
         /// </value>
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The connection name.
         /// </value>
-        [JsonProperty("connectionName")]
+        [JsonPropertyName("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The user token that can be exchanged.
         /// </value>
-        [JsonProperty("token")]
+        [JsonPropertyName("token")]
         public string Token { get; set; }
 
         /// <summary>

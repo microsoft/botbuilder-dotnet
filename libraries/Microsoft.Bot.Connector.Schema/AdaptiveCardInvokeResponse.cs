@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The Card Action response StatusCode.
         /// </value>
-        [JsonProperty("statusCode")]
+        [JsonPropertyName("statusCode")]
         public int StatusCode { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The Type of this response.
         /// </value>
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The json response object.
         /// </value>
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public object Value { get; set; }
     }
 }

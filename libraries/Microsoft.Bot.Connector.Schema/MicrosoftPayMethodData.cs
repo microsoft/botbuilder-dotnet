@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Payment method mode.
         /// </value>
-        [JsonPropertyName("mode", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("mode")]
         public string Mode { get; set; }
 
         /// <summary>
