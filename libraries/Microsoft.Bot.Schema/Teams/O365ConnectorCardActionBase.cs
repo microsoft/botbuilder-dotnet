@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// O365 connector card action base.
     /// </summary>
-    public partial class O365ConnectorCardActionBase
+    public class O365ConnectorCardActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardActionBase"/> class.
-        /// </summary>
-        public O365ConnectorCardActionBase()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardActionBase"/> class.
         /// </summary>
@@ -31,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             Type = type;
             Name = name;
             Id = id;
-            CustomInit();
         }
 
         /// <summary>
@@ -55,10 +46,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The action ID.</value>
         [JsonProperty(PropertyName = "@id")]
         public string Id { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

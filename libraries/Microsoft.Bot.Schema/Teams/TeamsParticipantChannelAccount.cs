@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Teams participant channel account detailing user Azure Active Directory and meeting participant details.
     /// </summary>
-    public partial class TeamsParticipantChannelAccount : TeamsChannelAccount
+    public class TeamsParticipantChannelAccount : TeamsChannelAccount
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamsParticipantChannelAccount"/> class.
-        /// </summary>
-        public TeamsParticipantChannelAccount()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsParticipantChannelAccount"/> class.
         /// </summary>
@@ -40,7 +32,6 @@ namespace Microsoft.Bot.Schema.Teams
             MeetingRole = meetingRole;
             InMeeting = inMeeting;
             Conversation = conversation;
-            CustomInit();
         }
         
         /// <summary>
@@ -69,10 +60,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "conversation")]
         public ConversationAccount Conversation { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

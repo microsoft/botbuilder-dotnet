@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Task module invoke request value payload.
     /// </summary>
-    public partial class TaskModuleRequest
+    public class TaskModuleRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskModuleRequest"/> class.
-        /// </summary>
-        public TaskModuleRequest()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleRequest"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Data = data;
             Context = context;
-            CustomInit();
         }
 
         /// <summary>
@@ -53,10 +43,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "tabContext")]
         public TabEntityContext TabEntityContext { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// O365 connector card image.
     /// </summary>
-    public partial class O365ConnectorCardImage
+    public class O365ConnectorCardImage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardImage"/> class.
-        /// </summary>
-        public O365ConnectorCardImage()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardImage"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Image = image;
             Title = title;
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The alternative text for the image.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

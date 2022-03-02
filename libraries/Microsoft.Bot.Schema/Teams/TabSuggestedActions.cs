@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Tab SuggestedActions (Only when type is 'auth' or 'silentAuth').
     /// </summary>
-    public partial class TabSuggestedActions
+    public class TabSuggestedActions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabSuggestedActions"/> class.
-        /// </summary>
-        public TabSuggestedActions()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets actions for a card tab response.
         /// </summary>
@@ -27,10 +19,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "actions")]
         public IList<CardAction> Actions { get; private set; } = new List<CardAction>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

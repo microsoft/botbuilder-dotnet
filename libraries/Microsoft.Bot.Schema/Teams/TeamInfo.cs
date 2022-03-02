@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Describes a team.
     /// </summary>
-    public partial class TeamInfo
+    public class TeamInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamInfo"/> class.
-        /// </summary>
-        public TeamInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamInfo"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Id = id;
             Name = name;
-            CustomInit();
         }
 
         /// <summary>
@@ -51,10 +41,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The Azure Active Directory Teams group ID.</value>
         [JsonProperty(PropertyName = "aadGroupId")]
         public string AadGroupId { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

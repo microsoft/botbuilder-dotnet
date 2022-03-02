@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Invoke ('tab/submit') request value payload.
     /// </summary>
-    public partial class TabSubmit
+    public class TabSubmit
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabSubmit"/> class.
-        /// </summary>
-        public TabSubmit()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets or sets current tab entity request context.
         /// </summary>
@@ -44,10 +36,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "data")]
         public TabSubmitData Data { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

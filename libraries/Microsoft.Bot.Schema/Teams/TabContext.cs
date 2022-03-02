@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Current tab request context, i.e., the current theme.
     /// </summary>
-    public partial class TabContext
+    public class TabContext
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabContext"/> class.
-        /// </summary>
-        public TabContext()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets or sets the current user's theme.
         /// </summary>
@@ -26,10 +18,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "theme")]
         public string Theme { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

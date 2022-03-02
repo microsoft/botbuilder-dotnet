@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Envelope for Task Module Response.
     /// </summary>
-    public partial class TaskModuleResponse
+    public class TaskModuleResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskModuleResponse"/> class.
-        /// </summary>
-        public TaskModuleResponse()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleResponse"/> class.
         /// </summary>
@@ -26,7 +17,6 @@ namespace Microsoft.Bot.Schema.Teams
         public TaskModuleResponse(TaskModuleResponseBase task = default)
         {
             Task = task;
-            CustomInit();
         }
 
         /// <summary>
@@ -43,10 +33,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The CacheInfo for this <see cref="TaskModuleResponse"/>.</value>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Describes a tenant.
     /// </summary>
-    public partial class TenantInfo
+    public class TenantInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TenantInfo"/> class.
-        /// </summary>
-        public TenantInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TenantInfo"/> class.
         /// </summary>
@@ -26,7 +17,6 @@ namespace Microsoft.Bot.Schema.Teams
         public TenantInfo(string id = default)
         {
             Id = id;
-            CustomInit();
         }
 
         /// <summary>
@@ -35,10 +25,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The ID representing a tenant.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

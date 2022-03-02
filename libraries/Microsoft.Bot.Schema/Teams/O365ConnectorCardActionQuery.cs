@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// O365 connector card HttpPOST invoke query.
     /// </summary>
-    public partial class O365ConnectorCardActionQuery
+    public class O365ConnectorCardActionQuery
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardActionQuery"/> class.
-        /// </summary>
-        public O365ConnectorCardActionQuery()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardActionQuery"/> class.
         /// </summary>
@@ -30,7 +22,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Body = body;
             ActionId = actionId;
-            CustomInit();
         }
 
         /// <summary>
@@ -48,10 +39,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The action ID associated with the HttpPOST action button triggered.</value>
         [JsonProperty(PropertyName = "actionId")]
         public string ActionId { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

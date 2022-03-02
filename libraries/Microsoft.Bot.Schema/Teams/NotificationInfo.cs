@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Specifies if a notification is to be sent for the mentions.
     /// </summary>
-    public partial class NotificationInfo
+    public class NotificationInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationInfo"/> class.
-        /// </summary>
-        public NotificationInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationInfo"/> class.
         /// </summary>
@@ -27,7 +18,6 @@ namespace Microsoft.Bot.Schema.Teams
         public NotificationInfo(bool? alert = default)
         {
             Alert = alert;
-            CustomInit();
         }
 
         /// <summary>
@@ -54,10 +44,5 @@ namespace Microsoft.Bot.Schema.Teams
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string ExternalResourceUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

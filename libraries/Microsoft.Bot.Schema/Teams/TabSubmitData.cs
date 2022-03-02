@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Invoke ('tab/submit') request value payload data.
     /// </summary>
-    public partial class TabSubmitData
+    public class TabSubmitData
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabSubmitData"/> class.
-        /// </summary>
-        public TabSubmitData()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets or sets the type for this TabSubmitData.
         /// </summary>
@@ -38,10 +30,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public JObject Properties { get; private set; } = new JObject();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

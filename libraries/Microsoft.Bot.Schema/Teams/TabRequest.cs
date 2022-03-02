@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Invoke ('tab/fetch') request value payload.
     /// </summary>
-    public partial class TabRequest
+    public class TabRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabRequest"/> class.
-        /// </summary>
-        public TabRequest()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets or sets current tab entity request context.
         /// </summary>
@@ -44,10 +36,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

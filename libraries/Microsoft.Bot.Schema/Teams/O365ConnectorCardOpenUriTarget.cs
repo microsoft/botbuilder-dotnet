@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// O365 connector card OpenUri target.
     /// </summary>
-    public partial class O365ConnectorCardOpenUriTarget
+    public class O365ConnectorCardOpenUriTarget
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardOpenUriTarget"/> class.
-        /// </summary>
-        public O365ConnectorCardOpenUriTarget()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardOpenUriTarget"/> class.
         /// </summary>
@@ -29,7 +20,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Os = os;
             Uri = uri;
-            CustomInit();
         }
 
         /// <summary>
@@ -48,10 +38,5 @@ namespace Microsoft.Bot.Schema.Teams
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Uri { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

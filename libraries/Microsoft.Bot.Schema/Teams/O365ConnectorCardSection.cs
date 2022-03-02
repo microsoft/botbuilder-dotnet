@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// O365 connector card section.
     /// </summary>
-    public partial class O365ConnectorCardSection
+    public class O365ConnectorCardSection
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardSection"/> class.
-        /// </summary>
-        public O365ConnectorCardSection()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardSection"/> class.
         /// </summary>
@@ -46,7 +38,6 @@ namespace Microsoft.Bot.Schema.Teams
             Facts = facts ?? new List<O365ConnectorCardFact>();
             Images = images ?? new List<O365ConnectorCardImage>();
             PotentialAction = potentialAction ?? new List<O365ConnectorCardActionBase>();
-            CustomInit();
         }
 
         /// <summary>
@@ -127,10 +118,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The actions for the current section.</value>
         [JsonProperty(PropertyName = "potentialAction")]
         public IList<O365ConnectorCardActionBase> PotentialAction { get; private set; } = new List<O365ConnectorCardActionBase>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

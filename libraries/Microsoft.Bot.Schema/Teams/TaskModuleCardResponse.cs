@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Tab Response to 'task/submit' from a tab.
     /// </summary>
-    public partial class TaskModuleCardResponse : TaskModuleResponseBase
+    public class TaskModuleCardResponse : TaskModuleResponseBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleCardResponse"/> class.
@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Schema.Teams
         public TaskModuleCardResponse()
             : base("continue")
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -27,7 +26,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base("continue")
         {
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -38,10 +36,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "value")]
         public TabResponse Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

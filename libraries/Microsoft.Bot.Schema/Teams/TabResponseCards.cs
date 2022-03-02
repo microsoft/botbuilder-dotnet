@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Envelope for cards for a <see cref="TabResponse"/>.
     /// </summary>
-    public partial class TabResponseCards
+    public class TabResponseCards
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabResponseCards"/> class.
-        /// </summary>
-        public TabResponseCards()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets adaptive cards for this card tab response.
         /// </summary>
@@ -27,10 +19,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "cards")]
         public IList<TabResponseCard> Cards { get; private set; } = new List<TabResponseCard>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

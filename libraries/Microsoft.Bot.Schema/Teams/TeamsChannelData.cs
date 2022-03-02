@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Channel data specific to messages received in Microsoft Teams.
     /// </summary>
-    public partial class TeamsChannelData
+    public class TeamsChannelData
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamsChannelData"/> class.
-        /// </summary>
-        public TeamsChannelData()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsChannelData"/> class.
         /// </summary>
@@ -34,7 +26,6 @@ namespace Microsoft.Bot.Schema.Teams
             Team = team;
             Notification = notification;
             Tenant = tenant;
-            CustomInit();
         }
 
         /// <summary>
@@ -82,10 +73,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The information about the meeting.</value>
         [JsonProperty(PropertyName = "meeting")]
         public TeamsMeetingInfo Meeting { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Signin state (part of signin action auth flow) verification invoke query.
     /// </summary>
-    public partial class SigninStateVerificationQuery
+    public class SigninStateVerificationQuery
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SigninStateVerificationQuery"/> class.
-        /// </summary>
-        public SigninStateVerificationQuery()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SigninStateVerificationQuery"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         public SigninStateVerificationQuery(string state = default)
         {
             State = state;
-            CustomInit();
         }
 
         /// <summary>
@@ -39,10 +29,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The state.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

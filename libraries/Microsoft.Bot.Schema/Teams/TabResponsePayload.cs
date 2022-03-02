@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Payload for Tab Response.
     /// </summary>
-    public partial class TabResponsePayload
+    public class TabResponsePayload
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabResponsePayload"/> class.
-        /// </summary>
-        public TabResponsePayload()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Gets or sets choice of action options when responding to the
         /// tab/fetch message. Possible values include: 'continue', 'auth' or 'silentAuth'.
@@ -46,10 +38,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "suggestedActions")]
         public TabSuggestedActions SuggestedActions { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

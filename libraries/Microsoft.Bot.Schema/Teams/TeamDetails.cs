@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Details related to a team.
     /// </summary>
-    public partial class TeamDetails
+    public class TeamDetails
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamDetails"/> class.
-        /// </summary>
-        public TeamDetails()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamDetails"/> class.
         /// </summary>
@@ -31,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             Id = id;
             Name = name;
             AadGroupId = aadGroupId;
-            CustomInit();
         }
 
         /// <summary>
@@ -78,10 +69,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "memberCount")]
         public int MemberCount { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

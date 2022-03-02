@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// O365O365 connector card multiple choice input item.
     /// </summary>
-    public partial class O365ConnectorCardMultichoiceInputChoice
+    public class O365ConnectorCardMultichoiceInputChoice
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardMultichoiceInputChoice"/> class.
-        /// </summary>
-        public O365ConnectorCardMultichoiceInputChoice()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardMultichoiceInputChoice"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Display = display;
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +34,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The value received as results.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

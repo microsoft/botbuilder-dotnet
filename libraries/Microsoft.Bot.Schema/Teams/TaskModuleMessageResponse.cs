@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Task Module response with message action.
     /// </summary>
-    public partial class TaskModuleMessageResponse : TaskModuleResponseBase
+    public class TaskModuleMessageResponse : TaskModuleResponseBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleMessageResponse"/> class.
@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Schema.Teams
         public TaskModuleMessageResponse()
             : base("message")
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -27,7 +26,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base("message")
         {
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -37,10 +35,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The value Teams will display in a pop-up message box.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

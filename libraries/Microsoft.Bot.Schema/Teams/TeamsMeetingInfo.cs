@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Describes a Teams Meeting.
     /// </summary>
-    public partial class TeamsMeetingInfo
+    public class TeamsMeetingInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamsMeetingInfo"/> class.
-        /// </summary>
-        public TeamsMeetingInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsMeetingInfo"/> class.
         /// </summary>
@@ -25,7 +17,6 @@ namespace Microsoft.Bot.Schema.Teams
         public TeamsMeetingInfo(string id = default)
         {
             Id = id;
-            CustomInit();
         }
 
         /// <summary>
@@ -36,10 +27,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

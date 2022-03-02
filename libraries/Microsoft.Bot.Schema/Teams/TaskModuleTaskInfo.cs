@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Metadata for a Task Module.
     /// </summary>
-    public partial class TaskModuleTaskInfo
+    public class TaskModuleTaskInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskModuleTaskInfo"/> class.
-        /// </summary>
-        public TaskModuleTaskInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleTaskInfo"/> class.
         /// </summary>
@@ -39,7 +30,6 @@ namespace Microsoft.Bot.Schema.Teams
             Card = card;
             FallbackUrl = fallbackUrl;
             CompletionBotId = completionBotId;
-            CustomInit();
         }
 
         /// <summary>
@@ -102,10 +92,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The completion bot ID.</value>
         [JsonProperty(PropertyName = "completionBotId")]
         public string CompletionBotId { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
