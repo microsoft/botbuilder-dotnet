@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// identifiers for payment methods that the merchant web site accepts.
         /// </summary>
         /// <value>The supported payment methods.</value>
-        [JsonProperty(PropertyName = "supportedMethods")]
+        [JsonPropertyName("supportedMethods")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedMethods { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// information that might be needed by the supported payment methods.
         /// </summary>
         /// <value>The JSON-serializable data object that provides optional information.</value>
-        [JsonProperty(PropertyName = "data")]
+        [JsonPropertyName("data")]
         public object Data { get; set; }
 
         /// <summary>

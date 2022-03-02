@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets title of the card.
         /// </summary>
         /// <value>The title of the card.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Title in font styling only.
         /// </summary>
         /// <value>The subtitle of the card.</value>
-        [JsonProperty(PropertyName = "subtitle")]
+        [JsonPropertyName("subtitle")]
         public string Subtitle { get; set; }
 
         /// <summary>
@@ -63,28 +63,28 @@ namespace Microsoft.Bot.Connector.Schema
         /// Subtitle in font styling only.
         /// </summary>
         /// <value>The text field of the card that appears just below the subtitle.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets image.
         /// </summary>
         /// <value>The image.</value>
-        [JsonProperty(PropertyName = "image")]
+        [JsonPropertyName("image")]
         public CardImage Image { get; set; }
 
         /// <summary>
         /// Gets or sets amount with currency.
         /// </summary>
         /// <value>The price.</value>
-        [JsonProperty(PropertyName = "price")]
+        [JsonPropertyName("price")]
         public string Price { get; set; }
 
         /// <summary>
         /// Gets or sets number of items of given kind.
         /// </summary>
         /// <value>The number of items of a given kind.</value>
-        [JsonProperty(PropertyName = "quantity")]
+        [JsonPropertyName("quantity")]
         public string Quantity { get; set; }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Item bubble.
         /// </summary>
         /// <value>The action that will activate when the user taps on the Item bubble.</value>
-        [JsonProperty(PropertyName = "tap")]
+        [JsonPropertyName("tap")]
         public CardAction Tap { get; set; }
 
         /// <summary>

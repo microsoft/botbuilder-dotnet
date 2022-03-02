@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets a unique identifier for this token exchange instance.
         /// </summary>
         /// <value>The ID for this token exchange instance.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the application ID / resource identifier with which to exchange a token on behalf of.
         /// </summary>
         /// <value>The URI.</value>
-        [JsonProperty(PropertyName = "uri")]
+        [JsonPropertyName("uri")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Uri { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// A value of null or empty will default to Azure Active Directory.
         /// </summary>
         /// <value>The ID of the provider with which to attempt a tocken exchange.</value>
-        [JsonProperty(PropertyName = "providerId")]
+        [JsonPropertyName("providerId")]
         public string ProviderId { get; set; }
 
         /// <summary>

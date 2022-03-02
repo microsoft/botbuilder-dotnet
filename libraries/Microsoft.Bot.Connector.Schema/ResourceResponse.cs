@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets id of the resource.
         /// </summary>
         /// <value>The ID of the resource.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>

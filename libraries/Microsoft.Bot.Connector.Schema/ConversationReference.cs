@@ -3,7 +3,7 @@
 
 using System;
 using System.Globalization;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -53,37 +53,37 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets (Optional) ID of the activity to refer to.</summary>
         /// <value>The activity ID.</value>
-        [JsonProperty(PropertyName = "activityId")]
+        [JsonPropertyName("activityId")]
         public string ActivityId { get; set; }
 
         /// <summary>Gets or sets (Optional) User participating in this conversation.</summary>
         /// <value>The user participating in the conversation.</value>
-        [JsonProperty(PropertyName = "user")]
+        [JsonPropertyName("user")]
         public ChannelAccount User { get; set; }
 
         /// <summary>Gets or sets (Optional) Bot participating in this conversation.</summary>
         /// <value>The bot participating in the conversation.</value>
-        [JsonProperty(PropertyName = "bot")]
+        [JsonPropertyName("bot")]
         public ChannelAccount Bot { get; set; }
 
         /// <summary>Gets or sets Reference to the conversation.</summary>
         /// <value>The conversation.</value>
-        [JsonProperty(PropertyName = "conversation")]
+        [JsonPropertyName("conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>Gets or sets ID of the channel in which the referenced conversation exists.</summary>
         /// <value>The channel ID.</value>
-        [JsonProperty(PropertyName = "channelId")]
+        [JsonPropertyName("channelId")]
         public string ChannelId { get; set; }
         
         /// <summary>Gets or sets (Optional) A BCP-47 locale name for the referenced conversation.</summary>
         /// <value>The locale of the conversation.</value>
-        [JsonProperty(PropertyName = "locale")]
+        [JsonPropertyName("locale")]
         public string Locale { get; set; }
 
         /// <summary>Gets or sets (Optional) Service endpoint where operations concerning the referenced conversation may be performed.</summary>
         /// <value>The service URL.</value>
-        [JsonProperty(PropertyName = "serviceUrl")]
+        [JsonPropertyName("serviceUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string ServiceUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// object of type `PostalAddress`).
         /// </summary>
         /// <value>The address of the place.</value>
-        [JsonProperty(PropertyName = "address")]
+        [JsonPropertyName("address")]
         public object Address { get; set; }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// type `GeoCoordinates` or `GeoShape`).
         /// </summary>
         /// <value>The geo coordinates of the place.</value>
-        [JsonProperty(PropertyName = "geo")]
+        [JsonPropertyName("geo")]
         public object Geo { get; set; }
 
         /// <summary>
@@ -60,14 +60,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// object of type `Map`).
         /// </summary>
         /// <value>The map to the place.</value>
-        [JsonProperty(PropertyName = "hasMap")]
+        [JsonPropertyName("hasMap")]
         public object HasMap { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing.
         /// </summary>
         /// <value>The name of the thing.</value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>

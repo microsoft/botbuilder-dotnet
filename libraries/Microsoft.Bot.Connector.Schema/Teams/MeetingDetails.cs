@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The MsGraphResourceId, used specifically for MS Graph API calls.
         /// </value>
-        [JsonProperty(PropertyName = "msGraphResourceId")]
+        [JsonPropertyName("msGraphResourceId")]
         public string MsGraphResourceId { get; set; }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The meeting's scheduled start time, in UTC.
         /// </value>
-        [JsonProperty(PropertyName = "scheduledStartTime")]
+        [JsonPropertyName("scheduledStartTime")]
         public DateTime ScheduledStartTime { get; set; }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The meeting's scheduled end time, in UTC.
         /// </value>
-        [JsonProperty(PropertyName = "scheduledEndTime")]
+        [JsonPropertyName("scheduledEndTime")]
         public DateTime ScheduledEndTime { get; set; }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The meeting's type.
         /// </value>
-        [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>

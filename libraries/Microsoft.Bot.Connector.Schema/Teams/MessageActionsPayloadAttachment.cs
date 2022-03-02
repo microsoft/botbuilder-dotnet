@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -46,21 +46,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the id of the attachment.
         /// </summary>
         /// <value>The attachment ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the attachment.
         /// </summary>
         /// <value>The type of the attachment.</value>
-        [JsonProperty(PropertyName = "contentType")]
+        [JsonPropertyName("contentType")]
         public string ContentType { get; set; }
 
         /// <summary>
         /// Gets or sets the url of the attachment, in case of an external link.
         /// </summary>
         /// <value>The URL of the attachment, in case of an external link.</value>
-        [JsonProperty(PropertyName = "contentUrl")]
+        [JsonPropertyName("contentUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string ContentUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -70,14 +70,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// snippet, email, or file.
         /// </summary>
         /// <value>The content of the attachment.</value>
-        [JsonProperty(PropertyName = "content")]
+        [JsonPropertyName("content")]
         public object Content { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the attachment.
         /// </summary>
         /// <value>The plaintext display name of the attachment.</value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// the attachment, in case of a card.
         /// </summary>
         /// <value>The URL of the thumbnail image that might be embedded in the attachment.</value>
-        [JsonProperty(PropertyName = "thumbnailUrl")]
+        [JsonPropertyName("thumbnailUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string ThumbnailUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings

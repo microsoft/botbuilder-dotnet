@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets user input data. Free payload with key-value pairs.
         /// </summary>
         /// <value>The user input data.</value>
-        [JsonProperty(PropertyName = "data")]
+        [JsonPropertyName("data")]
         public object Data { get; set; }
 
         /// <summary>
         /// Gets or sets current user context, i.e., the current theme.
         /// </summary>
         /// <value>The current user context.</value>
-        [JsonProperty(PropertyName = "context")]
+        [JsonPropertyName("context")]
         public TaskModuleRequestContext Context { get; set; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Tab request context.
         /// </value>
-        [JsonProperty(PropertyName = "tabContext")]
+        [JsonPropertyName("tabContext")]
         public TabEntityContext TabEntityContext { get; set; }
 
         /// <summary>

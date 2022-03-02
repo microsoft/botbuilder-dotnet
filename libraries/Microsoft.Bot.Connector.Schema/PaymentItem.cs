@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -39,14 +39,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets human-readable description of the item.
         /// </summary>
         /// <value>The human-readable label of the item.</value>
-        [JsonProperty(PropertyName = "label")]
+        [JsonPropertyName("label")]
         public string Label { get; set; }
 
         /// <summary>
         /// Gets or sets monetary amount for the item.
         /// </summary>
         /// <value>The amount for the item.</value>
-        [JsonProperty(PropertyName = "amount")]
+        [JsonPropertyName("amount")]
         public PaymentCurrencyAmount Amount { get; set; }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// is not final.
         /// </summary>
         /// <value>A boolean indicating that amount in field is pending (i.e. not final).</value>
-        [JsonProperty(PropertyName = "pending")]
+        [JsonPropertyName("pending")]
         public bool? Pending { get; set; }
 
         /// <summary>

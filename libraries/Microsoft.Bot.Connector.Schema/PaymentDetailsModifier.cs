@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets contains a sequence of payment method identifiers.
         /// </summary>
         /// <value>The supported method identifiers.</value>
-        [JsonProperty(PropertyName = "supportedMethods")]
+        [JsonPropertyName("supportedMethods")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedMethods { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// supportedMethods field.
         /// </summary>
         /// <value>The total.</value>
-        [JsonProperty(PropertyName = "total")]
+        [JsonPropertyName("total")]
         public PaymentItem Total { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// payment method identifiers in the supportedMethods field.
         /// </summary>
         /// <value>The additional display items that are appended to the displayItems field in PaymentDetails.</value>
-        [JsonProperty(PropertyName = "additionalDisplayItems")]
+        [JsonPropertyName("additionalDisplayItems")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentItem> AdditionalDisplayItems { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// information that might be needed by the supported payment methods.
         /// </summary>
         /// <value>The JSON-serializable object that provides optional information.</value>
-        [JsonProperty(PropertyName = "data")]
+        [JsonPropertyName("data")]
         public object Data { get; set; }
 
         /// <summary>

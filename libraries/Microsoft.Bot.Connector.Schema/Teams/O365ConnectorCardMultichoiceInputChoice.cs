@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the text rendered on ActionCard.
         /// </summary>
         /// <value>The text rednered on ActionCard.</value>
-        [JsonProperty(PropertyName = "display")]
+        [JsonPropertyName("display")]
         public string Display { get; set; }
 
         /// <summary>
         /// Gets or sets the value received as results.
         /// </summary>
         /// <value>The value received as results.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
 
         /// <summary>

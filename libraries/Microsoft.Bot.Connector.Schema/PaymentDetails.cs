@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets contains the total amount of the payment request.
         /// </summary>
         /// <value>The total amount of the payment request.</value>
-        [JsonProperty(PropertyName = "total")]
+        [JsonPropertyName("total")]
         public PaymentItem Total { get; set; }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// user agent may display.
         /// </summary>
         /// <value>The items for the payment request.</value>
-        [JsonProperty(PropertyName = "displayItems")]
+        [JsonPropertyName("displayItems")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentItem> DisplayItems { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// for the user to choose from.
         /// </summary>
         /// <value>The the different shipping options for the user to choose from.</value>
-        [JsonProperty(PropertyName = "shippingOptions")]
+        [JsonPropertyName("shippingOptions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentShippingOption> ShippingOptions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// identifiers.
         /// </summary>
         /// <value>The modifiers for a particular payment method.</value>
-        [JsonProperty(PropertyName = "modifiers")]
+        [JsonPropertyName("modifiers")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentDetailsModifier> Modifiers { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets error description.
         /// </summary>
         /// <value>The error description.</value>
-        [JsonProperty(PropertyName = "error")]
+        [JsonPropertyName("error")]
         public string Error { get; set; }
 
         /// <summary>

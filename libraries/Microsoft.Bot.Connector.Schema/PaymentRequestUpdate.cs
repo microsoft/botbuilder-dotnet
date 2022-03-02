@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -40,28 +40,28 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets ID for the payment request to update.
         /// </summary>
         /// <value>The ID for the payment request to update.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets update payment details.
         /// </summary>
         /// <value>The update payment details.</value>
-        [JsonProperty(PropertyName = "details")]
+        [JsonPropertyName("details")]
         public PaymentDetails Details { get; set; }
 
         /// <summary>
         /// Gets or sets updated shipping address.
         /// </summary>
         /// <value>The updated shipping address.</value>
-        [JsonProperty(PropertyName = "shippingAddress")]
+        [JsonPropertyName("shippingAddress")]
         public PaymentAddress ShippingAddress { get; set; }
 
         /// <summary>
         /// Gets or sets updated shipping options.
         /// </summary>
         /// <value>The updated shipping options.</value>
-        [JsonProperty(PropertyName = "shippingOption")]
+        [JsonPropertyName("shippingOption")]
         public string ShippingOption { get; set; }
 
         /// <summary>

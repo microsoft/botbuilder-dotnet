@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the URLs to the resource you want to connect to.
         /// </summary>
         /// <value>The URLs to the resources you want to connect to.</value>
-        [JsonProperty(PropertyName = "resourceUrls")]
+        [JsonPropertyName("resourceUrls")]
 #pragma warning disable CA2227 // Collection properties should be read only
         public IList<string> ResourceUrls { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

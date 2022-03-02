@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets file download URL.
         /// </summary>
         /// <value>The file download URL.</value>
-        [JsonProperty(PropertyName = "downloadUrl")]
+        [JsonPropertyName("downloadUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string DownloadUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -47,21 +47,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets unique Id for the file.
         /// </summary>
         /// <value>The unique ID for the file.</value>
-        [JsonProperty(PropertyName = "uniqueId")]
+        [JsonPropertyName("uniqueId")]
         public string UniqueId { get; set; }
 
         /// <summary>
         /// Gets or sets type of file.
         /// </summary>
         /// <value>The type of the file.</value>
-        [JsonProperty(PropertyName = "fileType")]
+        [JsonPropertyName("fileType")]
         public string FileType { get; set; }
 
         /// <summary>
         /// Gets or sets eTag for the file.
         /// </summary>
         /// <value>The eTag for the file.</value>
-        [JsonProperty(PropertyName = "etag")]
+        [JsonPropertyName("etag")]
         public object Etag { get; set; }
 
         /// <summary>

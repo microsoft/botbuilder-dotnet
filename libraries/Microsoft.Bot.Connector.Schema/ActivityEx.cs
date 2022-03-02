@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -52,9 +50,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <remarks>With this, properties not represented in the defined type are not dropped when
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
-        [JsonExtensionData(ReadData = true, WriteData = true)]
+        [JsonExtensionData]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public JObject Properties { get; set; } = new JObject();
+        public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
@@ -425,7 +423,7 @@ namespace Microsoft.Bot.Connector.Schema
                 return (TypeT)ChannelData;
             }
 
-            return ((JObject)ChannelData).ToObject<TypeT>();
+            return ((Dictionary<string, JsonElement>)ChannelData).ToObject<TypeT>();
         }
 
         /// <summary>

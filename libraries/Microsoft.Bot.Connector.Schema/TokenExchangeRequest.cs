@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets a URI string.
         /// </summary>
         /// <value>The URI string.</value>
-        [JsonProperty(PropertyName = "uri")]
+        [JsonPropertyName("uri")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Uri { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets a token string.
         /// </summary>
         /// <value>The token.</value>
-        [JsonProperty(PropertyName = "token")]
+        [JsonPropertyName("token")]
         public string Token { get; set; }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'text'.
         /// </summary>
         /// <value>The content type.</value>
-        [JsonProperty(PropertyName = "contentType")]
+        [JsonPropertyName("contentType")]
         public string ContentType { get; set; }
 
         /// <summary>
         /// Gets or sets the content of the body.
         /// </summary>
         /// <value>The content of the body.</value>
-        [JsonProperty(PropertyName = "content")]
+        [JsonPropertyName("content")]
         public string Content { get; set; }
 
         /// <summary>

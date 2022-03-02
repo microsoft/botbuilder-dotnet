@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The specific details of a Teams meeting.
         /// </value>
-        [JsonProperty(PropertyName = "details")]
+        [JsonPropertyName("details")]
         public MeetingDetails Details { get; set; }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The Conversation Account for the meeting.
         /// </value>
-        [JsonProperty(PropertyName = "conversation")]
+        [JsonPropertyName("conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The organizer's user information.
         /// </value>
-        [JsonProperty(PropertyName = "organizer")]
+        [JsonPropertyName("organizer")]
         public TeamsChannelAccount Organizer { get; set; }
 
         /// <summary>

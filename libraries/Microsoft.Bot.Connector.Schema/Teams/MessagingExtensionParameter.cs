@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets name of the parameter.
         /// </summary>
         /// <value>The name of the parameter.</value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets value of the parameter.
         /// </summary>
         /// <value>The value of the parameter.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public object Value { get; set; }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets url for the media.
         /// </summary>
         /// <value>The URL for the media.</value>
-        [JsonProperty(PropertyName = "url")]
+        [JsonPropertyName("url")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// multiple MediaUrl objects from each other.
         /// </summary>
         /// <value>The profile hint.</value>
-        [JsonProperty(PropertyName = "profile")]
+        [JsonPropertyName("profile")]
         public string Profile { get; set; }
 
         /// <summary>

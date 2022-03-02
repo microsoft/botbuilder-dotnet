@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Cards in response to a <see cref="TabRequest"/>.
         /// </value>
-        [JsonProperty(PropertyName = "tab")]
+        [JsonPropertyName("tab")]
         public TabResponsePayload Tab { get; set; }
 
         /// <summary>

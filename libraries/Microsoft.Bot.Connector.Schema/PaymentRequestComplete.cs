@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -39,21 +39,21 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets payment request ID.
         /// </summary>
         /// <value>The payment request ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets initial payment request.
         /// </summary>
         /// <value>The initial payment request.</value>
-        [JsonProperty(PropertyName = "paymentRequest")]
+        [JsonPropertyName("paymentRequest")]
         public PaymentRequest PaymentRequest { get; set; }
 
         /// <summary>
         /// Gets or sets corresponding payment response.
         /// </summary>
         /// <value>The payment reesponse.</value>
-        [JsonProperty(PropertyName = "paymentResponse")]
+        [JsonPropertyName("paymentResponse")]
         public PaymentResponse PaymentResponse { get; set; }
 
         /// <summary>

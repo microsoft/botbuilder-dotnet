@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -33,14 +33,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets text for sign-in request.
         /// </summary>
         /// <value>The text for the sign-in request.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets action to use to perform signin.
         /// </summary>
         /// <value>The action(s) to use to perform sign-in.</value>
-        [JsonProperty(PropertyName = "buttons")]
+        [JsonPropertyName("buttons")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

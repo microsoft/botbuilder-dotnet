@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets paging token.</summary>
         /// <value>The continuation token that can be used to get paged results.</value>
-        [JsonProperty(PropertyName = "continuationToken")]
+        [JsonPropertyName("continuationToken")]
         public string ContinuationToken { get; set; }
 
         /// <summary>Gets or sets list of conversations.</summary>
         /// <value>A list of conversations.</value>
-        [JsonProperty(PropertyName = "conversations")]
+        [JsonPropertyName("conversations")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ConversationMembers> Conversations { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

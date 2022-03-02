@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -44,28 +44,28 @@ namespace Microsoft.Bot.Connector.Schema
         /// PaymentShippingOption.
         /// </summary>
         /// <value>The <see cref="PaymentShippingOption"/> ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets human-readable description of the item.
         /// </summary>
         /// <value>The human-readable description of the item.</value>
-        [JsonProperty(PropertyName = "label")]
+        [JsonPropertyName("label")]
         public string Label { get; set; }
 
         /// <summary>
         /// Gets or sets contains the monetary amount for the item.
         /// </summary>
         /// <value>The monetary amount for the item.</value>
-        [JsonProperty(PropertyName = "amount")]
+        [JsonPropertyName("amount")]
         public PaymentCurrencyAmount Amount { get; set; }
 
         /// <summary>
         /// Gets or sets indicates whether this is the default selected <see cref="PaymentShippingOption"/>.
         /// </summary>
         /// <value>Boolean indivating if this is the default selected <see cref="PaymentShippingOption"/>.</value>
-        [JsonProperty(PropertyName = "selected")]
+        [JsonPropertyName("selected")]
         public bool? Selected { get; set; }
 
         /// <summary>

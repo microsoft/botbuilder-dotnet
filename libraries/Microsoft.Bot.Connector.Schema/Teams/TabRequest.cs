@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Tab context for this <see cref="TabRequest"/>.
         /// </value>
-        [JsonProperty(PropertyName = "tabContext")]
+        [JsonPropertyName("tabContext")]
         public TabEntityContext TabEntityContext { get; set; }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Current user context, i.e., the current theme.
         /// </value>
-        [JsonProperty(PropertyName = "context")]
+        [JsonPropertyName("context")]
         public TabContext Context { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// State, which is the magic code for OAuth Flow.
         /// </value>
-        [JsonProperty(PropertyName = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
         /// <summary>

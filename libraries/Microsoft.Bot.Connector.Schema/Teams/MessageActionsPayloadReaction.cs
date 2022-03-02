@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -42,21 +42,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'angry'.
         /// </summary>
         /// <value>The reaction type given to the message.</value>
-        [JsonProperty(PropertyName = "reactionType")]
+        [JsonPropertyName("reactionType")]
         public string ReactionType { get; set; }
 
         /// <summary>
         /// Gets or sets timestamp of when the user reacted to the message.
         /// </summary>
         /// <value>The timestamp of when the user reacted to the message.</value>
-        [JsonProperty(PropertyName = "createdDateTime")]
+        [JsonPropertyName("createdDateTime")]
         public string CreatedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the user with which the reaction is associated.
         /// </summary>
         /// <value>The user with which the reaction is associated.</value>
-        [JsonProperty(PropertyName = "user")]
+        [JsonPropertyName("user")]
         public MessageActionsPayloadFrom User { get; set; }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// icon.
         /// </summary>
         /// <value>The title.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// height in pixels, or a string, one of: small, medium, large.
         /// </summary>
         /// <value>The task module's height.</value>
-        [JsonProperty(PropertyName = "height")]
+        [JsonPropertyName("height")]
         public object Height { get; set; }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// width in pixels, or a string, one of: small, medium, large.
         /// </summary>
         /// <value>The task module's width.</value>
-        [JsonProperty(PropertyName = "width")]
+        [JsonPropertyName("width")]
         public object Width { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// module. One of url or card is required.
         /// </summary>
         /// <value>The URL of what is loaded as an iframe inside the task module.</value>
-        [JsonProperty(PropertyName = "url")]
+        [JsonPropertyName("url")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// module.
         /// </summary>
         /// <value>The JSON for the Adaptive card to appear in the task module.</value>
-        [JsonProperty(PropertyName = "card")]
+        [JsonPropertyName("card")]
         public Attachment Card { get; set; }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// this URL is opened in a browser tab.
         /// </summary>
         /// <value>The fallback URL to open in a browser tab if the client does not support the task module feature.</value>
-        [JsonProperty(PropertyName = "fallbackUrl")]
+        [JsonPropertyName("fallbackUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string FallbackUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// a task/submit invoke event with a JSON object in the event payload.
         /// </summary>
         /// <value>The completion bot ID.</value>
-        [JsonProperty(PropertyName = "completionBotId")]
+        [JsonPropertyName("completionBotId")]
         public string CompletionBotId { get; set; }
 
         /// <summary>

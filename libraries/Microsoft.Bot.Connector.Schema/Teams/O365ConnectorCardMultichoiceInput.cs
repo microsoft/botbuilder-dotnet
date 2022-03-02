@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// of O365ConnectorCardMultichoiceInputChoice.
         /// </summary>
         /// <value>The choices.</value>
-        [JsonProperty(PropertyName = "choices")]
+        [JsonPropertyName("choices")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardMultichoiceInputChoice> Choices { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'compact'. Possible values include: 'compact', 'expanded'.
         /// </summary>
         /// <value>The style.</value>
-        [JsonProperty(PropertyName = "style")]
+        [JsonPropertyName("style")]
         public string Style { get; set; }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Default value is false.
         /// </summary>
         /// <value>Boolean indicating if field allows multiple selections.</value>
-        [JsonProperty(PropertyName = "isMultiSelect")]
+        [JsonPropertyName("isMultiSelect")]
         public bool? IsMultiSelect { get; set; }
 
         /// <summary>

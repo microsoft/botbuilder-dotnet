@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets content to be posted back to bots via invoke.
         /// </summary>
         /// <value>The content to be posted back to bots via invoke.</value>
-        [JsonProperty(PropertyName = "body")]
+        [JsonPropertyName("body")]
         public string Body { get; set; }
 
         /// <summary>

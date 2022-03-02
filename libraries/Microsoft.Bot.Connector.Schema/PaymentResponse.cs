@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// that the user selected to fulfill the transaction.
         /// </summary>
         /// <value>The payment method identifier.</value>
-        [JsonProperty(PropertyName = "methodName")]
+        [JsonPropertyName("methodName")]
         public string MethodName { get; set; }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// transaction and determine successful fund transfer.
         /// </summary>
         /// <value>The JSON-serializable data object that provides additional information to process the transaction.</value>
-        [JsonProperty(PropertyName = "details")]
+        [JsonPropertyName("details")]
         public object Details { get; set; }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// by the user.
         /// </summary>
         /// <value>The final shipping address chosen by the user.</value>
-        [JsonProperty(PropertyName = "shippingAddress")]
+        [JsonPropertyName("shippingAddress")]
         public PaymentAddress ShippingAddress { get; set; }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// option.
         /// </summary>
         /// <value>The shipping option ID.</value>
-        [JsonProperty(PropertyName = "shippingOption")]
+        [JsonPropertyName("shippingOption")]
         public string ShippingOption { get; set; }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// payerEmail will be the email address chosen by the user.
         /// </summary>
         /// <value>The payer email chosen by the user..</value>
-        [JsonProperty(PropertyName = "payerEmail")]
+        [JsonPropertyName("payerEmail")]
         public string PayerEmail { get; set; }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// payerPhone will be the phone number chosen by the user.
         /// </summary>
         /// <value>The payer phone number chosen by the user.</value>
-        [JsonProperty(PropertyName = "payerPhone")]
+        [JsonPropertyName("payerPhone")]
         public string PayerPhone { get; set; }
 
         /// <summary>

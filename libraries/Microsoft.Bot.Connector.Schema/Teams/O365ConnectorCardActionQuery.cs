@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// IO365ConnectorCardHttpPOST with substituted input values.
         /// </summary>
         /// <value>The body defined in IO365ConnectorCardHttpPost.</value>
-        [JsonProperty(PropertyName = "body")]
+        [JsonPropertyName("body")]
         public string Body { get; set; }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// triggered, defined in O365ConnectorCardActionBase.
         /// </summary>
         /// <value>The action ID associated with the HttpPOST action button triggered.</value>
-        [JsonProperty(PropertyName = "actionId")]
+        [JsonPropertyName("actionId")]
         public string ActionId { get; set; }
 
         /// <summary>

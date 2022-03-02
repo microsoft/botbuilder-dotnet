@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -42,14 +42,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// sent.
         /// </summary>
         /// <value>The channel information.</value>
-        [JsonProperty(PropertyName = "channel")]
+        [JsonPropertyName("channel")]
         public ChannelInfo Channel { get; set; }
 
         /// <summary>
         /// Gets or sets type of event.
         /// </summary>
         /// <value>The type of event.</value>
-        [JsonProperty(PropertyName = "eventType")]
+        [JsonPropertyName("eventType")]
         public string EventType { get; set; }
 
         /// <summary>
@@ -57,14 +57,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// sent.
         /// </summary>
         /// <value>The information about the team.</value>
-        [JsonProperty(PropertyName = "team")]
+        [JsonPropertyName("team")]
         public TeamInfo Team { get; set; }
 
         /// <summary>
         /// Gets or sets notification settings for the message.
         /// </summary>
         /// <value>The notification settings for the user.</value>
-        [JsonProperty(PropertyName = "notification")]
+        [JsonPropertyName("notification")]
         public NotificationInfo Notification { get; set; }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// sent.
         /// </summary>
         /// <value>The information about the tenant.</value>
-        [JsonProperty(PropertyName = "tenant")]
+        [JsonPropertyName("tenant")]
         public TenantInfo Tenant { get; set; }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// sent.
         /// </summary>
         /// <value>The information about the meeting.</value>
-        [JsonProperty(PropertyName = "meeting")]
+        [JsonPropertyName("meeting")]
         public TeamsMeetingInfo Meeting { get; set; }
 
         /// <summary>

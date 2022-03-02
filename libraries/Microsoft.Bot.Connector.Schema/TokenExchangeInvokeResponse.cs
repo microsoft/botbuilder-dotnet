@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Extension data for overflow of properties.
         /// </value>
-        [JsonExtensionData(ReadData = true, WriteData = true)]
+        [JsonExtensionData]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public JObject Properties { get; set; } = new JObject();
+        public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
 #pragma warning restore CA2227 // Collection properties should be read only
     }
 }

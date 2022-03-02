@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// region code. For example, US, GB, CN, or JP.
         /// </summary>
         /// <value>The country by CLDR region code.</value>
-        [JsonProperty(PropertyName = "country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// office box number.
         /// </summary>
         /// <value>The most specific part of the address.</value>
-        [JsonProperty(PropertyName = "addressLine")]
+        [JsonPropertyName("addressLine")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<string> AddressLine { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -93,14 +93,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// oblast, or a prefecture.
         /// </summary>
         /// <value>The region. This is the top level administrative subdivision of the country. (e.g. state, province, etc.)</value>
-        [JsonProperty(PropertyName = "region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; }
 
         /// <summary>
         /// Gets or sets this is the city/town portion of the address.
         /// </summary>
         /// <value>The city or town.</value>
-        [JsonProperty(PropertyName = "city")]
+        [JsonPropertyName("city")]
         public string City { get; set; }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// UK dependent localities.
         /// </summary>
         /// <value>The dependent locality or sublocality within a city.</value>
-        [JsonProperty(PropertyName = "dependentLocality")]
+        [JsonPropertyName("dependentLocality")]
         public string DependentLocality { get; set; }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// code in India.
         /// </summary>
         /// <value>The postal code or ZIP code.</value>
-        [JsonProperty(PropertyName = "postalCode")]
+        [JsonPropertyName("postalCode")]
         public string PostalCode { get; set; }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// France.
         /// </summary>
         /// <value>The sorting code.</value>
-        [JsonProperty(PropertyName = "sortingCode")]
+        [JsonPropertyName("sortingCode")]
         public string SortingCode { get; set; }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// formatting the address for display.
         /// </summary>
         /// <value>The BCP-47 language code for the address.</value>
-        [JsonProperty(PropertyName = "languageCode")]
+        [JsonPropertyName("languageCode")]
         public string LanguageCode { get; set; }
 
         /// <summary>
@@ -142,14 +142,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// institution at this address.
         /// </summary>
         /// <value>The organization, firm, company, or institution at the address.</value>
-        [JsonProperty(PropertyName = "organization")]
+        [JsonPropertyName("organization")]
         public string Organization { get; set; }
 
         /// <summary>
         /// Gets or sets this is the name of the recipient or contact person.
         /// </summary>
         /// <value>The recipient or contact person.</value>
-        [JsonProperty(PropertyName = "recipient")]
+        [JsonPropertyName("recipient")]
         public string Recipient { get; set; }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// person.
         /// </summary>
         /// <value>The phone number of the recipient or contact person.</value>
-        [JsonProperty(PropertyName = "phone")]
+        [JsonPropertyName("phone")]
         public string Phone { get; set; }
 
         /// <summary>

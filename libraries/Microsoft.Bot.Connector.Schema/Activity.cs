@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The activity type (see <see cref="ActivityTypes"/>). 
         /// </value>
-        [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// An ID that uniquely identifies the activity on the channel.
         /// </value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The date and time when the message was sent, in UTC, expressed in ISO-8601 format.
         /// </value>
-        [JsonProperty(PropertyName = "timestamp")]
+        [JsonPropertyName("timestamp")]
         public System.DateTimeOffset? Timestamp { get; set; }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The date and time when the message was sent, in local time, expressed in ISO-8601 format.
         /// </value>
-        [JsonProperty(PropertyName = "localTimestamp")]
+        [JsonPropertyName("localTimestamp")]
         public System.DateTimeOffset? LocalTimestamp { get; set; }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// The name of the timezone used to define local time for
         /// the message, expressed in IANA Time Zone database format.
         /// </value>
-        [JsonProperty(PropertyName = "localTimezone")]
+        [JsonPropertyName("localTimezone")]
         public string LocalTimezone { get; set; }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The URL that specifies the channel's service endpoint.
         /// </value>
-        [JsonProperty(PropertyName = "serviceUrl")]
+        [JsonPropertyName("serviceUrl")]
         public string ServiceUrl { get; set; }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// An ID that uniquely identifies the channel.
         /// </value>
-        [JsonProperty(PropertyName = "channelId")]
+        [JsonPropertyName("channelId")]
         public string ChannelId { get; set; }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The <see cref="ChannelAccount"/> for the sender of the message.
         /// </value>
-        [JsonProperty(PropertyName = "from")]
+        [JsonPropertyName("from")]
         public ChannelAccount From { get; set; }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The <see cref="ConversationAccount"/> to which the activity belongs.
         /// </value>
-        [JsonProperty(PropertyName = "conversation")]
+        [JsonPropertyName("conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The <see cref="ChannelAccount"/> for the recipient of the message.
         /// </value>
-        [JsonProperty(PropertyName = "recipient")]
+        [JsonPropertyName("recipient")]
         public ChannelAccount Recipient { get; set; }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The format of text fields (see <see cref="TextFormatTypes"/>).
         /// </value>
-        [JsonProperty(PropertyName = "textFormat")]
+        [JsonPropertyName("textFormat")]
         public string TextFormat { get; set; }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The layout hint for multiple attachments.
         /// </value>
-        [JsonProperty(PropertyName = "attachmentLayout")]
+        [JsonPropertyName("attachmentLayout")]
         public string AttachmentLayout { get; set; }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of members added to the conversation.
         /// </value>
-        [JsonProperty(PropertyName = "membersAdded")]
+        [JsonPropertyName("membersAdded")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ChannelAccount> MembersAdded { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of members removed from the conversation.
         /// </value>
-        [JsonProperty(PropertyName = "membersRemoved")]
+        [JsonPropertyName("membersRemoved")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ChannelAccount> MembersRemoved { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of reactions added to the conversation.
         /// </value>
-        [JsonProperty(PropertyName = "reactionsAdded")]
+        [JsonPropertyName("reactionsAdded")]
 #pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<MessageReaction> ReactionsAdded { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -331,7 +331,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The collection of reactions removed from the conversation.
         /// </value>
-        [JsonProperty(PropertyName = "reactionsRemoved")]
+        [JsonPropertyName("reactionsRemoved")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<MessageReaction> ReactionsRemoved { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The updated topic name of the conversation.
         /// </value>
-        [JsonProperty(PropertyName = "topicName")]
+        [JsonPropertyName("topicName")]
         public string TopicName { get; set; }
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A value indicating whether the prior history of the channel is disclosed.
         /// </value>
-        [JsonProperty(PropertyName = "historyDisclosed")]
+        [JsonPropertyName("historyDisclosed")]
         public bool? HistoryDisclosed { get; set; }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A locale for the activity.
         /// </value>
-        [JsonProperty(PropertyName = "locale")]
+        [JsonPropertyName("locale")]
         public string Locale { get; set; }
 
         /// <summary>
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The text content of the message.
         /// </value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The text to speak.
         /// </value>
-        [JsonProperty(PropertyName = "speak")]
+        [JsonPropertyName("speak")]
         public string Speak { get; set; }
 
         /// <summary>
@@ -392,7 +392,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// expecting, or ignoring user input after the message is delivered to
         /// the client.
         /// </value>
-        [JsonProperty(PropertyName = "inputHint")]
+        [JsonPropertyName("inputHint")]
         public string InputHint { get; set; }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The text to display if the channel cannot render cards.
         /// </value>
-        [JsonProperty(PropertyName = "summary")]
+        [JsonPropertyName("summary")]
         public string Summary { get; set; }
 
         /// <summary>
@@ -411,7 +411,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The suggested actions for the activity.
         /// </value>
-        [JsonProperty(PropertyName = "suggestedActions")]
+        [JsonPropertyName("suggestedActions")]
         public SuggestedActions SuggestedActions { get; set; }
 
         /// <summary>
@@ -420,7 +420,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The attachments for the activity.
         /// </value>
-        [JsonProperty(PropertyName = "attachments")]
+        [JsonPropertyName("attachments")]
 #pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<Attachment> Attachments { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The entities that were mentioned in the message.
         /// </value>
-        [JsonProperty(PropertyName = "entities")]
+        [JsonPropertyName("entities")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<Entity> Entities { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -442,7 +442,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Channel-specific content.
         /// </value>
-        [JsonProperty(PropertyName = "channelData")]
+        [JsonPropertyName("channelData")]
 #pragma warning disable CA1721 // Property names should not match get methods (we can't change this without changing binary compat).
         public object ChannelData { get; set; }
 #pragma warning restore CA1721 // Property names should not match get methods
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// contactRelationUpdate was added to or removed from the sender's
         /// contact list.
         /// </value>
-        [JsonProperty(PropertyName = "action")]
+        [JsonPropertyName("action")]
         public string Action { get; set; }
 
         /// <summary>
@@ -467,7 +467,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The ID of the message to which this message is a reply.
         /// </value>
-        [JsonProperty(PropertyName = "replyToId")]
+        [JsonPropertyName("replyToId")]
         public string ReplyToId { get; set; }
 
         /// <summary>
@@ -476,7 +476,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A descriptive label for the activity.
         /// </value>
-        [JsonProperty(PropertyName = "label")]
+        [JsonPropertyName("label")]
         public string Label { get; set; }
 
         /// <summary>
@@ -485,7 +485,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The type of the activity's value object.
         /// </value>
-        [JsonProperty(PropertyName = "valueType")]
+        [JsonPropertyName("valueType")]
         public string ValueType { get; set; }
 
         /// <summary>
@@ -494,7 +494,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A value that is associated with the activity.
         /// </value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public object Value { get; set; }
 
         /// <summary>
@@ -504,7 +504,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The name of the operation associated with an invoke or event activity.
         /// </value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>
@@ -513,7 +513,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// A reference to another conversation or activity.
         /// </value>
-        [JsonProperty(PropertyName = "relatesTo")]
+        [JsonPropertyName("relatesTo")]
         public ConversationReference RelatesTo { get; set; }
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// A code for endOfConversation activities that indicates
         /// why the conversation ended.
         /// </value>
-        [JsonProperty(PropertyName = "code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// The time at which the activity should be considered to
         /// be "expired" and should not be presented to the recipient.
         /// </value>
-        [JsonProperty(PropertyName = "expiration")]
+        [JsonPropertyName("expiration")]
         public System.DateTimeOffset? Expiration { get; set; }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// The importance of the activity.
         /// </value>
-        [JsonProperty(PropertyName = "importance")]
+        [JsonPropertyName("importance")]
         public string Importance { get; set; }
 
         /// <summary>
@@ -557,7 +557,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// A delivery hint to signal to the recipient alternate
         /// delivery paths for the activity.
         /// </value>
-        [JsonProperty(PropertyName = "deliveryMode")]
+        [JsonPropertyName("deliveryMode")]
         public string DeliveryMode { get; set; }
 
         /// <summary>
@@ -567,7 +567,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// List of phrases and references that speech and language-priming systems should listen for.
         /// </value>
-        [JsonProperty(PropertyName = "listenFor")]
+        [JsonPropertyName("listenFor")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<string> ListenFor { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -580,7 +580,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// The collection of text fragments to highlight when the
         /// activity contains a ReplyToId value.
         /// </value>
-        [JsonProperty(PropertyName = "textHighlights")]
+        [JsonPropertyName("textHighlights")]
 #pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<TextHighlight> TextHighlights { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -593,7 +593,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// An optional programmatic action accompanying this
         /// request.
         /// </value>
-        [JsonProperty(PropertyName = "semanticAction")]
+        [JsonPropertyName("semanticAction")]
         public SemanticAction SemanticAction { get; set; }
 
         /// <summary>
@@ -608,7 +608,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// instead populated by bots and clients based on cryptographically
         /// verifiable data that asserts the identity of the callers (e.g. tokens).
         /// </value>
-        [JsonProperty(PropertyName = "callerId")]
+        [JsonPropertyName("callerId")]
         public string CallerId { get; set; }
 
         /// <summary>

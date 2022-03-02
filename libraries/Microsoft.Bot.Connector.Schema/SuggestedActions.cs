@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// recipients of the activity.
         /// </summary>
         /// <value>The ID's of the recipients that the actions should be shown to.</value>
-        [JsonProperty(PropertyName = "to")]
+        [JsonPropertyName("to")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> To { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets actions that can be shown to the user.
         /// </summary>
         /// <value>The actions that can be shown to the user.</value>
-        [JsonProperty(PropertyName = "actions")]
+        [JsonPropertyName("actions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Actions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

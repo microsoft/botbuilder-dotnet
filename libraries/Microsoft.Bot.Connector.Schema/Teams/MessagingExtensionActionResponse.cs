@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -36,21 +36,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// module.
         /// </summary>
         /// <value>The JSON for the Adaptive card to appear in the task module.</value>
-        [JsonProperty(PropertyName = "task")]
+        [JsonPropertyName("task")]
         public TaskModuleResponseBase Task { get; set; }
 
         /// <summary>
         /// Gets or sets the compose extension result.
         /// </summary>
         /// <value>The compose extension result.</value>
-        [JsonProperty(PropertyName = "composeExtension")]
+        [JsonPropertyName("composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="CacheInfo "/> for this <see cref="MessagingExtensionActionResponse"/>.
         /// </summary>
         /// <value>The <see cref="CacheInfo "/> for this <see cref="MessagingExtensionActionResponse"/>.</value>
-        [JsonProperty(PropertyName = "cacheInfo")]
+        [JsonPropertyName("cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
 
         /// <summary>

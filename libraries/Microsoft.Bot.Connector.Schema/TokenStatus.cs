@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the channelId of the token status pertains to.
         /// </summary>
         /// <value>The channel ID.</value>
-        [JsonProperty(PropertyName = "channelId")]
+        [JsonPropertyName("channelId")]
         public string ChannelId { get; set; }
 
         /// <summary>
@@ -50,14 +50,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// to.
         /// </summary>
         /// <value>The connection name.</value>
-        [JsonProperty(PropertyName = "connectionName")]
+        [JsonPropertyName("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
         /// Gets or sets true if a token is stored for this ConnectionName.
         /// </summary>
         /// <value>Boolean indicating if a token is stored for this ConnectionName.</value>
-        [JsonProperty(PropertyName = "hasToken")]
+        [JsonPropertyName("hasToken")]
         public bool? HasToken { get; set; }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// this Token belongs to.
         /// </summary>
         /// <value>The display name of the service provider for which this Token belongs to.</value>
-        [JsonProperty(PropertyName = "serviceProviderDisplayName")]
+        [JsonPropertyName("serviceProviderDisplayName")]
         public string ServiceProviderDisplayName { get; set; }
 
         /// <summary>

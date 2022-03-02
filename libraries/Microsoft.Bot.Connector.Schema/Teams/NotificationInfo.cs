@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// otherwise.
         /// </summary>
         /// <value>Boolean indicating if notification is sent to the user.</value>
-        [JsonProperty(PropertyName = "alert")]
+        [JsonPropertyName("alert")]
         public bool? Alert { get; set; }
 
         /// <summary>
@@ -42,14 +42,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// false otherwise.
         /// </summary>
         /// <value>Boolean indicating if a notification is to be shown to the user while in a meeting.</value>
-        [JsonProperty(PropertyName = "alertInMeeting")]
+        [JsonPropertyName("alertInMeeting")]
         public bool? AlertInMeeting { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the notification's external resource URL.
         /// </summary>
         /// <value>The value of the notification's external resource URL.</value>
-        [JsonProperty(PropertyName = "externalResourceUrl")]
+        [JsonPropertyName("externalResourceUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string ExternalResourceUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings

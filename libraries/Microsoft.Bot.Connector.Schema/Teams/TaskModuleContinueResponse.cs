@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the JSON for the Adaptive card to appear in the task module.
         /// </summary>
         /// <value>The JSON for the adaptive card to appear in the task module.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public TaskModuleTaskInfo Value { get; set; }
 
         /// <summary>

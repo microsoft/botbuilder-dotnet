@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -38,21 +38,21 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets a currency identifier.
         /// </summary>
         /// <value>The currency.</value>
-        [JsonProperty(PropertyName = "currency")]
+        [JsonPropertyName("currency")]
         public string Currency { get; set; }
 
         /// <summary>
         /// Gets or sets decimal monetary value.
         /// </summary>
         /// <value>The decimal monetary value.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
 
         /// <summary>
         /// Gets or sets currency system.
         /// </summary>
         /// <value>The currency system.</value>
-        [JsonProperty(PropertyName = "currencySystem")]
+        [JsonPropertyName("currencySystem")]
         public string CurrencySystem { get; set; }
 
         /// <summary>

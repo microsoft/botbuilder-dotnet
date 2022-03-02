@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -29,17 +29,17 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets name of the attachment.</summary>
         /// <value>The name of the attachment.</value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>Gets or sets contentType of the attachment.</summary>
         /// <value>The content type of the attachment.</value>
-        [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>Gets or sets attachment views.</summary>
         /// <value> The attachment views.</value>
-        [JsonProperty(PropertyName = "views")]
+        [JsonPropertyName("views")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<AttachmentView> Views { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

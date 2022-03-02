@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -41,14 +41,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'accept', 'decline'.
         /// </summary>
         /// <value>The action the user took.</value>
-        [JsonProperty(PropertyName = "action")]
+        [JsonPropertyName("action")]
         public string Action { get; set; }
 
         /// <summary>
         /// Gets or sets the context associated with the action.
         /// </summary>
         /// <value>The context associated with the action.</value>
-        [JsonProperty(PropertyName = "context")]
+        [JsonPropertyName("context")]
         public object Context { get; set; }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// about the file to be uploaded.
         /// </summary>
         /// <value>The information about the file to be uploaded.</value>
-        [JsonProperty(PropertyName = "uploadInfo")]
+        [JsonPropertyName("uploadInfo")]
         public FileUploadInfo UploadInfo { get; set; }
 
         /// <summary>

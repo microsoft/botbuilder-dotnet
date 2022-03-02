@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Default value is false.
         /// </summary>
         /// <value>Boolean indicating if multi-line input is allowed.</value>
-        [JsonProperty(PropertyName = "isMultiline")]
+        [JsonPropertyName("isMultiline")]
         public bool? IsMultiline { get; set; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// unlimited.
         /// </summary>
         /// <value>The maximum length of text input.</value>
-        [JsonProperty(PropertyName = "maxLength")]
+        [JsonPropertyName("maxLength")]
         public double? MaxLength { get; set; }
 
         /// <summary>

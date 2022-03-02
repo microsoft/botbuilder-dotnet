@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -35,14 +35,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets ID of this action.
         /// </summary>
         /// <value>The ID of this action card.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets entities associated with this action.
         /// </summary>
         /// <value>The entities associated with this action.</value>
-        [JsonProperty(PropertyName = "entities")]
+        [JsonPropertyName("entities")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IDictionary<string, Entity> Entities { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// `continue`, `done`.
         /// </summary>
         /// <value>The state of this action.</value>
-        [JsonProperty(PropertyName = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
         /// <summary>

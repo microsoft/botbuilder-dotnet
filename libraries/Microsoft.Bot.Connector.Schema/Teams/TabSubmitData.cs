@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Currently, 'tab/submit'.
         /// </value>
-        [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <remarks>With this, properties not represented in the defined type are not dropped when
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
-        [JsonExtensionData(ReadData = true, WriteData = true)]
+        [JsonExtensionData]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public JObject Properties { get; set; } = new JObject();
+        public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>

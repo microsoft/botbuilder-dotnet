@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -32,17 +32,17 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets error code.</summary>
         /// <value>The error code.</value>
-        [JsonProperty(PropertyName = "code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; }
 
         /// <summary>Gets or sets error message.</summary>
         /// <value>The error message.</value>
-        [JsonProperty(PropertyName = "message")]
+        [JsonPropertyName("message")]
         public string Message { get; set; }
 
         /// <summary>Gets or sets error from inner http call.</summary>
         /// <value>The error from the inner HTTP call.</value>
-        [JsonProperty(PropertyName = "innerHttpError")]
+        [JsonPropertyName("innerHttpError")]
         public InnerHttpError InnerHttpError { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>

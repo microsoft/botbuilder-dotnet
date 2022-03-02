@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets number of entities to skip.
         /// </summary>
         /// <value>The number of entities to skip.</value>
-        [JsonProperty(PropertyName = "skip")]
+        [JsonPropertyName("skip")]
         public int? Skip { get; set; }
 
         /// <summary>
         /// Gets or sets number of entities to fetch.
         /// </summary>
         /// <value>The number of entities to fetch.</value>
-        [JsonProperty(PropertyName = "count")]
+        [JsonPropertyName("count")]
         public int? Count { get; set; }
 
         /// <summary>

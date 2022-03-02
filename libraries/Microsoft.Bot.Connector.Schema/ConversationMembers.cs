@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Connector.Schema
 
         /// <summary>Gets or sets conversation ID.</summary>
         /// <value>The conversation ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>Gets or sets list of members in this conversation.</summary>
         /// <value>The members in the conversation.</value>
-        [JsonProperty(PropertyName = "members")]
+        [JsonPropertyName("members")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

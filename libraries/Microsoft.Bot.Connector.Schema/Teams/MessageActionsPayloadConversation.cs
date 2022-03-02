@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -40,14 +40,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Possible values include: 'team', 'channel'.
         /// </summary>
         /// <value>The type of converation, indicating whether it's a team or channel.</value>
-        [JsonProperty(PropertyName = "conversationIdentityType")]
+        [JsonPropertyName("conversationIdentityType")]
         public string ConversationIdentityType { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the team or channel.
         /// </summary>
         /// <value>The ID of the team or channel.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// entity.
         /// </summary>
         /// <value>The plaintext display name of the team or channel.</value>
-        [JsonProperty(PropertyName = "displayName")]
+        [JsonPropertyName("displayName")]
         public string DisplayName { get; set; }
 
         /// <summary>

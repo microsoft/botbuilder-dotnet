@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -37,14 +37,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the key for this Fact.
         /// </summary>
         /// <value>The key for this fact.</value>
-        [JsonProperty(PropertyName = "key")]
+        [JsonPropertyName("key")]
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the value for this Fact.
         /// </summary>
         /// <value>The value for this Fact.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
 
         /// <summary>

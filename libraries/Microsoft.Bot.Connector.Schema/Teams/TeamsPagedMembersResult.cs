@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         public TeamsPagedMembersResult(string continuationToken = default, IList<ChannelAccount> members = default)
         {
             ContinuationToken = continuationToken;
-            var teamsChannelAccounts = members.Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
+            var teamsChannelAccounts = members.Select(channelAccount => Dictionary<string, JsonElement>.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
             Members = teamsChannelAccounts.ToList();
         }
 
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The paging token.
         /// </value>
-        [JsonProperty(PropertyName = "continuationToken")]
+        [JsonPropertyName("continuationToken")]
         public string ContinuationToken { get; set; }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The channel accounts.
         /// </value>
-        [JsonProperty(PropertyName = "members")]
+        [JsonPropertyName("members")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<TeamsChannelAccount> Members { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

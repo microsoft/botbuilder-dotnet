@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,21 +34,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets unique identifier representing a team.
         /// </summary>
         /// <value>The team ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets name of team.
         /// </summary>
         /// <value>The team name.</value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the Azure AD Teams group ID.
         /// </summary>
         /// <value>The Azure Active Directory Teams group ID.</value>
-        [JsonProperty(PropertyName = "aadGroupId")]
+        [JsonPropertyName("aadGroupId")]
         public string AadGroupId { get; set; }
 
         /// <summary>

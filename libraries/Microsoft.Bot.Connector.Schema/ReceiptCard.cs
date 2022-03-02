@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -50,14 +50,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets title of the card.
         /// </summary>
         /// <value>The title of the card.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets array of Fact objects.
         /// </summary>
         /// <value>The collection of <see cref="Fact"/>'s.</value>
-        [JsonProperty(PropertyName = "facts")]
+        [JsonPropertyName("facts")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Fact> Facts { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets array of Receipt Items.
         /// </summary>
         /// <value>The receipt items.</value>
-        [JsonProperty(PropertyName = "items")]
+        [JsonPropertyName("items")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ReceiptItem> Items { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -76,35 +76,35 @@ namespace Microsoft.Bot.Connector.Schema
         /// card.
         /// </summary>
         /// <value>The card action that will be activated when the user taps on the card.</value>
-        [JsonProperty(PropertyName = "tap")]
+        [JsonPropertyName("tap")]
         public CardAction Tap { get; set; }
 
         /// <summary>
         /// Gets or sets total amount of money paid (or to be paid).
         /// </summary>
         /// <value>The total amount of money paid (or to be paid).</value>
-        [JsonProperty(PropertyName = "total")]
+        [JsonPropertyName("total")]
         public string Total { get; set; }
 
         /// <summary>
         /// Gets or sets total amount of tax paid (or to be paid).
         /// </summary>
         /// <value>The total amount of tax.</value>
-        [JsonProperty(PropertyName = "tax")]
+        [JsonPropertyName("tax")]
         public string Tax { get; set; }
 
         /// <summary>
         /// Gets or sets total amount of VAT paid (or to be paid).
         /// </summary>
         /// <value>The total amount of VAT.</value>
-        [JsonProperty(PropertyName = "vat")]
+        [JsonPropertyName("vat")]
         public string Vat { get; set; }
 
         /// <summary>
         /// Gets or sets set of actions applicable to the current card.
         /// </summary>
         /// <value>The actions applicable to the current card.</value>
-        [JsonProperty(PropertyName = "buttons")]
+        [JsonPropertyName("buttons")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

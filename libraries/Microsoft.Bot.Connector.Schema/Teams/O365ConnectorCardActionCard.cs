@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// item can be in any subtype of O365ConnectorCardInputBase.
         /// </summary>
         /// <value>The inputs contained in the ActionCard.</value>
-        [JsonProperty(PropertyName = "inputs")]
+        [JsonPropertyName("inputs")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardInputBase> Inputs { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// O365ConnectorCardActionCard, as nested ActionCard is forbidden.
         /// </summary>
         /// <value>The actions contained in this ActionCard.</value>
-        [JsonProperty(PropertyName = "actions")]
+        [JsonPropertyName("actions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardActionBase> Actions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'default', 'iOS', 'android', 'windows'.
         /// </summary>
         /// <value>The target operating system.</value>
-        [JsonProperty(PropertyName = "os")]
+        [JsonPropertyName("os")]
         public string Os { get; set; }
 
         /// <summary>
         /// Gets or sets target URL.
         /// </summary>
         /// <value>The target URL.</value>
-        [JsonProperty(PropertyName = "uri")]
+        [JsonPropertyName("uri")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Uri { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings

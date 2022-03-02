@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The current user's theme.
         /// </value>
-        [JsonProperty(PropertyName = "theme")]
+        [JsonPropertyName("theme")]
         public string Theme { get; set; }
 
         /// <summary>

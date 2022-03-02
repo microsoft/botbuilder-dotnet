@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets URL pointing to the thumbnail to use for media content.
         /// </summary>
         /// <value>The URL pointing to the thumbnail to use for media content.</value>
-        [JsonProperty(PropertyName = "url")]
+        [JsonPropertyName("url")]
 #pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets HTML alt text to include on this thumbnail image.
         /// </summary>
         /// <value>The HTML alt text to include on this thumbnail image.</value>
-        [JsonProperty(PropertyName = "alt")]
+        [JsonPropertyName("alt")]
         public string Alt { get; set; }
 
         /// <summary>

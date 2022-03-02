@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets result of the payment request completion.
         /// </summary>
         /// <value>The result of the payment request completion.</value>
-        [JsonProperty(PropertyName = "result")]
+        [JsonPropertyName("result")]
         public string Result { get; set; }
 
         /// <summary>

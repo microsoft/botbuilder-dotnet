@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -53,42 +53,42 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets title of the section.
         /// </summary>
         /// <value>The title of the section.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets text for the section.
         /// </summary>
         /// <value>The text for the section.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets activity title.
         /// </summary>
         /// <value>The activity title.</value>
-        [JsonProperty(PropertyName = "activityTitle")]
+        [JsonPropertyName("activityTitle")]
         public string ActivityTitle { get; set; }
 
         /// <summary>
         /// Gets or sets activity subtitle.
         /// </summary>
         /// <value>The activity subtitle.</value>
-        [JsonProperty(PropertyName = "activitySubtitle")]
+        [JsonPropertyName("activitySubtitle")]
         public string ActivitySubtitle { get; set; }
 
         /// <summary>
         /// Gets or sets activity text.
         /// </summary>
         /// <value>The activity text.</value>
-        [JsonProperty(PropertyName = "activityText")]
+        [JsonPropertyName("activityText")]
         public string ActivityText { get; set; }
 
         /// <summary>
         /// Gets or sets activity image.
         /// </summary>
         /// <value>The activity image.</value>
-        [JsonProperty(PropertyName = "activityImage")]
+        [JsonPropertyName("activityImage")]
         public string ActivityImage { get; set; }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// values include: 'avatar', 'article'.
         /// </summary>
         /// <value>The activity image type.</value>
-        [JsonProperty(PropertyName = "activityImageType")]
+        [JsonPropertyName("activityImageType")]
         public string ActivityImageType { get; set; }
 
         /// <summary>
@@ -104,14 +104,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// true.
         /// </summary>
         /// <value>Boolean indicating whether markdown is used for all text contents.</value>
-        [JsonProperty(PropertyName = "markdown")]
+        [JsonPropertyName("markdown")]
         public bool? Markdown { get; set; }
 
         /// <summary>
         /// Gets or sets set of facts for the current section.
         /// </summary>
         /// <value>The facts for the current section.</value>
-        [JsonProperty(PropertyName = "facts")]
+        [JsonPropertyName("facts")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardFact> Facts { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets set of images for the current section.
         /// </summary>
         /// <value>The images for the current section.</value>
-        [JsonProperty(PropertyName = "images")]
+        [JsonPropertyName("images")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardImage> Images { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets set of actions for the current section.
         /// </summary>
         /// <value>The actions for the current section.</value>
-        [JsonProperty(PropertyName = "potentialAction")]
+        [JsonPropertyName("potentialAction")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardActionBase> PotentialAction { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

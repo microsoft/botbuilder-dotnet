@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// (date only).
         /// </summary>
         /// <value>Boolean indicating whether to include time.</value>
-        [JsonProperty(PropertyName = "includeTime")]
+        [JsonPropertyName("includeTime")]
         public bool? IncludeTime { get; set; }
 
         /// <summary>

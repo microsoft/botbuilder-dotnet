@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The meeting's type.
         /// </value>
-        [JsonProperty(PropertyName = "MeetingType")]
+        [JsonPropertyName("MeetingType")]
         public string MeetingType { get; set; }
 
         /// <summary>

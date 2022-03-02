@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets URL for the image.
         /// </summary>
         /// <value>The URL for the image.</value>
-        [JsonProperty(PropertyName = "image")]
+        [JsonPropertyName("image")]
         public string Image { get; set; }
 
         /// <summary>
         /// Gets or sets alternative text for the image.
         /// </summary>
         /// <value>The alternative text for the image.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>

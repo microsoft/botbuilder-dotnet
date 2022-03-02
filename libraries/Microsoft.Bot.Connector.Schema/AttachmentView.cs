@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -30,14 +30,14 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets id of the attachment.
         /// </summary>
         /// <value>The ID of the attachment.</value>
-        [JsonProperty(PropertyName = "viewId")]
+        [JsonPropertyName("viewId")]
         public string ViewId { get; set; }
 
         /// <summary>
         /// Gets or sets size of the attachment.
         /// </summary>
         /// <value>The size of the attachment.</value>
-        [JsonProperty(PropertyName = "size")]
+        [JsonPropertyName("size")]
         public int? Size { get; set; }
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>

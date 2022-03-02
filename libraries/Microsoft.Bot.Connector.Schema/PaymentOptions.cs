@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// return the payer's name as part of the payment request.
         /// </summary>
         /// <value>Boolean indicating if user agent should collect and return payer's name.</value>
-        [JsonProperty(PropertyName = "requestPayerName")]
+        [JsonPropertyName("requestPayerName")]
         public bool? RequestPayerName { get; set; }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// return the payer's email address as part of the payment request.
         /// </summary>
         /// <value>Boolean indicating if user agent should collect and return payer's email address.</value>
-        [JsonProperty(PropertyName = "requestPayerEmail")]
+        [JsonPropertyName("requestPayerEmail")]
         public bool? RequestPayerEmail { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// return the payer's phone number as part of the payment request.
         /// </summary>
         /// <value>Boolean indicating if user agent should collect and return payer's phone number.</value>
-        [JsonProperty(PropertyName = "requestPayerPhone")]
+        [JsonPropertyName("requestPayerPhone")]
         public bool? RequestPayerPhone { get; set; }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// return a shipping address as part of the payment request.
         /// </summary>
         /// <value>Boolean indicating if user agent should collect and return shipping address.</value>
-        [JsonProperty(PropertyName = "requestShipping")]
+        [JsonPropertyName("requestShipping")]
         public bool? RequestShipping { get; set; }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// presents the user interface for gathering the shipping address.
         /// </summary>
         /// <value>The shipping type.</value>
-        [JsonProperty(PropertyName = "shippingType")]
+        [JsonPropertyName("shippingType")]
         public string ShippingType { get; set; }
 
         /// <summary>

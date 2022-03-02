@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.s
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The JSON for the Adaptive cards to appear in the tab.
         /// </value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public TabResponse Value { get; set; }
 
         /// <summary>

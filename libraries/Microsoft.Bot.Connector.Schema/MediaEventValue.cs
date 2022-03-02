@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// MediaCard that originated this event.
         /// </summary>
         /// <value>The callback parameter specifid in the Value field of the MediaCard that originated this event.</value>
-        [JsonProperty(PropertyName = "cardValue")]
+        [JsonPropertyName("cardValue")]
         public object CardValue { get; set; }
 
         /// <summary>

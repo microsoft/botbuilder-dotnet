@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -42,42 +42,42 @@ namespace Microsoft.Bot.Connector.Schema
         /// Possible values include: 'openUrl', 'imBack', 'postBack','playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin', 'call', 'messageBack'.
         /// </summary>
         /// <value>The type of action implemented.</value>
-        [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>Gets or sets text description which appears on the button.</summary>
         /// <value>The title.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>Gets or sets image URL which will appear on the button, next to text label.</summary>
         /// <value>The image that appears on the button.</value>
-        [JsonProperty(PropertyName = "image")]
+        [JsonPropertyName("image")]
         public string Image { get; set; }
 
         /// <summary>Gets or sets text for this action.</summary>
         /// <value>The text for this action.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>Gets or sets (Optional) text to display in the chat feed if the button is clicked.</summary>
         /// <value>The text to display in the chat feed.</value>
-        [JsonProperty(PropertyName = "displayText")]
+        [JsonPropertyName("displayText")]
         public string DisplayText { get; set; }
 
         /// <summary>Gets or sets supplementary parameter for action. Content of this property depends on the ActionType.</summary>
         /// <value>The supplementary parameter for action.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public object Value { get; set; }
 
         /// <summary>Gets or sets channel-specific data associated with this action.</summary>
         /// <value>The channel-specific data associated with this action.</value>
-        [JsonProperty(PropertyName = "channelData")]
+        [JsonPropertyName("channelData")]
         public object ChannelData { get; set; }
 
         /// <summary>Gets or sets alternate text to be used for the Image property.</summary>
         /// <value>The alternate text for the image.</value>
-        [JsonProperty(PropertyName = "imageAltText")]
+        [JsonPropertyName("imageAltText")]
         public string ImageAltText { get; set; }
 
         /// <summary>

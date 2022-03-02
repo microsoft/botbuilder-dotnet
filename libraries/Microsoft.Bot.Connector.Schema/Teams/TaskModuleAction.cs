@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -22,17 +22,17 @@ namespace Microsoft.Bot.Connector.Schema.Teams
             JToken data;
             if (value == null)
             {
-                data = new JObject();
+                data = new Dictionary<string, JsonElement>();
             }
             else
             {
                 if (value is string)
                 {
-                    data = JObject.Parse(value as string);
+                    data = Dictionary<string, JsonElement>.Parse(value as string);
                 }
                 else
                 {
-                    data = JObject.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings
+                    data = Dictionary<string, JsonElement>.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                         Formatting = Formatting.None

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The value indicating if the participant is in the meeting.
         /// </value>
-        [JsonProperty(PropertyName = "inMeeting")]
+        [JsonPropertyName("inMeeting")]
         public bool? InMeeting { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The participant's role in the meeting.
         /// </value>
-        [JsonProperty(PropertyName = "role")]
+        [JsonPropertyName("role")]
         public string Role { get; set; }
 
         /// <summary>

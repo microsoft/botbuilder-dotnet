@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,21 +38,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets represents details of the user.
         /// </summary>
         /// <value>The user details.</value>
-        [JsonProperty(PropertyName = "user")]
+        [JsonPropertyName("user")]
         public MessageActionsPayloadUser User { get; set; }
 
         /// <summary>
         /// Gets or sets represents details of the app.
         /// </summary>
         /// <value>The application details.</value>
-        [JsonProperty(PropertyName = "application")]
+        [JsonPropertyName("application")]
         public MessageActionsPayloadApp Application { get; set; }
 
         /// <summary>
         /// Gets or sets represents details of the converesation.
         /// </summary>
         /// <value>The conversation details.</value>
-        [JsonProperty(PropertyName = "conversation")]
+        [JsonPropertyName("conversation")]
         public MessageActionsPayloadConversation Conversation { get; set; }
 
         /// <summary>

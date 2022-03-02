@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets update payment details.
         /// </summary>
         /// <value>The update payment details.</value>
-        [JsonProperty(PropertyName = "details")]
+        [JsonPropertyName("details")]
         public PaymentDetails Details { get; set; }
 
         /// <summary>

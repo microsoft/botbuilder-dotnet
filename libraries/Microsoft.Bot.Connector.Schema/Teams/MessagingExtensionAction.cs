@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets ID of the command assigned by Bot.
         /// </summary>
         /// <value>The ID of the command assigned by the Bot.</value>
-        [JsonProperty(PropertyName = "commandId")]
+        [JsonPropertyName("commandId")]
         public string CommandId { get; set; }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Possible values include: 'message', 'compose', 'commandbox'.
         /// </summary>
         /// <value>The context from which the command originates.</value>
-        [JsonProperty(PropertyName = "commandContext")]
+        [JsonPropertyName("commandContext")]
         public string CommandContext { get; set; }
 
         /// <summary>
@@ -66,14 +66,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// values include: 'edit', 'send'.
         /// </summary>
         /// <value>The bot message preview action taken by the user.</value>
-        [JsonProperty(PropertyName = "botMessagePreviewAction")]
+        [JsonPropertyName("botMessagePreviewAction")]
         public string BotMessagePreviewAction { get; set; }
 
         /// <summary>
         /// Gets or sets the bot activity preview.
         /// </summary>
         /// <value>The bot activity preview.</value>
-        [JsonProperty(PropertyName = "botActivityPreview")]
+        [JsonPropertyName("botActivityPreview")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Activity> BotActivityPreview { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -82,14 +82,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets message content sent as part of the command request.
         /// </summary>
         /// <value>The message content sent as part of the command request.</value>
-        [JsonProperty(PropertyName = "messagePayload")]
+        [JsonPropertyName("messagePayload")]
         public MessageActionsPayload MessagePayload { get; set; }
 
         /// <summary>
         /// Gets or sets state parameter passed back to the bot after authentication flow.
         /// </summary>
         /// <value>The state parameter passed back to the bot after authentication flow.</value>
-        [JsonProperty(PropertyName = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
         /// <summary>

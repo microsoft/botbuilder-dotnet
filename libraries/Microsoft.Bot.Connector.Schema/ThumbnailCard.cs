@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -45,28 +45,28 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets title of the card.
         /// </summary>
         /// <value>The title of the card.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets subtitle of the card.
         /// </summary>
         /// <value>The subtitle of the card.</value>
-        [JsonProperty(PropertyName = "subtitle")]
+        [JsonPropertyName("subtitle")]
         public string Subtitle { get; set; }
 
         /// <summary>
         /// Gets or sets text for the card.
         /// </summary>
         /// <value>The text for the card.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets array of images for the card.
         /// </summary>
         /// <value>The images for the card.</value>
-        [JsonProperty(PropertyName = "images")]
+        [JsonPropertyName("images")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardImage> Images { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets set of actions applicable to the current card.
         /// </summary>
         /// <value>The actions applicable to the current card.</value>
-        [JsonProperty(PropertyName = "buttons")]
+        [JsonPropertyName("buttons")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// card itself.
         /// </summary>
         /// <value>The action that activates when the user taps on the card itself.</value>
-        [JsonProperty(PropertyName = "tap")]
+        [JsonPropertyName("tap")]
         public CardAction Tap { get; set; }
 
         /// <summary>

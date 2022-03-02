@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the preview.
         /// </summary>
         /// <value>The preview.</value>
-        [JsonProperty(PropertyName = "preview")]
+        [JsonPropertyName("preview")]
         public Attachment Preview { get; set; }
 
         /// <summary>

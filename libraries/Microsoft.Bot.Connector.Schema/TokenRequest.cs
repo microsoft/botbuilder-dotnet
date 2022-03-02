@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the provider to request a user token from.
         /// </summary>
         /// <value>The provider to request a user token from.</value>
-        [JsonProperty(PropertyName = "provider")]
+        [JsonPropertyName("provider")]
         public string Provider { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// this request.
         /// </summary>
         /// <value>The collection of settings for the specific provider for this request.</value>
-        [JsonProperty(PropertyName = "settings")]
+        [JsonPropertyName("settings")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IDictionary<string, object> Settings { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Cards for this <see cref="TabResponse"/>.
         /// </value>
-        [JsonProperty(PropertyName = "cards")]
+        [JsonPropertyName("cards")]
 #pragma warning disable CA2227 // Collection properties should be read only
         public IList<TabResponseCard> Cards { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

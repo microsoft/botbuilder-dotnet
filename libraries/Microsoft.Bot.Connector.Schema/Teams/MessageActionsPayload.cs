@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -77,14 +77,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets unique id of the message.
         /// </summary>
         /// <value>The message ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets id of the parent/root message of the thread.
         /// </summary>
         /// <value>The ID of the parent/root message of the thread.</value>
-        [JsonProperty(PropertyName = "replyToId")]
+        [JsonPropertyName("replyToId")]
         public string ReplyToId { get; set; }
 
         /// <summary>
@@ -92,35 +92,35 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Possible values include: 'message'.
         /// </summary>
         /// <value>The message type.</value>
-        [JsonProperty(PropertyName = "messageType")]
+        [JsonPropertyName("messageType")]
         public string MessageType { get; set; }
 
         /// <summary>
         /// Gets or sets timestamp of when the message was created.
         /// </summary>
         /// <value>The timestamp of when the message was created.</value>
-        [JsonProperty(PropertyName = "createdDateTime")]
+        [JsonPropertyName("createdDateTime")]
         public string CreatedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets timestamp of when the message was edited or updated.
         /// </summary>
         /// <value>The timestamp of when the message was edited or updated.</value>
-        [JsonProperty(PropertyName = "lastModifiedDateTime")]
+        [JsonPropertyName("lastModifiedDateTime")]
         public string LastModifiedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets indicates whether a message has been soft deleted.
         /// </summary>
         /// <value>Boolean indicating whether a message has been soft deleted.</value>
-        [JsonProperty(PropertyName = "deleted")]
+        [JsonPropertyName("deleted")]
         public bool? Deleted { get; set; }
 
         /// <summary>
         /// Gets or sets subject line of the message.
         /// </summary>
         /// <value>The subject line of the message.</value>
-        [JsonProperty(PropertyName = "subject")]
+        [JsonPropertyName("subject")]
         public string Subject { get; set; }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// notifications.
         /// </summary>
         /// <value>The summary text of the message.</value>
-        [JsonProperty(PropertyName = "summary")]
+        [JsonPropertyName("summary")]
         public string Summary { get; set; }
 
         /// <summary>
@@ -136,21 +136,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// include: 'normal', 'high', 'urgent'.
         /// </summary>
         /// <value>The importance of the message.</value>
-        [JsonProperty(PropertyName = "importance")]
+        [JsonPropertyName("importance")]
         public string Importance { get; set; }
 
         /// <summary>
         /// Gets or sets locale of the message set by the client.
         /// </summary>
         /// <value>The locale of the message set by the client.</value>
-        [JsonProperty(PropertyName = "locale")]
+        [JsonPropertyName("locale")]
         public string Locale { get; set; }
 
         /// <summary>
         /// Gets or sets sender of the message.
         /// </summary>
         /// <value>The sender of the message.</value>
-        [JsonProperty(PropertyName = "from")]
+        [JsonPropertyName("from")]
         public MessageActionsPayloadFrom From { get; set; }
 
         /// <summary>
@@ -158,21 +158,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// message.
         /// </summary>
         /// <value>The plaintext/HTML representation of the content of the message.</value>
-        [JsonProperty(PropertyName = "body")]
+        [JsonPropertyName("body")]
         public MessageActionsPayloadBody Body { get; set; }
 
         /// <summary>
         /// Gets or sets how the attachment(s) are displayed in the message.
         /// </summary>
         /// <value>String idicating how the attachment(s) are displayed in the message.</value>
-        [JsonProperty(PropertyName = "attachmentLayout")]
+        [JsonPropertyName("attachmentLayout")]
         public string AttachmentLayout { get; set; }
 
         /// <summary>
         /// Gets or sets attachments in the message - card, image, file, etc.
         /// </summary>
         /// <value>The attachments in the message.</value>
-        [JsonProperty(PropertyName = "attachments")]
+        [JsonPropertyName("attachments")]
 #pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking compat)
         public IList<MessageActionsPayloadAttachment> Attachments { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets list of entities mentioned in the message.
         /// </summary>
         /// <value>The entities mentioned in the message.</value>
-        [JsonProperty(PropertyName = "mentions")]
+        [JsonPropertyName("mentions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<MessageActionsPayloadMention> Mentions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets reactions for the message.
         /// </summary>
         /// <value>The reactions for the message.</value>
-        [JsonProperty(PropertyName = "reactions")]
+        [JsonPropertyName("reactions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<MessageActionsPayloadReaction> Reactions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the link back to the message.
         /// </summary>
         /// <value>The link back to the message.</value>
-        [JsonProperty(PropertyName = "linkToMessage")]
+        [JsonPropertyName("linkToMessage")]
         public Uri LinkToMessage { get; set; }
 
         /// <summary>

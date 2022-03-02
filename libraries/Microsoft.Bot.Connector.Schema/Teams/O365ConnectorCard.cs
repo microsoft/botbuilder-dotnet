@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -44,35 +44,35 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets title of the item.
         /// </summary>
         /// <value>The title of the item.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets text for the card.
         /// </summary>
         /// <value>The text for the card.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets summary for the card.
         /// </summary>
         /// <value>The summary for the card.</value>
-        [JsonProperty(PropertyName = "summary")]
+        [JsonPropertyName("summary")]
         public string Summary { get; set; }
 
         /// <summary>
         /// Gets or sets theme color for the card.
         /// </summary>
         /// <value>The theme color for the card.</value>
-        [JsonProperty(PropertyName = "themeColor")]
+        [JsonPropertyName("themeColor")]
         public string ThemeColor { get; set; }
 
         /// <summary>
         /// Gets or sets set of sections for the current card.
         /// </summary>
         /// <value>The sections for the current card.</value>
-        [JsonProperty(PropertyName = "sections")]
+        [JsonPropertyName("sections")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardSection> Sections { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets set of actions for the current card.
         /// </summary>
         /// <value>The actions for the current card.</value>
-        [JsonProperty(PropertyName = "potentialAction")]
+        [JsonPropertyName("potentialAction")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardActionBase> PotentialAction { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

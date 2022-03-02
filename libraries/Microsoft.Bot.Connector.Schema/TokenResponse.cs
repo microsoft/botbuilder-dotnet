@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Schema
@@ -39,37 +39,37 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the channel ID.
         /// </summary>
         /// <value>The channel ID.</value>
-        [JsonProperty(PropertyName = "channelId")]
+        [JsonPropertyName("channelId")]
         public string ChannelId { get; set; }
 
         /// <summary>
         /// Gets or sets the connection name.
         /// </summary>
         /// <value>The connection name.</value>
-        [JsonProperty(PropertyName = "connectionName")]
+        [JsonPropertyName("connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
         /// Gets or sets the token.
         /// </summary>
         /// <value>The token.</value>
-        [JsonProperty(PropertyName = "token")]
+        [JsonPropertyName("token")]
         public string Token { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration.
         /// </summary>
         /// <value>The expiration.</value>
-        [JsonProperty(PropertyName = "expiration")]
+        [JsonPropertyName("expiration")]
         public string Expiration { get; set; }
         
         /// <summary>
         /// Gets or sets extra propreties.
         /// </summary>
         /// <value>The extra properties.</value>
-        [JsonExtensionData(ReadData = true, WriteData = true)]
+        [JsonExtensionData]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public JObject Properties { get; set; } = new JObject();
+        public Dictionary<string, JsonElement> Properties { get; set; } = new Dictionary<string, JsonElement>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>

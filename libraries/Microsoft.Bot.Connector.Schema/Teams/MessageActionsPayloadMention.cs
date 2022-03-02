@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,21 +38,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the id of the mentioned entity.
         /// </summary>
         /// <value>The mentioned entity ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public int? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the mentioned entity.
         /// </summary>
         /// <value>The plaintext display name of the mentioned entity.</value>
-        [JsonProperty(PropertyName = "mentionText")]
+        [JsonPropertyName("mentionText")]
         public string MentionText { get; set; }
 
         /// <summary>
         /// Gets or sets provides more details on the mentioned entity.
         /// </summary>
         /// <value>Details of the mentioned entity.</value>
-        [JsonProperty(PropertyName = "mentioned")]
+        [JsonPropertyName("mentioned")]
         public MessageActionsPayloadFrom Mentioned { get; set; }
 
         /// <summary>

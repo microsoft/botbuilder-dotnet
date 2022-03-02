@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets the mentioned user.
         /// </summary>
         /// <value>The mentioned user.</value>
-        [JsonProperty(PropertyName = "mentioned")]
+        [JsonPropertyName("mentioned")]
         public ChannelAccount Mentioned { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// empty).
         /// </summary>
         /// <value>The sub text with represents the mention.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>

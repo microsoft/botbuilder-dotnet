@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets defines the snippet of text to highlight.
         /// </summary>
         /// <value>The snippet of text to highlight.</value>
-        [JsonProperty(PropertyName = "text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// text, if multiple exist.
         /// </summary>
         /// <value>The number of occurrences of the text field within the referenced text.</value>
-        [JsonProperty(PropertyName = "occurrence")]
+        [JsonPropertyName("occurrence")]
         public int? Occurrence { get; set; }
 
         /// <summary>

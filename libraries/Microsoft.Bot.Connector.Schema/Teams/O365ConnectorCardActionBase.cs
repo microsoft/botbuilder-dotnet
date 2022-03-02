@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -39,21 +39,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.
         /// </summary>
         /// <value>The type of the action.</value>
-        [JsonProperty(PropertyName = "@type")]
+        [JsonPropertyName("@type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets name of the action that will be used as button title.
         /// </summary>
         /// <value>The name of the action that will be used as a button title.</value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets action ID.
         /// </summary>
         /// <value>The action ID.</value>
-        [JsonProperty(PropertyName = "@id")]
+        [JsonPropertyName("@id")]
         public string Id { get; set; }
 
         /// <summary>

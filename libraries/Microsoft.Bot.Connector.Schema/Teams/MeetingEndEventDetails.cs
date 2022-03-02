@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The meeting's end time, in UTC.
         /// </value>
-        [JsonProperty(PropertyName = "EndTime")]
+        [JsonPropertyName("EndTime")]
         public DateTime EndTime { get; set; }
 
         /// <summary>

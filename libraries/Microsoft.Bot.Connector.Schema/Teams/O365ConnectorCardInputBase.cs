@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'dateInput', 'multichoiceInput'.
         /// </summary>
         /// <value>The input type name.</value>
-        [JsonProperty(PropertyName = "@type")]
+        [JsonPropertyName("@type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// card.
         /// </summary>
         /// <value>The input ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -58,21 +58,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// value is false.
         /// </summary>
         /// <value>Boolean indicating if this input is a required field.</value>
-        [JsonProperty(PropertyName = "isRequired")]
+        [JsonPropertyName("isRequired")]
         public bool? IsRequired { get; set; }
 
         /// <summary>
         /// Gets or sets input title that will be shown as the placeholder.
         /// </summary>
         /// <value>The input title that will be shown as the placeholder.</value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets default value for this input field.
         /// </summary>
         /// <value>The default value for this input field.</value>
-        [JsonProperty(PropertyName = "value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
 
         /// <summary>

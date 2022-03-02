@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -41,21 +41,21 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// 'webhook'.
         /// </summary>
         /// <value>The type of application.</value>
-        [JsonProperty(PropertyName = "applicationIdentityType")]
+        [JsonPropertyName("applicationIdentityType")]
         public string ApplicationIdentityType { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the application.
         /// </summary>
         /// <value>The application ID.</value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the application.
         /// </summary>
         /// <value>The plaintext display name of the application.</value>
-        [JsonProperty(PropertyName = "displayName")]
+        [JsonPropertyName("displayName")]
         public string DisplayName { get; set; }
 
         /// <summary>

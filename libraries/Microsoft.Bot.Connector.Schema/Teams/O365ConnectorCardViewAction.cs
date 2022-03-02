@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets target urls, only the first url effective for card button.
         /// </summary>
         /// <value>The target URLs.</value>
-        [JsonProperty(PropertyName = "target")]
+        [JsonPropertyName("target")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> Target { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

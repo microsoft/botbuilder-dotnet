@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -39,14 +39,14 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets ID of the command assigned by Bot.
         /// </summary>
         /// <value>The ID of the command assigned by the Bot.</value>
-        [JsonProperty(PropertyName = "commandId")]
+        [JsonPropertyName("commandId")]
         public string CommandId { get; set; }
 
         /// <summary>
         /// Gets or sets parameters for the query.
         /// </summary>
         /// <value>The parameters for the query.</value>
-        [JsonProperty(PropertyName = "parameters")]
+        [JsonPropertyName("parameters")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionParameter> Parameters { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// Gets or sets the query options.
         /// </summary>
         /// <value>The query options.</value>
-        [JsonProperty(PropertyName = "queryOptions")]
+        [JsonPropertyName("queryOptions")]
         public MessagingExtensionQueryOptions QueryOptions { get; set; }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// authentication/configuration flow.
         /// </summary>
         /// <value>The state parameter passed back to the bot after authentication/configuration flow.</value>
-        [JsonProperty(PropertyName = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
         /// <summary>

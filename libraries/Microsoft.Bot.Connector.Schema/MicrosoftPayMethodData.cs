@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema
 {
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets Microsoft Pay Merchant ID.
         /// </summary>
         /// <value>The Microsoft Pay Merchant ID.</value>
-        [JsonProperty(PropertyName = "merchantId")]
+        [JsonPropertyName("merchantId")]
         public string MerchantId { get; set; }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <value>
         /// Payment method mode.
         /// </value>
-        [JsonProperty(PropertyName = "mode", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("mode", NullValueHandling = NullValueHandling.Ignore)]
         public string Mode { get; set; }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// "mastercard").
         /// </summary>
         /// <value>The supported payment networks.</value>
-        [JsonProperty(PropertyName = "supportedNetworks")]
+        [JsonPropertyName("supportedNetworks")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedNetworks { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// Gets or sets supported payment types (e.g., "credit").
         /// </summary>
         /// <value>The supported payment types.</value>
-        [JsonProperty(PropertyName = "supportedTypes")]
+        [JsonPropertyName("supportedTypes")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedTypes { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// /// <value>
         /// The team Id.
         /// </value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// Name of team.
         /// </value>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The AAD Group Id.
         /// </value>
-        [JsonProperty(PropertyName = "aadGroupId")]
+        [JsonPropertyName("aadGroupId")]
         public string AadGroupId { get; set; }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The number of channels in the team.
         /// </value>
-        [JsonProperty(PropertyName = "channelCount")]
+        [JsonPropertyName("channelCount")]
         public int ChannelCount { get; set; }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The number of members in the team.
         /// </value>
-        [JsonProperty(PropertyName = "memberCount")]
+        [JsonPropertyName("memberCount")]
         public int MemberCount { get; set; }
 
         /// <summary>

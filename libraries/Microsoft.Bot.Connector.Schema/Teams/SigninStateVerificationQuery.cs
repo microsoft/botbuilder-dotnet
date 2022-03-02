@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// microsoftTeams.authentication.notifySuccess(state).
         /// </summary>
         /// <value>The state.</value>
-        [JsonProperty(PropertyName = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
         /// <summary>

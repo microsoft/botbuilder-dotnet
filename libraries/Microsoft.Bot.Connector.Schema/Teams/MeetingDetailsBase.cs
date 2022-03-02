@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The meeting's Id, encoded as a BASE64 string.
         /// </value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The URL used to join the meeting.
         /// </value>
-        [JsonProperty(PropertyName = "joinUrl")]
+        [JsonPropertyName("joinUrl")]
         public Uri JoinUrl { get; set; }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         /// <value>
         /// The title of the meeting.
         /// </value>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
         /// <summary>
