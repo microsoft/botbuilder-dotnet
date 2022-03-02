@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// An item on a receipt card.
     /// </summary>
-    public partial class ReceiptItem
+    public class ReceiptItem
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReceiptItem"/> class.
-        /// </summary>
-        public ReceiptItem()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ReceiptItem"/> class.
         /// </summary>
@@ -41,7 +32,6 @@ namespace Microsoft.Bot.Schema
             Price = price;
             Quantity = quantity;
             Tap = tap;
-            CustomInit();
         }
 
         /// <summary>
@@ -95,10 +85,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The action that will activate when the user taps on the Item bubble.</value>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

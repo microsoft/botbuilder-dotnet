@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Thing (entity type: "https://schema.org/Thing").
     /// </summary>
-    public partial class Thing
+    public class Thing
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Thing"/> class.
-        /// </summary>
-        public Thing()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Thing"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema
         {
             Type = type;
             Name = name;
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +34,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The name of the thing.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// A response containing a resource ID.
     /// </summary>
-    public partial class ResourceResponse
+    public class ResourceResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceResponse"/> class.
-        /// </summary>
-        public ResourceResponse()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceResponse"/> class.
         /// </summary>
@@ -26,7 +17,6 @@ namespace Microsoft.Bot.Schema
         public ResourceResponse(string id = default)
         {
             Id = id;
-            CustomInit();
         }
 
         /// <summary>
@@ -35,10 +25,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The ID of the resource.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

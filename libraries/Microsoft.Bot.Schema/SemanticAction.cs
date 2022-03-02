@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Represents a reference to a programmatic action.
     /// </summary>
-    public partial class SemanticAction
+    public class SemanticAction
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SemanticAction"/> class.
-        /// </summary>
-        public SemanticAction()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SemanticAction"/> class.
         /// </summary>
@@ -28,7 +20,6 @@ namespace Microsoft.Bot.Schema
         {
             Id = id;
             Entities = entities ?? new Dictionary<string, Entity>();
-            CustomInit();
         }
 
         /// <summary>
@@ -52,10 +43,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The state of this action.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

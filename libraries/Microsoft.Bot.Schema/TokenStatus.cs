@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// The status of a particular token.
     /// </summary>
-    public partial class TokenStatus
+    public class TokenStatus
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenStatus"/> class.
-        /// </summary>
-        public TokenStatus()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenStatus"/> class.
         /// </summary>
@@ -35,7 +27,6 @@ namespace Microsoft.Bot.Schema
             ConnectionName = connectionName;
             HasToken = hasToken;
             ServiceProviderDisplayName = serviceProviderDisplayName;
-            CustomInit();
         }
 
         /// <summary>
@@ -67,10 +58,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The display name of the service provider for which this Token belongs to.</value>
         [JsonProperty(PropertyName = "serviceProviderDisplayName")]
         public string ServiceProviderDisplayName { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

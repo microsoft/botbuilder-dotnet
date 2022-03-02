@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Response schema sent back from Bot Framework Token Service required to initiate a user single sign on.
     /// </summary>
-    public partial class TokenExchangeResource
+    public class TokenExchangeResource
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenExchangeResource"/> class.
-        /// </summary>
-        public TokenExchangeResource()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenExchangeResource"/> class.
         /// </summary>
@@ -29,7 +21,6 @@ namespace Microsoft.Bot.Schema
             Id = id;
             Uri = uri;
             ProviderId = providerId;
-            CustomInit();
         }
 
         /// <summary>
@@ -55,10 +46,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The ID of the provider with which to attempt a tocken exchange.</value>
         [JsonProperty(PropertyName = "providerId")]
         public string ProviderId { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

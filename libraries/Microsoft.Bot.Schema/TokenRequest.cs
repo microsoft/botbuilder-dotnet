@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// A request to receive a user token.
     /// </summary>
-    public partial class TokenRequest
+    public class TokenRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenRequest"/> class.
-        /// </summary>
-        public TokenRequest()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenRequest"/> class.
         /// </summary>
@@ -30,7 +22,6 @@ namespace Microsoft.Bot.Schema
         {
             Provider = provider;
             Settings = settings ?? new Dictionary<string, object>();
-            CustomInit();
         }
 
         /// <summary>
@@ -47,10 +38,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The collection of settings for the specific provider for this request.</value>
         [JsonProperty(PropertyName = "settings")]
         public IDictionary<string, object> Settings { get; private set; } = new Dictionary<string, object>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

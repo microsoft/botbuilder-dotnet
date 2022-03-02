@@ -7,14 +7,8 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>Parameters for creating a new conversation.</summary>
-    public partial class ConversationParameters
+    public class ConversationParameters
     {
-        /// <summary>Initializes a new instance of the <see cref="ConversationParameters"/> class.</summary>
-        public ConversationParameters()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="ConversationParameters"/> class.</summary>
         /// <param name="isGroup">IsGroup.</param>
         /// <param name="bot">The bot address for this conversation.</param>
@@ -32,7 +26,6 @@ namespace Microsoft.Bot.Schema
             Activity = activity;
             ChannelData = channelData;
             TenantId = tenantId;
-            CustomInit();
         }
 
         /// <summary>Gets or sets isGroup.</summary>
@@ -69,8 +62,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The tenant ID.</value>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

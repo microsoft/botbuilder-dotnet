@@ -3,18 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>A response containing a resource.</summary>
-    public partial class ConversationResourceResponse
+    public class ConversationResourceResponse
     {
-        /// <summary>Initializes a new instance of the <see cref="ConversationResourceResponse"/> class.</summary>
-        public ConversationResourceResponse()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="ConversationResourceResponse"/> class.</summary>
         /// <param name="activityId">ID of the Activity (if sent).</param>
         /// <param name="serviceUrl">Service endpoint where operations concerning the conversation may be performed.</param>
@@ -24,7 +17,6 @@ namespace Microsoft.Bot.Schema
             ActivityId = activityId;
             ServiceUrl = serviceUrl;
             Id = id;
-            CustomInit();
         }
 
         /// <summary>Gets or sets ID of the Activity (if sent).</summary>
@@ -43,8 +35,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The resource ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// A type containing information for single sign-on.
     /// </summary>
-    public partial class SignInResource
+    public class SignInResource
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SignInResource"/> class.
-        /// </summary>
-        public SignInResource()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SignInResource"/> class.
         /// </summary>
@@ -27,7 +19,6 @@ namespace Microsoft.Bot.Schema
         {
             SignInLink = signInLink;
             TokenExchangeResource = tokenExchangeResource;
-            CustomInit();
         }
 
         /// <summary>
@@ -43,10 +34,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The additional properties can be used for token exchange operations.</value>
         [JsonProperty(PropertyName = "tokenExchangeResource")]
         public TokenExchangeResource TokenExchangeResource { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

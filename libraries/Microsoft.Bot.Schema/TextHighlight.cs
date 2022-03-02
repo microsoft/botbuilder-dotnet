@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Refers to a substring of content within another field.
     /// </summary>
-    public partial class TextHighlight
+    public class TextHighlight
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TextHighlight"/> class.
-        /// </summary>
-        public TextHighlight()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TextHighlight"/> class.
         /// </summary>
@@ -29,7 +20,6 @@ namespace Microsoft.Bot.Schema
         {
             Text = text;
             Occurrence = occurrence;
-            CustomInit();
         }
 
         /// <summary>
@@ -46,10 +36,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The number of occurrences of the text field within the referenced text.</value>
         [JsonProperty(PropertyName = "occurrence")]
         public int? Occurrence { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

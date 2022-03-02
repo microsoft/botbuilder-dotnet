@@ -11,14 +11,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Conversations result.
     /// </summary>
-    public partial class ConversationsResult
+    public class ConversationsResult
     {
-        /// <summary>Initializes a new instance of the <see cref="ConversationsResult"/> class.</summary>
-        public ConversationsResult()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="ConversationsResult"/> class.</summary>
         /// <param name="continuationToken">Paging token.</param>
         /// <param name="conversations">List of conversations.</param>
@@ -26,7 +20,6 @@ namespace Microsoft.Bot.Schema
         {
             ContinuationToken = continuationToken;
             Conversations = conversations ?? new List<ConversationMembers>();
-            CustomInit();
         }
 
         /// <summary>Gets or sets paging token.</summary>
@@ -38,8 +31,5 @@ namespace Microsoft.Bot.Schema
         /// <value>A list of conversations.</value>
         [JsonProperty(PropertyName = "conversations")]
         public IList<ConversationMembers> Conversations { get; private set; } = new List<ConversationMembers>();
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

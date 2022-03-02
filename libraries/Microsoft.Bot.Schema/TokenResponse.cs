@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Response schema sent back from Bot Framework Token Service, in response to a request to get or exchange a token for a user.
     /// </summary>
-    public partial class TokenResponse
+    public class TokenResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TokenResponse"/> class.
-        /// </summary>
-        public TokenResponse()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenResponse"/> class.
         /// </summary>
@@ -34,7 +26,6 @@ namespace Microsoft.Bot.Schema
             Token = token;
             Expiration = expiration;
             Properties = properties;
-            CustomInit();
         }
 
         /// <summary>
@@ -71,10 +62,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The extra properties.</value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public JObject Properties { get; private set; } = new JObject();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

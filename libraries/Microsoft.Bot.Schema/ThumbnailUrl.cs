@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Thumbnail URL.
     /// </summary>
-    public partial class ThumbnailUrl
+    public class ThumbnailUrl
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ThumbnailUrl"/> class.
-        /// </summary>
-        public ThumbnailUrl()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ThumbnailUrl"/> class.
         /// </summary>
@@ -30,7 +21,6 @@ namespace Microsoft.Bot.Schema
         {
             Url = url;
             Alt = alt;
-            CustomInit();
         }
 
         /// <summary>
@@ -48,10 +38,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The HTML alt text to include on this thumbnail image.</value>
         [JsonProperty(PropertyName = "alt")]
         public string Alt { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
