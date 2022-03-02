@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
@@ -29,8 +28,11 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         public TeamsPagedMembersResult(string continuationToken = default, IList<ChannelAccount> members = default)
         {
             ContinuationToken = continuationToken;
-            var teamsChannelAccounts = members.Select(channelAccount => Dictionary<string, JsonElement>.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
-            Members = teamsChannelAccounts.ToList();
+
+            if (members != null)
+            {
+                Members = members.Select(m => m.ToObject<TeamsChannelAccount>()).ToList();
+            }
         }
 
         /// <summary>

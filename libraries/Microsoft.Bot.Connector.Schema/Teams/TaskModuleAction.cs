@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Xml;
 
 namespace Microsoft.Bot.Connector.Schema.Teams
 {
@@ -20,29 +19,16 @@ namespace Microsoft.Bot.Connector.Schema.Teams
         public TaskModuleAction(string title, object value = null)
             : base("invoke", title)
         {
-            JToken data;
-            if (value == null)
+            var data = value == null
+                ? new Dictionary<string, JsonElement>()
+                : value.ToJsonElements();
+
+            foreach (var element in new { type = "task/fetch" }.ToJsonElements())
             {
-                data = new Dictionary<string, JsonElement>();
-            }
-            else
-            {
-                if (value is string)
-                {
-                    data = Dictionary<string, JsonElement>.Parse(value as string);
-                }
-                else
-                {
-                    data = Dictionary<string, JsonElement>.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        Formatting = Formatting.None
-                    }));
-                }
+                data.Add(element.Key, element.Value);
             }
 
-            data["type"] = "task/fetch";
-            this.Value = data.ToString();
+            Value = JsonSerializer.Serialize(data, SerializationConfig.DefaultSerializeOptions);
         }
     }
 }

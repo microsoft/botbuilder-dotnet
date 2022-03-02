@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <returns>T as T.</returns>
         public T GetAs<T>()
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this));
+            return this.ToObject<T>();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Schema
         /// <param name="obj">obj.</param>
         public void SetAs<T>(T obj)
         {
-            var entity = JsonConvert.DeserializeObject<Entity>(JsonConvert.SerializeObject(obj));
+            var entity = obj.ToObject<Entity>();
             Type = entity.Type;
             Properties = entity.Properties;
         }
@@ -79,7 +79,8 @@ namespace Microsoft.Bot.Connector.Schema
                 return false;
             }
 
-            return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other), StringComparison.Ordinal);
+            return JsonSerializer.SerializeToUtf8Bytes(this, SerializationConfig.DefaultSerializeOptions)
+                .SequenceEqual(JsonSerializer.SerializeToUtf8Bytes(other, SerializationConfig.DefaultSerializeOptions));
         }
 
         /// <summary>
