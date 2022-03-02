@@ -10,7 +10,6 @@ using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Microsoft.Bot.Connector.Client.Authentication;
 using Microsoft.Rest;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -273,9 +272,6 @@ namespace Microsoft.Bot.Connector.Client
 
         partial void CustomInitialize()
         {
-            // Override the contract resolver with the Default because we want to be able to serialize annonymous types
-            SerializationSettings.ContractResolver = new DefaultContractResolver();
-            DeserializationSettings.ContractResolver = new DefaultContractResolver();
         }
     }
 }

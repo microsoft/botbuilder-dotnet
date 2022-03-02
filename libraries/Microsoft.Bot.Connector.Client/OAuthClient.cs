@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Client.Authentication;
 using Microsoft.Bot.Connector.Schema;
 using Microsoft.Rest;
-using Microsoft.Rest.Serialization;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -268,14 +267,6 @@ namespace Microsoft.Bot.Connector.Client
         /// <value> The base URI. </value>
         public System.Uri BaseUri { get; set; }
 
-        /// <summary> Gets json serialization settings. </summary>
-        /// <value>The serialization settings.</value>
-        public JsonSerializerSettings SerializationSettings { get; private set; }
-
-        /// <summary> Gets json deserialization settings. </summary>
-        /// <value> The deserialization settings. </value>
-        public JsonSerializerSettings DeserializationSettings { get; private set; }
-
         /// <summary> Gets subscription credentials which uniquely identify client subscription. </summary>
         /// <value>The client credentials. </value>
         public ServiceClientCredentials Credentials { get; private set; }
@@ -386,7 +377,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (exchangeRequest != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(exchangeRequest, this.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(exchangeRequest, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -420,7 +411,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, this.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -458,7 +449,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenResponse>(responseContent, this.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<TokenResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -478,7 +469,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, this.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -498,7 +489,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenResponse>(responseContent, this.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<TokenResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -668,7 +659,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<SignInResource>(responseContent, this.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<SignInResource>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -711,31 +702,6 @@ namespace Microsoft.Bot.Connector.Client
             BotSignIn = new BotSignIn(this);
             UserToken = new UserToken(this);
             BaseUri = new System.Uri(AuthenticationConstants.OAuthUrl);
-            SerializationSettings = new JsonSerializerSettings
-            {
-                Formatting = Newtonsoft.Json.Formatting.Indented,
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-                ContractResolver = new ReadOnlyJsonContractResolver(),
-                Converters = new List<JsonConverter>
-                    {
-                        new Iso8601TimeSpanConverter()
-                    }
-            };
-            DeserializationSettings = new JsonSerializerSettings
-            {
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-                ContractResolver = new ReadOnlyJsonContractResolver(),
-                Converters = new List<JsonConverter>
-                    {
-                        new Iso8601TimeSpanConverter()
-                    }
-            };
             CustomInitialize();
         }
     }

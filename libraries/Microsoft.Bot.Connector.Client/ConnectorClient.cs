@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Rest;
-using Microsoft.Rest.Serialization;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -295,18 +292,6 @@ namespace Microsoft.Bot.Connector.Client
         public System.Uri BaseUri { get; set; }
 
         /// <summary>
-        /// Gets the JSON serialization settings.
-        /// </summary>
-        /// <value>The JSON serialization settings.</value>
-        public JsonSerializerSettings SerializationSettings { get; private set; }
-
-        /// <summary>
-        /// Gets the JSON deserialization settings.
-        /// </summary>
-        /// <value>The JSON deserialization settings.</value>
-        public JsonSerializerSettings DeserializationSettings { get; private set; }
-
-        /// <summary>
         /// Gets the subscription credentials which uniquely identify client subscription.
         /// </summary>
         /// <value>The subscription credentials.</value>
@@ -337,31 +322,6 @@ namespace Microsoft.Bot.Connector.Client
             Attachments = new Attachments(this);
             Conversations = new Conversations(this);
             BaseUri = new System.Uri("https://api.botframework.com");
-            SerializationSettings = new JsonSerializerSettings
-            {
-                Formatting = Newtonsoft.Json.Formatting.None,
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-                ContractResolver = new ReadOnlyJsonContractResolver(),
-                Converters = new List<JsonConverter>
-                    {
-                        new Iso8601TimeSpanConverter()
-                    }
-            };
-            DeserializationSettings = new JsonSerializerSettings
-            {
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-                ContractResolver = new ReadOnlyJsonContractResolver(),
-                Converters = new List<JsonConverter>
-                    {
-                        new Iso8601TimeSpanConverter()
-                    }
-            };
             CustomInitialize();
         }
     }

@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Schema;
 using Microsoft.Bot.Connector.Schema.Teams;
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client.Teams
 {
@@ -374,7 +375,7 @@ namespace Microsoft.Bot.Connector.Client.Teams
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<T>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {

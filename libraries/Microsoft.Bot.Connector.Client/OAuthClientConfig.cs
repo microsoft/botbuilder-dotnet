@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Client.Authentication;
 using Microsoft.Bot.Connector.Schema;
 using Microsoft.Rest;
-using Microsoft.Rest.Serialization;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -102,7 +101,7 @@ namespace Microsoft.Bot.Connector.Client
                         try
                         {
                             responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            var errorBody = SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, client.DeserializationSettings);
+                            var errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                             if (errorBody != null)
                             {
                                 ex.Body = errorBody;

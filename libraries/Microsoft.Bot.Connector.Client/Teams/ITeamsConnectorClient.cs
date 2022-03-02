@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client.Teams
 {
@@ -39,18 +38,6 @@ namespace Microsoft.Bot.Connector.Client.Teams
         /// </summary>
         /// <value>The base URI.</value>
         System.Uri BaseUri { get; set; }
-
-        /// <summary>
-        /// Gets the JSON serialization settings.
-        /// </summary>
-        /// <value>The JSON serialization settings.</value>
-        JsonSerializerSettings SerializationSettings { get; }
-
-        /// <summary>
-        /// Gets the JSON deserialization settings.
-        /// </summary>
-        /// <value>the JSON deserialization settings.</value>
-        JsonSerializerSettings DeserializationSettings { get; }
 
         /// <summary>
         /// Gets the subscription credentials which uniquely identify client

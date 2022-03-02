@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Schema;
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationsResult>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ConversationsResult>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (parameters != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, Client.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(parameters, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -387,7 +387,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ConversationResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -407,7 +407,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ConversationResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -427,7 +427,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ConversationResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -548,7 +548,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (activity != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(activity, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -582,7 +582,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -620,7 +620,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -640,7 +640,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -660,7 +660,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -775,7 +775,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (transcript != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(transcript, Client.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(transcript, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -809,7 +809,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -847,7 +847,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -867,7 +867,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -887,7 +887,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1012,7 +1012,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (activity != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(activity, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -1046,7 +1046,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -1084,7 +1084,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1104,7 +1104,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1124,7 +1124,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1257,7 +1257,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (activity != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(activity, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -1291,7 +1291,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -1329,7 +1329,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1349,7 +1349,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1369,7 +1369,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1507,7 +1507,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -1655,7 +1655,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -1693,7 +1693,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<IList<ChannelAccount>>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1834,7 +1834,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -1872,7 +1872,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ChannelAccount>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ChannelAccount>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -1974,7 +1974,7 @@ namespace Microsoft.Bot.Connector.Client
             List<string> queryParameters = new List<string>();
             if (pageSize != null)
             {
-                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "pageSize={0}", System.Uri.EscapeDataString(JsonSerializer.Serialize(pageSize, SerializationConfig.DefaultSerializeOptions).Trim('"'))));
             }
 
             if (continuationToken != null)
@@ -2072,7 +2072,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<PagedMembersResult>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<PagedMembersResult>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -2212,7 +2212,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -2371,7 +2371,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -2409,7 +2409,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<IList<ChannelAccount>>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -2524,7 +2524,7 @@ namespace Microsoft.Bot.Connector.Client
             string requestContent = null;
             if (attachmentUpload != null)
             {
-                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(attachmentUpload, Client.SerializationSettings);
+                requestContent = JsonSerializer.Serialize(attachmentUpload, SerializationConfig.DefaultSerializeOptions);
                 httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
                 httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
@@ -2558,7 +2558,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -2596,7 +2596,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -2616,7 +2616,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -2636,7 +2636,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<ResourceResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {

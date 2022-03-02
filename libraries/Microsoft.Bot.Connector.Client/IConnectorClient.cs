@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -40,14 +39,6 @@ namespace Microsoft.Bot.Connector.Client
         /// Gets or sets the base URI of the service.</summary>
         /// <value>See <see cref="System.Uri" /> class.</value>
         System.Uri BaseUri { get; set; }
-
-        /// <summary>Gets json serialization settings. </summary>
-        /// <value>See <see cref="JsonSerializerSettings" /> class.</value>
-        JsonSerializerSettings SerializationSettings { get; }
-
-        /// <summary>Gets json deserialization settings.</summary>
-        /// <value>See <see cref="JsonSerializerSettings" /> class.</value>
-        JsonSerializerSettings DeserializationSettings { get; }
 
         /// <summary> Gets subscription credentials, which uniquely identify client subscription.</summary>
         /// <value>See <see cref="ServiceClientCredentials" /> class.</value>

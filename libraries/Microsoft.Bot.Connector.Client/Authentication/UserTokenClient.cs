@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Schema;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client.Authentication
 {
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Client.Authentication
                 RelatesTo = activity.RelatesTo,
                 MsAppId = appId,
             };
-            var json = JsonConvert.SerializeObject(tokenExchangeState);
+            var json = JsonSerializer.Serialize(tokenExchangeState, SerializationConfig.DefaultSerializeOptions);
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
         }
 

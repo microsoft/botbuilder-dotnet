@@ -3,11 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Schema;
 using Microsoft.IdentityModel.Protocols;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Client.Authentication
 {
@@ -74,30 +75,31 @@ namespace Microsoft.Bot.Connector.Client.Authentication
             }
 
             var jsonDocument = await retriever.GetDocumentAsync(address, cancellationToken).ConfigureAwait(false);
-            var configurationRoot = JObject.Parse(jsonDocument);
+            var configurationRoot = jsonDocument.ToJsonElements();
 
-            var keys = configurationRoot["keys"]?.Value<JArray>();
+            var keys = configurationRoot["keys"].EnumerateObject().ToArray();
 
             if (keys == null)
             {
                 return new Dictionary<string, HashSet<string>>(0);
             }
 
-            var results = new Dictionary<string, HashSet<string>>(keys.Count);
+            var results = new Dictionary<string, HashSet<string>>(keys.Length);
 
             foreach (var key in keys)
             {
-                var keyId = key[AuthenticationConstants.KeyIdHeader]?.Value<string>();
+                var keyId = key.Name.Equals(AuthenticationConstants.KeyIdHeader, StringComparison.OrdinalIgnoreCase)
+                    ? key.Value.GetString()
+                    : null;
 
                 if (keyId != null
                         &&
                    !results.ContainsKey(keyId))
                 {
-                    var endorsementsToken = key["endorsements"];
-
-                    if (endorsementsToken != null)
+                    if (key.Name.Equals("endorsements", StringComparison.OrdinalIgnoreCase))
                     {
-                        results.Add(keyId, new HashSet<string>(endorsementsToken.Values<string>()));
+                        var values = key.Value.EnumerateArray().Select(e => e.GetString());
+                        results.Add(keyId, new HashSet<string>(values));
                     }
                 }
             }
@@ -135,8 +137,8 @@ namespace Microsoft.Bot.Connector.Client.Authentication
                     return string.Empty;
                 }
 
-                var obj = JObject.Parse(json);
-                var keysUrl = obj[JsonWebKeySetUri]?.Value<string>();
+                var obj = json.ToJsonElements();
+                var keysUrl = obj[JsonWebKeySetUri].GetString();
 
                 if (keysUrl == null)
                 {

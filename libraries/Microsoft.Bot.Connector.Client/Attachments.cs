@@ -7,11 +7,11 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Schema;
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<AttachmentInfo>(responseContent, Client.DeserializationSettings);
+                    result.Body = JsonSerializer.Deserialize<AttachmentInfo>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                 }
                 catch (JsonException ex)
                 {
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
