@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Message reaction object.
     /// </summary>
-    public partial class MessageReaction
+    public class MessageReaction
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageReaction"/> class.
-        /// </summary>
-        public MessageReaction()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageReaction"/> class.
         /// </summary>
@@ -26,7 +18,6 @@ namespace Microsoft.Bot.Schema
         public MessageReaction(string type = default)
         {
             Type = type;
-            CustomInit();
         }
 
         /// <summary>
@@ -36,10 +27,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The message reaction type.</value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

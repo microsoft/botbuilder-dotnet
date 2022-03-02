@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Object representing inner http error.
     /// </summary>
-    public partial class InnerHttpError
+    public class InnerHttpError
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InnerHttpError"/> class.
-        /// </summary>
-        public InnerHttpError()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InnerHttpError"/> class.
         /// </summary>
@@ -28,7 +19,6 @@ namespace Microsoft.Bot.Schema
         {
             StatusCode = statusCode;
             Body = body;
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +34,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The body from failed request.</value>
         [JsonProperty(PropertyName = "body")]
         public object Body { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

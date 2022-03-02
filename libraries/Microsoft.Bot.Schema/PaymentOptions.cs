@@ -10,16 +10,8 @@ namespace Microsoft.Bot.Schema
     /// Provides information about the options desired for the payment request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentOptions
+    public class PaymentOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentOptions"/> class.
-        /// </summary>
-        public PaymentOptions()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentOptions"/> class.
         /// </summary>
@@ -46,7 +38,6 @@ namespace Microsoft.Bot.Schema
             RequestPayerPhone = requestPayerPhone;
             RequestShipping = requestShipping;
             ShippingType = shippingType;
-            CustomInit();
         }
 
         /// <summary>
@@ -89,10 +80,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The shipping type.</value>
         [JsonProperty(PropertyName = "shippingType")]
         public string ShippingType { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

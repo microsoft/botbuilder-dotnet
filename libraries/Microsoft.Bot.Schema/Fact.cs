@@ -11,16 +11,8 @@ namespace Microsoft.Bot.Schema
     /// rendered with default style information with some delimiter between
     /// them. So there is no need for developer to specify style information.
     /// </summary>
-    public partial class Fact
+    public class Fact
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Fact"/> class.
-        /// </summary>
-        public Fact()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Fact"/> class.
         /// </summary>
@@ -30,7 +22,6 @@ namespace Microsoft.Bot.Schema
         {
             Key = key;
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -46,10 +37,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The value for this Fact.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

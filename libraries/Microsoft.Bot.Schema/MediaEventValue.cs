@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Supplementary parameter for media events.
     /// </summary>
-    public partial class MediaEventValue
+    public class MediaEventValue
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MediaEventValue"/> class.
-        /// </summary>
-        public MediaEventValue()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaEventValue"/> class.
         /// </summary>
@@ -26,7 +18,6 @@ namespace Microsoft.Bot.Schema
         public MediaEventValue(object cardValue = default)
         {
             CardValue = cardValue;
-            CustomInit();
         }
 
         /// <summary>
@@ -36,10 +27,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The callback parameter specifid in the Value field of the MediaCard that originated this event.</value>
         [JsonProperty(PropertyName = "cardValue")]
         public object CardValue { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -10,16 +10,8 @@ namespace Microsoft.Bot.Schema
     /// Describes a shipping option.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentShippingOption
+    public class PaymentShippingOption
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentShippingOption"/> class.
-        /// </summary>
-        public PaymentShippingOption()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentShippingOption"/> class.
         /// </summary>
@@ -36,7 +28,6 @@ namespace Microsoft.Bot.Schema
             Label = label;
             Amount = amount;
             Selected = selected;
-            CustomInit();
         }
 
         /// <summary>
@@ -67,10 +58,5 @@ namespace Microsoft.Bot.Schema
         /// <value>Boolean indivating if this is the default selected <see cref="PaymentShippingOption"/>.</value>
         [JsonProperty(PropertyName = "selected")]
         public bool? Selected { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

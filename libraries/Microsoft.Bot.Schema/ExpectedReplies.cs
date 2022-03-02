@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Replies in response to <see cref="DeliveryModes.ExpectReplies"/>.
     /// </summary>
-    public partial class ExpectedReplies
+    public class ExpectedReplies
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExpectedReplies"/> class.
-        /// </summary>
-        public ExpectedReplies()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpectedReplies"/> class.
         /// </summary>
@@ -27,7 +19,6 @@ namespace Microsoft.Bot.Schema
         public ExpectedReplies(IList<Activity> activities = default)
         {
             Activities = activities ?? new List<Activity>();
-            CustomInit();
         }
 
         /// <summary>
@@ -36,10 +27,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The collection of activities that conforms to the ExpectedREplies schema.</value>
         [JsonProperty(PropertyName = "activities")]
         public IList<Activity> Activities { get; private set; } = new List<Activity>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

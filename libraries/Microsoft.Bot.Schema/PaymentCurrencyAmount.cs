@@ -10,16 +10,8 @@ namespace Microsoft.Bot.Schema
     /// Supplies monetary amounts.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentCurrencyAmount
+    public class PaymentCurrencyAmount
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentCurrencyAmount"/> class.
-        /// </summary>
-        public PaymentCurrencyAmount()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentCurrencyAmount"/> class.
         /// </summary>
@@ -31,7 +23,6 @@ namespace Microsoft.Bot.Schema
             Currency = currency;
             Value = value;
             CurrencySystem = currencySystem;
-            CustomInit();
         }
 
         /// <summary>
@@ -54,10 +45,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The currency system.</value>
         [JsonProperty(PropertyName = "currencySystem")]
         public string CurrencySystem { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

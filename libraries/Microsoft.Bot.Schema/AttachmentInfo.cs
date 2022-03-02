@@ -7,14 +7,8 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>Metadata for an attachment.</summary>
-    public partial class AttachmentInfo
+    public class AttachmentInfo
     {
-        /// <summary>Initializes a new instance of the <see cref="AttachmentInfo"/> class.</summary>
-        public AttachmentInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="AttachmentInfo"/> class.</summary>
         /// <param name="name">Name of the attachment.</param>
         /// <param name="type">ContentType of the attachment.</param>
@@ -24,7 +18,6 @@ namespace Microsoft.Bot.Schema
             Name = name;
             Type = type;
             Views = views ?? new List<AttachmentView>();
-            CustomInit();
         }
 
         /// <summary>Gets or sets name of the attachment.</summary>
@@ -41,8 +34,5 @@ namespace Microsoft.Bot.Schema
         /// <value> The attachment views.</value>
         [JsonProperty(PropertyName = "views")]
         public IList<AttachmentView> Views { get; private set; } = new List<AttachmentView>();
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

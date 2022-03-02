@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Page of members.
     /// </summary>
-    public partial class PagedMembersResult
+    public class PagedMembersResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PagedMembersResult"/> class.
-        /// </summary>
-        public PagedMembersResult()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PagedMembersResult"/> class.
         /// </summary>
@@ -28,7 +20,6 @@ namespace Microsoft.Bot.Schema
         {
             ContinuationToken = continuationToken;
             Members = members ?? new List<ChannelAccount>();
-            CustomInit();
         }
 
         /// <summary>
@@ -44,10 +35,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The Channel Accounts.</value>
         [JsonProperty(PropertyName = "members")]
         public IList<ChannelAccount> Members { get; private set; } = new List<ChannelAccount>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -11,16 +11,8 @@ namespace Microsoft.Bot.Schema
     /// Provides information about the requested transaction.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentDetails
+    public class PaymentDetails
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentDetails"/> class.
-        /// </summary>
-        public PaymentDetails()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentDetails"/> class.
         /// </summary>
@@ -40,7 +32,6 @@ namespace Microsoft.Bot.Schema
             ShippingOptions = shippingOptions ?? new List<PaymentShippingOption>();
             Modifiers = modifiers ?? new List<PaymentDetailsModifier>();
             Error = error;
-            CustomInit();
         }
 
         /// <summary>
@@ -80,10 +71,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The error description.</value>
         [JsonProperty(PropertyName = "error")]
         public string Error { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

@@ -11,16 +11,8 @@ namespace Microsoft.Bot.Schema
     /// Address within a Payment Request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentAddress
+    public class PaymentAddress
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentAddress"/> class.
-        /// </summary>
-        public PaymentAddress()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentAddress"/> class.
         /// </summary>
@@ -64,7 +56,6 @@ namespace Microsoft.Bot.Schema
             Organization = organization;
             Recipient = recipient;
             Phone = phone;
-            CustomInit();
         }
 
         /// <summary>
@@ -157,10 +148,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The phone number of the recipient or contact person.</value>
         [JsonProperty(PropertyName = "phone")]
         public string Phone { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

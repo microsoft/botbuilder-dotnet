@@ -3,24 +3,14 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Schema of the target resource for which the Bot Framework Token Service would exchange a cached token for a user. This class applies only to AAD V1 connections.
     /// </summary>
-    public partial class AadResourceUrls
+    public class AadResourceUrls
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AadResourceUrls"/> class.
-        /// </summary>
-        public AadResourceUrls()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AadResourceUrls"/> class.
         /// </summary>
@@ -28,7 +18,6 @@ namespace Microsoft.Bot.Schema
         public AadResourceUrls(IList<string> resourceUrls = default)
         {
             ResourceUrls = resourceUrls ?? new List<string>();
-            CustomInit();
         }
 
         /// <summary>
@@ -37,10 +26,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The URLs to the resources you want to connect to.</value>
         [JsonProperty(PropertyName = "resourceUrls")]
         public IList<string> ResourceUrls { get; private set; } = new List<string>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

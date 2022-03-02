@@ -12,16 +12,8 @@ namespace Microsoft.Bot.Schema
     /// method specific data for those methods.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentMethodData
+    public class PaymentMethodData
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentMethodData"/> class.
-        /// </summary>
-        public PaymentMethodData()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentMethodData"/> class.
         /// </summary>
@@ -35,7 +27,6 @@ namespace Microsoft.Bot.Schema
         {
             SupportedMethods = supportedMethods ?? new List<string>();
             Data = data;
-            CustomInit();
         }
 
         /// <summary>
@@ -53,10 +44,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The JSON-serializable data object that provides optional information.</value>
         [JsonProperty(PropertyName = "data")]
         public object Data { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

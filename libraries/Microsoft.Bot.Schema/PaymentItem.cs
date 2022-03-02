@@ -10,16 +10,8 @@ namespace Microsoft.Bot.Schema
     /// Indicates what the payment request is for and the value asked for.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentItem
+    public class PaymentItem
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentItem"/> class.
-        /// </summary>
-        public PaymentItem()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentItem"/> class.
         /// </summary>
@@ -32,7 +24,6 @@ namespace Microsoft.Bot.Schema
             Label = label;
             Amount = amount;
             Pending = pending;
-            CustomInit();
         }
 
         /// <summary>
@@ -56,10 +47,5 @@ namespace Microsoft.Bot.Schema
         /// <value>A boolean indicating that amount in field is pending (i.e. not final).</value>
         [JsonProperty(PropertyName = "pending")]
         public bool? Pending { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

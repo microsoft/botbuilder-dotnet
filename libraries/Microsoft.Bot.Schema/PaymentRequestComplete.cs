@@ -10,16 +10,8 @@ namespace Microsoft.Bot.Schema
     /// Payload delivered when completing a payment request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentRequestComplete
+    public class PaymentRequestComplete
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentRequestComplete"/> class.
-        /// </summary>
-        public PaymentRequestComplete()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentRequestComplete"/> class.
         /// </summary>
@@ -32,7 +24,6 @@ namespace Microsoft.Bot.Schema
             Id = id;
             PaymentRequest = paymentRequest;
             PaymentResponse = paymentResponse;
-            CustomInit();
         }
 
         /// <summary>
@@ -55,10 +46,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The payment reesponse.</value>
         [JsonProperty(PropertyName = "paymentResponse")]
         public PaymentResponse PaymentResponse { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

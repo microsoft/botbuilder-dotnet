@@ -12,16 +12,8 @@ namespace Microsoft.Bot.Schema
     /// identifier.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentDetailsModifier
+    public class PaymentDetailsModifier
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PaymentDetailsModifier"/> class.
-        /// </summary>
-        public PaymentDetailsModifier()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentDetailsModifier"/> class.
         /// </summary>
@@ -43,7 +35,6 @@ namespace Microsoft.Bot.Schema
             Total = total;
             AdditionalDisplayItems = additionalDisplayItems ?? new List<PaymentItem>();
             Data = data;
-            CustomInit();
         }
 
         /// <summary>
@@ -78,10 +69,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The JSON-serializable object that provides optional information.</value>
         [JsonProperty(PropertyName = "data")]
         public object Data { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

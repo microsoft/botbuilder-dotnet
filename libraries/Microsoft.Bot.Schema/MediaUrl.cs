@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Media URL.
     /// </summary>
-    public partial class MediaUrl
+    public class MediaUrl
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MediaUrl"/> class.
-        /// </summary>
-        public MediaUrl()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaUrl"/> class.
         /// </summary>
@@ -28,7 +20,6 @@ namespace Microsoft.Bot.Schema
         {
             Url = url;
             Profile = profile;
-            CustomInit();
         }
 
         /// <summary>
@@ -47,10 +38,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The profile hint.</value>
         [JsonProperty(PropertyName = "profile")]
         public string Profile { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
