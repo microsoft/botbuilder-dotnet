@@ -1,21 +1,27 @@
 {
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.AdaptiveDialog",
-  "id": "AskNameDialog",
+  "id": "AskGuidDialog",
+  "recognizer": {
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.GuidEntityRecognizer",
+    "id": "guidrecognizer"
+  },
   "triggers": [
     {
       "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         {
           "$kind": "Microsoft.TextInput",
-          "property": "user.name",
-          "prompt": "Hello, what is your name?",
-          "unrecognizedPrompt": "How should I call you?",
-          "invalidPrompt": "That does not soud like a name"
+          "property": "user.guid",
+          "value": "${@guid}",
+          "prompt": "Please send me a Guid.",
+          "unrecognizedPrompt": "Please send a Guid.",
+          "invalidPrompt": "That does not look like a Guid."
         },
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "Hello ${user.name}"
+          "activity": "Received ${user.guid}"
         },
         {
           "$kind": "Microsoft.SetProperty",

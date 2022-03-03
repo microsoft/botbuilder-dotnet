@@ -22,24 +22,10 @@
                     "$kind": "Microsoft.BeginDialog",
                     "dialog": "AdaptiveDialog_ForEachElement_BeginDialog_innerDialog",
                     "resultProperty": "dialog.fromNameDialog"
-                  },
-                  {
-                    "$kind": "Microsoft.EndTurn",
-                    "id": "EndTurn"
                   }
                 ]
               }
             ]
-          },
-          {
-            "$kind": "Microsoft.TextInput",
-            "alwaysPrompt": true,
-            "property": "$answer2",
-            "prompt": "Anything else?"
-          },
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "result: '${dialog.fromNameDialog}' name: '${user.name}'"
           }
         ]
       }
@@ -57,31 +43,15 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Hello, what is your name?"
+      "text": "Please send a Guid."
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "Sarah"
+      "text": "60aed179-3101-47fa-9aa9-f67e91ae7e25"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Hello Sarah"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Hi"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Anything else?"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Nope"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "result: 'this is the result from the inner dialog' name: 'Sarah'"
+      "text": "Received 60aed179-3101-47fa-9aa9-f67e91ae7e25"
     }
   ]
 }

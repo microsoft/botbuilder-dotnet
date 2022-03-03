@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [Fact(Skip = "Temporarily disabled. working on it")]
+        [Fact]
         public async Task AdaptiveDialog_ForEachElement_BeginDialog()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
