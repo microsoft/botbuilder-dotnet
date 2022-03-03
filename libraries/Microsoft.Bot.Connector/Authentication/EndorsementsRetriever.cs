@@ -56,12 +56,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="address">Address of the discovery document.</param>
         /// <param name="retriever">The document retriever to use to read the discovery document.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// <param name="cancel">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// a populated configuration.</remarks>
-        public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
+        public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
         {
             if (address == null)
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(retriever));
             }
 
-            var jsonDocument = await retriever.GetDocumentAsync(address, cancellationToken).ConfigureAwait(false);
+            var jsonDocument = await retriever.GetDocumentAsync(address, cancel).ConfigureAwait(false);
             var configurationRoot = JObject.Parse(jsonDocument);
 
             var keys = configurationRoot["keys"]?.Value<JArray>();
@@ -109,19 +109,19 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Obtains a document from an address.
         /// </summary>
         /// <param name="address">location of document.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// <param name="cancel">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// the document as a string.</remarks>
-        public async Task<string> GetDocumentAsync(string address, CancellationToken cancellationToken)
+        public async Task<string> GetDocumentAsync(string address, CancellationToken cancel)
         {
             if (address == null)
             {
                 throw new ArgumentNullException(nameof(address));
             }
 
-            using (var documentResponse = await _httpClient.GetAsync(address, cancellationToken).ConfigureAwait(false))
+            using (var documentResponse = await _httpClient.GetAsync(address, cancel).ConfigureAwait(false))
             {
                 if (!documentResponse.IsSuccessStatusCode)
                 {
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     return string.Empty;
                 }
 
-                using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancellationToken).ConfigureAwait(false))
+                using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancel).ConfigureAwait(false))
                 {
                     if (!keysResponse.IsSuccessStatusCode)
                     {

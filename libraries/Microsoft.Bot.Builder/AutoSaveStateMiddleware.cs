@@ -62,14 +62,14 @@ namespace Microsoft.Bot.Builder
         /// on each state object.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="nextDelegate">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This middleware persists state after the bot logic completes and before the turn ends.</remarks>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await next(cancellationToken).ConfigureAwait(false);
+            await nextDelegate(cancellationToken).ConfigureAwait(false);
             await this.BotStateSet.SaveAllChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
     }

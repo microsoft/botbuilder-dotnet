@@ -45,19 +45,19 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <summary>
         /// Used by XUnit.net for deserialization.
         /// </summary>
-        /// <param name="serializationInfo">A parameter used by XUnit.net.</param>
-        public void Deserialize(IXunitSerializationInfo serializationInfo)
+        /// <param name="info">A parameter used by XUnit.net.</param>
+        public void Deserialize(IXunitSerializationInfo info)
         {
-            TestObject = serializationInfo.GetValue<string>(TestObjectKey);
+            TestObject = info.GetValue<string>(TestObjectKey);
         }
 
         /// <summary>
         /// Used by XUnit.net for serialization.
         /// </summary>
-        /// <param name="serializationInfo">A parameter used by XUnit.net.</param>
-        public void Serialize(IXunitSerializationInfo serializationInfo)
+        /// <param name="info">A parameter used by XUnit.net.</param>
+        public void Serialize(IXunitSerializationInfo info)
         {
-            serializationInfo.AddValue(TestObjectKey, TestObject);
+            info.AddValue(TestObjectKey, TestObject);
         }
 
         /// <summary>

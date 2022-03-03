@@ -121,13 +121,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Return recognition results.
         /// </summary>
-        /// <param name="dc">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="dialogContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="activity">The incoming activity received from the user. The Text property value is used as the query text for QnA Maker.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <returns>A <see cref="RecognizerResult"/> containing the QnA Maker result.</returns>
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dc, Schema.Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Schema.Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (_resolver == null)
             {
@@ -230,15 +230,15 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             if (ExternalEntityRecognizer != null)
             {
                 // Run external recognition
-                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
                 recognizerResult.Entities.Merge(externalResults.Entities);
             }
 
             TryScoreEntities(text, recognizerResult);
 
             // Add full recognition result as a 'result' property
-            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
-            TrackRecognizerResult(dc, $"{nameof(OrchestratorRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
+            await dialogContext.Context.TraceActivityAsync($"{nameof(OrchestratorRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
+            TrackRecognizerResult(dialogContext, $"{nameof(OrchestratorRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
             return recognizerResult;
         }

@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <inheritdoc/>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken = default)
         {
             if (string.Equals(Channels.Msteams, turnContext.Activity.ChannelId, StringComparison.OrdinalIgnoreCase) 
                 && string.Equals(SignInConstants.TokenExchangeOperationName, turnContext.Activity.Name, StringComparison.OrdinalIgnoreCase))
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Teams
                 }
             }
 
-            await next(cancellationToken).ConfigureAwait(false);
+            await nextDelegate(cancellationToken).ConfigureAwait(false);
         }
 
         private static async Task SendInvokeResponseAsync(ITurnContext turnContext, object body = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK, CancellationToken cancellationToken = default)

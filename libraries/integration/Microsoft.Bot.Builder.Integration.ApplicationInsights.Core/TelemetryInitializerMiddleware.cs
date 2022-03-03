@@ -34,20 +34,20 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         /// <summary>
         /// Stores the incoming activity as JSON in the items collection on the HttpContext.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
-        /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="nextDelegate">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+        public virtual async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken)
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
-            if (context.Activity != null)
+            if (turnContext.Activity != null)
             {
-                var activity = context.Activity;
+                var activity = turnContext.Activity;
 
                 var httpContext = _httpContextAccessor.HttpContext;
                 var items = httpContext?.Items;
@@ -65,12 +65,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             if (_logActivityTelemetry)
             {
                 await _telemetryLoggerMiddleware
-                    .OnTurnAsync(context, nextTurn, cancellationToken)
+                    .OnTurnAsync(turnContext, nextDelegate, cancellationToken)
                     .ConfigureAwait(false);
             }
             else
             {
-                await nextTurn(cancellationToken).ConfigureAwait(false);
+                await nextDelegate(cancellationToken).ConfigureAwait(false);
             }
         }
     }

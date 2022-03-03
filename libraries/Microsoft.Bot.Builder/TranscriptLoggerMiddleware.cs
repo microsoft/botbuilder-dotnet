@@ -32,13 +32,13 @@ namespace Microsoft.Bot.Builder
         /// Records incoming and outgoing activities to the conversation store.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="nextDelegate">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken)
         {
             var transcript = new Queue<IActivity>();
 
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder
             });
 
             // process bot logic
-            await nextTurn(cancellationToken).ConfigureAwait(false);
+            await nextDelegate(cancellationToken).ConfigureAwait(false);
 
             // flush transcript at end of turn
             // NOTE: We are not awaiting this task by design, TryLogTranscriptAsync() observes all exceptions and we don't need to or want to block execution on the completion.

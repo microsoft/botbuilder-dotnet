@@ -43,13 +43,13 @@ namespace Microsoft.Bot.Builder
         /// Middleware implementation which corrects Enity.Mention.Text to a value RemoveMentionText can work with.
         /// </summary>
         /// <param name="turnContext">turn context.</param>
-        /// <param name="next">next middleware.</param>
+        /// <param name="nextDelegate">next middleware.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken = default(CancellationToken))
         {
             NormalizeActivity(turnContext.Activity);
-            await next(cancellationToken).ConfigureAwait(false);
+            await nextDelegate(cancellationToken).ConfigureAwait(false);
         }
 
         private static string RemoveAt(string text)

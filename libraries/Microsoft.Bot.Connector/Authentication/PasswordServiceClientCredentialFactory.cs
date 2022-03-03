@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
-        public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
+        public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(AppId))
             {
@@ -96,17 +96,17 @@ namespace Microsoft.Bot.Connector.Authentication
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftAppCredentials(
-                    appId, Password, TenantId, _httpClient, _logger, oauthScope));
+                    appId, Password, TenantId, _httpClient, _logger, audience));
             }
             else if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftGovernmentAppCredentials(
-                    appId, Password, TenantId, _httpClient, _logger, oauthScope));
+                    appId, Password, TenantId, _httpClient, _logger, audience));
             }
             else
             {
                 return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
-                    AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
+                    AppId, Password, TenantId, _httpClient, _logger, audience, loginEndpoint, validateAuthority));
             }
         }
 

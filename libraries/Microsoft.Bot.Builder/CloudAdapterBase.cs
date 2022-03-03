@@ -138,11 +138,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <inheritdoc/>
-        public override Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public override Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             _ = reference ?? throw new ArgumentNullException(nameof(reference));
 
-            return ProcessProactiveAsync(CreateClaimsIdentity(botAppId), reference.GetContinuationActivity(), null, callback, cancellationToken);
+            return ProcessProactiveAsync(CreateClaimsIdentity(botId), reference.GetContinuationActivity(), null, callback, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -164,12 +164,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <inheritdoc/>
-        public override Task ContinueConversationAsync(string botAppId, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public override Task ContinueConversationAsync(string botId, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
             ValidateContinuationActivity(continuationActivity);
 
-            return ProcessProactiveAsync(CreateClaimsIdentity(botAppId), continuationActivity, null, callback, cancellationToken);
+            return ProcessProactiveAsync(CreateClaimsIdentity(botId), continuationActivity, null, callback, cancellationToken);
         }
 
         /// <inheritdoc/>

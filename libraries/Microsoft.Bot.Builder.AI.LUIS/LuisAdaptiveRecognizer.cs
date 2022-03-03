@@ -174,9 +174,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="recognizerResult">An instance of <see cref="RecognizerResult"/> to extract the telemetry properties from.</param>
         /// <param name="telemetryProperties">A collection of additional properties to be added to the returned dictionary of properties.</param>
-        /// <param name="dc">An instance of <see cref="DialogContext"/>.</param>
+        /// <param name="dialogContext">An instance of <see cref="DialogContext"/>.</param>
         /// <returns>The dictionary of properties to be logged with telemetry for the recongizer result.</returns>
-        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dc)
+        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext)
         {
             var logPersonalInfo = LogPersonalInformation;
             var applicationId = ApplicationId;
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" },
                 { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
                 { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" : "0.00" },
-                { LuisTelemetryConstants.FromIdProperty, dc.Context.Activity.From.Id },
+                { LuisTelemetryConstants.FromIdProperty, dialogContext.Context.Activity.From.Id },
             };
 
             if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
@@ -211,9 +211,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             properties.Add(LuisTelemetryConstants.EntitiesProperty, entities);
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text is a common example
-            if (logPersonalInfo && !string.IsNullOrEmpty(dc.Context.Activity.Text))
+            if (logPersonalInfo && !string.IsNullOrEmpty(dialogContext.Context.Activity.Text))
             {
-                properties.Add(LuisTelemetryConstants.QuestionProperty, dc.Context.Activity.Text);
+                properties.Add(LuisTelemetryConstants.QuestionProperty, dialogContext.Context.Activity.Text);
             }
 
             // Additional Properties can override "stock" properties.

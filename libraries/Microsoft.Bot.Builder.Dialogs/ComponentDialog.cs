@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Called when the dialog is started and pushed onto the parent's dialog stack.
         /// </summary>
-        /// <param name="outerDc">The parent <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dc">The parent <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="options">Optional, initial information to pass to the dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -50,30 +50,30 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the dialog.</remarks>
         /// <seealso cref="OnBeginDialogAsync(DialogContext, object, CancellationToken)"/>
         /// <seealso cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (outerDc == null)
+            if (dc == null)
             {
-                throw new ArgumentNullException(nameof(outerDc));
+                throw new ArgumentNullException(nameof(dc));
             }
 
-            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+            await EnsureInitializedAsync(dc).ConfigureAwait(false);
 
-            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
 
-            var innerDc = this.CreateChildContext(outerDc);
+            var innerDc = this.CreateChildContext(dc);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
                 // Return result to calling dialog
-                return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
+                return await EndComponentAsync(dc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
             TelemetryClient.TrackDialogView(Id);
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Called when the dialog is _continued_, where it is the active dialog and the
         /// user replies with a new activity.
         /// </summary>
-        /// <param name="outerDc">The parent <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dc">The parent <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -102,21 +102,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <seealso cref="OnContinueDialogAsync(DialogContext, CancellationToken)"/>
         /// <seealso cref="DialogContext.ContinueDialogAsync(CancellationToken)"/>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+            await EnsureInitializedAsync(dc).ConfigureAwait(false);
 
-            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
 
             // Continue execution of inner dialog
-            var innerDc = this.CreateChildContext(outerDc);
+            var innerDc = this.CreateChildContext(dc);
             var turnResult = await this.OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
                 // Return to calling dialog
-                return await this.EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
+                return await this.EndComponentAsync(dc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
             // Just signal waiting
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Called when a child dialog on the parent's dialog stack completed this turn, returning
         /// control to this dialog component.
         /// </summary>
-        /// <param name="outerDc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
         /// <param name="result">Optional, value returned from the dialog that was called. The type
         /// of the value returned is dependent on the child dialog.</param>
@@ -148,23 +148,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the user replies.
         /// </remarks>
         /// <seealso cref="RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
             }
 
-            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+            await EnsureInitializedAsync(dc).ConfigureAwait(false);
 
-            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.
             // To avoid the container prematurely ending we need to implement this method and simply
             // ask our inner dialog stack to re-prompt.
-            await RepromptDialogAsync(outerDc.Context, outerDc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
 

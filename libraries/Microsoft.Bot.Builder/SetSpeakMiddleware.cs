@@ -36,13 +36,13 @@ namespace Microsoft.Bot.Builder
         /// Processes an incoming activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="nextDelegate">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="IActivity"/>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken = default)
         {
             turnContext.OnSendActivities(async (ctx, activities, nextSend) =>
             {
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder
                 return await nextSend().ConfigureAwait(false);
             });
 
-            await next(cancellationToken).ConfigureAwait(false);
+            await nextDelegate(cancellationToken).ConfigureAwait(false);
         }
 
         private static bool HasTag(string tagName, string speakText)

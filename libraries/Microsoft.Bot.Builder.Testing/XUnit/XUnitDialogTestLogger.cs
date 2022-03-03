@@ -48,20 +48,20 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <summary>
         /// Processes the incoming activity and logs it using the <see cref="ITestOutputHelper"/>.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
-        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="nextDelegate">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextDelegate, CancellationToken cancellationToken = default(CancellationToken))
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            context.TurnState[_stopWatchStateKey] = stopwatch;
-            await LogIncomingActivityAsync(context, context.Activity, cancellationToken).ConfigureAwait(false);
-            context.OnSendActivities(OnSendActivitiesAsync);
+            turnContext.TurnState[_stopWatchStateKey] = stopwatch;
+            await LogIncomingActivityAsync(turnContext, turnContext.Activity, cancellationToken).ConfigureAwait(false);
+            turnContext.OnSendActivities(OnSendActivitiesAsync);
 
-            await next(cancellationToken).ConfigureAwait(false);
+            await nextDelegate(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
