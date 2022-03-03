@@ -4,9 +4,9 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Extension methods for converting strongly typed Card objects to <see cref="Attachment"/>.
+    /// Extension methods for Cards.
     /// </summary>
-    public static partial class Extensions
+    public static class CardEx
     {
         /// <summary>
         /// Creates a new attachment from <see cref="HeroCard"/>.
