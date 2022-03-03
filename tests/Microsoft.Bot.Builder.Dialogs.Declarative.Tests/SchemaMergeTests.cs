@@ -93,7 +93,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 "Action_SendHandoffActivity.test.dialog",
                 "Action_BeginSkill.test.dialog",
                 "Action_BeginSkillEndDialog.test.dialog",
-                "TestScriptTests_OAuthInputLG.test.dialog"
+                "TestScriptTests_OAuthInputLG.test.dialog",
+                "AdaptiveDialog_ForEachElement_BeginDialog_innerDialog.dialog"
             };
             if (omit.Any(e => fileResource.FullName.Contains(e)))
             {

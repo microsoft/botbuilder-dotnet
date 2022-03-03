@@ -1,9 +1,8 @@
 {
-  "$schema": "../../../tests.schema",
+  "$schema": "../../../../tests.schema",
   "$kind": "Microsoft.AdaptiveDialog",
   "id": "AskGuidDialog",
   "recognizer": {
-    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.GuidEntityRecognizer",
     "id": "guidrecognizer"
   },
