@@ -15,6 +15,7 @@
           "$kind": "Microsoft.TextInput",
           "property": "user.guid",
           "value": "${@guid}",
+          "allowInterruptions": false,
           "prompt": "Please send me a Guid.",
           "unrecognizedPrompt": "Please send a Guid.",
           "invalidPrompt": "That does not look like a Guid."
