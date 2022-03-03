@@ -30,7 +30,9 @@ namespace Microsoft.Bot.Connector.Schema
 
             var elements = new Dictionary<string, JsonElement>();
 
-            using (var document = value is string json ? JsonDocument.Parse(json) : JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions)))
+            using (var document = value is string json
+                       ? JsonDocument.Parse(string.IsNullOrWhiteSpace(json) ? "{}" : json)
+                       : JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions)))
             {
                 foreach (var property in document.RootElement.Clone().EnumerateObject())
                 {
@@ -60,10 +62,26 @@ namespace Microsoft.Bot.Connector.Schema
             }
 
             return value is string json
-                ? JsonSerializer.Deserialize<T>(json, SerializationConfig.DefaultDeserializeOptions)
+                ? json.Deserialize<T>()
                 : JsonSerializer.Deserialize<T>(
                     JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions),
                     SerializationConfig.DefaultDeserializeOptions);
+        }
+
+        /// <summary>
+        /// Deserialize a JSON string to the desired type.
+        /// </summary>
+        /// <param name="value">The string to be deserialized.</param>
+        /// <typeparam name="T">The type of object to deserialize to.</typeparam>
+        /// <returns>The deserialized object.</returns>
+        public static T Deserialize<T>(this string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return default;
+            }
+
+            return JsonSerializer.Deserialize<T>(value, SerializationConfig.DefaultDeserializeOptions);
         }
     }
 }

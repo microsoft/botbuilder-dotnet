@@ -11,7 +11,6 @@ using Microsoft.Bot.Connector.Schema;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Client.Tests.Authentication
@@ -81,7 +80,7 @@ namespace Microsoft.Bot.Connector.Client.Tests.Authentication
             var invokeResponse = await bfc.PostActivityAsync(fromBotId, toBotId, toUrl, serviceUrl, conversationId, activity);
 
             // Assert
-            Assert.Equal("world", ((JObject)invokeResponse.Body)["hello"].ToString());
+            Assert.Equal("world", invokeResponse.Body.ToJsonElements()["hello"].GetString());
         }
     }
 }

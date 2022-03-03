@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    ErrorResponse errorBody = responseContent.Deserialize<ErrorResponse>();
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = JsonSerializer.Deserialize<TokenResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    result.Body = responseContent.Deserialize<TokenResponse>();
                 }
                 catch (JsonException ex)
                 {
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = JsonSerializer.Deserialize<TokenResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    result.Body = responseContent.Deserialize<TokenResponse>();
                 }
                 catch (JsonException ex)
                 {
@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    ErrorResponse errorBody = responseContent.Deserialize<ErrorResponse>();
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = JsonSerializer.Deserialize<IDictionary<string, TokenResponse>>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    result.Body = responseContent.Deserialize<IDictionary<string, TokenResponse>>();
                 }
                 catch (JsonException ex)
                 {
@@ -527,7 +527,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    ErrorResponse errorBody = responseContent.Deserialize<ErrorResponse>();
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -565,7 +565,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = JsonSerializer.Deserialize<object>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    result.Body = responseContent.Deserialize<object>();
                 }
                 catch (JsonException ex)
                 {
@@ -695,7 +695,7 @@ namespace Microsoft.Bot.Connector.Client
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    ErrorResponse errorBody = responseContent.Deserialize<ErrorResponse>();
                     if (errorBody != null)
                     {
                         ex.Body = errorBody;
@@ -733,7 +733,7 @@ namespace Microsoft.Bot.Connector.Client
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = JsonSerializer.Deserialize<IList<TokenStatus>>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    result.Body = responseContent.Deserialize<IList<TokenStatus>>();
                 }
                 catch (JsonException ex)
                 {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Schema;
@@ -77,29 +78,28 @@ namespace Microsoft.Bot.Connector.Client.Authentication
             var jsonDocument = await retriever.GetDocumentAsync(address, cancellationToken).ConfigureAwait(false);
             var configurationRoot = jsonDocument.ToJsonElements();
 
-            var keys = configurationRoot["keys"].EnumerateObject().ToArray();
+            var results = new Dictionary<string, HashSet<string>>();
 
-            if (keys == null)
+            if (configurationRoot.ContainsKey("keys"))
             {
-                return new Dictionary<string, HashSet<string>>(0);
-            }
+                var keys = configurationRoot["keys"];
 
-            var results = new Dictionary<string, HashSet<string>>(keys.Length);
-
-            foreach (var key in keys)
-            {
-                var keyId = key.Name.Equals(AuthenticationConstants.KeyIdHeader, StringComparison.OrdinalIgnoreCase)
-                    ? key.Value.GetString()
-                    : null;
-
-                if (keyId != null
-                        &&
-                   !results.ContainsKey(keyId))
+                if (keys.ValueKind == JsonValueKind.Array)
                 {
-                    if (key.Name.Equals("endorsements", StringComparison.OrdinalIgnoreCase))
+                    foreach (var key in keys.EnumerateArray())
                     {
-                        var values = key.Value.EnumerateArray().Select(e => e.GetString());
-                        results.Add(keyId, new HashSet<string>(values));
+                        var keyId = key.TryGetProperty(AuthenticationConstants.KeyIdHeader, out var keyIdElement)
+                            ? keyIdElement.GetString()
+                            : null;
+
+                        if (keyId != null && !results.ContainsKey(keyId))
+                        {
+                            if (key.TryGetProperty("endorsements", out var endorsements))
+                            {
+                                var values = endorsements.EnumerateArray().Select(e => e.GetString());
+                                results.Add(keyId, new HashSet<string>(values));
+                            }
+                        }
                     }
                 }
             }
@@ -138,6 +138,12 @@ namespace Microsoft.Bot.Connector.Client.Authentication
                 }
 
                 var obj = json.ToJsonElements();
+
+                if (!obj.ContainsKey(JsonWebKeySetUri))
+                {
+                    return string.Empty;
+                }
+
                 var keysUrl = obj[JsonWebKeySetUri].GetString();
 
                 if (keysUrl == null)

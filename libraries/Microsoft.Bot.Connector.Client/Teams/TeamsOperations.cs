@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Connector.Client.Teams
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    result.Body = JsonSerializer.Deserialize<T>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    result.Body = responseContent.Deserialize<T>();
                 }
                 catch (JsonException ex)
                 {

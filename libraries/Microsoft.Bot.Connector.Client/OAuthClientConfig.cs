@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Connector.Client
                         try
                         {
                             responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            var errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                            var errorBody = responseContent.Deserialize<ErrorResponse>();
                             if (errorBody != null)
                             {
                                 ex.Body = errorBody;

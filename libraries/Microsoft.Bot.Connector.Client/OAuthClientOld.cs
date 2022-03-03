@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Connector.Client
                 string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    var tokenResponse = responseContent.Deserialize<TokenResponse>();
                     return tokenResponse;
                 }
                 catch (JsonException)
@@ -389,7 +389,7 @@ namespace Microsoft.Bot.Connector.Client
                 string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    var statuses = JsonSerializer.Deserialize<TokenStatus[]>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                    var statuses = responseContent.Deserialize<TokenStatus[]>();
                     return statuses;
                 }
                 catch (JsonException)
@@ -510,7 +510,7 @@ namespace Microsoft.Bot.Connector.Client
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     try
                     {
-                        var tokens = JsonSerializer.Deserialize<Dictionary<string, TokenResponse>>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                        var tokens = responseContent.Deserialize<Dictionary<string, TokenResponse>>();
                         return tokens;
                     }
                     catch (JsonException)
@@ -530,7 +530,7 @@ namespace Microsoft.Bot.Connector.Client
                     try
                     {
                         responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        ErrorResponse errorBody = JsonSerializer.Deserialize<ErrorResponse>(responseContent, SerializationConfig.DefaultDeserializeOptions);
+                        ErrorResponse errorBody = responseContent.Deserialize<ErrorResponse>();
                         if (errorBody != null)
                         {
                             ex.Body = errorBody;

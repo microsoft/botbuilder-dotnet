@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Connector.Client.Authentication
                             return new InvokeResponse<T>
                             {
                                 Status = (int)httpResponseMessage.StatusCode,
-                                Body = content?.Length > 0 ? JsonSerializer.Deserialize<T>(content, SerializationConfig.DefaultDeserializeOptions) : default
+                                Body = content?.Length > 0 ? content.Deserialize<T>() : default
                             };
                         }
                         else
