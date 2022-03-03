@@ -41,5 +41,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Get or set for Card no match response.
         /// </value>
         public Activity CardNoMatchResponse { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dialog response should display only precise answers.
+        /// </summary>
+        /// <value>
+        /// True or False, defaults to False.
+        /// </value>
+        public bool DisplayPreciseAnswerOnly { get; set; }
     }
 }

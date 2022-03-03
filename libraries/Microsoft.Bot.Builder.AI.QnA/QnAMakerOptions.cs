@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// This property allows users to set Timeout without having to pass in a custom HttpClient to QnAMaker class constructor.
         /// If using custom HttpClient, then set Timeout value in HttpClient instead of QnAMakerOptions.Timeout.
         /// </remarks>
-        [JsonProperty("timeout")] 
+        [JsonProperty("timeout")]
         public double Timeout { get; set; }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public QnARequestContext Context { get; set; }
 
         /// <summary>
-        /// Gets or sets QnA Id of the current question asked (if availble).
+        /// Gets or sets QnA Id of the current question asked (if available).
         /// </summary>
         /// <value>
         /// Id of the current question asked.
@@ -113,12 +114,35 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets <see cref="StrictFilters"/> join operator.
+        /// Gets or sets logical operation (OR/AND) for <see cref="StrictFilters"/>.
         /// </summary>
-        /// <value>
-        /// A value used for join operation of StrictFilters <see cref="StrictFilters"/>.
-        /// </value>
+        /// <value>Logical operation (OR/AND) for <see cref="StrictFilters"/>.</value>
         [JsonProperty("strictFiltersJoinOperator")]
         public JoinOperator StrictFiltersJoinOperator { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to include precise answer in response.
+        /// </summary>
+        /// <value>
+        /// True/False, defaults to false.
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public bool EnablePreciseAnswer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public Filters Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to include Unstructured Sources from the Knowledge Base to query.
+        /// </summary>
+        /// <value> Flag to enable Query over Unstructured Sources. True/False, defaults to False.</value>
+        [JsonProperty("includeUnstructuredSources")]
+        public bool IncludeUnstructuredSources { get; set; } = true;
     }
 }

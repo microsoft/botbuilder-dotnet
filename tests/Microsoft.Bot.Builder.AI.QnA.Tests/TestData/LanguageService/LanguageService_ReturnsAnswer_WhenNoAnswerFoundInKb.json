@@ -1,13 +1,11 @@
 {
-  "activeLearningEnabled": true,
   "answers": [
     {
       "questions": [],
       "answer": "No good match found in KB.",
-      "score": 0,
+      "confidenceScore": 0.0,
       "id": -1,
-      "source": null,
-      "metadata": []
+      "metadata": {}
     }
   ]
 }

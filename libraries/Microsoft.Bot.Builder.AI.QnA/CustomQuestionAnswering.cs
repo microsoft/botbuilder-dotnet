@@ -8,50 +8,39 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Configuration;
+using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// Provides access to a QnA Maker knowledge base.
+    /// Provides access to a Custom Question Answering Knowledge Base.
     /// </summary>
-    public class QnAMaker : IQnAMakerClient, ITelemetryQnAMaker
+    public class CustomQuestionAnswering : IQnAMakerClient, ITelemetryQnAMaker
     {
-        /// <summary>
-        /// The name of the QnAMaker class. 
-        /// </summary>
-        public static readonly string QnAMakerName = nameof(QnAMaker);
-
-        /// <summary>
-        /// The type used when logging QnA Maker trace.
-        /// </summary>
-        public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
-
-        /// <summary>
-        /// The label used when logging QnA Maker trace.
-        /// </summary>
-        public static readonly string QnAMakerTraceLabel = "QnAMaker Trace";
-
         private readonly HttpClient _httpClient;
 
         private readonly QnAMakerEndpoint _endpoint;
 
-        private readonly GenerateAnswerUtils _generateAnswerHelper;
-        private readonly TrainUtils _activeLearningTrainHelper;
+        private readonly LanguageServiceUtils _languageServiceHelper;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
+        /// Initializes a new instance of the <see cref="CustomQuestionAnswering"/> class.
         /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
+        /// <param name="endpoint">The <see cref="QnAMakerEndpoint"/> of the knowledge base to query.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Custom Question Answering Knowledge Base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to Language Service.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
-        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
+        public CustomQuestionAnswering(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+
+            if (string.IsNullOrEmpty(endpoint.QnAServiceType))
+            {
+                throw new ArgumentException(nameof(endpoint.QnAServiceType));
+            }
 
             if (string.IsNullOrEmpty(endpoint.KnowledgeBaseId))
             {
@@ -73,68 +62,28 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
             }
 
-            if (httpClient == null)
-            {
-                _httpClient = DefaultHttpClient;
-            }
-            else
-            {
-                _httpClient = httpClient;
-            }
+            _httpClient = httpClient ?? DefaultHttpClient;
 
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
 
-            this._generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
-            this._activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
+            _languageServiceHelper = new LanguageServiceUtils(TelemetryClient, _httpClient, endpoint, options);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
+        /// Initializes a new instance of the <see cref="CustomQuestionAnswering"/> class.
         /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
+        /// <param name="endpoint">The <see cref="QnAMakerEndpoint"/> of the knowledge base to query.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Custom Question Answering Knowledge Base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to Language Service.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
+        public CustomQuestionAnswering(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
             : this(endpoint, options, httpClient, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
-        /// </summary>
-        /// <param name="service">QnA service details from configuration.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
-        /// If null, a default client is used for this instance.</param>
-        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
-        [Obsolete("Constructor is deprecated, please use QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient).")]
-#pragma warning disable CS0618 // Type or member is obsolete, this is here only for backward compat and should be removed when QnAMakerService is removed.
-        public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
-            : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
-        {
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
-        /// </summary>
-        /// <param name="service">QnA service details from configuration.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
-        /// If null, a default client is used for this instance.</param>
-        [Obsolete("Constructor is deprecated, please use QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient).")]
-#pragma warning disable CS0618 // Type or member is obsolete, this is here only for backward compat and should be removed when QnAMakerService is removed.
-        public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null)
-            : this(new QnAMakerEndpoint(service), options, httpClient, null)
-        {
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        /// <summary>
-        /// Gets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
+        /// Gets the <see cref="HttpClient"/> to be used when calling the Custom Question Answering API.
         /// </summary>
         /// <value>
         /// A instance of <see cref="HttpClient"/>.
@@ -142,7 +91,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public static HttpClient DefaultHttpClient { get; } = new HttpClient();
 
         /// <summary>
-        /// Gets a value indicating whether determines whether to log personal information that came from the user.
+        /// Gets a value indicating whether to log personal information that came from the user.
         /// </summary>
         /// <value>If true, will log personal information into the IBotTelemetryClient.TrackEvent method; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; }
@@ -157,8 +106,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Generates an answer from the knowledge base.
         /// </summary>
-        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="turnContext">The <see cref="TurnContext"/> that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Custom Question Answering Knowledge Base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, QnAMakerOptions options = null)
         {
@@ -168,8 +117,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Generates an answer from the knowledge base.
         /// </summary>
-        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="turnContext">The <see cref="TurnContext"/> that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Custom Question Answering Knowledge Base. If null, constructor option is used for this instance.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
@@ -187,8 +136,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Generates an answer from the knowledge base.
         /// </summary>
-        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <param name="turnContext">The <see cref="TurnContext"/> that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Custom Question Answering Knowledge Base. If null, constructor option is used for this instance.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the QnaMessage event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the QnaMessage event.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
@@ -219,7 +168,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Question cannot be null or empty text");
             }
 
-            QueryResults results = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            QueryResults results = await _languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
@@ -229,7 +178,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Filters the ambiguous question for active learning.
         /// </summary>
-        /// <param name="queryResult">User query output.</param>
+        /// <param name="queryResult">An array of <see cref="QueryResult"/> which is the user query output.</param>
         /// <returns>Filtered array of ambiguous question.</returns>
         public QueryResult[] GetLowScoreVariation(QueryResult[] queryResult)
         {
@@ -239,18 +188,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Send feedback to the knowledge base.
         /// </summary>
-        /// <param name="feedbackRecords">Feedback records.</param>
+        /// <param name="feedbackRecords">An object containing an array of <see cref="FeedbackRecord"/>.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            await this._activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            await _languageServiceHelper.UpdateActiveLearningFeedbackAsync(feedbackRecords).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Executed when a result is returned from QnA Maker.
+        /// Executed when a result is returned from Custom Question Answering.
         /// </summary>
         /// <param name="queryResults">An array of <see cref="QueryResult"/>.</param>
-        /// <param name="turnContext">The <see cref="TurnContext"/>.</param>
+        /// <param name="turnContext">The <see cref="TurnContext"/> that contains the user question to be queried against your knowledge base.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
@@ -260,28 +209,25 @@ namespace Microsoft.Bot.Builder.AI.QnA
                    ITurnContext turnContext,
                    Dictionary<string, string> telemetryProperties = null,
                    Dictionary<string, double> telemetryMetrics = null,
-                   CancellationToken cancellationToken = default(CancellationToken))
+                   CancellationToken cancellationToken = default)
         {
-            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
 
             // Track the event
-            this.TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
+            TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
         }
 
         /// <summary>
         /// Fills the event properties and metrics for the QnaMessage event for telemetry.
         /// These properties are logged when the QnA GetAnswers method is called.
         /// </summary>
-        /// <param name="queryResults">QnA service results.</param>
-        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="queryResults">An array of <see cref="QueryResult"/> which is the user query output.</param>
+        /// <param name="turnContext"><see cref="TurnContext"/> object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Properties to add/override for the event.</param>
         /// <param name="telemetryMetrics">Metrics to add/override for the event.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
         /// <returns>A tuple of Properties and Metrics that will be sent to the IBotTelemetryClient.TrackEvent method for the QnAMessage event.  The properties and metrics returned the standard properties logged with any properties passed from the GetAnswersAsync method.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat) 
-        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var properties = new Dictionary<string, string>();
             var metrics = new Dictionary<string, double>();
@@ -292,7 +238,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var userName = turnContext.Activity.From?.Name;
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
-            if (this.LogPersonalInformation)
+            if (LogPersonalInformation)
             {
                 if (!string.IsNullOrWhiteSpace(text))
                 {

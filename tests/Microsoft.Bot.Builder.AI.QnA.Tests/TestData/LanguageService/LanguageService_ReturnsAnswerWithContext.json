@@ -1,0 +1,18 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "Where can I buy cleaning products?"
+      ],
+      "answer": "Any DIY store",
+      "confidenceScore": 1,
+      "id": 55,
+      "source": "Editorial",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": true,
+        "prompts": []
+      }
+    }
+  ]
+}
