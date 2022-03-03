@@ -59,6 +59,12 @@ steps:
     version: 2.1.x
   condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
 
+- powershell: |
+   dotnet nuget remove source SDK_Dotnet_V4_org
+  displayName: Remove SDK_Dotnet_V4_org feed source reference from nuget.config
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
 - task: PowerShell@2
   displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/microsoft/botbuilder-dotnet'
   inputs:
