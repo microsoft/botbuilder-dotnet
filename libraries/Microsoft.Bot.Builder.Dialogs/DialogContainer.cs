@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="DialogContainer"/> class.
         /// </summary>
         /// <param name="dialogId">The ID to assign to the dialog.</param>
-        /// <param name="ignoreMemoryScopeBinding">True if this <see cref="DialogContainer"/> should interact with MemoryScopes.</param>
+        /// <param name="ignoreMemoryScopeBinding">False if this <see cref="DialogContainer"/> should interact with MemoryScopes.</param>
         protected DialogContainer(bool ignoreMemoryScopeBinding, string dialogId = null)
             : base(dialogId)
         {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets a value indicating whether or not this <see cref="DialogContainer"/> should interact with Memory Scopes.
         /// </summary>
-        /// <value>The containers Dialog Set.</value>
+        /// <value>The setting for whether or not this <see cref="DialogContainer"/> should ignore scope binding.</value>
         [JsonProperty("ignoreMemoryScopeBinding")]
         public bool IgnoreMemoryScopeBinding { get; set; } = false;
 
