@@ -3,24 +3,14 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// A card representing a request to perform a sign in via OAuth.
     /// </summary>
-    public partial class OAuthCard
+    public class OAuthCard
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthCard"/> class.
-        /// </summary>
-        public OAuthCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthCard"/> class.
         /// </summary>
@@ -33,7 +23,6 @@ namespace Microsoft.Bot.Schema
             Text = text;
             ConnectionName = connectionName;
             Buttons = buttons ?? new List<CardAction>();
-            CustomInit();
         }
 
         /// <summary>
@@ -63,10 +52,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The actions used to perform sign-in.</value>
         [JsonProperty(PropertyName = "buttons")]
         public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

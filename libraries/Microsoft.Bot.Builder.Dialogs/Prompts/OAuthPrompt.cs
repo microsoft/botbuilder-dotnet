@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     prompt.Attachments.Add(new Attachment
                     {
-                        ContentType = SigninCard.ContentType,
+                        ContentType = ContentTypes.SigninCard,
                         Content = new SigninCard(buttons: buttons)
                         {
                             Text = settings.Text,
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 prompt.Attachments.Add(new Attachment
                 {
-                    ContentType = OAuthCard.ContentType,
+                    ContentType = ContentTypes.OAuthCard,
                     Content = new OAuthCard(buttons: buttons)
                     {
                         Text = settings.Text,

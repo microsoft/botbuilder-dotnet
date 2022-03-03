@@ -3,24 +3,14 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// A thumbnail card (card with a single, small thumbnail image).
     /// </summary>
-    public partial class ThumbnailCard
+    public class ThumbnailCard
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ThumbnailCard"/> class.
-        /// </summary>
-        public ThumbnailCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ThumbnailCard"/> class.
         /// </summary>
@@ -40,7 +30,6 @@ namespace Microsoft.Bot.Schema
             Images = images ?? new List<CardImage>();
             Buttons = buttons ?? new List<CardAction>();
             Tap = tap;
-            CustomInit();
         }
 
         /// <summary>
@@ -85,10 +74,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The action that activates when the user taps on the card itself.</value>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

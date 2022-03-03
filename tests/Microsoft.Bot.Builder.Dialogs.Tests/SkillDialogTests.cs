@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var oauthCard = new OAuthCard { TokenExchangeResource = new TokenExchangeResource { Uri = uri } };
             var attachment = new Attachment
             {
-                ContentType = OAuthCard.ContentType,
+                ContentType = ContentTypes.OAuthCard,
                 Content = JObject.FromObject(oauthCard)
             };
 

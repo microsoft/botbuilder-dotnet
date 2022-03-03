@@ -611,12 +611,12 @@ namespace Microsoft.Bot.Connector.Tests
                 {
                     new Attachment()
                     {
-                        ContentType = HeroCard.ContentType,
+                        ContentType = ContentTypes.HeroCard,
                         Content = heroCardStatic,
                     },
                     new Attachment()
                     {
-                        ContentType = HeroCard.ContentType,
+                        ContentType = ContentTypes.HeroCard,
                         Content = heroCardAnimation,
                     },
                 });

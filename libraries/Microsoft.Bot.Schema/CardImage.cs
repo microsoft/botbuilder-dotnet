@@ -3,18 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>An image on a card.</summary>
-    public partial class CardImage
+    public class CardImage
     {
-        /// <summary>Initializes a new instance of the <see cref="CardImage"/> class.</summary>
-        public CardImage()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="CardImage"/> class.</summary>
         /// <param name="url">URL thumbnail image for major content property.</param>
         /// <param name="alt">Image description intended for screen readers.</param>
@@ -24,7 +17,6 @@ namespace Microsoft.Bot.Schema
             Url = url;
             Alt = alt;
             Tap = tap;
-            CustomInit();
         }
 
         /// <summary>Gets or sets URL thumbnail image for major content property.</summary>
@@ -43,8 +35,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The action assigned to the specific attachment.</value>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

@@ -19,14 +19,14 @@ namespace Microsoft.Bot.Builder
 
         private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
-            { nameof(HeroCard).ToLowerInvariant(), HeroCard.ContentType },
-            { nameof(ThumbnailCard).ToLowerInvariant(), ThumbnailCard.ContentType },
-            { nameof(AudioCard).ToLowerInvariant(), AudioCard.ContentType },
-            { nameof(VideoCard).ToLowerInvariant(), VideoCard.ContentType },
-            { nameof(AnimationCard).ToLowerInvariant(), AnimationCard.ContentType },
-            { nameof(SigninCard).ToLowerInvariant(), SigninCard.ContentType },
-            { nameof(OAuthCard).ToLowerInvariant(), OAuthCard.ContentType },
-            { nameof(ReceiptCard).ToLowerInvariant(), ReceiptCard.ContentType },
+            { nameof(HeroCard).ToLowerInvariant(), ContentTypes.HeroCard },
+            { nameof(ThumbnailCard).ToLowerInvariant(), ContentTypes.ThumbnailCard },
+            { nameof(AudioCard).ToLowerInvariant(), ContentTypes.AudioCard },
+            { nameof(VideoCard).ToLowerInvariant(), ContentTypes.VideoCard },
+            { nameof(AnimationCard).ToLowerInvariant(), ContentTypes.AnimationCard },
+            { nameof(SigninCard).ToLowerInvariant(), ContentTypes.SigninCard },
+            { nameof(OAuthCard).ToLowerInvariant(), ContentTypes.OAuthCard },
+            { nameof(ReceiptCard).ToLowerInvariant(), ContentTypes.ReceiptCard },
         };
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder
 
                     case "image":
                     case "images":
-                        if (type == HeroCard.ContentType || type == ThumbnailCard.ContentType)
+                        if (type == ContentTypes.HeroCard || type == ContentTypes.ThumbnailCard)
                         {
                             // then it's images
                             if (card["images"] == null)

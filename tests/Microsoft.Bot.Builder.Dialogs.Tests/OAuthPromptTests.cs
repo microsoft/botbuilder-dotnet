@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
 
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
@@ -262,7 +262,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
 
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
             })
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Add an exchangable token to the adapter
@@ -379,7 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // No exchangable token is added to the adapter
@@ -447,7 +447,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // No exchangable token is added to the adapter
@@ -512,7 +512,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // No exchangable token is added to the adapter
@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply(activity =>
                 {
                     Assert.Single(((Activity)activity).Attachments);
-                    Assert.Equal(SigninCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    Assert.Equal(ContentTypes.SigninCard, ((Activity)activity).Attachments[0].ContentType);
                 })
                 .StartTestAsync();
         }
@@ -623,7 +623,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply(activity => 
                 { 
                     Assert.Single(((Activity)activity).Attachments); 
-                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType); 
+                    Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType); 
                     var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content; 
                     var cardAction = oAuthCard.Buttons[0];
                     Assert.Equal(shouldHaveSignInLink, cardAction.Value != null);
@@ -702,7 +702,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
             })
             .Send(messageActivityWithNullText)
@@ -754,7 +754,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
             })
             .Send("blah")
             .AssertReply("Ended.")
@@ -831,7 +831,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
 
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
@@ -886,7 +886,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(ContentTypes.OAuthCard, ((Activity)activity).Attachments[0].ContentType);
 
                 // Add a magic code to the adapter
                 adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, MagicCode);

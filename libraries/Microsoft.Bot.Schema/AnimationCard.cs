@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// An animation card (Ex: gif or short video clip).
     /// </summary>
-    public partial class AnimationCard
+    public class AnimationCard
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AnimationCard"/> class.
-        /// </summary>
-        public AnimationCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AnimationCard"/> class.
         /// </summary>
@@ -56,7 +48,6 @@ namespace Microsoft.Bot.Schema
             Aspect = aspect;
             Duration = duration;
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -149,10 +140,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The supplementary parameter for this card.</value>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

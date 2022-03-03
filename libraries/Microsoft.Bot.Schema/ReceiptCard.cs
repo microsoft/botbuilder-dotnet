@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// A receipt card.
     /// </summary>
-    public partial class ReceiptCard
+    public class ReceiptCard
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReceiptCard"/> class.
-        /// </summary>
-        public ReceiptCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ReceiptCard"/> class.
         /// </summary>
@@ -43,7 +35,6 @@ namespace Microsoft.Bot.Schema
             Tax = tax;
             Vat = vat;
             Buttons = buttons ?? new List<CardAction>();
-            CustomInit();
         }
 
         /// <summary>
@@ -102,10 +93,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The actions applicable to the current card.</value>
         [JsonProperty(PropertyName = "buttons")]
         public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

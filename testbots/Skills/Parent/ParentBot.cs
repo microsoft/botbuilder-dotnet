@@ -139,7 +139,7 @@ namespace Microsoft.BotBuilderSamples
             var activity = activities[0];
             if (activity.Attachments != null)
             {
-                foreach (var attachment in activity.Attachments.Where(a => a?.ContentType == OAuthCard.ContentType))
+                foreach (var attachment in activity.Attachments.Where(a => a?.ContentType == ContentTypes.OAuthCard))
                 {
                     var oauthCard = ((JObject)attachment.Content).ToObject<OAuthCard>();
                     if (oauthCard.TokenExchangeResource != null)

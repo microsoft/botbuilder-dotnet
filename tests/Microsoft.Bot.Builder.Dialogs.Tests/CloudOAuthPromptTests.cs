@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Single(sentActivity.Attachments);
 
             var sentActivityAttachment = sentActivity.Attachments.First();
-            Assert.Equal(OAuthCard.ContentType, sentActivityAttachment.ContentType);
+            Assert.Equal(ContentTypes.OAuthCard, sentActivityAttachment.ContentType);
             Assert.IsType<OAuthCard>(sentActivityAttachment.Content);
 
             // TODO: complete verification of shape of outbound attachment
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Single(sentActivity.Attachments);
 
             var sentActivityAttachment = sentActivity.Attachments.First();
-            Assert.Equal(SigninCard.ContentType, sentActivityAttachment.ContentType);
+            Assert.Equal(ContentTypes.SigninCard, sentActivityAttachment.ContentType);
             Assert.IsType<SigninCard>(sentActivityAttachment.Content);
 
             // TODO: complete verification of shape of outbound attachment

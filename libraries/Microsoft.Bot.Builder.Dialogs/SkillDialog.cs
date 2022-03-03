@@ -317,7 +317,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
-            var oauthCardAttachment = activity.Attachments?.FirstOrDefault(a => a?.ContentType == OAuthCard.ContentType);
+            var oauthCardAttachment = activity.Attachments?.FirstOrDefault(a => a?.ContentType == ContentTypes.OAuthCard);
             if (oauthCardAttachment != null)
             {
                 var oauthCard = ((JObject)oauthCardAttachment.Content).ToObject<OAuthCard>();

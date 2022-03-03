@@ -3,20 +3,12 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary> A basic card.</summary>
-    public partial class BasicCard
+    public class BasicCard
     {
-        /// <summary>Initializes a new instance of the <see cref="BasicCard"/> class.</summary>
-        public BasicCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="BasicCard"/> class.</summary>
         /// <param name="title">Title of the card.</param>
         /// <param name="subtitle">Subtitle of the card.</param>
@@ -32,7 +24,6 @@ namespace Microsoft.Bot.Schema
             Images = images ?? new List<CardImage>();
             Buttons = buttons ?? new List<CardAction>();
             Tap = tap;
-            CustomInit();
         }
 
         /// <summary>Gets or sets title of the card.</summary>
@@ -64,8 +55,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The action that will activate when user taps card.</value>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

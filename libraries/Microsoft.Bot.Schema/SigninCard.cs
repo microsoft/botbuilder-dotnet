@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// A card representing a request to sign in.
     /// </summary>
-    public partial class SigninCard
+    public class SigninCard
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SigninCard"/> class.

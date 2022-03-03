@@ -7,14 +7,8 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>Audio card.</summary>
-    public partial class AudioCard
+    public class AudioCard
     {
-        /// <summary>Initializes a new instance of the <see cref="AudioCard"/> class.</summary>
-        public AudioCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>Initializes a new instance of the <see cref="AudioCard"/> class.</summary>
         /// <param name="title">Title of this card.</param>
         /// <param name="subtitle">Subtitle of this card.</param>
@@ -46,7 +40,6 @@ namespace Microsoft.Bot.Schema
             Aspect = aspect;
             Duration = duration;
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -139,8 +132,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The supplementary parameter for this card.</value>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

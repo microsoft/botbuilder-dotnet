@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this HeroCard card)
         {
-            return CreateAttachment(card, HeroCard.ContentType);
+            return CreateAttachment(card, ContentTypes.HeroCard);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this ThumbnailCard card)
         {
-            return CreateAttachment(card, ThumbnailCard.ContentType);
+            return CreateAttachment(card, ContentTypes.ThumbnailCard);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this SigninCard card)
         {
-            return CreateAttachment(card, SigninCard.ContentType);
+            return CreateAttachment(card, ContentTypes.SigninCard);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this ReceiptCard card)
         {
-            return CreateAttachment(card, ReceiptCard.ContentType);
+            return CreateAttachment(card, ContentTypes.ReceiptCard);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this AudioCard card)
         {
-            return CreateAttachment(card, AudioCard.ContentType);
+            return CreateAttachment(card, ContentTypes.AudioCard);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this VideoCard card)
         {
-            return CreateAttachment(card, VideoCard.ContentType);
+            return CreateAttachment(card, ContentTypes.VideoCard);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this AnimationCard card)
         {
-            return CreateAttachment(card, AnimationCard.ContentType);
+            return CreateAttachment(card, ContentTypes.AnimationCard);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Schema
         /// <returns> The generated attachment.</returns>
         public static Attachment ToAttachment(this OAuthCard card)
         {
-            return CreateAttachment(card, OAuthCard.ContentType);
+            return CreateAttachment(card, ContentTypes.OAuthCard);
         }
 
         private static Attachment CreateAttachment<T>(T card, string contentType)
