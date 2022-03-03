@@ -14,7 +14,7 @@ using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
-{ 
+{
     /// <summary>
     /// The TeamsInfo
     /// provides utility methods for the events and interactions that occur within Microsoft Teams.
@@ -102,6 +102,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="teamId"> ID of the Teams team. </param>
         /// <param name="cancellationToken"> cancellation token. </param>
         /// <returns>TeamsChannelAccount.</returns>
+        [Obsolete("Microsoft Teams is deprecating the non-paged version of the getMembers API which this method uses. Please use GetPagedTeamMembersAsync instead of this API.")]
         public static Task<IEnumerable<TeamsChannelAccount>> GetTeamMembersAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
@@ -114,6 +115,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="cancellationToken"> Cancellation token. </param>
         /// <returns>TeamsChannelAccount.</returns>
+        [Obsolete("Microsoft Teams is deprecating the non-paged version of the getMembers API which this method uses. Please use GetPagedTeamMembersAsync instead of this API.")]
         public static Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
