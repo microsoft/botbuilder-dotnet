@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "id": "AskNameDialog",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.TextInput",
+          "property": "user.name",
+          "prompt": "Hello, what is your name?",
+          "unrecognizedPrompt": "How should I call you?",
+          "invalidPrompt": "That does not soud like a name"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "Hello ${user.name}"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "dialog.result",
+          "value": "this is the result from the inner dialog"
+        }
+      ]
+    }
+  ],
+  "autoEndDialog": true,
+  "defaultResultProperty": "dialog.result"
+}

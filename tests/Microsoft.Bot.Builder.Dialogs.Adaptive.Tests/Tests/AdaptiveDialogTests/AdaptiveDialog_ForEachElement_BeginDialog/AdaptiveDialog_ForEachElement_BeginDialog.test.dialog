@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "outer",
+    "autoEndDialog": false,
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnConversationUpdateActivity",
+        "actions": [
+          {
+            "$kind": "Microsoft.Foreach",
+            "itemsProperty": "turn.Activity.membersAdded",
+            "value": "dialog.foreach.value",
+            "actions": [
+              {
+                "$kind": "Microsoft.IfCondition",
+                "condition": "=string(dialog.foreach.value.id) != string(turn.Activity.Recipient.id)",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "AdaptiveDialog_ForEachElement_BeginDialog_innerDialog",
+                    "resultProperty": "dialog.fromNameDialog"
+                  },
+                  {
+                    "$kind": "Microsoft.EndTurn",
+                    "id": "EndTurn"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$kind": "Microsoft.TextInput",
+            "alwaysPrompt": true,
+            "property": "$answer2",
+            "prompt": "Anything else?"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "result: '${dialog.fromNameDialog}' name: '${user.name}'"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello, what is your name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Sarah"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Hello Sarah"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Anything else?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Nope"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "result: 'this is the result from the inner dialog' name: 'Sarah'"
+    }
+  ]
+}
