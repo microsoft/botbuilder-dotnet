@@ -9,6 +9,15 @@ steps:
 
 - template: sdk_dotnet_v4_org-feed-setup-steps.yml
 
+- task: PowerShell@2
+  displayName: 'DEBUG: Upload Coverage Files to Coveralls.io https://coveralls.io/github/microsoft/botbuilder-dotnet'
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
+    arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "CI-PR build"'
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
