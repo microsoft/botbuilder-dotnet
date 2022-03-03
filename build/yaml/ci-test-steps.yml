@@ -45,7 +45,7 @@ steps:
    
    Get-ChildItem -Path "D:\a\_temp" -Include "*.coverage" -Recurse | Copy-Item -Destination CodeCoverage
   displayName: 'Copy .coverage Files to CodeCoverage folder'
-  condition: eq(variables['BuildConfiguration'],'Release-Windows')
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
 
 - powershell: 'echo ''##vso[task.setvariable variable=CoverallsToken]$(DotNetCoverallsToken)'''
   displayName: 'Set CoverallsToken for PublishToCoveralls.ps1 if token exists'
