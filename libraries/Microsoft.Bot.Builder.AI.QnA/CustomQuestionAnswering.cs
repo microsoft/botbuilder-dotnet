@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Newtonsoft.Json;
 
@@ -37,7 +38,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
-            if (string.IsNullOrEmpty(endpoint.QnAServiceType))
+            if (endpoint.QnAServiceType == ServiceType.QnAMaker)
             {
                 throw new ArgumentException(nameof(endpoint.QnAServiceType));
             }
@@ -168,7 +169,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Question cannot be null or empty text");
             }
 
-            QueryResults results = await _languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var results = await _languageServiceHelper.QueryKnowledgeBaseAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 

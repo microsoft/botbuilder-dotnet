@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             // Get Metatdata in legacy format from filters object
             // Union metadata and source filters
             return filters?.MetadataFilter?.Metadata?.Select(kvp => new Metadata { Name = kvp.Key, Value = kvp.Value })
-                    .Union(filters?.SourceFilter?.Select(s => new Metadata { Name = Constants.SourceFilterMetadataKey, Value = s })).ToArray();
+                    .Union(filters?.SourceFilter?.Select(s => new Metadata { Name = Metadata.SourceFilterMetadataKey, Value = s })).ToArray();
         }
     }
 }

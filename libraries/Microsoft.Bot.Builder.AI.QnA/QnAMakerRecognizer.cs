@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;

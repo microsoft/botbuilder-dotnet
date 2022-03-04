@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Question cannot be null or empty text");
             }
 
-            QueryResults results = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var results = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 

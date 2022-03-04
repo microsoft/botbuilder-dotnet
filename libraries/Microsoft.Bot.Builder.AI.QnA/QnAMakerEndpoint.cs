@@ -45,10 +45,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets the QnAServiceType to query QnAMaker or Custom Question Answering Knowledge Base.
         /// </summary>
         /// <value>
-        /// Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.
+        /// Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.
         /// </value>
         [JsonProperty("qnAServiceType")]
-        public string QnAServiceType { get; set; }
+        public ServiceType QnAServiceType { get; set; } = ServiceType.QnAMaker;
 
         /// <summary>
         /// Gets or sets the endpoint key for the knowledge base.

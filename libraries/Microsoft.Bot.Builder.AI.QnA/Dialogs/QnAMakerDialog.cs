@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="strictFilters">QnA Maker <see cref="Metadata"/> with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
         /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
-        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
         /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
-        /// <param name="qnAServiceType">Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -398,9 +398,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// Gets or sets QnA Service type to query either QnAMaker or Custom Question Answering Knowledge Base.
         /// </summary>
-        /// <value>Valid value <see cref="Constants.LanguageQnAServiceType"/> for Language Service, empty or null for legacy QnAMaker.</value>
+        /// <value>Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</value>
         [JsonProperty("qnAServiceType")]
-        public StringExpression QnAServiceType { get; set; }
+        public EnumExpression<ServiceType> QnAServiceType { get; set; } = ServiceType.QnAMaker;
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -526,11 +526,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 EndpointKey = this.EndpointKey.GetValue(dc.State),
                 Host = this.HostName.GetValue(dc.State),
                 KnowledgeBaseId = KnowledgeBaseId.GetValue(dc.State),
-                QnAServiceType = QnAServiceType?.GetValue(dc.State)
+                QnAServiceType = QnAServiceType.GetValue(dc.State)
             };
+
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
 
-            return QnAClientFactory.CreateQnAClient(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+            if (endpoint.QnAServiceType == ServiceType.Language)
+            {
+                return new CustomQuestionAnswering(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
+            }
+            else
+            {
+                return new QnAMaker(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
+            }
         }
 
         /// <summary>

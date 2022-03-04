@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = "dummy-key",
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -409,7 +409,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -545,7 +545,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 options);
 
@@ -581,7 +581,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 options);
 
@@ -616,7 +616,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 options);
 
@@ -647,7 +647,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -683,7 +683,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var feedbackRecords = new FeedbackRecords();
@@ -725,7 +725,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
 
             var options = new QnAMakerOptions
@@ -764,7 +764,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions
@@ -812,7 +812,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
             var filters = new Filters()
             {
@@ -859,7 +859,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions()
                 {
@@ -893,7 +893,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -919,7 +919,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
 
             var tooLargeThreshold = new QnAMakerOptions
@@ -944,7 +944,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
 
             var tooSmallThreshold = new QnAMakerOptions
@@ -976,7 +976,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions()
@@ -1016,7 +1016,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions()
@@ -1050,7 +1050,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions()
@@ -1080,7 +1080,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -1105,7 +1105,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                         KnowledgeBaseId = string.Empty,
                         EndpointKey = _endpointKey,
                         Host = _endpoint,
-                        QnAServiceType = Constants.LanguageQnAServiceType
+                        QnAServiceType = ServiceType.Language
                     });
             });
         }
@@ -1122,7 +1122,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
-            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true, string.Empty);
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true, ServiceType.QnAMaker);
 
             await Assert.ThrowsAsync<HttpRequestException>(() => CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
         .Send("What happens if I pass empty qnaServiceType with host of Language Service")
@@ -1145,7 +1145,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = string.Empty,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 }));
         }
 
@@ -1163,7 +1163,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = string.Empty,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 }));
         }
 
@@ -1189,7 +1189,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -1229,7 +1229,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions
@@ -1266,7 +1266,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var queryOptionsWithScoreThreshold = new QnAMakerOptions
@@ -1306,7 +1306,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             await Assert.ThrowsAsync<HttpRequestException>(() => qna.GetAnswersAsync(GetContext("how do I clean the stove?")));
@@ -1337,7 +1337,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
 
             var qna = new CustomQuestionAnswering(endpoint, qnAMakerOptions, client, null, true);
@@ -1369,7 +1369,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 });
 
             var qnaMakerOptions = new QnAMakerOptions
@@ -1410,7 +1410,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 noFiltersOptions);
 
@@ -1512,7 +1512,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = Constants.LanguageQnAServiceType
+                    QnAServiceType = ServiceType.Language
                 },
                 noFiltersOptions);
 
@@ -1634,7 +1634,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             {
                                 KnowledgeBaseId = _projectName,
                                 EndpointKey = _endpointKey,
-                                QnAServiceType = Constants.LanguageQnAServiceType,
+                                QnAServiceType = ServiceType.Language,
                                 Host = _endpoint,
                             }, oneFilteredOption);
 
@@ -1667,7 +1667,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1708,7 +1708,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1763,7 +1763,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1813,7 +1813,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1868,7 +1868,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1927,7 +1927,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1995,7 +1995,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -2059,7 +2059,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
                 Host = _endpoint,
-                QnAServiceType = Constants.LanguageQnAServiceType
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -2234,7 +2234,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         /// </summary>
         /// <param name="mockHttp">The mockHttp<see cref="MockHttpMessageHandler"/>.</param>
         /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
-        private AdaptiveDialog CreateLanguageServiceActionDialog(MockHttpMessageHandler mockHttp, bool displayPreciseAnswer = false, string qnaServiceType = Constants.LanguageQnAServiceType)
+        private AdaptiveDialog CreateLanguageServiceActionDialog(MockHttpMessageHandler mockHttp, bool displayPreciseAnswer = false, ServiceType qnaServiceType = ServiceType.Language)
         {
             var client = new HttpClient(mockHttp);
 
@@ -2347,7 +2347,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = _endpoint,
-                    QnAServiceType = "language"
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
