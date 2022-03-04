@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// File consent card attachment.
     /// </summary>
-    public partial class FileConsentCard
+    public class FileConsentCard
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileConsentCard"/> class.
-        /// </summary>
-        public FileConsentCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FileConsentCard"/> class.
         /// </summary>
@@ -37,7 +28,6 @@ namespace Microsoft.Bot.Schema.Teams
             SizeInBytes = sizeInBytes;
             AcceptContext = acceptContext;
             DeclineContext = declineContext;
-            CustomInit();
         }
 
         /// <summary>
@@ -70,10 +60,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The context to send back to the Bot if user declined.</value>
         [JsonProperty(PropertyName = "declineContext")]
         public object DeclineContext { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

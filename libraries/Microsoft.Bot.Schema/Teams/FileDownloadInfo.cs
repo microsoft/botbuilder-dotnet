@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// File download info attachment.
     /// </summary>
-    public partial class FileDownloadInfo
+    public class FileDownloadInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileDownloadInfo"/> class.
-        /// </summary>
-        public FileDownloadInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FileDownloadInfo"/> class.
         /// </summary>
@@ -32,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             UniqueId = uniqueId;
             FileType = fileType;
             Etag = etag;
-            CustomInit();
         }
 
         /// <summary>
@@ -64,10 +54,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The eTag for the file.</value>
         [JsonProperty(PropertyName = "etag")]
         public object Etag { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

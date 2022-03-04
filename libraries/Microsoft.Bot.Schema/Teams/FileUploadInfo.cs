@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Information about the file to be uploaded.
     /// </summary>
-    public partial class FileUploadInfo
+    public class FileUploadInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileUploadInfo"/> class.
-        /// </summary>
-        public FileUploadInfo()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FileUploadInfo"/> class.
         /// </summary>
@@ -36,7 +27,6 @@ namespace Microsoft.Bot.Schema.Teams
             ContentUrl = contentUrl;
             UniqueId = uniqueId;
             FileType = fileType;
-            CustomInit();
         }
 
         /// <summary>
@@ -78,10 +68,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The type of the file.</value>
         [JsonProperty(PropertyName = "fileType")]
         public string FileType { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
