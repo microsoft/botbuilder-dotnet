@@ -8,14 +8,13 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Teams channel account detailing user Azure Active Directory details.
     /// </summary>
-    public partial class TeamsChannelAccount : ChannelAccount
+    public class TeamsChannelAccount : ChannelAccount
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsChannelAccount"/> class.
         /// </summary>
         public TeamsChannelAccount()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -39,7 +38,6 @@ namespace Microsoft.Bot.Schema.Teams
             UserPrincipalName = userPrincipalName;
             TenantId = tenantId;
             UserRole = userRole;
-            CustomInit();
         }
 
         /// <summary>
@@ -100,8 +98,14 @@ namespace Microsoft.Bot.Schema.Teams
         public string TenantId { get; set; }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
+        /// Gets or sets the AAD Object Id.
         /// </summary>
-        partial void CustomInit();
+        [JsonProperty(PropertyName = "objectId")]
+        private string ObjectId
+        {
+            get => AadObjectId;
+
+            set => AadObjectId = value;
+        }
     }
 }
