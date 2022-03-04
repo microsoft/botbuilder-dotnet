@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// O365 connector card HttpPOST action.
     /// </summary>
-    public partial class O365ConnectorCardHttpPOST : O365ConnectorCardActionBase
+    public class O365ConnectorCardHttpPOST : O365ConnectorCardActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardHttpPOST"/> class.
-        /// </summary>
-        public O365ConnectorCardHttpPOST()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardHttpPOST"/> class.
         /// </summary>
@@ -31,7 +22,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base(type, name, id)
         {
             Body = body;
-            CustomInit();
         }
 
         /// <summary>
@@ -40,10 +30,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The content to be posted back to bots via invoke.</value>
         [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

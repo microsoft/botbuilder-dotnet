@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// O365 connector card OpenUri action.
     /// </summary>
-    public partial class O365ConnectorCardOpenUri : O365ConnectorCardActionBase
+    public class O365ConnectorCardOpenUri : O365ConnectorCardActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardOpenUri"/> class.
-        /// </summary>
-        public O365ConnectorCardOpenUri()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardOpenUri"/> class.
         /// </summary>
@@ -32,7 +24,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base(type, name, id)
         {
             Targets = targets ?? new List<O365ConnectorCardOpenUriTarget>();
-            CustomInit();
         }
 
         /// <summary>
@@ -41,10 +32,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The target OS/URLs.</value>
         [JsonProperty(PropertyName = "targets")]
         public IList<O365ConnectorCardOpenUriTarget> Targets { get; private set; } = new List<O365ConnectorCardOpenUriTarget>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

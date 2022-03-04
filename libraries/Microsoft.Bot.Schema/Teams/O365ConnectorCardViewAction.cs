@@ -9,16 +9,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// O365 connector card ViewAction action.
     /// </summary>
-    public partial class O365ConnectorCardViewAction : O365ConnectorCardActionBase
+    public class O365ConnectorCardViewAction : O365ConnectorCardActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardViewAction"/> class.
-        /// </summary>
-        public O365ConnectorCardViewAction()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardViewAction"/> class.
         /// </summary>
@@ -31,7 +23,6 @@ namespace Microsoft.Bot.Schema.Teams
             : base(type, name, id)
         {
             Target = target ?? new List<string>();
-            CustomInit();
         }
 
         /// <summary>
@@ -40,10 +31,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The target URLs.</value>
         [JsonProperty(PropertyName = "target")]
         public IList<string> Target { get; private set; } = new List<string>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

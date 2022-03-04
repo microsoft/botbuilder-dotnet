@@ -8,16 +8,8 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// O365 connector card text input.
     /// </summary>
-    public partial class O365ConnectorCardTextInput : O365ConnectorCardInputBase
+    public class O365ConnectorCardTextInput : O365ConnectorCardInputBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardTextInput"/> class.
-        /// </summary>
-        public O365ConnectorCardTextInput()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardTextInput"/> class.
         /// </summary>
@@ -34,7 +26,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             IsMultiline = isMultiline;
             MaxLength = maxLength;
-            CustomInit();
         }
 
         /// <summary>
@@ -52,10 +43,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The maximum length of text input.</value>
         [JsonProperty(PropertyName = "maxLength")]
         public double? MaxLength { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

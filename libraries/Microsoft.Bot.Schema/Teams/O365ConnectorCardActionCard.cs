@@ -3,24 +3,14 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// O365 connector card ActionCard action.
     /// </summary>
-    public partial class O365ConnectorCardActionCard : O365ConnectorCardActionBase
+    public class O365ConnectorCardActionCard : O365ConnectorCardActionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardActionCard"/> class.
-        /// </summary>
-        public O365ConnectorCardActionCard()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardActionCard"/> class.
         /// </summary>
@@ -41,7 +31,6 @@ namespace Microsoft.Bot.Schema.Teams
         {
             Inputs = inputs ?? new List<O365ConnectorCardInputBase>();
             Actions = actions ?? new List<O365ConnectorCardActionBase>();
-            CustomInit();
         }
 
         /// <summary>
@@ -60,10 +49,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The actions contained in this ActionCard.</value>
         [JsonProperty(PropertyName = "actions")]
         public IList<O365ConnectorCardActionBase> Actions { get; private set; } = new List<O365ConnectorCardActionBase>();
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

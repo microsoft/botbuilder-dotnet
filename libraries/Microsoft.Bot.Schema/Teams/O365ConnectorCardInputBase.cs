@@ -3,22 +3,13 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// O365 connector card input for ActionCard action.
     /// </summary>
-    public partial class O365ConnectorCardInputBase
+    public class O365ConnectorCardInputBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="O365ConnectorCardInputBase"/> class.
-        /// </summary>
-        public O365ConnectorCardInputBase()
-        {
-            CustomInit();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="O365ConnectorCardInputBase"/> class.
         /// </summary>
@@ -35,7 +26,6 @@ namespace Microsoft.Bot.Schema.Teams
             IsRequired = isRequired;
             Title = title;
             Value = value;
-            CustomInit();
         }
 
         /// <summary>
@@ -75,10 +65,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The default value for this input field.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
