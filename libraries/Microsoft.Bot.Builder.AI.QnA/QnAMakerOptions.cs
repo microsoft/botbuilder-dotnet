@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets or sets a value indicating whether to include Unstructured Sources from the Knowledge Base to query.
         /// </summary>
-        /// <value> Flag to enable Query over Unstructured Sources. True/False, defaults to False.</value>
+        /// <value> Flag to enable Query over Unstructured Sources. True/False, defaults to True.</value>
         [JsonProperty("includeUnstructuredSources")]
         public bool IncludeUnstructuredSources { get; set; } = true;
     }

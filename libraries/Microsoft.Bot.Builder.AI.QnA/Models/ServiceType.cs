@@ -5,7 +5,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// Type of Service invoked from the bot.
-    /// Default is QnAMaker.
     /// </summary>
     public enum ServiceType
     {

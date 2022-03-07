@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <summary>
         /// Gets or sets QnA Service type to query either QnAMaker or Custom Question Answering Knowledge Base.
         /// </summary>
-        /// <value>Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</value>
+        /// <value>Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker, default is QnAMaker.</value>
         [JsonProperty("qnAServiceType")]
         public EnumExpression<ServiceType> QnAServiceType { get; set; } = ServiceType.QnAMaker;
 
