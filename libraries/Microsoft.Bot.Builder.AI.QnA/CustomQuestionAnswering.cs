@@ -38,11 +38,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
-            if (endpoint.QnAServiceType == ServiceType.QnAMaker)
-            {
-                throw new ArgumentException(nameof(endpoint.QnAServiceType));
-            }
-
             if (string.IsNullOrEmpty(endpoint.KnowledgeBaseId))
             {
                 throw new ArgumentException(nameof(endpoint.KnowledgeBaseId));
