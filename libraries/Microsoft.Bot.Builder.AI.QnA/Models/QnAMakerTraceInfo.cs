@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// True or False, defaults to False.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
-        public BoolExpression EnablePreciseAnswer { get; set; }
+        public BoolExpression EnablePreciseAnswer { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable Query over Unstructured Sources.
