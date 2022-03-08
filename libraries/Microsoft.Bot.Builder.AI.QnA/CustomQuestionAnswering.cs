@@ -192,28 +192,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Executed when a result is returned from Custom Question Answering.
-        /// </summary>
-        /// <param name="queryResults">An array of <see cref="QueryResult"/>.</param>
-        /// <param name="turnContext">The <see cref="TurnContext"/> that contains the user question to be queried against your knowledge base.</param>
-        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
-        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
-        /// <returns>A Task representing the work to be executed.</returns>
-        protected virtual async Task OnQnaResultsAsync(
-                   QueryResult[] queryResults,
-                   ITurnContext turnContext,
-                   Dictionary<string, string> telemetryProperties = null,
-                   Dictionary<string, double> telemetryMetrics = null,
-                   CancellationToken cancellationToken = default)
-        {
-            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-
-            // Track the event
-            TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
-        }
-
-        /// <summary>
         /// Fills the event properties and metrics for the QnaMessage event for telemetry.
         /// These properties are logged when the QnA GetAnswers method is called.
         /// </summary>
@@ -223,7 +201,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="telemetryMetrics">Metrics to add/override for the event.</param>
         /// additionalProperties
         /// <returns>A tuple of Properties and Metrics that will be sent to the IBotTelemetryClient.TrackEvent method for the QnAMessage event.  The properties and metrics returned the standard properties logged with any properties passed from the GetAnswersAsync method.</returns>
-        protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
+        internal Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var properties = new Dictionary<string, string>();
             var metrics = new Dictionary<string, double>();
@@ -282,6 +260,28 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             return Task.FromResult((Properties: telemetryProperties ?? properties, Metrics: telemetryMetrics ?? metrics));
+        }
+
+        /// <summary>
+        /// Executed when a result is returned from Custom Question Answering.
+        /// </summary>
+        /// <param name="queryResults">An array of <see cref="QueryResult"/>.</param>
+        /// <param name="turnContext">The <see cref="TurnContext"/> that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>A Task representing the work to be executed.</returns>
+        protected virtual async Task OnQnaResultsAsync(
+                   QueryResult[] queryResults,
+                   ITurnContext turnContext,
+                   Dictionary<string, string> telemetryProperties = null,
+                   Dictionary<string, double> telemetryMetrics = null,
+                   CancellationToken cancellationToken = default)
+        {
+            var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+
+            // Track the event
+            TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
         }
     }
 }

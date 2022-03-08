@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
     /// <summary>
     /// Gets or sets precise answer of query from Knowledge Base.
     /// </summary>
-    [Serializable]
     internal class KnowledgeBaseAnswerSpan
     {
         /// <summary>

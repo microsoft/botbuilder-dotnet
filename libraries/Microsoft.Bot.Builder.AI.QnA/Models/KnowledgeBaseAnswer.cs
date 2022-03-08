@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
     /// <summary>
     /// Represents an individual result from a knowledge base query.
     /// </summary>
-    [Serializable]
     internal class KnowledgeBaseAnswer
     {
         /// <summary>

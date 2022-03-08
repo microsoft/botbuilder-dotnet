@@ -506,7 +506,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the QnA Maker client to use.</remarks>
-        protected async virtual Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
+        protected virtual async Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
             if (qnaClient != null)
@@ -515,11 +515,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 return qnaClient;
             }
 
-            var httpClient = dc.Context.TurnState.Get<HttpClient>();
-            if (httpClient == null)
-            {
-                httpClient = HttpClient;
-            }
+            var httpClient = dc.Context.TurnState.Get<HttpClient>() ?? HttpClient;
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -535,10 +531,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             {
                 return new CustomQuestionAnswering(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
             }
-            else
-            {
-                return new QnAMaker(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
-            }
+
+            return new QnAMaker(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
         }
 
         /// <summary>

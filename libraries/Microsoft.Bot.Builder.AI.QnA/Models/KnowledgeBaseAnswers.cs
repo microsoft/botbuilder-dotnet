@@ -6,14 +6,11 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.AI.QnA.Tests")]
-
 namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// Contains answers for a user query.
     /// </summary>
-    [Serializable]
     internal class KnowledgeBaseAnswers
     {
         /// <summary>
