@@ -9,6 +9,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// The context associated with QnA.  Used to mark if the qna response has related prompts to display.
     /// </summary>
+    [Serializable]
     public class QnAResponseContext
     {
         /// <summary>

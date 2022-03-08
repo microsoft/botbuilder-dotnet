@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -9,7 +10,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
     /// <summary>
     /// Represents an individual result from a knowledge base query.
     /// </summary>
-    public class KnowledgeBaseAnswer
+    [Serializable]
+    internal class KnowledgeBaseAnswer
     {
         /// <summary>
         /// Gets the list of questions indexed in the QnA Service for the given answer.

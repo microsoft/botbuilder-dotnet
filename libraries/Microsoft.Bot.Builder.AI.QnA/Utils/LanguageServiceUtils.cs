@@ -182,7 +182,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
 
         private async Task<QueryResults> QueryKbAsync(Activity messageActivity, QnAMakerOptions options)
         {
-            var requestUrl = $"{_endpoint.Host}/language/:query-knowledgebases?projectName={_endpoint.KnowledgeBaseId}&deploymentName=production&{ApiVersionQueryParam}";
+            var deploymentName = options.IsTest ? "test" : "production";
+            var requestUrl = $"{_endpoint.Host}/language/:query-knowledgebases?projectName={_endpoint.KnowledgeBaseId}&deploymentName={deploymentName}&{ApiVersionQueryParam}";
 
             var jsonRequest = JsonConvert.SerializeObject(
                 new

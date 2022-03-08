@@ -1,15 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.AI.QnA.Tests")]
 
 namespace Microsoft.Bot.Builder.AI.QnA.Models
 {
     /// <summary>
     /// Contains answers for a user query.
     /// </summary>
-    public class KnowledgeBaseAnswers
+    [Serializable]
+    internal class KnowledgeBaseAnswers
     {
         /// <summary>
         /// Gets the answers for a user query,

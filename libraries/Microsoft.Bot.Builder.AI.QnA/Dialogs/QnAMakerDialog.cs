@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
             Filters filters = null,
-            string qnAServiceType = "",
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
             Filters filters = null,
-            string qnAServiceType = "",
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -363,19 +363,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether to include precise answer in response. 
         /// </summary>
         /// <value>
-        /// True or false to include precise answer in response, defaults to false. 
+        /// True or false to include precise answer in response, defaults to true. 
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
-        public bool EnablePreciseAnswer { get; set; }
+        public BoolExpression EnablePreciseAnswer { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to include unstructured sources in search for answers. 
         /// </summary>
         /// <value>
-        /// True/False indicating whether to include unstructured sources, defaults to false. 
+        /// True/False indicating whether to include unstructured sources, defaults to true. 
         /// </value>
         [JsonProperty("includeUnstructuredSources")]
-        public bool IncludeUnstructuredSources { get; set; }
+        public BoolExpression IncludeUnstructuredSources { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the metadata and sources used to filter QnA Maker results.
@@ -393,7 +393,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// True/False, defaults to False.
         /// </value>
         [JsonProperty("displayPreciseAnswerOnly")]
-        public bool DisplayPreciseAnswerOnly { get; set; }
+        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = false;
 
         /// <summary>
         /// Gets or sets QnA Service type to query either QnAMaker or Custom Question Answering Knowledge Base.
@@ -559,7 +559,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 RankerType = this.RankerType?.GetValue(dc.State),
                 IsTest = IsTest,
                 EnablePreciseAnswer = EnablePreciseAnswer,
-                Filters = Filters?.GetValue(dc.State)
+                Filters = Filters?.GetValue(dc.State),
+                IncludeUnstructuredSources = IncludeUnstructuredSources
             });
         }
 

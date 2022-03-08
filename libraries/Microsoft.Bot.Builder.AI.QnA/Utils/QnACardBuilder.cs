@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -94,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="displayPreciseAnswerOnly">Choice to render precise answer.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, BoolExpression displayPreciseAnswerOnly)
         {
             if (result == null)
             {
@@ -129,7 +130,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 chatActivity.Text = result.AnswerSpan.Text;
 
                 // For content choice Precise only
-                if (!displayPreciseAnswerOnly)
+                if (displayPreciseAnswerOnly.Value == false)
                 {
                     heroCardText = result.Answer;
                 }

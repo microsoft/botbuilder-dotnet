@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
@@ -124,10 +125,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets a value indicating whether to include precise answer in response.
         /// </summary>
         /// <value>
-        /// True/False, defaults to false.
+        /// True/False, defaults to true.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
-        public bool EnablePreciseAnswer { get; set; }
+        public BoolExpression EnablePreciseAnswer { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the metadata and sources used to filter QnA Maker results.
@@ -143,6 +144,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <value> Flag to enable Query over Unstructured Sources. True/False, defaults to True.</value>
         [JsonProperty("includeUnstructuredSources")]
-        public bool IncludeUnstructuredSources { get; set; } = true;
+        public BoolExpression IncludeUnstructuredSources { get; set; } = true;
     }
 }

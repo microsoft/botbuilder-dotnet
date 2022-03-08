@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -48,6 +49,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// True or False, defaults to False.
         /// </value>
-        public bool DisplayPreciseAnswerOnly { get; set; }
+        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = false;
     }
 }

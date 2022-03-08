@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Models
@@ -8,7 +9,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Models
     /// <summary>
     /// Gets or sets precise answer of query from Knowledge Base.
     /// </summary>
-    public class KnowledgeBaseAnswerSpan
+    [Serializable]
+    internal class KnowledgeBaseAnswerSpan
     {
         /// <summary>
         /// Gets or sets the precise answer text.
