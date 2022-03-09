@@ -39,6 +39,14 @@ steps:
   inputs:
     projects: Microsoft.Bot.Builder.sln
     arguments: ' --source $(SDK_Dotnet_V4_org_Url)'
+  condition: and(succeeded(), ne(variables['System.PullRequest.IsFork'], 'True'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build for forks'
+  inputs:
+    projects: Microsoft.Bot.Builder.sln
+    arguments: ' --source https://api.nuget.org/v3/index.json'
+  condition: and(succeeded(), eq(variables['System.PullRequest.IsFork'], 'True'))
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
