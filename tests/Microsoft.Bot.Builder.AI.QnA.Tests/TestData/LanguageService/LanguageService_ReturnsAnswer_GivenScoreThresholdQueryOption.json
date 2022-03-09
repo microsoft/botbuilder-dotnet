@@ -1,0 +1,17 @@
+{
+  "answers": [
+    {
+      "confidenceScore": 0.6854820341616869,
+      "Id": 22,
+      "answer": "Why do you ask?",
+      "source": "Custom Editorial",
+      "questions": [
+        "what happens when you hug a procupine?"
+      ],
+      "metadata": {
+        "name": "animal",
+        "value": "procupine"
+      }
+    }
+  ]
+}

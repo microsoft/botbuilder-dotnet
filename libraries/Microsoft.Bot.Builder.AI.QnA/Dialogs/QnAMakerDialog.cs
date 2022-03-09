@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -91,8 +92,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="top">The maximum number of answers to return from the knowledge base.</param>
         /// <param name="cardNoMatchResponse">The activity to send the user if they select the no match option
         /// on an active learning card.</param>
-        /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
+        /// <param name="strictFilters">QnA Maker <see cref="Metadata"/> with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
+        /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -111,6 +114,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
+            Filters filters = null,
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -127,6 +132,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.StrictFilters = strictFilters;
             this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
             this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
+            Filters = filters;
+            QnAServiceType = qnAServiceType;
             this.HttpClient = httpClient;
 
             // add waterfall steps
@@ -154,6 +161,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// on an active learning card.</param>
         /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
         /// knowledge base; or null to apply none.</param>
+        /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</param>
         /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
         /// or `null` to use a default client.</param>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -171,6 +180,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             int top = DefaultTopN,
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
+            Filters filters = null,
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
@@ -186,6 +197,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 top,
                 cardNoMatchResponse,
                 strictFilters,
+                filters,
+                qnAServiceType,
                 httpClient,
                 sourceFilePath,
                 sourceLineNumber)
@@ -347,6 +360,49 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
+        /// Gets or sets a value indicating whether to include precise answer in response. 
+        /// </summary>
+        /// <value>
+        /// True or false to include precise answer in response, defaults to true. 
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public BoolExpression EnablePreciseAnswer { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to include unstructured sources in search for answers. 
+        /// </summary>
+        /// <value>
+        /// True/False indicating whether to include unstructured sources, defaults to true. 
+        /// </value>
+        [JsonProperty("includeUnstructuredSources")]
+        public BoolExpression IncludeUnstructuredSources { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public ObjectExpression<Filters> Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dialog response should display only precise answers.
+        /// </summary>
+        /// <value>
+        /// True/False, defaults to False.
+        /// </value>
+        [JsonProperty("displayPreciseAnswerOnly")]
+        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets QnA Service type to query either QnAMaker or Custom Question Answering Knowledge Base.
+        /// </summary>
+        /// <value>Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker, default is QnAMaker.</value>
+        [JsonProperty("qnAServiceType")]
+        public EnumExpression<ServiceType> QnAServiceType { get; set; } = ServiceType.QnAMaker;
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -450,7 +506,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the QnA Maker client to use.</remarks>
-        protected async virtual Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
+        protected virtual async Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
             if (qnaClient != null)
@@ -459,20 +515,24 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 return qnaClient;
             }
 
-            var httpClient = dc.Context.TurnState.Get<HttpClient>();
-            if (httpClient == null)
-            {
-                httpClient = HttpClient;
-            }
+            var httpClient = dc.Context.TurnState.Get<HttpClient>() ?? HttpClient;
 
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.EndpointKey.GetValue(dc.State),
                 Host = this.HostName.GetValue(dc.State),
-                KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State)
+                KnowledgeBaseId = KnowledgeBaseId.GetValue(dc.State),
+                QnAServiceType = QnAServiceType.GetValue(dc.State)
             };
+
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+
+            if (endpoint.QnAServiceType == ServiceType.Language)
+            {
+                return new CustomQuestionAnswering(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
+            }
+
+            return new QnAMaker(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
         }
 
         /// <summary>
@@ -491,7 +551,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = this.RankerType?.GetValue(dc.State),
-                IsTest = this.IsTest
+                IsTest = IsTest,
+                EnablePreciseAnswer = EnablePreciseAnswer,
+                Filters = Filters?.GetValue(dc.State),
+                IncludeUnstructuredSources = IncludeUnstructuredSources
             });
         }
 
@@ -508,7 +571,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
+                CardNoMatchResponse = await CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
+                DisplayPreciseAnswerOnly = DisplayPreciseAnswerOnly
             };
         }
 
@@ -547,20 +611,32 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             // If response is present then show that response, else default answer.
-            if (stepContext.Result is List<QueryResult> response && response.Count > 0)
+            var response = (List<QueryResult>)stepContext.Result;
+            if (response.Count > 0 && response[0].Id != -1)
             {
-                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
             }
             else
             {
                 var activity = dialogOptions.ResponseOptions.NoAnswer;
-                if (activity == null)
+                if (activity != null && activity.Text != null)
                 {
-                    await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(activity).ConfigureAwait(false);
                 }
                 else
                 {
-                    await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    if (response.Count == 1 && response[0].Id == -1)
+                    {
+                        // Nomatch Response from service.
+                        var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                        await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        // Empty result array received from service.
+                        await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
                 }
             }
 
@@ -632,16 +708,23 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
                     {
-                        suggestedQuestions.Add(qna.Questions[0]);
+                        // for unstructured sources questions will be empty
+                        if (qna.Questions?.Length > 0)
+                        {
+                            suggestedQuestions.Add(qna.Questions[0]);
+                        }
                     }
 
-                    // Get active learning suggestion card activity.
-                    var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    if (suggestedQuestions.Count > 0)
+                    {
+                        // Get active learning suggestion card activity.
+                        var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
+                        await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
-                    ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
-                    stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
-                    return new DialogTurnResult(DialogTurnStatus.Waiting);
+                        ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
+                        stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
+                    }
                 }
             }
 
@@ -730,7 +813,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                 var answer = response.First();
 
-                if (answer.Context != null && answer.Context.Prompts.Length > 0)
+                if (answer.Context != null && answer.Context.Prompts?.Length > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
                     var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
@@ -745,7 +828,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText);
+                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);

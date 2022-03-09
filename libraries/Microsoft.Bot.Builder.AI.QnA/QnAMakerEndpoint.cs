@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Configuration;
 using Newtonsoft.Json;
 
@@ -39,6 +40,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("knowledgeBaseId")]
         public string KnowledgeBaseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the QnAServiceType to query QnAMaker or Custom Question Answering Knowledge Base.
+        /// </summary>
+        /// <value>
+        /// Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.
+        /// </value>
+        [JsonProperty("qnAServiceType")]
+        public ServiceType QnAServiceType { get; set; } = ServiceType.QnAMaker;
 
         /// <summary>
         /// Gets or sets the endpoint key for the knowledge base.

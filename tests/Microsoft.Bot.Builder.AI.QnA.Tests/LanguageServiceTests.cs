@@ -5,21 +5,21 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
-using Microsoft.Bot.Builder.AI.QnA.Tests;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Moq;
@@ -28,187 +28,193 @@ using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.AI.Tests
+namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     /// <summary>
-    /// Defines the <see cref="QnAMakerTests" />.
+    /// Defines the <see cref="LanguageServiceTests" />.
     /// </summary>
-    public class QnAMakerTests
+    public class LanguageServiceTests
     {
         /// <summary>
-        /// Defines the _knowledgeBaseId.
+        /// Defines the _endpointKey.
         /// </summary>
-        private const string _knowledgeBaseId = "dummy-id";
+        private const string _projectName = "dummy-project";
 
         /// <summary>
-        /// Defines the _endpointKey.
+        /// Defines the _endpoint.
+        /// </summary>
+        private const string _endpoint = "https://dummy-hostname.cognitiveservices.azure.com";
+
+        /// <summary>
+        /// Defines the api-version.
+        /// </summary>
+        private const string _apiVersion = "2021-10-01";
+
+        /// <summary>
+        /// Defines the endpoint key.
         /// </summary>
         private const string _endpointKey = "dummy-key";
 
         /// <summary>
-        /// Defines the _hostname.
-        /// </summary>
-        private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
-
-        /// <summary>
-        /// The QnAMakerAction_ActiveLearningDialogBase.
+        /// The LanguageServiceAction_ActiveLearningDialogBase.
         /// </summary>
         /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
-        public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
+        public AdaptiveDialog LanguageServiceAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
-                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-               .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
-            return CreateQnAMakerActionDialog(mockHttp);
+            mockHttp.When(HttpMethod.Post, GetFeedbackUrl())
+              .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
+               .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
+               .Respond("application/json", GetResponse("LanguageService_TopNAnswer.json"));
+            return CreateLanguageServiceActionDialog(mockHttp, false);
         }
 
         /// <summary>
-        /// The QnAMakerAction_ActiveLearningDialog_WithProperResponse.
+        /// The LanguageServiceAction_ActiveLearningDialog_WithProperResponse.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
-        public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse()
+        public async Task LanguageServiceAction_ActiveLearningDialog_WithProperResponse()
         {
-            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+            var rootDialog = LanguageServiceAction_ActiveLearningDialogBase();
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithProperResponse")
+            await CreateFlow(rootDialog, "LanguageServiceAction_ActiveLearningDialog_WithProperResponse")
             .Send("Q11")
-                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+                .AssertReply(suggestionActivity, equalityComparer: qnaMakerCardEqualityComparer)
             .Send("Q1")
                 .AssertReply("A1")
             .StartTestAsync();
         }
 
         /// <summary>
-        /// The QnAMakerAction_ActiveLearningDialog_WithNoResponse.
+        /// The LanguageServiceAction_ActiveLearningDialog_WithNoResponse.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
-        public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse()
+        public async Task LanguageServiceAction_ActiveLearningDialog_WithNoResponse()
         {
-            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+            var rootDialog = LanguageServiceAction_ActiveLearningDialogBase();
 
             const string noAnswerActivity = "No match found, please ask another question.";
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithNoResponse")
+            await CreateFlow(rootDialog, "LanguageServiceAction_ActiveLearningDialog_WithNoResponse")
             .Send("Q11")
-                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+                .AssertReply(suggestionActivity, equalityComparer: qnaMakerCardEqualityComparer)
             .Send("Q12")
                 .AssertReply(noAnswerActivity)
             .StartTestAsync();
         }
 
         /// <summary>
-        /// The QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery.
+        /// The LanguageServiceAction_ActiveLearningDialog_WithNoneOfAboveQuery.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
-        public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery()
+        public async Task LanguageServiceAction_ActiveLearningDialog_WithNoneOfAboveQuery()
         {
-            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+            var rootDialog = LanguageServiceAction_ActiveLearningDialogBase();
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery")
+            await CreateFlow(rootDialog, "LanguageServiceAction_ActiveLearningDialog_WithNoneOfAboveQuery")
             .Send("Q11")
-                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+                .AssertReply(suggestionActivity, equalityComparer: qnaMakerCardEqualityComparer)
             .Send("None of the above.")
                 .AssertReply("Thanks for the feedback.")
             .StartTestAsync();
         }
 
         /// <summary>
-        /// The QnAMakerAction_MultiTurnDialogBase.
+        /// The LanguageServiceAction_MultiTurnDialogBase.
         /// </summary>
         /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
-        public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
+        public AdaptiveDialog LanguageServiceAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
 
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
+                .Respond("application/json", GetResponse("LanguageService_ReturnAnswer_withPrompts.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true}")
+                .Respond("application/json", GetResponse("LanguageService_ReturnAnswer_MultiTurnLevel1.json"));
 
-            return CreateQnAMakerActionDialog(mockHttp);
+            return CreateLanguageServiceActionDialog(mockHttp, false);
         }
 
         /// <summary>
-        /// The QnAMakerAction_MultiTurnDialogBase_WithAnswer.
+        /// The LanguageServiceAction_MultiTurnDialogBase_WithAnswer.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
-        public async Task QnAMakerAction_MultiTurnDialogBase_WithAnswer()
+        public async Task LanguageServiceAction_MultiTurnDialogBase_WithAnswer()
         {
-            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
+            var rootDialog = LanguageServiceAction_MultiTurnDialogBase();
 
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
-            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0]);
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(GetQueryResultFromKBAnswer(response.Answers[0]));
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog, nameof(QnAMakerAction_MultiTurnDialogBase_WithAnswer))
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithAnswer))
             .Send("I have issues related to KB")
-                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+                .AssertReply(promptsActivity, equalityComparer: qnaMakerCardEqualityComparer)
             .Send("Accidently deleted KB")
                 .AssertReply("All deletes are permanent, including question and answer pairs, files, URLs, custom questions and answers, knowledge bases, or Azure resources. Make sure you export your knowledge base from the Settings**page before deleting any part of your knowledge base.")
             .StartTestAsync();
         }
 
         /// <summary>
-        /// The QnAMakerAction_MultiTurnDialogBase_WithNoAnswer.
+        /// The LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
-        public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer()
+        public async Task LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer()
         {
-            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
+            var rootDialog = LanguageServiceAction_MultiTurnDialogBase();
 
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
-            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0]);
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(GetQueryResultFromKBAnswer(response.Answers[0]));
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog, nameof(QnAMakerAction_MultiTurnDialogBase_WithNoAnswer))
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
             .Send("I have issues related to KB")
-                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+                .AssertReply(promptsActivity, equalityComparer: qnaMakerCardEqualityComparer)
             .Send("None of the above.")
                 .AssertReply("Thanks for the feedback.")
             .StartTestAsync();
         }
 
         /// <summary>
-        /// The QnaMaker_TraceActivity.
+        /// The LanguageService_TraceActivity.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TraceActivity()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TraceActivity()
         {
             // Mock Qna
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-            var qna = GetQnAMaker(
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    KnowledgeBaseId = _projectName,
+                    EndpointKey = "dummy-key",
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -217,7 +223,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity)))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_TraceActivity)))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -240,7 +246,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 };
                 await context.SendActivityAsync(typingActivity);
                 await Task.Delay(500);
-                await context.SendActivityAsync("echo:" + context.Activity.Text);
+                await context.SendActivityAsync("echo:" + context.Activity.Text, cancellationToken: ct);
             })
                 .Send("how do I clean the stove?")
                     .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
@@ -270,19 +276,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TraceActivity_EmptyText.
+        /// The LanguageService_TraceActivity_EmptyText.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TraceActivity_EmptyText()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TraceActivity_EmptyText()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_EmptyText)));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_TraceActivity_EmptyText)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -297,19 +303,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TraceActivity_NullText.
+        /// The LanguageService_TraceActivity_NullText.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TraceActivity_NullText()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TraceActivity_NullText()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_NullText)));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_TraceActivity_NullText)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -324,13 +330,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TraceActivity_NullContext.
+        /// The LanguageService_TraceActivity_NullContext.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TraceActivity_NullContext()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TraceActivity_NullContext()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
@@ -339,19 +345,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TraceActivity_BadMessage.
+        /// The LanguageService_TraceActivity_BadMessage.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TraceActivity_BadMessage()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TraceActivity_BadMessage()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_BadMessage)));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_TraceActivity_BadMessage)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -366,44 +372,45 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TraceActivity_NullActivity.
+        /// The LanguageService_TraceActivity_NullActivity.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TraceActivity_NullActivity()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TraceActivity_NullActivity()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_NullActivity)));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_TraceActivity_NullActivity)));
             var context = new MyTurnContext(adapter, null);
 
             await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsAnswer.
+        /// The LanguageService_ReturnsAnswer.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswer()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -417,30 +424,200 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsAnswerRaw.
+        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabledAndDisplayPreciseAnswerOnlyEnabled.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswerRaw()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabledAndDisplayPreciseAnswerOnlyEnabled()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithAnswerSpan.json"));
+
+            // setting enablePreciseAnswer to true
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true);
+
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnsAnswerWithAnswerSpan.json")));
+            var cardWhenDisplayPreciseAnswerOnlyEnabled = QnACardBuilder.GetQnADefaultResponse(GetQueryResultFromKBAnswer(response.Answers[0]), true);
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+            .Send("What happens when I enable precise answer?")
+                .AssertReply(cardWhenDisplayPreciseAnswerOnlyEnabled, equalityComparer: qnaMakerCardEqualityComparer)
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerDisabledAndDisplayPreciseAnswerEnabled.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerDisabledAndDisplayPreciseAnswerEnabled()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            // setting enablePreciseAnswer to true
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true);
+
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnsAnswer.json")));
+            var cardWhenDisplayPreciseAnswerOnlyEnabled = QnACardBuilder.GetQnADefaultResponse(GetQueryResultFromKBAnswer(response.Answers[0]), true);
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+            .Send("What happens when I enable precise answer?")
+                .AssertReply(cardWhenDisplayPreciseAnswerOnlyEnabled, equalityComparer: qnaMakerCardEqualityComparer)
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsAnswer_WhenPreciseAnswerDisabledAndDisplayPreciseAnswerEnabled.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_WhenPreciseAnswerEnabledAndDisplayPreciseAnswerDisabled()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithAnswerSpan.json"));
+
+            // setting enablePreciseAnswer to true
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, false);
+
+            var response = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(File.ReadAllText(GetFilePath("LanguageService_ReturnsAnswerWithAnswerSpan.json")));
+            var cardWhenDisplayPreciseAnswerOnlyEnabled = QnACardBuilder.GetQnADefaultResponse(GetQueryResultFromKBAnswer(response.Answers[0]), false);
+            var qnaMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+            .Send("What happens when I enable precise answer?")
+                .AssertReply(cardWhenDisplayPreciseAnswerOnlyEnabled, equalityComparer: qnaMakerCardEqualityComparer)
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsDefaultAnswerFromConfiguration.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsDefaultAnswerFromConfiguration()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, false);
+
+            await CreateFlow(rootDialog, "LanguageService_ReturnsDefaultAnswerFromConfiguration")
+            .Send("This question doesn't match with anything out there")
+                .AssertReply("No match found, please ask another question.")
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsDefaultAnswerFromService.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsDefaultAnswerFromService()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             var options = new QnAMakerOptions
             {
                 Top = 1,
             };
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
+                },
+                options);
+
+            var results = await qna.GetAnswersRawAsync(GetContext("This question doesn't match with anything out there?"), options);
+            Assert.NotNull(results.Answers);
+            Assert.Single(results.Answers);
+            Assert.StartsWith("No good match found in KB.", results.Answers[0].Answer);
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenUnstructuredSourcesIncluded.json"));
+
+            var options = new QnAMakerOptions
+            {
+                Top = 1,
+                IncludeUnstructuredSources = true
+            };
+
+            var qna = GetLanguageService(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _projectName,
+                    EndpointKey = _endpointKey,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
+                },
+                options);
+
+            var results = await qna.GetAnswersRawAsync(GetContext("What is machine learning?"), options);
+            Assert.NotNull(results.Answers);
+            Assert.Single(results.Answers);
+            Assert.StartsWith("Machine learning refers to statistical modeling techniques that have powered recent excitement in the software and services marketplace.", results.Answers[0].Answer);
+        }
+
+        /// <summary>
+        /// The LanguageService_ReturnsAnswerRaw.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswerRaw()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            var options = new QnAMakerOptions
+            {
+                Top = 1,
+            };
+
+            var qna = GetLanguageService(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _projectName,
+                    EndpointKey = _endpointKey,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 options);
 
@@ -452,25 +629,26 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_LowScoreVariation.
+        /// The LanguageService_LowScoreVariation.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_LowScoreVariation()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_LowScoreVariation()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_TopNAnswer.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -484,40 +662,29 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var filteredResults = qna.GetLowScoreVariation(results);
             Assert.NotNull(filteredResults);
             Assert.Equal(3, filteredResults.Length);
-
-            mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer_DisableActiveLearning.json"));
-
-            results = await qna.GetAnswersAsync(GetContext("Q11"));
-            Assert.NotNull(results);
-            Assert.Equal(4, results.Length);
-
-            filteredResults = qna.GetLowScoreVariation(results);
-            Assert.NotNull(filteredResults);
-            Assert.Equal(3, filteredResults.Length);
         }
 
         /// <summary>
-        /// The QnaMaker_CallTrain.
+        /// The LanguageService_CallTrain.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_CallTrain()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_CallTrain()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+            mockHttp.When(HttpMethod.Post, GetFeedbackUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var feedbackRecords = new FeedbackRecords();
@@ -542,23 +709,24 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsAnswer_Configuration.
+        /// The LanguageService_ReturnsAnswer_Configuration.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswer_Configuration()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswer_Configuration()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
-            var service = new QnAMakerService
+            var service = new QnAMakerEndpoint
             {
-                KbId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Hostname = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
 
             var options = new QnAMakerOptions
@@ -567,7 +735,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
 
             var client = new HttpClient(mockHttp);
-            var qna = new QnAMaker(service, options, client);
+            var qna = new CustomQuestionAnswering(service, options, client);
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
             Assert.NotNull(results);
@@ -576,27 +744,28 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsAnswerWithFiltering.
+        /// The LanguageService_ReturnsAnswerWithFiltering.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswerWithFiltering()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswerWithFiltering()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_UsesStrictFilters_ToReturnAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_UsesStrictFilters_ToReturnAnswer.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions
@@ -618,30 +787,80 @@ namespace Microsoft.Bot.Builder.AI.Tests
             // verify we are actually passing on the options
             var obj = JObject.Parse(interceptHttp.Content);
             Assert.Equal(1, obj["top"].Value<int>());
-            Assert.Equal("topic", obj["strictFilters"][0]["name"].Value<string>());
-            Assert.Equal("value", obj["strictFilters"][0]["value"].Value<string>());
+            Assert.Equal("topic", obj["filters"]["MetadataFilter"]["Metadata"][0]["Key"].Value<string>());
+            Assert.Equal("value", obj["filters"]["MetadataFilter"]["Metadata"][0]["Value"].Value<string>());
         }
 
         /// <summary>
-        /// The QnaMaker_SetScoreThresholdWhenThresholdIsZero.
+        /// The LanguageService_ReturnsAnswerWithFiltering.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_SetScoreThresholdWhenThresholdIsZero()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswerWithFilteringFromFilters()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_UsesStrictFilters_ToReturnAnswer.json"));
 
-            var qnaWithZeroValueThreshold = GetQnAMaker(
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var qna = GetLanguageService(
+                interceptHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _projectName,
+                    EndpointKey = _endpointKey,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
+                });
+            var filters = new Filters()
+            {
+                MetadataFilter = new MetadataFilter()
+            };
+            filters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("topic", "value"));
+            var options = new QnAMakerOptions
+            {
+                Filters = filters,
+                Top = 1
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), options);
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.Equal("topic", results[0].Metadata[0].Name);
+            Assert.Equal("value", results[0].Metadata[0].Value);
+
+            // verify we are actually passing on the options
+            var obj = JObject.Parse(interceptHttp.Content);
+            Assert.Equal(1, obj["top"].Value<int>());
+            Assert.Equal("topic", obj["filters"]["MetadataFilter"]["Metadata"][0]["Key"].Value<string>());
+            Assert.Equal("value", obj["filters"]["MetadataFilter"]["Metadata"][0]["Value"].Value<string>());
+        }
+
+        /// <summary>
+        /// The LanguageService_SetScoreThresholdWhenThresholdIsZero.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_SetScoreThresholdWhenThresholdIsZero()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            var qnaWithZeroValueThreshold = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions()
                 {
@@ -656,25 +875,26 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TestThreshold.
+        /// The LanguageService_TestThreshold.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TestThreshold()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TestThreshold()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_TestThreshold.json"));
+                .Respond("application/json", GetResponse("LanguageService_TestThreshold.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -688,18 +908,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_Test_ScoreThresholdTooLarge_OutOfRange.
+        /// The LanguageService_Test_ScoreThresholdTooLarge_OutOfRange.
         /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_Test_ScoreThresholdTooLarge_OutOfRange()
+        [Trait("TestCategory", "LanguageService")]
+        public void LanguageService_Test_ScoreThresholdTooLarge_OutOfRange()
         {
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
 
             var tooLargeThreshold = new QnAMakerOptions
@@ -708,22 +929,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 1,
             };
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(endpoint, tooLargeThreshold));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new CustomQuestionAnswering(endpoint, tooLargeThreshold));
         }
 
         /// <summary>
-        /// The QnaMaker_Test_ScoreThresholdTooSmall_OutOfRange.
+        /// The LanguageService_Test_ScoreThresholdTooSmall_OutOfRange.
         /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_Test_ScoreThresholdTooSmall_OutOfRange()
+        [Trait("TestCategory", "LanguageService")]
+        public void LanguageService_Test_ScoreThresholdTooSmall_OutOfRange()
         {
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
 
             var tooSmallThreshold = new QnAMakerOptions
@@ -732,29 +954,30 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 1,
             };
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(endpoint, tooSmallThreshold));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new CustomQuestionAnswering(endpoint, tooSmallThreshold));
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsAnswerWithContext.
+        /// The LanguageService_ReturnsAnswerWithContext.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswerWithContext()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswerWithContext()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithContext.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithContext.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions()
@@ -775,25 +998,26 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsAnswerWithoutContext.
+        /// The LanguageService_ReturnsAnswerWithoutContext.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswerWithoutContext()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswerWithoutContext()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithoutContext.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithoutContext.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions()
@@ -808,25 +1032,26 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_ReturnsHighScoreWhenIdPassed.
+        /// The LanguageService_ReturnsHighScoreWhenIdPassed.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsHighScoreWhenIdPassed()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsHighScoreWhenIdPassed()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithContext.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswerWithContext.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions()
@@ -843,19 +1068,20 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_Test_Top_OutOfRange.
+        /// The LanguageService_Test_Top_OutOfRange.
         /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_Test_Top_OutOfRange()
+        [Trait("TestCategory", "LanguageService")]
+        public void LanguageService_Test_Top_OutOfRange()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(
+            Assert.Throws<ArgumentOutOfRangeException>(() => new CustomQuestionAnswering(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -865,81 +1091,106 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_Test_Endpoint_EmptyKbId.
+        /// The LanguageService_Test_Endpoint_EmptyKbId.
         /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_Test_Endpoint_EmptyKbId()
+        [Trait("TestCategory", "LanguageService")]
+        public void LanguageService_Test_Endpoint_EmptyKbId()
         {
             Assert.Throws<ArgumentException>(() =>
             {
-                new QnAMaker(
+                new CustomQuestionAnswering(
                     new QnAMakerEndpoint
                     {
                         KnowledgeBaseId = string.Empty,
                         EndpointKey = _endpointKey,
-                        Host = _hostname,
+                        Host = _endpoint,
+                        QnAServiceType = ServiceType.Language
                     });
             });
         }
 
         /// <summary>
-        /// The QnaMaker_Test_Endpoint_EmptyEndpointKey.
+        /// The LanguageService_Test_ScoreThresholdTooLarge_OutOfRange.
         /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_Test_Endpoint_EmptyEndpointKey()
+        [Trait("TestCategory", "LanguageService")]
+        public async void LanguageService_Test_NotSpecifiedQnAServiceType()
         {
-            Assert.Throws<ArgumentException>(() => new QnAMaker(
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true, ServiceType.QnAMaker);
+
+            await Assert.ThrowsAsync<HttpRequestException>(() => CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+        .Send("What happens if I pass empty qnaServiceType with host of Language Service")
+        .StartTestAsync());
+
+            //Assert.Throws<ArgumentOutOfRangeException>(() => new CustomQuestionAnswering(endpoint, qnaMakerOptions));
+        }
+
+        /// <summary>
+        /// The LanguageService_Test_Endpoint_EmptyEndpointKey.
+        /// </summary>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public void LanguageService_Test_Endpoint_EmptyEndpointKey()
+        {
+            Assert.Throws<ArgumentException>(() => new CustomQuestionAnswering(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = string.Empty,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 }));
         }
 
         /// <summary>
-        /// The QnaMaker_Test_Endpoint_EmptyHost.
+        /// The LanguageService_Test_Endpoint_EmptyHost.
         /// </summary>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_Test_Endpoint_EmptyHost()
+        [Trait("TestCategory", "LanguageService")]
+        public void LanguageService_Test_Endpoint_EmptyHost()
         {
-            Assert.Throws<ArgumentException>(() => new QnAMaker(
+            Assert.Throws<ArgumentException>(() => new CustomQuestionAnswering(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
                     Host = string.Empty,
+                    QnAServiceType = ServiceType.Language
                 }));
         }
 
         /// <summary>
-        /// The QnaMaker_UserAgent.
+        /// The LanguageService_UserAgent.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_UserAgent()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_UserAgent()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -958,71 +1209,28 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_V2LegacyEndpoint_Should_Throw.
-        /// </summary>
-        [Fact]
-        [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_V2LegacyEndpoint_Should_Throw()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-
-            var v2LegacyEndpoint = new QnAMakerEndpoint
-            {
-                KnowledgeBaseId = _knowledgeBaseId,
-                EndpointKey = _endpointKey,
-                Host = $"{_hostname}/v2.0"
-            };
-
-            Assert.Throws<NotSupportedException>(() => GetQnAMaker(mockHttp, v2LegacyEndpoint));
-        }
-
-        /// <summary>
-        /// The QnaMaker_V3LegacyEndpoint_ShouldThrow.
-        /// </summary>
-        [Fact]
-        [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public void QnaMaker_V3LegacyEndpoint_ShouldThrow()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_LegacyEndpointAnswer.json"));
-
-            var v3LegacyEndpoint = new QnAMakerEndpoint
-            {
-                KnowledgeBaseId = _knowledgeBaseId,
-                EndpointKey = _endpointKey,
-                Host = $"{_hostname}/v3.0"
-            };
-
-            Assert.Throws<NotSupportedException>(() => GetQnAMaker(mockHttp, v3LegacyEndpoint));
-        }
-
-        /// <summary>
-        /// The QnaMaker_ReturnsAnswerWithMetadataBoost.
+        /// The LanguageService_ReturnsAnswerWithMetadataBoost.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_ReturnsAnswerWithMetadataBoost()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_ReturnsAnswerWithMetadataBoost()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswersWithMetadataBoost.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswersWithMetadataBoost.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var options = new QnAMakerOptions
@@ -1038,27 +1246,28 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_TestThresholdInQueryOption.
+        /// The LanguageService_TestThresholdInQueryOption.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_TestThresholdInQueryOption()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_TestThresholdInQueryOption()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_GivenScoreThresholdQueryOption.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_GivenScoreThresholdQueryOption.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var queryOptionsWithScoreThreshold = new QnAMakerOptions
@@ -1075,48 +1284,49 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var obj = JObject.Parse(interceptHttp.Content);
             Assert.Equal(2, obj["top"].Value<int>());
-            Assert.Equal(0.5F, obj["scoreThreshold"].Value<float>() / 100.0f);
+            Assert.Equal(0.5F, obj["confidenceScoreThreshold"].Value<float>());
         }
 
         /// <summary>
-        /// The QnaMaker_Test_UnsuccessfulResponse.
+        /// The LanguageService_Test_UnsuccessfulResponse.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_Test_UnsuccessfulResponse()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_Test_UnsuccessfulResponse()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond(HttpStatusCode.BadGateway);
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             await Assert.ThrowsAsync<HttpRequestException>(() => qna.GetAnswersAsync(GetContext("how do I clean the stove?")));
         }
 
         /// <summary>
-        /// The QnaMaker_IsTest_True.
+        /// The LanguageService_IsTest_True.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_IsTest_True()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_IsTest_True()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_IsTest_True.json"));
+            mockHttp.When(HttpMethod.Post, $"{_endpoint}/language/:query-knowledgebases?projectName={_projectName}&deploymentName=test&api-version={_apiVersion}")
+                .Respond("application/json", GetResponse("LanguageService_IsTest_True.json"));
 
-            var qnaMakerOptions = new QnAMakerOptions
+            var qnAMakerOptions = new QnAMakerOptions
             {
                 Top = 1,
                 IsTest = true
@@ -1125,12 +1335,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
 
-            var qna = new QnAMaker(endpoint, qnaMakerOptions, client, null, true);
+            var qna = new CustomQuestionAnswering(endpoint, qnAMakerOptions, client, null, true);
             var results = await qna.GetAnswersAsync(GetContext("Will answer be any different now?"));
 
             // Assert - Validate we didn't break QnA functionality.
@@ -1140,25 +1351,26 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_RankerType_QuestionOnly.
+        /// The LanguageService_RankerType_QuestionOnly.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_RankerType_QuestionOnly()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_RankerType_QuestionOnly()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_RankerType_QuestionOnly.json"));
+                .Respond("application/json", GetResponse("LanguageService_RankerType_QuestionOnly.json"));
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 });
 
             var qnaMakerOptions = new QnAMakerOptions
@@ -1173,17 +1385,17 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The QnaMaker_Test_Options_Hydration.
+        /// The LanguageService_Test_Options_Hydration.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_Test_Options_Hydration()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_Test_Options_Hydration_WithFilters()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
@@ -1192,13 +1404,116 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 30,
             };
 
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                 interceptHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
+                },
+                noFiltersOptions);
+
+            var oneFilters = new Filters()
+            {
+                MetadataFilter = new MetadataFilter()
+            };
+            oneFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("movie", "disney"));
+            var oneFilteredOption = new QnAMakerOptions
+            {
+                Top = 30,
+                Filters = oneFilters
+            };
+
+            var twoFilters = new Filters()
+            {
+                MetadataFilter = new MetadataFilter()
+            };
+            twoFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("movie", "disney"));
+            twoFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("home", "floating"));
+            var twoFiltersOptions = new QnAMakerOptions
+            {
+                Top = 30,
+                Filters = twoFilters
+            };
+
+            var allChangedFilters = new Filters()
+            {
+                MetadataFilter = new MetadataFilter()
+            };
+            allChangedFilters.MetadataFilter.Metadata.Add(new KeyValuePair<string, string>("dog", "samoyed"));
+            var allChangedRequestOptions = new QnAMakerOptions
+            {
+                Top = 2000,
+                ScoreThreshold = 0.42F,
+                Filters = allChangedFilters
+            };
+
+            var context = GetContext("up");
+
+            // Ensure that options from previous requests do not bleed over to the next,
+            // And that the options set in the constructor are not overwritten improperly by options passed into .GetAnswersAsync()
+            await qna.GetAnswersAsync(context, noFiltersOptions);
+            var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            await qna.GetAnswersAsync(context, twoFiltersOptions);
+            var requestContent2 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            await qna.GetAnswersAsync(context, oneFilteredOption);
+            var requestContent3 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            await qna.GetAnswersAsync(context);
+            var requestContent4 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            await qna.GetAnswersAsync(context, allChangedRequestOptions);
+            var requestContent5 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            await qna.GetAnswersAsync(context);
+            var requestContent6 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            Assert.Empty(requestContent1.Filters.MetadataFilter.Metadata);
+            Assert.Equal(2, requestContent2.Filters.MetadataFilter.Metadata.Count);
+            Assert.Single(requestContent3.Filters.MetadataFilter.Metadata);
+            Assert.Empty(requestContent4.Filters.MetadataFilter.Metadata);
+
+            Assert.Equal(2000, requestContent5.Top);
+            Assert.Equal(0.42, Math.Round(requestContent5.ConfidenceScoreThreshold, 2));
+            Assert.Single(requestContent5.Filters.MetadataFilter.Metadata);
+
+            Assert.Equal(30, requestContent6.Top);
+            Assert.Equal(0.30, Math.Round(requestContent6.ConfidenceScoreThreshold, 2));
+            Assert.Empty(requestContent6.Filters.MetadataFilter.Metadata);
+        }
+
+        /// <summary>
+        /// The LanguageService_Test_Options_Hydration.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_Test_Options_Hydration()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+
+            var noFiltersOptions = new QnAMakerOptions
+            {
+                Top = 30,
+            };
+
+            var qna = GetLanguageService(
+                interceptHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _projectName,
+                    EndpointKey = _endpointKey,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 noFiltersOptions);
 
@@ -1207,11 +1522,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 30,
                 StrictFilters = new Metadata[]
                 {
-                    new Metadata
-                    {
-                        Name = "movie",
-                        Value = "disney",
-                    },
+                            new Metadata
+                            {
+                                Name = "movie",
+                                Value = "disney",
+                            },
                 },
             };
 
@@ -1220,16 +1535,16 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 30,
                 StrictFilters = new Metadata[]
                 {
-                    new Metadata()
-                    {
-                        Name = "movie",
-                        Value = "disney",
-                    },
-                    new Metadata()
-                    {
-                        Name = "home",
-                        Value = "floating",
-                    },
+                            new Metadata()
+                            {
+                                Name = "movie",
+                                Value = "disney",
+                            },
+                            new Metadata()
+                            {
+                                Name = "home",
+                                Value = "floating",
+                            },
                 },
             };
             var allChangedRequestOptions = new QnAMakerOptions
@@ -1238,11 +1553,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 ScoreThreshold = 0.42F,
                 StrictFilters = new Metadata[]
                 {
-                    new Metadata()
-                    {
-                        Name = "dog",
-                        Value = "samoyed",
-                    },
+                            new Metadata()
+                            {
+                                Name = "dog",
+                                Value = "samoyed",
+                            },
                 },
             };
 
@@ -1268,32 +1583,32 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await qna.GetAnswersAsync(context);
             var requestContent6 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            Assert.Empty(requestContent1.StrictFilters);
-            Assert.Equal(2, requestContent2.StrictFilters.Length);
-            Assert.Single(requestContent3.StrictFilters);
-            Assert.Empty(requestContent4.StrictFilters);
+            Assert.Empty(requestContent1.Filters.MetadataFilter.Metadata);
+            Assert.Equal(2, requestContent2.Filters.MetadataFilter.Metadata.Count);
+            Assert.Single(requestContent3.Filters.MetadataFilter.Metadata);
+            Assert.Empty(requestContent4.Filters.MetadataFilter.Metadata);
 
             Assert.Equal(2000, requestContent5.Top);
-            Assert.Equal(42.0f, Math.Round(requestContent5.ScoreThreshold, 1));
-            Assert.Single(requestContent5.StrictFilters);
+            Assert.Equal(0.42, Math.Round(requestContent5.ConfidenceScoreThreshold, 2));
+            Assert.Single(requestContent5.Filters.MetadataFilter.Metadata);
 
             Assert.Equal(30, requestContent6.Top);
-            Assert.Equal(30.0f, Math.Round(requestContent6.ScoreThreshold, 1));
-            Assert.Empty(requestContent6.StrictFilters);
+            Assert.Equal(0.30, Math.Round(requestContent6.ConfidenceScoreThreshold, 2));
+            Assert.Empty(requestContent6.Filters.MetadataFilter.Metadata);
         }
 
         /// <summary>
-        /// The QnaMaker_StrictFilters_Compound_OperationType.
+        /// The LanguageService_StrictFilters_Compound_OperationType.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
-        public async Task QnaMaker_StrictFilters_Compound_OperationType()
+        [Trait("TestCategory", "LanguageService")]
+        public async Task LanguageService_Filters_Compound_OperationType()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
             var oneFilteredOption = new QnAMakerOptions()
@@ -1301,27 +1616,27 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 30,
                 StrictFilters = new Metadata[]
                 {
-                    new Metadata()
-                    {
-                        Name = "movie",
-                        Value = "disney",
-                    },
-                    new Metadata()
-                    {
-                        Name = "production",
-                        Value = "Walden",
-                    },
+                            new Metadata()
+                            {
+                                Name = "movie",
+                                Value = "disney",
+                            },
+                            new Metadata()
+                            {
+                                Name = "production",
+                                Value = "Walden",
+                            },
                 },
                 StrictFiltersJoinOperator = JoinOperator.OR
             };
-            var qna = GetQnAMaker(
+            var qna = GetLanguageService(
                             interceptHttp,
                             new QnAMakerEndpoint
                             {
-                                KnowledgeBaseId = _knowledgeBaseId,
+                                KnowledgeBaseId = _projectName,
                                 EndpointKey = _endpointKey,
-
-                                Host = _hostname,
+                                QnAServiceType = ServiceType.Language,
+                                Host = _endpoint,
                             }, oneFilteredOption);
 
             var context = GetContext("up");
@@ -1337,22 +1652,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_NullTelemetryClient()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1361,7 +1677,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             // Act (Null Telemetry client)
             // This will default to the NullTelemetryClient which no-ops all calls.
-            var qna = new QnAMaker(endpoint, options, client, null, true);
+            var qna = new CustomQuestionAnswering(endpoint, options, client, null, true);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Validate we didn't break QnA functionality.
@@ -1377,22 +1693,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_ReturnsAnswer()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1401,7 +1718,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
             // Act - See if we get data back in telemetry
-            var qna = new QnAMaker(endpoint, options, client, telemetryClient: telemetryClient.Object, logPersonalInformation: true);
+            var qna = new CustomQuestionAnswering(endpoint, options, client, telemetryClient: telemetryClient.Object, logPersonalInformation: true);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Check Telemetry logged
@@ -1431,22 +1748,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_ReturnsAnswer_WhenNoAnswerFoundInKB()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1455,7 +1773,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
             // Act - See if we get data back in telemetry
-            var qna = new QnAMaker(endpoint, options, client, telemetryClient: telemetryClient.Object, logPersonalInformation: true);
+            var qna = new CustomQuestionAnswering(endpoint, options, client, telemetryClient: telemetryClient.Object, logPersonalInformation: true);
             var results = await qna.GetAnswersAsync(GetContext("what is the answer to my nonsense question?"));
 
             // Assert - Check Telemetry logged
@@ -1480,22 +1798,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_PII()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1504,7 +1823,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
             // Act
-            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
+            var qna = new CustomQuestionAnswering(endpoint, options, client, telemetryClient.Object, false);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Validate PII properties not logged.
@@ -1534,22 +1853,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_Override()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1557,11 +1877,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
-            // Act - Override the QnaMaker object to log custom stuff and honor parms passed in.
+            // Act - Override the LanguageService object to log custom stuff and honor parms passed in.
             var telemetryProperties = new Dictionary<string, string>
-            {
-                { "Id", "MyID" },
-            };
+                    {
+                        { "Id", "MyID" },
+                    };
             var qna = new OverrideTelemetry(endpoint, options, client, telemetryClient.Object, false);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties);
 
@@ -1592,22 +1912,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_AdditionalPropsMetrics()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1616,15 +1937,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
             // Act - Pass in properties during QnA invocation
-            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
+            var qna = new CustomQuestionAnswering(endpoint, options, client, telemetryClient.Object, false);
             var telemetryProperties = new Dictionary<string, string>
-            {
-                { "MyImportantProperty", "myImportantValue" },
-            };
+                    {
+                        { "MyImportantProperty", "myImportantValue" },
+                    };
             var telemetryMetrics = new Dictionary<string, double>
-            {
-                { "MyImportantMetric", 3.14159 },
-            };
+                    {
+                        { "MyImportantMetric", 3.14159 },
+                    };
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
@@ -1659,22 +1980,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_AdditionalPropsOverride()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1684,16 +2006,16 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             // Act - Pass in properties during QnA invocation that override default properties
             //  NOTE: We are invoking this with PII turned OFF, and passing a PII property (originalQuestion).
-            var qna = new QnAMaker(endpoint, options, client, telemetryClient.Object, false);
+            var qna = new CustomQuestionAnswering(endpoint, options, client, telemetryClient.Object, false);
             var telemetryProperties = new Dictionary<string, string>
-            {
-                { "knowledgeBaseId", "myImportantValue" },
-                { "originalQuestion", "myImportantValue2" },
-            };
+                    {
+                        { "knowledgeBaseId", "myImportantValue" },
+                        { "originalQuestion", "myImportantValue2" },
+                    };
             var telemetryMetrics = new Dictionary<string, double>
-            {
-                { "score", 3.14159 },
-            };
+                    {
+                        { "score", 3.14159 },
+                    };
 
             await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
@@ -1722,22 +2044,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
-        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "LanguageService")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_FillPropsOverride()
         {
             // Arrange
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+                .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var client = new HttpClient(mockHttp);
 
             var endpoint = new QnAMakerEndpoint
             {
-                KnowledgeBaseId = _knowledgeBaseId,
+                KnowledgeBaseId = _projectName,
                 EndpointKey = _endpointKey,
-                Host = _hostname,
+                Host = _endpoint,
+                QnAServiceType = ServiceType.Language
             };
             var options = new QnAMakerOptions
             {
@@ -1749,20 +2072,20 @@ namespace Microsoft.Bot.Builder.AI.Tests
             //       In addition Override with derivation.  This presents an interesting question of order of setting properties.
             //       If I want to override "originalQuestion" property:
             //           - Set in "Stock" schema
-            //           - Set in derived QnAMaker class
+            //           - Set in derived LanguageService class
             //           - Set in GetAnswersAsync
             //       Logically, the GetAnswersAync should win.  But ultimately OnQnaResultsAsync decides since it is the last
             //       code to touch the properties before logging (since it actually logs the event).
             var qna = new OverrideFillTelemetry(endpoint, options, client, telemetryClient.Object, false);
             var telemetryProperties = new Dictionary<string, string>
-            {
-                { "knowledgeBaseId", "myImportantValue" },
-                { "matchedQuestion", "myImportantValue2" },
-            };
+                    {
+                        { "knowledgeBaseId", "myImportantValue" },
+                        { "matchedQuestion", "myImportantValue2" },
+                    };
             var telemetryMetrics = new Dictionary<string, double>
-            {
-                { "score", 3.14159 },
-            };
+                    {
+                        { "score", 3.14159 },
+                    };
 
             await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
@@ -1833,19 +2156,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// Defines the <see cref="QnaMakerTestDialog" />.
+        /// Defines the <see cref="LanguageServiceTestDialog" />.
         /// </summary>
-        public class QnaMakerTestDialog : ComponentDialog, IDialogDependencies
+        public class LanguageServiceTestDialog : ComponentDialog, IDialogDependencies
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="QnaMakerTestDialog"/> class.
+            /// Initializes a new instance of the <see cref="LanguageServiceTestDialog"/> class.
             /// </summary>
             /// <param name="knowledgeBaseId">The knowledgeBaseId<see cref="string"/>.</param>
             /// <param name="endpointKey">The endpointKey<see cref="string"/>.</param>
             /// <param name="hostName">The hostName<see cref="string"/>.</param>
             /// <param name="httpClient">The httpClient<see cref="HttpClient"/>.</param>
-            public QnaMakerTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
-                : base(nameof(QnaMakerTestDialog))
+            public LanguageServiceTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
+                : base(nameof(LanguageServiceTestDialog))
             {
                 AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey, hostName, httpClient: httpClient));
             }
@@ -1908,19 +2231,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The CreateQnAMakerActionDialog.
+        /// The CreateLanguageServiceActionDialog.
         /// </summary>
         /// <param name="mockHttp">The mockHttp<see cref="MockHttpMessageHandler"/>.</param>
         /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
-        private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
+        private AdaptiveDialog CreateLanguageServiceActionDialog(MockHttpMessageHandler mockHttp, BoolExpression displayPreciseAnswer, ServiceType qnaServiceType = ServiceType.Language)
         {
             var client = new HttpClient(mockHttp);
 
             var noAnswerActivity = new ActivityTemplate("No match found, please ask another question.");
-            const string host = "https://dummy-hostname.azurewebsites.net/qnamaker";
-            const string knowledgeBaseId = "dummy-id";
+            const string host = _endpoint;
+            const string knowledgeBaseId = _projectName;
             const string endpointKey = "dummy-key";
-            const string activeLearningCardTitle = "QnAMaker Active Learning";
+            const string activeLearningCardTitle = "LanguageService Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -1940,6 +2263,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                 NoAnswer = noAnswerActivity,
                                 ActiveLearningCardTitle = activeLearningCardTitle,
                                 CardNoMatchText = "None of the above.",
+                                QnAServiceType = qnaServiceType,
+                                DisplayPreciseAnswerOnly = displayPreciseAnswer,
                             }
                         }
                     }
@@ -1973,28 +2298,16 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The GetV2LegacyRequestUrl.
+        /// The GetRequestUrl.
         /// </summary>
         /// <returns>The <see cref="string"/>.</returns>
-        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
-
-        /// <summary>
-        /// The GetV3LegacyRequestUrl.
-        /// </summary>
-        /// <returns>The <see cref="string"/>.</returns>
-        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
+        private string GetRequestUrl() => $"{_endpoint}/language/:query-knowledgebases?projectName={_projectName}&deploymentName=production&api-version={_apiVersion}";
 
         /// <summary>
         /// The GetRequestUrl.
         /// </summary>
         /// <returns>The <see cref="string"/>.</returns>
-        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/generateanswer";
-
-        /// <summary>
-        /// The GetTrainRequestUrl.
-        /// </summary>
-        /// <returns>The <see cref="string"/>.</returns>
-        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/train";
+        private string GetFeedbackUrl() => $"{_endpoint}/language/query-knowledgebases/projects/{_projectName}/feedback?api-version={_apiVersion}";
 
         /// <summary>
         /// The GetResponse.
@@ -2014,27 +2327,28 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <returns>The <see cref="string"/>.</returns>
         private string GetFilePath(string fileName)
         {
-            return Path.Combine(Environment.CurrentDirectory, "TestData/QnaMaker", fileName);
+            return Path.Combine(Environment.CurrentDirectory, "TestData/LanguageService", fileName);
         }
 
         /// <summary>
-        /// Return a stock Mocked Qna thats loaded with QnaMaker_ReturnsAnswer.json
+        /// Return a stock Mocked Qna thats loaded with LanguageService_ReturnsAnswer.json
         /// Used for tests that just require any old qna instance.
         /// </summary>
-        /// <returns>The <see cref="QnAMaker"/>.</returns>
-        private QnAMaker QnaReturnsAnswer()
+        /// <returns>The <see cref="LanguageService"/>.</returns>
+        private CustomQuestionAnswering QnaReturnsAnswer()
         {
             // Mock Qna
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                    .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-            var qna = GetQnAMaker(
+                    .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
+            var qna = GetLanguageService(
                 mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
+                    KnowledgeBaseId = _projectName,
                     EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    Host = _endpoint,
+                    QnAServiceType = ServiceType.Language
                 },
                 new QnAMakerOptions
                 {
@@ -2044,22 +2358,22 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
-        /// The GetQnAMaker.
+        /// The GetLanguageService.
         /// </summary>
         /// <param name="messageHandler">The messageHandler<see cref="HttpMessageHandler"/>.</param>
         /// <param name="endpoint">The endpoint<see cref="QnAMakerEndpoint"/>.</param>
         /// <param name="options">The options<see cref="QnAMakerOptions"/>.</param>
-        /// <returns>The <see cref="QnAMaker"/>.</returns>
-        private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
+        /// <returns>The <see cref="LanguageService"/>.</returns>
+        private CustomQuestionAnswering GetLanguageService(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
         {
             var client = new HttpClient(messageHandler);
-            return new QnAMaker(endpoint, options, client);
+            return new CustomQuestionAnswering(endpoint, options, client);
         }
 
         /// <summary>
         /// Defines the <see cref="OverrideTelemetry" />.
         /// </summary>
-        public class OverrideTelemetry : QnAMaker
+        public class OverrideTelemetry : CustomQuestionAnswering
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="OverrideTelemetry"/> class.
@@ -2113,7 +2427,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         /// <summary>
         /// Defines the <see cref="OverrideFillTelemetry" />.
         /// </summary>
-        public class OverrideFillTelemetry : QnAMaker
+        public class OverrideFillTelemetry : CustomQuestionAnswering
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="OverrideFillTelemetry"/> class.
@@ -2144,7 +2458,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                         Dictionary<string, double> telemetryMetrics = null,
                                         CancellationToken cancellationToken = default(CancellationToken))
             {
-                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
 
                 // Add my property
                 eventData.Properties.Add("MyImportantProperty", "myImportantValue");
@@ -2182,7 +2496,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             /// <summary>
             /// Gets or sets the StrictFilters.
             /// </summary>
-            public Metadata[] StrictFilters { get; set; }
+            public Filters Filters { get; set; }
 
             /// <summary>
             /// Gets or sets the MetadataBoost.
@@ -2192,7 +2506,39 @@ namespace Microsoft.Bot.Builder.AI.Tests
             /// <summary>
             /// Gets or sets the ScoreThreshold.
             /// </summary>
-            public float ScoreThreshold { get; set; }
+            public float ConfidenceScoreThreshold { get; set; }
+        }
+
+        /// <summary>
+        /// Converts KNAnswer to QueryResult.
+        /// </summary>
+        /// <param name="kbAnswer">Represents an individual result from a knowledge base query.</param>
+        /// <returns>An individual result from a knowledge base query.</returns>
+        private QueryResult GetQueryResultFromKBAnswer(KnowledgeBaseAnswer kbAnswer)
+        {
+            return new QueryResult
+            {
+                Answer = kbAnswer.Answer,
+                AnswerSpan = kbAnswer.AnswerSpan != null ? new AnswerSpanResponse
+                {
+                    Score = (float)kbAnswer.AnswerSpan.ConfidenceScore,
+                    Text = kbAnswer.AnswerSpan?.Text,
+                    StartIndex = kbAnswer.AnswerSpan?.Offset ?? 0,
+                    EndIndex = kbAnswer.AnswerSpan?.Length != null ? (kbAnswer.AnswerSpan?.Offset + kbAnswer.AnswerSpan?.Length - 1).Value : 0
+                }
+                : null,
+                Context = kbAnswer.Dialog != null ? new QnAResponseContext
+                {
+                    Prompts = kbAnswer.Dialog?.Prompts?.Select(p =>
+                                new QnaMakerPrompt { DisplayOrder = p.DisplayOrder, DisplayText = p.DisplayText, Qna = null, QnaId = p.QnaId }).ToArray()
+                }
+                : null,
+                Id = kbAnswer.Id,
+                Metadata = kbAnswer.Metadata?.ToList().Select(nv => new Metadata { Name = nv.Key, Value = nv.Value }).ToArray(),
+                Questions = kbAnswer.Questions?.ToArray(),
+                Score = (float)kbAnswer.ConfidenceScore,
+                Source = kbAnswer.Source
+            };
         }
     }
 }

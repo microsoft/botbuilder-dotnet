@@ -1,0 +1,17 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "Will answer be any different now?"
+      ],
+      "answer": "No, isTest won't change your answer.",
+      "confidenceScore": 1,
+      "id": 5,
+      "source": "Editorial",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": true
+      }
+    }
+  ]
+}
