@@ -45,11 +45,24 @@ steps:
    
    Get-ChildItem -Path "D:\a\_temp" -Include "*.coverage" -Recurse | Copy-Item -Destination CodeCoverage
   displayName: 'Copy .coverage Files to CodeCoverage folder'
-  condition: eq(variables['BuildConfiguration'],'Release-Windows')
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
 
 - powershell: 'echo ''##vso[task.setvariable variable=CoverallsToken]$(DotNetCoverallsToken)'''
   displayName: 'Set CoverallsToken for PublishToCoveralls.ps1 if token exists'
   continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
+- powershell: |
+   dotnet nuget remove source SDK_Dotnet_V4_org
+  displayName: Remove SDK_Dotnet_V4_org feed source reference from nuget.config
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 2.1, required for Upload Coverage Files task'
+  inputs:
+    packageType: sdk
+    version: 2.1.x
   condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
 
 - task: PowerShell@2
@@ -60,13 +73,6 @@ steps:
     arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "CI-PR build"'
   continueOnError: true
   condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish build artifact CodeCoverage'
-  inputs:
-    PathtoPublish: CodeCoverage
-    ArtifactName: CodeCoverage
-  enabled: false
 
 - powershell: |
    New-Item -ItemType directory -Path "outputLibraries\" -Force
