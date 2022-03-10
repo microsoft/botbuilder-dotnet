@@ -218,6 +218,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions);
         }
 
+        /// <inheritdoc/>
+        protected override void TrackGeneratorResultEvent(DialogContext dc, ITemplate<Activity> activityTemplate, IMessageActivity msg)
+        {
+            var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
+            var serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+            var properties = new Dictionary<string, string>()
+            {
+                { "template", JsonConvert.SerializeObject(activityTemplate) },
+                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, serializationSettings) },
+                { "choices", options.Choices == null ? string.Empty : JsonConvert.SerializeObject(options.Choices, serializationSettings) },
+                { "context", TelemetryLoggerConstants.InputDialogResultEvent }
+            };
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
+        }
+
         private async Task<ChoiceSet> GetChoiceSetAsync(DialogContext dc)
         {
             if (Choices.ExpressionText != null && Choices.ExpressionText.TrimStart().StartsWith("${", StringComparison.InvariantCultureIgnoreCase))
