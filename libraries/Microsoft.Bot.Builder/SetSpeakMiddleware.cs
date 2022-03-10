@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private bool HasTag(string tagName, string speakText)
+        private static bool HasTag(string tagName, string speakText)
         {
             try
             {

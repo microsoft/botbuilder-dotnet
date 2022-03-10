@@ -57,27 +57,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var text = activity.Text ?? string.Empty;
 
-                var recognizerResult = await Task.FromResult(new RecognizerResult
+                var recognizerResult = new RecognizerResult()
                 {
                     Text = text,
                     AlteredText = null,
-                    Intents = new Dictionary<string, IntentScore>
-                    {
-                        {
-                            "myTestIntent", new IntentScore
-                            {
-                                Score = 1.0,
-                                Properties = new Dictionary<string, object>()
-                            }
-                        }
-                    },
-                    Entities = new JObject(),
-                    Properties = new Dictionary<string, object>()
-                });
+                };
+                recognizerResult.Intents.Add("myTestIntent", new IntentScore { Score = 1.0 });
 
                 TrackRecognizerResult(dialogContext, $"{nameof(MyRecognizerSubclass)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
-                return recognizerResult;
+                return await Task.FromResult(recognizerResult);
             }
         }
     }

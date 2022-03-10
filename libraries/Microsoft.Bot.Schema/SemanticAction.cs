@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         public SemanticAction(string id = default, IDictionary<string, Entity> entities = default)
         {
             Id = id;
-            Entities = entities;
+            Entities = entities ?? new Dictionary<string, Entity>();
             CustomInit();
         }
 
@@ -39,13 +39,11 @@ namespace Microsoft.Bot.Schema
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets entities associated with this action.
+        /// Gets entities associated with this action.
         /// </summary>
         /// <value>The entities associated with this action.</value>
         [JsonProperty(PropertyName = "entities")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IDictionary<string, Entity> Entities { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, Entity> Entities { get; private set; } = new Dictionary<string, Entity>();
 
         /// <summary>
         /// Gets or sets state of this action. Allowed values: `start`,

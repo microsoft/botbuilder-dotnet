@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder
             var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
+            ma.SuggestedActions = new SuggestedActions(actions: cardActions.ToList());
 
             return ma;
         }
@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder
         {
             var ma = Activity.CreateMessageActivity();
             ma.AttachmentLayout = attachmentLayout;
-            ma.Attachments = attachments.ToList();
+            ((List<Attachment>)ma.Attachments).AddRange(attachments.ToList());
             SetTextAndSpeak(ma, text, ssml, inputHint);
             return ma;
         }

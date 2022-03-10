@@ -106,11 +106,13 @@ namespace Microsoft.Bot.Builder.Skills
             // we need to swap the values back to the ones received from the skill so the bot gets the actual activity.
             turnContext.Activity.ChannelData = activity.ChannelData;
             turnContext.Activity.Code = activity.Code;
-            turnContext.Activity.Entities = activity.Entities;
+            turnContext.Activity.Entities.Clear();
+            ((List<Entity>)turnContext.Activity.Entities).AddRange(activity.Entities);
             turnContext.Activity.Locale = activity.Locale;
             turnContext.Activity.LocalTimestamp = activity.LocalTimestamp;
             turnContext.Activity.Name = activity.Name;
-            turnContext.Activity.Properties = activity.Properties;
+            turnContext.Activity.Properties.RemoveAll();
+            turnContext.Activity.Properties.Merge(activity.Properties);
             turnContext.Activity.RelatesTo = activity.RelatesTo;
             turnContext.Activity.ReplyToId = activity.ReplyToId;
             turnContext.Activity.Timestamp = activity.Timestamp;

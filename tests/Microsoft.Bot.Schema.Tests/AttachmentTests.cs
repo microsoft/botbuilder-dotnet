@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -19,10 +20,7 @@ namespace Microsoft.Bot.Schema.Tests
             var thumbnailUrl = "thumbnailUrl";
             var properties = new JObject();
 
-            var attachment = new Attachment(contentType, contentUrl, content, name, thumbnailUrl)
-            {
-                Properties = properties
-            };
+            var attachment = new Attachment(contentType, contentUrl, content, name, thumbnailUrl);
 
             Assert.NotNull(attachment);
             Assert.IsType<Attachment>(attachment);
@@ -48,8 +46,8 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.IsType<AttachmentData>(attachmentData);
             Assert.Equal(type, attachmentData.Type);
             Assert.Equal(name, attachmentData.Name);
-            Assert.Equal(originalBase64, attachmentData.OriginalBase64);
-            Assert.Equal(thumbnailBase64, attachmentData.ThumbnailBase64);
+            Assert.Equal(originalBase64, attachmentData.OriginalBase64.ToArray());
+            Assert.Equal(thumbnailBase64, attachmentData.ThumbnailBase64.ToArray());
         }
 
         [Fact]

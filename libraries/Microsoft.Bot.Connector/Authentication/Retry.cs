@@ -19,9 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="task">A reference to the action to retry.</param>
         /// <param name="retryExceptionHandler">A reference to the method that handles exceptions.</param>
         /// <returns>A result object.</returns>
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
-        public static async Task<TResult> Run<TResult>(Func<Task<TResult>> task, Func<Exception, int, RetryParams> retryExceptionHandler)
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
+        public static async Task<TResult> RunAsync<TResult>(Func<Task<TResult>> task, Func<Exception, int, RetryParams> retryExceptionHandler)
         {
             RetryParams retry;
             var exceptions = new List<Exception>();

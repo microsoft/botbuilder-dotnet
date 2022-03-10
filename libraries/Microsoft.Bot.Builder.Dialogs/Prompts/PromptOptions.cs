@@ -13,6 +13,17 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class PromptOptions
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="PromptOptions"/> class.
+        /// </summary>
+        /// <param name="prompt">The initial prompt to send the user as an <see cref="Activity"/>.</param>
+        /// <param name="choices">The list of available choices.</param>
+        public PromptOptions(Activity prompt = default, IList<Choice> choices = default)
+        {
+            Prompt = prompt;
+            Choices = choices;
+        }
+
+        /// <summary>
         /// Gets or sets the initial prompt to send the user as an <see cref="Activity"/>.
         /// </summary>
         /// <value>
@@ -29,12 +40,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Activity RetryPrompt { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of choices for the user to choose from, for use with a <see cref="ChoicePrompt"/>.
+        /// Gets a list of choices for the user to choose from, for use with a <see cref="ChoicePrompt"/>.
         /// </summary>
         /// <value>The list of available choices.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<Choice> Choices { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<Choice> Choices { get; private set; } = new List<Choice>();
 
         /// <summary>
         /// Gets or sets the <see cref="ListStyle"/> for a <see cref="ChoicePrompt"/>.

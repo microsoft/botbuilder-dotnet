@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Connector.Tests
         public async Task GetAadTokensWithHttpMessagesAsync_ShouldThrowOnNullUserId()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
-            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync(null, "connection", new AadResourceUrls() { ResourceUrls = new string[] { "hello" } }));
+            await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync(null, "connection", new AadResourceUrls(new string[] { "hello" })));
         }
 
         [Fact]
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync(
-                "dummyUserId", null, new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }));
+                "dummyUserId", null, new AadResourceUrls(new string[] { "dummyUrl" })));
         }
 
         [Fact]
@@ -202,13 +202,13 @@ namespace Microsoft.Bot.Connector.Tests
             {
                 // Automated Windows build exception:
                 await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetAadTokensAsync(
-                    "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
+                    "dummyUserId", "dummyConnectionName", new AadResourceUrls(new string[] { "dummyUrl" }), "dummyChannelId"));
             }
             else
             {
                 // MacLinux build and local build exception:
                 await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
-                    "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
+                    "dummyUserId", "dummyConnectionName", new AadResourceUrls(new string[] { "dummyUrl" }), "dummyChannelId"));
             }
         }
 

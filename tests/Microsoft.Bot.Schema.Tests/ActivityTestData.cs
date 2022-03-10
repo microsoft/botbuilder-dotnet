@@ -28,7 +28,9 @@ namespace Microsoft.Bot.Schema.Tests
             {
                 yield return new object[] { new Activity() { Text = "text" }, true };
                 yield return new object[] { new Activity() { Summary = "summary" }, true };
-                yield return new object[] { new Activity() { Attachments = GetAttachments() }, true };
+                var activity = new Activity();
+                ((List<Attachment>)activity.Attachments).AddRange(GetAttachments());
+                yield return new object[] { activity, true };
                 yield return new object[] { new Activity() { ChannelData = new MyChannelData() }, true };
                 yield return new object[] { new Activity(), false };
             }
@@ -50,29 +52,32 @@ namespace Microsoft.Bot.Schema.Tests
                     new List<Entity>() { new Entity() },
                     false,
                 };
+
+                var entity = new Entity()
+                {
+                    Type = "mention",
+                };
+                entity.Properties.Merge(new JObject()
+                {
+                    {
+                        "Mentioned",
+                        new JObject()
+                        {
+                            { "Id", "ChannelAccountId" },
+                            { "Name", "AccountName" },
+                            { "Properties", new JObject() },
+                            { "Role", "ChannelAccountRole" },
+                        }
+                    },
+                    { "Text", "text" },
+                    { "Type", "mention" },
+                });
+
                 yield return new object[]
                 {
                     new List<Entity>()
                     {
-                        new Entity()
-                        {
-                            Type = "mention",
-                            Properties = new JObject()
-                            {
-                                { 
-                                    "Mentioned",
-                                    new JObject()
-                                    {
-                                        { "Id", "ChannelAccountId" },
-                                        { "Name", "AccountName" },
-                                        { "Properties", new JObject() },
-                                        { "Role", "ChannelAccountRole" },
-                                    }
-                                },
-                                { "Text", "text" },
-                                { "Type", "mention" },
-                            },
-                        }
+                        entity
                     },
                     true
                 };

@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Schema.Tests
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Entities = entities,
             };
+            ((List<Entity>)message.Entities).AddRange(entities);
             var mentionsId = ActivityExtensions.MentionsId(message, "ChannelAccountId");
 
             Assert.Equal(expectsMention, mentionsId);
@@ -38,18 +38,20 @@ namespace Microsoft.Bot.Schema.Tests
         [ClassData(typeof(MentionsData))]
         public void DetectsMentionedRecipient(List<Entity> entities, bool expectsMention)
         {
+            var recipient = new ChannelAccount
+            {
+                Id = "ChannelAccountId",
+                Name = "ChannelAccountName",
+                Role = "ChannelAccountRole",
+            };
+            recipient.Properties.Add("Name", "Value");
+
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Entities = entities,
-                Recipient = new ChannelAccount
-                {
-                    Id = "ChannelAccountId",
-                    Name = "ChannelAccountName",
-                    Properties = new JObject { { "Name", "Value" } },
-                    Role = "ChannelAccountRole",
-                }
+                Recipient = recipient,
             };
+            ((List<Entity>)message.Entities).AddRange(entities);
 
             var mentionsRecipient = ActivityExtensions.MentionsRecipient(message);
 

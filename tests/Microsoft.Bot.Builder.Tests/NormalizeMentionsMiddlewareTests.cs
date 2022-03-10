@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             Activity activity = new Activity();
             activity.Text = text;
-            activity.Entities = entities.ToList();
+            ((List<Entity>)activity.Entities).AddRange(entities);
             return activity;
         }
 

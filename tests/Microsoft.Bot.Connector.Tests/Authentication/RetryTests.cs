@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 ExceptionToThrow = null,
             };
 
-            var result = await Retry.Run(
+            var result = await Retry.RunAsync(
                 task: () => faultyClass.FaultyTask(),
                 retryExceptionHandler: (ex, ct) => faultyClass.ExceptionHandler(ex, ct));
 
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 TriesUntilSuccess = 3,
             };
 
-            var result = await Retry.Run(
+            var result = await Retry.RunAsync(
                 task: () => faultyClass.FaultyTask(),
                 retryExceptionHandler: (ex, ct) => faultyClass.ExceptionHandler(ex, ct));
 
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             };
 
             await Assert.ThrowsAsync<AggregateException>(async () =>
-                await Retry.Run(
+                await Retry.RunAsync(
                     task: () => faultyClass.FaultyTask(),
                     retryExceptionHandler: (ex, ct) => faultyClass.ExceptionHandler(ex, ct)));
         }

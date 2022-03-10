@@ -38,6 +38,11 @@ steps:
      Tests/**/*Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.Streaming.Tests.csproj
-     
     arguments: '-v n  --configuration $(BuildConfiguration) --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&TestCategory!=WindowsOnly"'
 
+- script: |
+   cd ..
+   ls -ARl
+  displayName: dir workspace
+  continueOnError: true
+  condition: succeededOrFailed()

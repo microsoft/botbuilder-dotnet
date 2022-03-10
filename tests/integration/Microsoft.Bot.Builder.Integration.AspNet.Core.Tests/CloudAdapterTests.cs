@@ -246,24 +246,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             };
 
             var streamingConnection = new Mock<StreamingConnection>(null);
+            var request = new ReceiveRequest
+            {
+                Verb = "POST",
+                Path = "/api/messages",
+            };
+
+            request.Streams.AddRange(new List<IContentStream>
+            {
+                new TestContentStream
+                {
+                    Id = Guid.NewGuid(),
+                    ContentType = "application/json",
+                    Length = (int?)validContent.Headers.ContentLength,
+                    Stream = validContent.ReadAsStreamAsync().GetAwaiter().GetResult()
+                }
+            });
+
             streamingConnection
                 .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
                 .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
-                    new ReceiveRequest
-                    {
-                        Verb = "POST",
-                        Path = "/api/messages",
-                        Streams = new List<IContentStream>
-                        {
-                            new TestContentStream
-                            {
-                                Id = Guid.NewGuid(),
-                                ContentType = "application/json",
-                                Length = (int?)validContent.Headers.ContentLength,
-                                Stream = validContent.ReadAsStreamAsync().GetAwaiter().GetResult()
-                            }
-                        }
-                    },
+                    request,
                     null,
                     cancellationToken: cancellationToken));
 
@@ -735,7 +738,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 IsGroup = false,
                 Bot = new ChannelAccount { },
-                Members = new ChannelAccount[] { },
                 TenantId = "tenantId",
             };
 

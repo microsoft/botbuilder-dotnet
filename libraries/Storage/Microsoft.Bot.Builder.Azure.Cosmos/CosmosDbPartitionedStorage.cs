@@ -324,6 +324,46 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
             _disposed = true;
         }
 
+        private static bool IsNestingError(JObject json, out string errorMessage)
+        {
+            using var reader = new JTokenReader(json);
+
+            while (reader.Read())
+            {
+                if (reader.Depth > MaxDepthAllowed)
+                {
+                    errorMessage = $"Maximum nesting depth of {MaxDepthAllowed} exceeded.";
+
+                    if (IsInDialogState(json.SelectToken(reader.Path)))
+                    {
+                        errorMessage += " This is most likely caused by recursive component dialogs."
+                            + " Try reworking your dialog code to make sure it does not keep dialogs on the stack that it's not using."
+                            + " For example, consider using ReplaceDialogAsync instead of BeginDialogAsync.";
+                    }
+                    else
+                    {
+                        errorMessage += " Please check your data for signs of unintended recursion.";
+                    }
+
+                    return true;
+                }
+            }
+
+            errorMessage = null;
+
+            return false;
+        }
+
+        private static bool IsInDialogState(JToken jToken) => jToken
+            .Ancestors()
+            .Where(ancestor => ancestor is JProperty prop && prop.Name == "dialogStack")
+            .Any(dialogStackProperty => dialogStackProperty?
+                .Parent["$type"]?
+                .ToString()
+                .StartsWith(
+                    "Microsoft.Bot.Builder.Dialogs.DialogState",
+                    StringComparison.OrdinalIgnoreCase) is true);
+
         private PartitionKey GetPartitionKey(string key)
         {
             if (_compatibilityModePartitionKey)
@@ -398,46 +438,6 @@ namespace Microsoft.Bot.Builder.Azure.Cosmos
 
             _container = containerResponse.Container;
         }
-
-        private bool IsNestingError(JObject json, out string errorMessage)
-        {
-            using var reader = new JTokenReader(json);
-
-            while (reader.Read())
-            {
-                if (reader.Depth > MaxDepthAllowed)
-                {
-                    errorMessage = $"Maximum nesting depth of {MaxDepthAllowed} exceeded.";
-
-                    if (IsInDialogState(json.SelectToken(reader.Path)))
-                    {
-                        errorMessage += " This is most likely caused by recursive component dialogs."
-                            + " Try reworking your dialog code to make sure it does not keep dialogs on the stack that it's not using."
-                            + " For example, consider using ReplaceDialogAsync instead of BeginDialogAsync.";
-                    }
-                    else
-                    {
-                        errorMessage += " Please check your data for signs of unintended recursion.";
-                    }
-
-                    return true;
-                }
-            }
-
-            errorMessage = null;
-
-            return false;
-        }
-
-        private bool IsInDialogState(JToken jToken) => jToken
-            .Ancestors()
-            .Where(ancestor => ancestor is JProperty prop && prop.Name == "dialogStack")
-            .Any(dialogStackProperty => dialogStackProperty?
-                .Parent["$type"]?
-                .ToString()
-                .StartsWith(
-                    "Microsoft.Bot.Builder.Dialogs.DialogState",
-                    StringComparison.OrdinalIgnoreCase) is true);
 
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.

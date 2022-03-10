@@ -65,14 +65,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public string Subtype { get; set; }
 
         /// <summary>
-        /// Gets or sets any extra properties.
+        /// Gets any extra properties.
         /// </summary>
         /// <value>
         /// Any extra properties.
         /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IDictionary<string, object> Properties { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, object> Properties { get; private set; }
     }
 }

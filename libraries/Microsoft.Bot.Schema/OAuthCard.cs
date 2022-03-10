@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema
         {
             Text = text;
             ConnectionName = connectionName;
-            Buttons = buttons;
+            Buttons = buttons ?? new List<CardAction>();
             CustomInit();
         }
 
@@ -58,13 +58,11 @@ namespace Microsoft.Bot.Schema
         public TokenExchangeResource TokenExchangeResource { get; set; }
 
         /// <summary>
-        /// Gets or sets action to use to perform signin.
+        /// Gets action to use to perform signin.
         /// </summary>
         /// <value>The actions used to perform sign-in.</value>
         [JsonProperty(PropertyName = "buttons")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<CardAction> Buttons { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<CardAction> Buttons { get; private set; } = new List<CardAction>();
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

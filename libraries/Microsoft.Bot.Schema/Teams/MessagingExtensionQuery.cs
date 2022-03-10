@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema.Teams
         public MessagingExtensionQuery(string commandId = default, IList<MessagingExtensionParameter> parameters = default, MessagingExtensionQueryOptions queryOptions = default, string state = default)
         {
             CommandId = commandId;
-            Parameters = parameters;
+            Parameters = parameters ?? new List<MessagingExtensionParameter>();
             QueryOptions = queryOptions;
             State = state;
             CustomInit();
@@ -45,13 +45,11 @@ namespace Microsoft.Bot.Schema.Teams
         public string CommandId { get; set; }
 
         /// <summary>
-        /// Gets or sets parameters for the query.
+        /// Gets parameters for the query.
         /// </summary>
         /// <value>The parameters for the query.</value>
         [JsonProperty(PropertyName = "parameters")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
-        public IList<MessagingExtensionParameter> Parameters { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<MessagingExtensionParameter> Parameters { get; private set; } = new List<MessagingExtensionParameter>();
 
         /// <summary>
         /// Gets or sets the query options.

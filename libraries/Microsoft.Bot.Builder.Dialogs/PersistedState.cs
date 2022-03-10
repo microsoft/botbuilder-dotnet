@@ -32,19 +32,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets the user profile data.
+        /// Gets the user profile data.
         /// </summary>
         /// <value>The user profile data.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IDictionary<string, object> UserState { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, object> UserState { get; private set; }
 
         /// <summary>
-        /// Gets or sets the dialog state data.
+        /// Gets the dialog state data.
         /// </summary>
         /// <value>The dialog state data.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IDictionary<string, object> ConversationState { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, object> ConversationState { get; }
     }
 }

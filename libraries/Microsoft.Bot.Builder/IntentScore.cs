@@ -21,14 +21,12 @@ namespace Microsoft.Bot.Builder
         public double? Score { get; set; }
 
         /// <summary>
-        /// Gets or sets any extra properties to include in the results.
+        /// Gets any extra properties to include in the results.
         /// </summary>
         /// <value>
         /// Any extra properties to include in the results.
         /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
-#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
-        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IDictionary<string, object> Properties { get; private set; } = new Dictionary<string, object>();
     }
 }
