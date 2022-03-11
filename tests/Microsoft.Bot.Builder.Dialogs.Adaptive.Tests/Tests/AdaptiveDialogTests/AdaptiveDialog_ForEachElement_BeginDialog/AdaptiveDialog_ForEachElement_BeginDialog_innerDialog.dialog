@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "id": "AskGuidDialog",
+  "recognizer": {
+    "$kind": "Microsoft.GuidEntityRecognizer",
+    "id": "guidrecognizer"
+  },
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.TextInput",
+          "property": "user.guid",
+          "value": "${@guid}",
+          "allowInterruptions": false,
+          "prompt": "Please send me a Guid.",
+          "unrecognizedPrompt": "Please send a Guid.",
+          "invalidPrompt": "That does not look like a Guid."
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "Received ${user.guid}"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "dialog.result",
+          "value": "this is the result from the inner dialog"
+        }
+      ]
+    }
+  ],
+  "autoEndDialog": true,
+  "defaultResultProperty": "dialog.result"
+}

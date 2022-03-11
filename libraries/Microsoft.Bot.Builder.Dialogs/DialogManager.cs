@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="registerRoot">Whether to register the root of the subtree. </param>
         private void RegisterContainerDialogs(Dialog dialog, bool registerRoot = true)
         {
-            if (dialog is DialogContainer container)
+            if (dialog is DialogContainer container && !container.IgnoreMemoryScopeBinding)
             {
                 if (registerRoot)
                 {
