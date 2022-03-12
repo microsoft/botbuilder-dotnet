@@ -7,8 +7,8 @@
 
 namespace Microsoft.Bot.Connector.Client.Models
 {
-    /// <summary> An HTTP API response. </summary>
-    internal partial class ErrorResponse
+    /// <summary> The ErrorResponse. </summary>
+    public partial class ErrorResponse
     {
         /// <summary> Initializes a new instance of ErrorResponse. </summary>
         internal ErrorResponse()
@@ -16,13 +16,12 @@ namespace Microsoft.Bot.Connector.Client.Models
         }
 
         /// <summary> Initializes a new instance of ErrorResponse. </summary>
-        /// <param name="error"> Error message. </param>
+        /// <param name="error"> . </param>
         internal ErrorResponse(Error error)
         {
             Error = error;
         }
 
-        /// <summary> Error message. </summary>
         public Error Error { get; }
     }
 }

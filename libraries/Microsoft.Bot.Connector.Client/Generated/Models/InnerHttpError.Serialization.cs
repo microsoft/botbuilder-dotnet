@@ -10,7 +10,7 @@ using Azure.Core;
 
 namespace Microsoft.Bot.Connector.Client.Models
 {
-    internal partial class InnerHttpError
+    public partial class InnerHttpError
     {
         internal static InnerHttpError DeserializeInnerHttpError(JsonElement element)
         {

@@ -7,8 +7,8 @@
 
 namespace Microsoft.Bot.Connector.Client.Models
 {
-    /// <summary> Object representing error information. </summary>
-    internal partial class Error
+    /// <summary> The Error. </summary>
+    public partial class Error
     {
         /// <summary> Initializes a new instance of Error. </summary>
         internal Error()
@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Connector.Client.Models
         }
 
         /// <summary> Initializes a new instance of Error. </summary>
-        /// <param name="code"> Error code. </param>
-        /// <param name="message"> Error message. </param>
-        /// <param name="innerHttpError"> Error from inner http call. </param>
+        /// <param name="code"> . </param>
+        /// <param name="message"> . </param>
+        /// <param name="innerHttpError"> . </param>
         internal Error(string code, string message, InnerHttpError innerHttpError)
         {
             Code = code;
@@ -26,11 +26,8 @@ namespace Microsoft.Bot.Connector.Client.Models
             InnerHttpError = innerHttpError;
         }
 
-        /// <summary> Error code. </summary>
         public string Code { get; }
-        /// <summary> Error message. </summary>
         public string Message { get; }
-        /// <summary> Error from inner http call. </summary>
         public InnerHttpError InnerHttpError { get; }
     }
 }

@@ -10,7 +10,7 @@ using Azure.Core;
 
 namespace Microsoft.Bot.Connector.Client.Models
 {
-    internal partial class Error
+    public partial class Error
     {
         internal static Error DeserializeError(JsonElement element)
         {

@@ -7,23 +7,27 @@
 
 namespace Microsoft.Bot.Connector.Client.Models
 {
-    /// <summary> Record for a token exchange request that is sent as part of an OAuthCard. </summary>
-    internal partial class TokenExchangeResource
+    /// <summary> The TokenExchangeResource. </summary>
+    public partial class TokenExchangeResource
     {
         /// <summary> Initializes a new instance of TokenExchangeResource. </summary>
         internal TokenExchangeResource()
         {
         }
 
-        /// <summary> A unique identifier for this token exchange instance. </summary>
+        /// <summary> Initializes a new instance of TokenExchangeResource. </summary>
+        /// <param name="id"> . </param>
+        /// <param name="uri"> . </param>
+        /// <param name="providerId"> . </param>
+        internal TokenExchangeResource(string id, string uri, string providerId)
+        {
+            Id = id;
+            Uri = uri;
+            ProviderId = providerId;
+        }
+
         public string Id { get; }
-        /// <summary> The application ID / resource identifier with which to exchange a token on behalf of. </summary>
         public string Uri { get; }
-        /// <summary>
-        /// The identifier of the provider with which to attempt a token exchange
-        /// 
-        /// A value of null or empty will default to Azure Active Directory.
-        /// </summary>
         public string ProviderId { get; }
     }
 }
