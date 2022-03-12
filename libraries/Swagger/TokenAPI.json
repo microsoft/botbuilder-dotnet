@@ -27,10 +27,7 @@
         "operationId": "BotSignIn_GetSignInUrl",
         "consumes": [],
         "produces": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml"
+          "application/json"
         ],
         "parameters": [
           {
@@ -76,10 +73,7 @@
         "operationId": "BotSignIn_GetSignInResource",
         "consumes": [],
         "produces": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml"
+          "application/json"
         ],
         "parameters": [
           {
@@ -125,10 +119,7 @@
         "operationId": "UserToken_GetToken",
         "consumes": [],
         "produces": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml"
+          "application/json"
         ],
         "parameters": [
           {
@@ -185,17 +176,10 @@
         ],
         "operationId": "UserToken_GetAadTokens",
         "consumes": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml",
-          "application/x-www-form-urlencoded"
+          "application/json"
         ],
         "produces": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml"
+          "application/json"
         ],
         "parameters": [
           {
@@ -251,7 +235,9 @@
         ],
         "operationId": "UserToken_SignOut",
         "consumes": [],
-        "produces": [],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -299,10 +285,7 @@
         "operationId": "UserToken_GetTokenStatus",
         "consumes": [],
         "produces": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml"
+          "application/json"
         ],
         "parameters": [
           {
@@ -350,17 +333,10 @@
         ],
         "operationId": "UserToken_ExchangeAsync",
         "consumes": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml",
-          "application/x-www-form-urlencoded"
+          "application/json"
         ],
         "produces": [
-          "application/json",
-          "text/json",
-          "application/xml",
-          "text/xml"
+          "application/json"
         ],
         "parameters": [
           {
