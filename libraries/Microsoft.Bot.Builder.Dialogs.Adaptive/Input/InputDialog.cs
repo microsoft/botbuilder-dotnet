@@ -313,6 +313,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
+        /// Track GeneratorResultEvent telemetry event with InputDialogResultEvent context.
+        /// </summary>
+        /// <param name="dc">Current <see cref="DialogContext"/>.</param>
+        /// <param name="activityTemplate"><see cref="ITemplate{T}"/> used to create the Activity.</param>
+        /// <param name="msg">The <see cref="IMessageActivity"/> which will be sent.</param>
+        internal virtual void TrackGeneratorResultEvent(DialogContext dc, ITemplate<Activity> activityTemplate, IMessageActivity msg)
+        {
+            var properties = new Dictionary<string, string>()
+            {
+                { "template", JsonConvert.SerializeObject(activityTemplate) },
+                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                { "context", TelemetryLoggerConstants.InputDialogResultEvent }
+            };
+            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
+        }
+
+        /// <summary>
         /// Called when input has been received, override this method to customize recognition of the input.
         /// </summary>
         /// <param name="dc">dialogContext.</param>
@@ -490,23 +507,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             TrackGeneratorResultEvent(dc, template, msg);
 
             return msg;
-        }
-
-        /// <summary>
-        /// Track GeneratorResultEvent telemetry event with InputDialogResultEvent context.
-        /// </summary>
-        /// <param name="dc">Current <see cref="DialogContext"/>.</param>
-        /// <param name="activityTemplate"><see cref="ITemplate{T}"/> used to create the Activity.</param>
-        /// <param name="msg">The <see cref="IMessageActivity"/> which will be sent.</param>
-        protected virtual void TrackGeneratorResultEvent(DialogContext dc, ITemplate<Activity> activityTemplate, IMessageActivity msg)
-        {
-            var properties = new Dictionary<string, string>()
-            {
-                { "template", JsonConvert.SerializeObject(activityTemplate) },
-                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
-                { "context", TelemetryLoggerConstants.InputDialogResultEvent }
-            };
-            TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
         }
 
         private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount, CancellationToken cancellationToken = default(CancellationToken))
