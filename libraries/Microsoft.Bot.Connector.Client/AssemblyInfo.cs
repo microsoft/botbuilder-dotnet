@@ -1,0 +1,38 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Diagnostics.CodeAnalysis;
+
+[assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Generated code.")]
+[assembly: SuppressMessage("Microsoft.Performance", "VSTHRD103:CallAsyncMethodsWhenInAnAsyncMethod", Justification = "Generated code.")]
+
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1001:CommasShouldBeFollowedByWhitespace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1003:OperatorColonShouldBePrecededByWhitespace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1009:ClosingParenthesisShouldBeFollowedByASpace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1011:ClosingSquareBracketShouldBeFollowedByASpace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1012:OpeningBraceShouldBePrecededByASpace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1013:ClosingBraceShouldBePrecededByASpace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1015:ClosingGenericBracketShouldBeFollowedByASpace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1024:ColonShouldBePrecededByASpace", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1108:BlockStatementsShouldNotContainEmbeddedComments", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1124:DoNotUseRegions", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1127:GenericTypeConstraintsShouldBeOnTheirOwnLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1128:PutConstructorInitializersOnTheirOwnLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1131:ConstantValuesShouldAppearOnTheRightHandSideOfComparisons", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1201:AConstructorShouldNotFollowAProperty", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1202:PublicMembersShouldComeBeforePrivateMembers", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1203:ConstantFieldsShouldAppearBeforeNonConstantFields", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1204:StaticMembersShouldAppearBeforeNonStaticMembers", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1210:UsingDirectivesShouldBeOrderedAlphabeticallyByTheNamespaces", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1308:FieldShouldNotBeginWithThePrefixS_", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1311:StaticReadonlyFieldsShouldBeginWithUpperCaseLetter", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1401:FieldShouldBePrivate", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1405:DebugAssertShouldProvideMessageText", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1412:StoreFilesAsUtf8WithByteOrderMark", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:BracesForMultiLineStatementsShouldNotShareLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1502:ElementShouldNotBeOnASingleLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1503:BracesShouldNotBeOmitted", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:ClosingBraceShouldBeFollowedByBlankLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1515:SingleLineCommentShouldBePrecededByBlankLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1516:ElementsShouldBeSeparatedByBlankLine", Justification = "Generated code.")]
+[assembly: SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1609:PropertyDocumentationShouldHaveValue", Justification = "Generated code.")]
