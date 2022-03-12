@@ -56,7 +56,7 @@ steps:
    dotnet nuget remove source SDK_Dotnet_V4_org
   displayName: Remove SDK_Dotnet_V4_org feed source reference from nuget.config
   continueOnError: true
-  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 2.1, required for Upload Coverage Files task'
