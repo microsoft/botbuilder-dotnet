@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             if (dc.ActiveDialog != null)
             {
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                if (dialog is DialogContainer)
+                if (dialog is DialogContainer container && !container.IgnoreMemoryScopeBinding)
                 {
                     return dc.ActiveDialog.State;
                 }
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             if (dc.ActiveDialog != null)
             {
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                if (dialog is DialogContainer)
+                if (dialog is DialogContainer container && !container.IgnoreMemoryScopeBinding)
                 {
                     dc.ActiveDialog.State = (IDictionary<string, object>)memory;
                     return;
