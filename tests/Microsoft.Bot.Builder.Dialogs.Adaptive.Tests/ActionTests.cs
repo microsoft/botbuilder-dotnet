@@ -869,16 +869,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var choicesCollection = ((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["choices"];
             var choices = JsonConvert.DeserializeObject<List<Choice>>(choicesCollection);
-            
-            var option1 = choices[0].Value;
-            var option2 = choices[1].Value;
-            var option3 = choices[2].Value;
 
             Assert.Equal("GeneratorResult", mockTelemetryClient.Invocations[4].Arguments[0]);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("choices"));
-            Assert.Equal("option1", option1);
-            Assert.Equal("option2", option2);
-            Assert.Equal("option3", option3);
+            Assert.Equal("option1", choices[0].Value);
+            Assert.Equal("option2", choices[1].Value);
+            Assert.Equal("option3", choices[2].Value);
         }
 
         private class SetSkillConversationIdFactoryBaseMiddleware : IMiddleware
