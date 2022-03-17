@@ -89,7 +89,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static string TemplateNotExist(string templateName) => $"No such template '{templateName}'.";
 
-        public static string ErrorExpression(string refFullText, string templateName, string prefixText) => $"[{templateName}] {prefixText} Error occurred when evaluating '{refFullText}'.";
+#pragma warning disable CA1801 // Review unused parameters
+        public static string ErrorExpression(string refFullText, string templateName, string prefixText) => $"[{templateName}] {prefixText} Error occurred when evaluating expression.";
+#pragma warning restore CA1801 // Review unused parameters
 
         public static string NullExpression(string expression) => $"'{expression}' evaluated to null.";
 
