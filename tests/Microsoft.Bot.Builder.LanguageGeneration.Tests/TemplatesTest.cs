@@ -854,7 +854,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
             var exception = Assert.Throws<InvalidOperationException>(() => templates.ExpandTemplate("StrictTrue"));
-            Assert.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating '-${variable_not_defined}'", exception.Message);
+            Assert.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating expression", exception.Message);
         }
 
         [Fact]
