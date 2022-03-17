@@ -5,6 +5,7 @@ steps:
     if ("$(System.PullRequest.IsFork)" -eq 'True') {
       $key = "nuget.org";
       $value = "https://api.nuget.org/v3/index.json";
+      Write-Host 'System.PullRequest.IsFork = True';
     }
     else {
       $key = "SDK_Dotnet_V4_org";
