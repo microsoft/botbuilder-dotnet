@@ -505,7 +505,7 @@ namespace Microsoft.Bot.Builder
         /// Invoked when the bot is sent an Adaptive Card Action Execute.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
-        /// <param name="invokeValue">A stringly-typed object from the incoming activity's Value.</param>
+        /// <param name="invokeValue">A strongly-typed object from the incoming activity's Value.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -524,7 +524,7 @@ namespace Microsoft.Bot.Builder
         /// Invoked when the bot is sent an 'invoke' activity having name of 'application/search'.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
-        /// <param name="invokeValue">A stringly-typed object from the incoming activity's Value.</param>
+        /// <param name="invokeValue">A strongly-typed object from the incoming activity's Value.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
