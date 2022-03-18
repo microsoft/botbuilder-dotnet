@@ -580,7 +580,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.Equal("OnSearchQueryInvokeAsync", bot.Record[1]);
+            Assert.Equal("OnSearchInvokeAsync", bot.Record[1]);
         }
 
         [Fact]
