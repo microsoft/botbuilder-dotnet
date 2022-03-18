@@ -559,6 +559,31 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task TestOnSearchInvokeAsync()
+        {
+            var value = JObject.FromObject(new SearchInvokeValue { Kind = SearchInvokeTypes.Search, QueryText = "bot" });
+
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "application/search",
+                Value = value
+            };
+
+            var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnSearchQueryInvokeAsync", bot.Record[1]);
+        }
+
+        [Fact]
         public async Task TestCommandActivityType()
         {
             // Arrange
@@ -817,6 +842,12 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new AdaptiveCardInvokeResponse());
+            }
+
+            protected override Task<SearchInvokeResponse> OnSearchInvokeAsync(ITurnContext<IInvokeActivity> turnContext, SearchInvokeValue invokeValue, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(new SearchInvokeResponse());
             }
         }
 

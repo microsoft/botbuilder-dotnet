@@ -454,6 +454,10 @@ namespace Microsoft.Bot.Builder
             {
                 switch (turnContext.Activity.Name)
                 {
+                    case "application/search":
+                        var searchInvokeValue = GetSearchInvokeValue(turnContext.Activity);
+                        return CreateInvokeResponse(await OnSearchInvokeAsync(turnContext, searchInvokeValue, cancellationToken).ConfigureAwait(false));
+
                     case "adaptiveCard/action":
                         var invokeValue = GetAdaptiveCardInvokeValue(turnContext.Activity);
                         return CreateInvokeResponse(await OnAdaptiveCardInvokeAsync(turnContext, invokeValue, cancellationToken).ConfigureAwait(false));
@@ -512,6 +516,25 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
         protected virtual Task<AdaptiveCardInvokeResponse> OnAdaptiveCardInvokeAsync(ITurnContext<IInvokeActivity> turnContext, AdaptiveCardInvokeValue invokeValue, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Invoked when the bot is sent an 'invoke' activity having name of 'application/search'.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="invokeValue">A stringly-typed object from the incoming activity's Value.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `application/search`,
+        /// it calls this method. The Activity.Value must be a well formed <see cref="SearchInvokeValue"/>.
+        /// </remarks>
+        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        protected virtual Task<SearchInvokeResponse> OnSearchInvokeAsync(ITurnContext<IInvokeActivity> turnContext, SearchInvokeValue invokeValue, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
@@ -706,7 +729,69 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        private AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
+        private static SearchInvokeValue GetSearchInvokeValue(IInvokeActivity activity)
+        {
+            if (activity.Value == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Missing value property for search");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            var obj = activity.Value as JObject;
+            if (obj == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Value property is not properly formed for search");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            SearchInvokeValue invokeValue = null;
+            
+            try
+            {
+                invokeValue = obj.ToObject<SearchInvokeValue>();
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                var errorResponse = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Value property is not valid for search");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, errorResponse);
+            }
+
+            ValidateSearchInvokeValue(invokeValue, activity.ChannelId);
+            return invokeValue;
+        }
+
+        private static void ValidateSearchInvokeValue(SearchInvokeValue searchInvokeValue, string channelId)
+        {
+            string missingField = null;
+
+            if (string.IsNullOrEmpty(searchInvokeValue.Kind))
+            {
+                // Teams does not always send the 'kind' field. Default to 'search'.
+                if (Connector.Channels.Msteams.Equals(channelId, StringComparison.OrdinalIgnoreCase))
+                {
+                    searchInvokeValue.Kind = SearchInvokeTypes.Search;
+                }
+                else
+                {
+                    missingField = nameof(searchInvokeValue.Kind);
+                }
+            }
+
+            if (string.IsNullOrEmpty(searchInvokeValue.QueryText))
+            {
+                missingField = nameof(searchInvokeValue.QueryText);
+            }
+
+            if (missingField != null)
+            {
+                var errorResponse = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", $"Missing {missingField} property for search");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, errorResponse);
+            }
+        }
+
+        private static AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
         {
             if (activity.Value == null)
             {
@@ -750,7 +835,7 @@ namespace Microsoft.Bot.Builder
             return invokeValue;
         }
 
-        private AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
+        private static AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
         {
             return new AdaptiveCardInvokeResponse()
             {
