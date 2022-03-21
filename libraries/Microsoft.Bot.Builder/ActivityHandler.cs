@@ -775,13 +775,13 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    missingField = nameof(searchInvokeValue.Kind);
+                    missingField = "kind";
                 }
             }
 
             if (string.IsNullOrEmpty(searchInvokeValue.QueryText))
             {
-                missingField = nameof(searchInvokeValue.QueryText);
+                missingField = "queryText";
             }
 
             if (missingField != null)
