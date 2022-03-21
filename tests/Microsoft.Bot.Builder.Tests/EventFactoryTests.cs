@@ -58,9 +58,6 @@ namespace Microsoft.Bot.Builder.Tests
             var skill = (handoffEvent.Value as JObject)?.Value<string>("Skill");
             Assert.Equal("any", skill);
             Assert.Equal(handoffEvent.From.Id, fromID);
-
-            var nullHandoffEvent = EventFactory.CreateHandoffInitiation(context, null, transcript);
-            Assert.NotNull(nullHandoffEvent.Value);
         }
 
         [Fact]
