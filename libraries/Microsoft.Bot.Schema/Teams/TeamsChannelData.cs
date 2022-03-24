@@ -3,6 +3,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
+    using System.Collections.Generic;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -82,6 +83,19 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The information about the meeting.</value>
         [JsonProperty(PropertyName = "meeting")]
         public TeamsMeetingInfo Meeting { get; set; }
+
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined by the <see cref="TeamsChannelData"/> type but that
+        /// might appear in the REST JSON object.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only
+        public IDictionary<string, object> AdditionalProperties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

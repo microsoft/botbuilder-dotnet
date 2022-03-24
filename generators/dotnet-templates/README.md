@@ -121,7 +121,8 @@ dotnet new -i Microsoft.Bot.Framework.CSharp.EmptyBot
 dotnet new echobot -n MyEchoBot
 ```
 
-#### Create CoreBot
+#### Create CoreBot 
+> Note: For a core bot project, only the parent folder receives the bot name
 ```bash
 # Generate a Core Bot
 dotnet new corebot -n MyCoreBot

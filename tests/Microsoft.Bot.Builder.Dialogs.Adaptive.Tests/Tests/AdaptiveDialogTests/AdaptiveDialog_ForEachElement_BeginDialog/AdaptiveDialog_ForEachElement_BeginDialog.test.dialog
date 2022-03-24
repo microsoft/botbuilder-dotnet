@@ -1,0 +1,57 @@
+{
+  "$schema": "../../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "outer",
+    "autoEndDialog": false,
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnConversationUpdateActivity",
+        "actions": [
+          {
+            "$kind": "Microsoft.Foreach",
+            "itemsProperty": "turn.Activity.membersAdded",
+            "value": "dialog.foreach.value",
+            "actions": [
+              {
+                "$kind": "Microsoft.IfCondition",
+                "condition": "=string(dialog.foreach.value.id) != string(turn.Activity.Recipient.id)",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "AdaptiveDialog_ForEachElement_BeginDialog_innerDialog",
+                    "resultProperty": "dialog.fromNameDialog"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please send a Guid."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "60aed179-3101-47fa-9aa9-f67e91ae7e25"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Received 60aed179-3101-47fa-9aa9-f67e91ae7e25"
+    }
+  ]
+}

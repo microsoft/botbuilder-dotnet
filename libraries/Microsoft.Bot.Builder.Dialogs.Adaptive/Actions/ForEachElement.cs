@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class ForEachElement : Dialog, IDialogDependencies
+    public class ForEachElement : DialogContainer, IDialogDependencies
     {
         /// <summary>
         /// Class identifier.
@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <param name="actions">The actions to execute.</param>
         public ForEachElement(IEnumerable<Dialog> actions = null)
+            : base(true)
         {
             if (actions != null)
             {
@@ -156,6 +157,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <inheritdoc/>
+        public override DialogContext CreateChildContext(DialogContext dc)
+        {
+            var childDialogState = GetActionScopeState(dc);
+            return CreateChildContext(dc, childDialogState);
+        }
+
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{GetType().Name}({this.ItemsProperty?.ToString()})";
@@ -173,15 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             while (dc.ActiveDialog != null && list != null && index < list.Count)
             {
                 var childDialogState = GetActionScopeState(dc);
-                var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
-                childDc.Parent = dc.Parent;
-                if (dc.Services != null)
-                {
-                    foreach (var service in dc.Services)
-                    {
-                        childDc.Services[service.Key] = service.Value;
-                    }
-                }
+                var childDc = CreateChildContext(dc, childDialogState);
 
                 var valueProperty = Value.GetValue(dc.State);
                 dc.State.SetValue(valueProperty, list[index][IterationValue]);
@@ -238,10 +238,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        private DialogContext CreateChildContext(DialogContext dc, DialogState childDialogState)
+        {
+            var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
+            childDc.Parent = dc.Parent;
+
+            if (dc.Services != null)
+            {
+                foreach (var service in dc.Services)
+                {
+                    childDc.Services[service.Key] = service.Value;
+                }
+            }
+
+            return childDc;
+        }
+
         private bool ShouldEndDialog(DialogTurnResult turnResult, out DialogTurnResult finalTurnResult)
         {
             finalTurnResult = turnResult;
-            
+
+            // Insure BreakLoop ends the dialog
+            if (finalTurnResult.Status == DialogTurnStatus.Complete
+                && finalTurnResult.Result is ActionScopeResult asr
+                && asr.ActionScopeCommand == ActionScopeCommands.BreakLoop)
+            {
+                return true;
+            }
+
             // If a descendant dialog multiple levels below this container ended stack processing,
             // the result will be nested.
             while (finalTurnResult.Result != null 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -41,5 +42,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Get or set for Card no match response.
         /// </value>
         public Activity CardNoMatchResponse { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dialog response should display only precise answers.
+        /// </summary>
+        /// <value>
+        /// True or False, defaults to False.
+        /// </value>
+        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = false;
     }
 }

@@ -1,0 +1,18 @@
+{
+  "answers": [
+    {
+      "questions": [
+        "I accidentally deleted a part of my QnA Maker, what should I do?"
+      ],
+      "answer": "All deletes are permanent, including question and answer pairs, files, URLs, custom questions and answers, knowledge bases, or Azure resources. Make sure you export your knowledge base from the Settings**page before deleting any part of your knowledge base.",
+      "confidenceScore": 0.8999,
+      "id": 1,
+      "source": "https://docs.microsoft.com/en-us/azure/cognitive-services/qnamaker/troubleshooting",
+      "metadata": {},
+      "dialog": {
+        "isContextOnly": false,
+        "prompts": []
+      }
+    }
+  ],
+}

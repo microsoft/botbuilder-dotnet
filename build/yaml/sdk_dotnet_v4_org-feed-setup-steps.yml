@@ -1,6 +1,17 @@
 # Create nuget.config for resolving dependencies exclusively from SDK_Dotnet_V4_org feed.
+# Resolve from nuget.org when PR is from a fork, as forks do not have access to our private feed.
 steps:
 - powershell: |
+    if ("$(System.PullRequest.IsFork)" -eq 'True') {
+      $key = "nuget.org";
+      $value = "https://api.nuget.org/v3/index.json";
+      Write-Host 'System.PullRequest.IsFork = True';
+    }
+    else {
+      $key = "SDK_Dotnet_V4_org";
+      $value = "$(SDK_Dotnet_V4_org_Url)";
+    }
+
     $file = "$(Build.SourcesDirectory)\nuget.config";
 
     $content = @"
@@ -8,7 +19,7 @@ steps:
     <configuration>
       <packageSources>
         <clear />
-        <add key="SDK_Dotnet_V4_org" value="$(SDK_Dotnet_V4_org_Url)" />
+        <add key="$key" value="$value" />
       </packageSources>
       <activePackageSource>
         <add key="All" value="(Aggregate source)" />

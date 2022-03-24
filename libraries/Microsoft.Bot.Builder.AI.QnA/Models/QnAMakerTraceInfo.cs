@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -62,11 +64,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
-        /// Gets or sets the filters used to return answers that have the specified metadata.       
+        /// Gets or sets the filters used to return answers that have the specified metadata.
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
-        /// </value>        
+        /// </value>
         [JsonProperty("strictFilters")]
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
@@ -119,5 +121,30 @@ namespace Microsoft.Bot.Builder.AI.QnA
 #pragma warning disable CA1819 // Properties should not return arrays (this property is obsolete and we won't change it)
         public Metadata[] MetadataBoost { get; set; }
 #pragma warning restore CA1819 // Properties should not return arrays
+
+        /// <summary>
+        /// Gets or sets the metadata and sources used to filter QnA Maker results.
+        /// </summary>
+        /// <value>
+        /// An object with metadata, source filters and corresponding operators.
+        /// </value>
+        [JsonProperty("filters")]
+        public Filters Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable or disable Answer Span prediction.
+        /// </summary>
+        /// <value>
+        /// True or False, defaults to False.
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public BoolExpression EnablePreciseAnswer { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable Query over Unstructured Sources.
+        /// </summary>
+        /// <value>True/False, defaults to true.</value>
+        [JsonProperty("includeUnstructuredSources")]
+        public BoolExpression IncludeUnstructuredSources { get; set; } = true;
     }
 }

@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             }
 
             // Use Composer luis and qna settings extensions
-            builder.AddComposerConfiguration();
+            builder.AddComposerConfiguration(applicationRoot);
 
             builder.AddEnvironmentVariables();
 
@@ -103,8 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// This will pick up --root as the root folder to run in.
         /// </remarks>
         /// <param name="builder">Configuration builder to modify.</param>
+        /// <param name="applicationRoot">The path to the application root containing the generated folder.</param>
         /// <returns>Modified configuration builder.</returns>
-        private static IConfigurationBuilder AddComposerConfiguration(this IConfigurationBuilder builder)
+        private static IConfigurationBuilder AddComposerConfiguration(this IConfigurationBuilder builder, string applicationRoot)
         {
             var configuration = builder.Build();
             var botRoot = configuration.GetValue<string>("bot") ?? ".";
@@ -128,21 +129,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
                 environment = Environment.UserName;
             }
 
-            var luisSettingsPath = Path.GetFullPath(Path.Combine(botRoot, "generated", $"luis.settings.{environment.ToLowerInvariant()}.{luisRegion}.json"));
+            var luisSettingsPath = Path.Combine(applicationRoot, "generated", $"luis.settings.{environment.ToLowerInvariant()}.{luisRegion}.json");
             var luisSettingsFile = new FileInfo(luisSettingsPath);
             if (luisSettingsFile.Exists)
             {
                 builder.AddJsonFile(luisSettingsFile.FullName, optional: false, reloadOnChange: true);
             }
 
-            var qnaSettingsPath = Path.GetFullPath(Path.Combine(botRoot, "generated", $"qnamaker.settings.{environment.ToLowerInvariant()}.{qnaRegion}.json"));
+            var qnaSettingsPath = Path.Combine(applicationRoot, "generated", $"qnamaker.settings.{environment.ToLowerInvariant()}.{qnaRegion}.json");
             var qnaSettingsFile = new FileInfo(qnaSettingsPath);
             if (qnaSettingsFile.Exists)
             {
                 builder.AddJsonFile(qnaSettingsFile.FullName, optional: false, reloadOnChange: true);
             }
 
-            var orchestratorSettingsPath = Path.GetFullPath(Path.Combine(botRoot, "generated", "orchestrator.settings.json"));
+            var orchestratorSettingsPath = Path.Combine(applicationRoot, "generated", "orchestrator.settings.json");
             var orchestratorSettingsFile = new FileInfo(orchestratorSettingsPath);
             if (orchestratorSettingsFile.Exists)
             {

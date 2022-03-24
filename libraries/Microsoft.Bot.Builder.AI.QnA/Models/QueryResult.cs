@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.AI.QnA.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -80,5 +81,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty(PropertyName = "context")]
         public QnAResponseContext Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets <see cref="AnswerSpanResponse"/> object for precise answer in response .
+        /// </summary>
+        /// <value>
+        /// Object containing <see cref="AnswerSpanResponse"/>.
+        /// </value>
+        [JsonProperty("answerSpan")]
+        public AnswerSpanResponse AnswerSpan { get; set; }
     }
 }

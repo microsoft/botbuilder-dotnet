@@ -119,6 +119,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task AdaptiveDialog_ForEachElement_BeginDialog()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task AdaptiveDialog_BindingReferValueInLaterAction()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

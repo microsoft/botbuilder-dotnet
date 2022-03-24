@@ -216,14 +216,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (string.IsNullOrEmpty(turnContext.Activity.Text))
             {
-                throw new ArgumentException("Null or empty text");
+                throw new ArgumentException("Question cannot be null or empty text");
             }
 
-            var result = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var results = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
-            await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
+            await OnQnaResultsAsync(results.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
-            return result;
+            return results;
         }
 
         /// <summary>
