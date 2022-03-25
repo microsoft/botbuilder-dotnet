@@ -262,6 +262,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             public bool HandlesActivity(Activity activity)
             {
+                if (string.IsNullOrWhiteSpace(_requestHandler.ServiceUrl))
+                {
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(activity.ServiceUrl))
+                {
+                    return false;
+                }
+
                 return _requestHandler.ServiceUrl.Equals(activity.ServiceUrl, StringComparison.OrdinalIgnoreCase) &&
                        _requestHandler.HasConversation(activity.Conversation.Id);
             }
