@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Pipeline;
 using Microsoft.Bot.Connector.Client.Models;
+using Microsoft.Bot.Connector.Client.Authentication;
 
 namespace Microsoft.Bot.Connector.Client
 {
@@ -20,8 +21,13 @@ namespace Microsoft.Bot.Connector.Client
         private readonly UserTokenRestClient _userToken;
         private readonly BotSignInRestClient _botSignIn;
 
-        public UserTokenClientImpl(Uri tokenEndpoint, string appId)
+        public UserTokenClientImpl(BotFrameworkCredential credential, string appId, Uri endpoint)
         {
+            if (credential == null)
+            {
+                throw new ArgumentNullException(nameof(credential));
+            }
+
             if (string.IsNullOrWhiteSpace(appId))
             {
                 throw new ArgumentNullException(nameof(appId));
@@ -31,10 +37,12 @@ namespace Microsoft.Bot.Connector.Client
 
             var options = new ConnectorOptions();
             var diagnostics = new ClientDiagnostics(options);
-            var pipeline = HttpPipelineBuilder.Build(options);
+            var pipeline = credential.IsAuthenticationDisabledAsync().GetAwaiter().GetResult()
+                ? HttpPipelineBuilder.Build(options)
+                : HttpPipelineBuilder.Build(options, new BearerTokenAuthenticationPolicy(credential.GetTokenCredential(), $"api://{appId}/.default"));
 
-            _userToken = new UserTokenRestClient(diagnostics, pipeline, tokenEndpoint);
-            _botSignIn = new BotSignInRestClient(diagnostics, pipeline, tokenEndpoint);
+            _userToken = new UserTokenRestClient(diagnostics, pipeline, endpoint);
+            _botSignIn = new BotSignInRestClient(diagnostics, pipeline, endpoint);
         }
 
         public override async Task<TokenResponse> GetTokenAsync(string userId, string connectionName, string channelId, string code, CancellationToken cancellationToken = default)

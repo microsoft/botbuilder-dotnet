@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Pipeline;
+using Microsoft.Bot.Connector.Client.Authentication;
 using Microsoft.Bot.Connector.Client.Models;
 
 namespace Microsoft.Bot.Connector.Client
@@ -16,14 +17,21 @@ namespace Microsoft.Bot.Connector.Client
         private readonly ConversationsRestClient _conversations;
         private readonly AttachmentsRestClient _attachments;
 
-        public ConnectorClientImpl(Uri messagingEndpoint)
+        public ConnectorClientImpl(BotFrameworkCredential credential, string scope, Uri endpoint)
         {
+            if (credential == null)
+            {
+                throw new ArgumentNullException(nameof(credential));
+            }
+
             var options = new ConnectorOptions();
             var diagnostics = new ClientDiagnostics(options);
-            var pipeline = HttpPipelineBuilder.Build(options);
+            var pipeline = credential.IsAuthenticationDisabledAsync().GetAwaiter().GetResult() || string.IsNullOrWhiteSpace(scope)
+                ? HttpPipelineBuilder.Build(options)
+                : HttpPipelineBuilder.Build(options, new BearerTokenAuthenticationPolicy(credential.GetTokenCredential(), scope));
 
-            _conversations = new ConversationsRestClient(diagnostics, pipeline, messagingEndpoint);
-            _attachments = new AttachmentsRestClient(diagnostics, pipeline, messagingEndpoint);
+            _conversations = new ConversationsRestClient(diagnostics, pipeline, endpoint);
+            _attachments = new AttachmentsRestClient(diagnostics, pipeline, endpoint);
         }
 
         public override async Task<ConversationsResult> GetConversationsAsync(string continuationToken, CancellationToken cancellationToken = default)

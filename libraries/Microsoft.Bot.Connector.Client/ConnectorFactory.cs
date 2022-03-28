@@ -13,22 +13,17 @@ namespace Microsoft.Bot.Connector.Client
         /// <summary>
         /// Creates a <see cref="ConnectorClient"/> that can access Bot Framework Protocol REST APIs.
         /// </summary>
-        /// <param name="messagingEndpoint">The endpoint to connect to Bot Framework Protocol REST APIs.</param>
+        /// <param name="serviceUrl">The endpoint to connect to Bot Framework Protocol REST APIs.</param>
+        /// <param name="audience">The audience for the credentials the client will use.</param>
         /// <returns>A <see cref="ConnectorClient"/> instance.</returns>
-        public virtual ConnectorClient CreateConnectorClient(Uri messagingEndpoint)
-        {
-            return new ConnectorClientImpl(messagingEndpoint);
-        }
+        public abstract ConnectorClient CreateConnectorClient(Uri serviceUrl, string audience);
 
         /// <summary>
         /// Creates a <see cref="UserTokenClient"/> that can access Bot Framework Protocol Token APIs.
         /// </summary>
-        /// <param name="tokenEndpoint">The endpoint to connect to Bot Framework Protocol Token APIs.</param>
+        /// <param name="oAuthUrl">The endpoint to connect to Bot Framework Protocol Token APIs.</param>
         /// <param name="appId">The ID of the app to obtain token.</param>
         /// <returns>A <see cref="UserTokenClient"/> instance.</returns>
-        public virtual UserTokenClient CreateUserTokenClient(Uri tokenEndpoint, string appId)
-        {
-            return new UserTokenClientImpl(tokenEndpoint, appId);
-        }
+        public abstract UserTokenClient CreateUserTokenClient(Uri oAuthUrl, string appId);
     }
 }
