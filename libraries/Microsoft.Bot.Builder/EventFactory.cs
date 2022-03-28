@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder
             var handoffEvent = Activity.CreateEventActivity() as Activity;
 
             handoffEvent.Name = name;
-            handoffEvent.Value = JObject.FromObject(value);
+            handoffEvent.Value = value == null ? null : JObject.FromObject(value);
             handoffEvent.Id = Guid.NewGuid().ToString();
             handoffEvent.Timestamp = DateTime.UtcNow;
             handoffEvent.Conversation = conversation;

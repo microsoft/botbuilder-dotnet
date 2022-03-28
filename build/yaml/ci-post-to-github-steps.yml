@@ -13,7 +13,8 @@ steps:
     userToken: '$(GitHubCommentApiKey)'
     bodyFilePath: '$(System.ArtifactsDirectory)\ApiCompat'
     getSubFolders: true
-  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+  # Skip forks, as they can't get credentials.
+  condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
 - powershell: |
    # Check for string in the logs in the current DevOps pipeline run.
