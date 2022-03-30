@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Connector.Client.Models
 {
@@ -99,6 +101,15 @@ namespace Microsoft.Bot.Connector.Client.Models
         }
 
         /// <summary>
+        /// Returns this activity if it is <see cref="ActivityTypes.MessageDelete"/>; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>This activity as a message delete request; or null.</returns>
+        public Activity AsMessageDeleteActivity()
+        {
+            return IsActivity(ActivityTypes.MessageDelete.ToString()) ? this : null;
+        }
+
+        /// <summary>
         /// Returns this activity if it is <see cref="ActivityTypes.Trace"/>; or null, if this is not that type of activity.
         /// </summary>
         /// <returns>This activity as a message activity; or null.</returns>
@@ -147,6 +158,85 @@ namespace Microsoft.Bot.Connector.Client.Models
         {
             var isHttp = ServiceUrl?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase);
             return isHttp.HasValue && !isHttp.Value;
+        }
+
+        /// <summary>
+        /// Remove recipient mention text from Text property.
+        /// Use with caution because this function is altering the text on the Activity.
+        /// </summary>
+        /// <returns>new .Text property value.</returns>
+        public string RemoveRecipientMention()
+        {
+            return RemoveMentionText(Recipient.Id);
+        }
+
+        /// <summary>
+        /// Remove any mention text for given id from the Activity.Text property.  For example, given the message
+        /// @echoBot Hi Bot, this will remove "@echoBot", leaving "Hi Bot".
+        /// </summary>
+        /// <description>
+        /// Typically this would be used to remove the mention text for the target recipient (the bot usually), though
+        /// it could be called for each member.  For example:
+        ///    turnContext.Activity.RemoveMentionText(turnContext.Activity.Recipient.Id);
+        /// The format of a mention Activity.Entity is dependent on the Channel.  But in all cases we
+        /// expect the Mention.Text to contain the exact text for the user as it appears in
+        /// Activity.Text.
+        /// For example, Teams uses &lt;at&gt;username&lt;/at&gt;, whereas slack use @username. It
+        /// is expected that text is in Activity.Text and this method will remove that value from
+        /// Activity.Text.
+        /// </description>
+        /// <param name="id">id to match.</param>
+        /// <returns>new Activity.Text property value.</returns>
+        public string RemoveMentionText(string id)
+        {
+            foreach (var mention in GetMentions().Where(mention => mention.Mentioned.Id == id))
+            {
+                if (mention.Text == null)
+                {
+                    Text = Regex.Replace(Text, "<at>" + Regex.Escape(mention.Mentioned.Name) + "</at>", string.Empty, RegexOptions.IgnoreCase).Trim();
+                }
+                else
+                {
+                    Text = Regex.Replace(Text, Regex.Escape(mention.Text), string.Empty, RegexOptions.IgnoreCase).Trim();
+                }
+            }
+
+            return Text;
+        }
+
+        /// <summary>
+        /// Resolves the mentions from the entities of this activity.
+        /// </summary>
+        /// <returns>The array of mentions; or an empty array, if none are found.</returns>
+        /// <remarks>This method is defined on the <see cref="Activity"/> class, but is only intended
+        /// for use with a message activity, where the activity <see cref="Activity.Type"/> is set to
+        /// <see cref="ActivityTypes.Message"/>.</remarks>
+        /// <seealso cref="Entities"/>
+        /// <seealso cref="Mention"/>
+        public Mention[] GetMentions()
+        {
+            return Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
+                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? Array.Empty<Mention>();
+        }
+
+        /// <summary>
+        /// Gets the channel data for this activity as a strongly-typed object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to return.</typeparam>
+        /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
+        public T GetChannelData<T>()
+        {
+            if (ChannelData == null)
+            {
+                return default;
+            }
+
+            if (ChannelData.GetType() == typeof(T))
+            {
+                return (T)ChannelData;
+            }
+
+            return ChannelData.ToObject<T>();
         }
 
         /// <summary>
