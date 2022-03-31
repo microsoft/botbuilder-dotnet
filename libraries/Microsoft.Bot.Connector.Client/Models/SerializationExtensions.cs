@@ -30,13 +30,27 @@ namespace Microsoft.Bot.Connector.Client.Models
 
             var elements = new Dictionary<string, JsonElement>();
 
-            using (var document = value is string json
-                       ? JsonDocument.Parse(string.IsNullOrWhiteSpace(json) ? "{}" : json)
-                       : JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions)))
+            if (value is string json)
             {
-                foreach (var property in document.RootElement.Clone().EnumerateObject())
+                if (!string.IsNullOrWhiteSpace(json))
                 {
-                    elements.Add(property.Name, property.Value);
+                    using (var document = JsonDocument.Parse(json))
+                    {
+                        foreach (var property in document.RootElement.Clone().EnumerateObject())
+                        {
+                            elements.Add(property.Name, property.Value);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                using (var document = JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(value, SerializationConfig.DefaultSerializeOptions)))
+                {
+                    foreach (var property in document.RootElement.Clone().EnumerateObject())
+                    {
+                        elements.Add(property.Name, property.Value);
+                    }
                 }
             }
 
