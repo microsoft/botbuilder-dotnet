@@ -222,6 +222,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var userTokenClient = new TestUserTokenClient(appId);
 
+            var nullUrlActivity = new Activity
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = "testUser" },
+                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                Recipient = new ChannelAccount { Id = "testBot" },
+                ServiceUrl = null,
+                ChannelId = channelId,
+                Text = "hi",
+            };
+            var nullUrlContent = new StringContent(JsonConvert.SerializeObject(nullUrlActivity), Encoding.UTF8, "application/json");
+
             var validActivity = new Activity
             {
                 Id = Guid.NewGuid().ToString("N"),
@@ -246,6 +259,28 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 ChannelId = channelId,
                 Text = "hi",
             };
+
+            var nullUrlConnection = new Mock<StreamingConnection>(null);
+            nullUrlConnection
+                .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
+                .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
+                    new ReceiveRequest
+                    {
+                        Verb = "POST",
+                        Path = "/api/messages",
+                        Streams = new List<IContentStream>
+                        {
+                            new TestContentStream
+                            {
+                                Id = Guid.NewGuid(),
+                                ContentType = "application/json",
+                                Length = (int?)nullUrlContent.Headers.ContentLength,
+                                Stream = nullUrlContent.ReadAsStreamAsync().GetAwaiter().GetResult()
+                            }
+                        }
+                    },
+                    null,
+                    cancellationToken: cancellationToken));
 
             var streamingConnection = new Mock<StreamingConnection>(null);
             streamingConnection
@@ -275,8 +310,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
 
+            var webSocket = new ClientWebSocket();
             var webSocketManager = new Mock<WebSocketManager>();
             webSocketManager.Setup(m => m.IsWebSocketRequest).Returns(true);
+            webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult<WebSocket>(webSocket));
             var httpContext = new Mock<HttpContext>();
             httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
             var httpRequest = new Mock<HttpRequest>();
@@ -290,12 +327,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var httpResponse = new Mock<HttpResponse>();
 
+            var nullUrlWebSocket = new ClientWebSocket();
+            var nullUrlWebSocketManager = new Mock<WebSocketManager>();
+            nullUrlWebSocketManager.Setup(m => m.IsWebSocketRequest).Returns(true);
+            nullUrlWebSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult<WebSocket>(nullUrlWebSocket));
+            var nullUrlHttpContext = new Mock<HttpContext>();
+            nullUrlHttpContext.Setup(c => c.WebSockets).Returns(nullUrlWebSocketManager.Object);
+            var nullUrlHttpRequest = new Mock<HttpRequest>();
+            nullUrlHttpRequest.Setup(r => r.Method).Returns("GET");
+            nullUrlHttpRequest.Setup(r => r.HttpContext).Returns(httpContext.Object);
+            nullUrlHttpRequest.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", new StringValues(token) },
+                { "channelid", new StringValues(channelId) }
+            });
+
+            var nullUrlHttpResponse = new Mock<HttpResponse>();
+
             var bot = new Mock<IBot>();
             bot.Setup(b => b.OnTurnAsync(It.IsAny<ITurnContext>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
 
             // Act
-            var adapter = new StreamingTestCloudAdapter(auth.Object, streamingConnection.Object);
+            var adapter = new StreamingTestCloudAdapter(auth.Object, new Dictionary<WebSocket, StreamingConnection> { { nullUrlWebSocket, nullUrlConnection.Object }, { webSocket, streamingConnection.Object } });
+            var nullUrlProcessRequest = adapter.ProcessAsync(nullUrlHttpRequest.Object, nullUrlHttpResponse.Object, bot.Object, CancellationToken.None);
             var processRequest = adapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, CancellationToken.None);
 
             var validContinuation = adapter.ContinueConversationAsync(
@@ -317,6 +372,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None);
 
             continueConversationWaiter.Set();
+            nullUrlProcessRequest.Wait();
             processRequest.Wait();
 
             // Assert
@@ -988,17 +1044,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         private class StreamingTestCloudAdapter : CloudAdapter
         {
-            private readonly StreamingConnection _connection;
+            private readonly Dictionary<WebSocket, StreamingConnection> _connections;
 
-            public StreamingTestCloudAdapter(BotFrameworkAuthentication auth, StreamingConnection connection)
+            public StreamingTestCloudAdapter(BotFrameworkAuthentication auth, Dictionary<WebSocket, StreamingConnection> connections)
                 : base(auth)
             {
-                _connection = connection;
+                _connections = connections;
             }
 
             protected override StreamingConnection CreateWebSocketConnection(WebSocket socket, ILogger logger)
             {
-                return _connection;
+                return _connections[socket];
             }
         }
     }
