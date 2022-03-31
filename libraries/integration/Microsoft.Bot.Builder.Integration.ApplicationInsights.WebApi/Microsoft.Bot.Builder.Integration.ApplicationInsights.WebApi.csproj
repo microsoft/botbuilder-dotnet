@@ -6,11 +6,11 @@
     <PackageVersion Condition=" '$(ReleasePackageVersion)' == '' ">$(LocalPackageVersion)</PackageVersion>
     <PackageVersion Condition=" '$(ReleasePackageVersion)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
-    <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\net472\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights WebAPI.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
