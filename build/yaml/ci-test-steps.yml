@@ -56,14 +56,14 @@ steps:
    dotnet nuget remove source SDK_Dotnet_V4_org
   displayName: Remove SDK_Dotnet_V4_org feed source reference from nuget.config
   continueOnError: true
-  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 2.1, required for Upload Coverage Files task'
   inputs:
     packageType: sdk
     version: 2.1.x
-  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
 - task: PowerShell@2
   displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/microsoft/botbuilder-dotnet'
@@ -72,7 +72,8 @@ steps:
     filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
     arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "CI-PR build"'
   continueOnError: true
-  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+  # Skip for forks because it errors: "Couldn't find a repository matching this job."
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
 - powershell: |
    New-Item -ItemType directory -Path "outputLibraries\" -Force

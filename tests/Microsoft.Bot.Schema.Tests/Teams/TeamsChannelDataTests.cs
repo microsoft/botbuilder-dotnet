@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests.Teams
@@ -54,6 +55,23 @@ namespace Microsoft.Bot.Schema.Tests.Teams
 
             // Assert
             Assert.Equal(AadGroupId, channelData.Team.AadGroupId);
+        }
+
+        [Fact]
+        public void AdditionalProperties_ExtraChannelDataFields()
+        {
+            // Arrange
+            const string TestKey = "thekey";
+            const string TestValue = "the test value";
+            var asJobject = JObject.FromObject(new TeamsChannelData { Team = new TeamInfo { AadGroupId = "id" } });
+
+            // Act
+            asJobject[TestKey] = TestValue;
+            var asTeamsChannelData = asJobject.ToObject<TeamsChannelData>();
+
+            // Assert
+            Assert.True(asTeamsChannelData.AdditionalProperties.ContainsKey(TestKey));
+            Assert.Equal(TestValue, asTeamsChannelData.AdditionalProperties[TestKey].ToString());
         }
     }
 }
