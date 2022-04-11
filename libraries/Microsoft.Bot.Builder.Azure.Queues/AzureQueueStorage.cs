@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure.Queues
 {
@@ -50,6 +53,25 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             };
 
             _queueClient = new QueueClient(queuesStorageConnectionString, queueName);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureQueueStorage"/> class.
+        /// </summary>
+        /// <param name="queueClient">The custom implementation of QueueClient.</param>
+        /// <param name="jsonSerializerSettings">If passing in custom JsonSerializerSettings, we 
+        /// recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Ignore.</para>
+        /// </param>
+        internal AzureQueueStorage(QueueClient queueClient, JsonSerializerSettings jsonSerializerSettings = null)
+        {
+            _queueClient = queueClient;
+            _jsonSettings = jsonSerializerSettings ?? new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.None,
+                NullValueHandling = NullValueHandling.Ignore
+            };
         }
 
         /// <summary>
