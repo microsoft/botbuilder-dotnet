@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage;
@@ -14,6 +15,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure.Blobs
 {
@@ -97,6 +100,25 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
                     return containerClient;
                 }, isThreadSafe: true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
+        /// </summary>
+        /// <param name="containerClient">The custom implementation of BlobContainerClient.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        internal BlobsTranscriptStore(BlobContainerClient containerClient, JsonSerializer jsonSerializer = null)
+        {
+            _containerClient = new Lazy<BlobContainerClient>(() => containerClient);
+
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+            });
         }
 
         /// <summary>
