@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,6 +14,8 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure.Blobs
 {
@@ -84,6 +87,28 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             _checkForContainerExistence = 1;
 
             _containerClient = new BlobContainerClient(dataConnectionString, containerName);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
+        /// </summary>
+        /// <param name="containerClient">The custom implementation of BlobContainerClient.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        internal BlobsStorage(BlobContainerClient containerClient, JsonSerializer jsonSerializer = null)
+        {
+            _containerClient = containerClient;
+
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+            });
+
+            // Triggers a check for the existence of the container
+            _checkForContainerExistence = 1;
         }
 
         /// <summary>
