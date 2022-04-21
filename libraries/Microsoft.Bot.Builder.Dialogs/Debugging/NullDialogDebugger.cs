@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <value>
         /// true ot enable tracing steps.
         /// </value>
-        public bool TraceSteps { get; set; } = true;
+        public bool TraceSteps { get; set; } = false;
 
         Task IDialogDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
         {

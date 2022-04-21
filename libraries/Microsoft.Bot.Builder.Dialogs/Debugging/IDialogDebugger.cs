@@ -12,6 +12,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public interface IDialogDebugger
     {
         /// <summary>
+        /// Gets or sets a value indicating whether to trace steps.
+        /// </summary>
+        /// <value>
+        /// true ot enable tracing steps.
+        /// </value>
+        public bool TraceSteps { get; set; }
+
+        /// <summary>
         /// Task representing information in a given point of an item.
         /// </summary>
         /// <param name="context">The <see cref="DialogContext"/> object for this turn.</param>

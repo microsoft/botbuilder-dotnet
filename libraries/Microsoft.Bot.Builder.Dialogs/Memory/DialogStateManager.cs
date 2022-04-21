@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private const string PathTracker = "dialog._tracker.paths";
 
         private static readonly char[] Separators = { ',', '[' };
-
+        
         private readonly DialogContext _dialogContext;
         private int _version;
 
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            if (TrackChange(path, value))
+            if (HasPath(path, value))
             {
                 ObjectPath.SetPathValue(this, path, value);
             }
@@ -379,7 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            if (TrackChange(path, null))
+            if (HasPath(path, null))
             {
                 ObjectPath.RemovePathValue(this, path);
             }
@@ -650,53 +650,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return $"'{path}' does not match memory scopes:[{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}]";
         }
 
-        private bool TrackChange(string path, object value)
+        private bool HasPath(string path, object value)
         {
             var hasPath = false;
             if (ObjectPath.TryResolvePath(this, path, out var segments))
             {
-                var root = segments.Count > 1 ? segments[1] as string : string.Empty;
-
-                // Skip _* as first scope, i.e. _adaptive, _tracker, ...
-                if (!root.StartsWith("_", StringComparison.Ordinal))
+                if (Debugging.DebugSupport.GetDebugger(_dialogContext).TraceSteps)
                 {
-                    // Convert to a simple path with _ between segments
-                    var pathName = string.Join("_", segments);
-                    var trackedPath = $"{PathTracker}.{pathName}";
-                    uint? counter = null;
+                    var root = segments.Count > 1 ? segments[1] as string : string.Empty;
 
-                    void Update()
+                    // Skip _* as first scope, i.e. _adaptive, _tracker, ...
+                    if (!root.StartsWith("_", StringComparison.Ordinal))
                     {
-                        if (TryGetValue<uint>(trackedPath, out var lastChanged))
+                        // Convert to a simple path with _ between segments
+                        var pathName = string.Join("_", segments);
+                        var trackedPath = $"{PathTracker}.{pathName}";
+                        uint? counter = null;
+
+                        void Update()
                         {
-                            if (!counter.HasValue)
+                            if (TryGetValue<uint>(trackedPath, out var lastChanged))
                             {
-                                counter = GetValue<uint>(DialogPath.EventCounter);
+                                if (!counter.HasValue)
+                                {
+                                    counter = GetValue<uint>(DialogPath.EventCounter);
+                                }
+
+                                SetValue(trackedPath, counter.Value);
                             }
-
-                            SetValue(trackedPath, counter.Value);
-                        }
-                    }
-
-                    Update();
-                    if (value is object obj)
-                    {
-                        // For an object we need to see if any children path are being tracked
-                        void CheckChildren(string property, object instance)
-                        {
-                            // Add new child segment
-                            trackedPath += "_" + property.ToLowerInvariant();
-                            Update();
-                            if (instance is object child)
-                            {
-                                ObjectPath.ForEachProperty(child, CheckChildren);
-                            }
-
-                            // Remove added child segment
-                            trackedPath = trackedPath.Substring(0, trackedPath.LastIndexOf('_'));
                         }
 
-                        ObjectPath.ForEachProperty(obj, CheckChildren);
+                        Update();
+                        if (value is object obj)
+                        {
+                            // For an object we need to see if any children path are being tracked
+                            void CheckChildren(string property, object instance)
+                            {
+                                // Add new child segment
+                                trackedPath += "_" + property.ToLowerInvariant();
+                                Update();
+                                if (instance is object child)
+                                {
+                                    ObjectPath.ForEachProperty(child, CheckChildren);
+                                }
+
+                                // Remove added child segment
+                                trackedPath = trackedPath.Substring(0, trackedPath.LastIndexOf('_'));
+                            }
+
+                            ObjectPath.ForEachProperty(obj, CheckChildren);
+                        }
                     }
                 }
 

@@ -106,6 +106,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             Exited
         }
 
+        bool IDialogDebugger.TraceSteps { get; set; } = true;
+
         private int NextSeq => Interlocked.Increment(ref _sequence);
 
         public async Task OutputAsync(string text, object item, object value, CancellationToken cancellationToken)
@@ -126,104 +128,110 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         async Task IDialogDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
         {
-            try
+            if ((this as IDialogDebugger).TraceSteps)
             {
-                var activity = context.Context.Activity;
-                var turnText = activity.Text?.Trim() ?? string.Empty;
-                if (turnText.Length == 0)
+                try
                 {
-                    turnText = activity.Type;
-                }
-
-                var threadText = $"'{StringUtils.Ellipsis(turnText, 18)}'";
-                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {_codeModel.NameFor(item)} ", item, null, cancellationToken).ConfigureAwait(false);
-
-                await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
-
-                if (_threadByTurnId.TryGetValue(TurnIdFor(context.Context), out var thread))
-                {
-                    thread.SetLast(context, item, more);
-
-                    var run = thread.Run;
-                    if (_breakpoints.IsBreakPoint(item) && _events[more])
+                    var activity = context.Context.Activity;
+                    var turnText = activity.Text?.Trim() ?? string.Empty;
+                    if (turnText.Length == 0)
                     {
-                        run.Post(Phase.Breakpoint);
+                        turnText = activity.Type;
                     }
 
-                    if (_options.BreakOnStart && thread.StepCount == 0 && _events[more])
+                    var threadText = $"'{StringUtils.Ellipsis(turnText, 18)}'";
+                    await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {_codeModel.NameFor(item)} ", item, null, cancellationToken).ConfigureAwait(false);
+
+                    await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
+
+                    if (_threadByTurnId.TryGetValue(TurnIdFor(context.Context), out var thread))
                     {
-                        run.Post(Phase.Breakpoint);
-                    }
+                        thread.SetLast(context, item, more);
 
-                    ++thread.StepCount;
-
-                    // TODO: implement asynchronous condition variables
-                    Monitor.Enter(run.Gate);
-                    try
-                    {
-                        await UpdateThreadPhaseAsync(thread, item, cancellationToken).ConfigureAwait(false);
-
-                        // while the stopped condition is true, atomically release the mutex
-                        while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
+                        var run = thread.Run;
+                        if (_breakpoints.IsBreakPoint(item) && _events[more])
                         {
-                            Monitor.Wait(run.Gate);
+                            run.Post(Phase.Breakpoint);
                         }
 
-                        // "Started" signals to Visual Studio Code that there is a new thread
-                        if (run.Phase == Phase.Started)
+                        if (_options.BreakOnStart && thread.StepCount == 0 && _events[more])
                         {
-                            run.Phase = Phase.Continue;
+                            run.Post(Phase.Breakpoint);
                         }
 
-                        await UpdateThreadPhaseAsync(thread, item, cancellationToken).ConfigureAwait(false);
+                        ++thread.StepCount;
 
-                        // allow one step to progress since next was requested
-                        if (run.Phase == Phase.Next)
+                        // TODO: implement asynchronous condition variables
+                        Monitor.Enter(run.Gate);
+                        try
                         {
-                            run.Phase = Phase.Step;
+                            await UpdateThreadPhaseAsync(thread, item, cancellationToken).ConfigureAwait(false);
+
+                            // while the stopped condition is true, atomically release the mutex
+                            while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
+                            {
+                                Monitor.Wait(run.Gate);
+                            }
+
+                            // "Started" signals to Visual Studio Code that there is a new thread
+                            if (run.Phase == Phase.Started)
+                            {
+                                run.Phase = Phase.Continue;
+                            }
+
+                            await UpdateThreadPhaseAsync(thread, item, cancellationToken).ConfigureAwait(false);
+
+                            // allow one step to progress since next was requested
+                            if (run.Phase == Phase.Next)
+                            {
+                                run.Phase = Phase.Step;
+                            }
+                        }
+                        finally
+                        {
+                            Monitor.Exit(run.Gate);
                         }
                     }
-                    finally
+                    else
                     {
-                        Monitor.Exit(run.Gate);
+                        _logger.LogError("thread context not found");
                     }
                 }
-                else
-                {
-                    _logger.LogError("thread context not found");
-                }
-            }
 #pragma warning disable CA1031 // Do not catch general exception types (we just log the exception and we continue the execution)
-            catch (Exception error)
+                catch (Exception error)
 #pragma warning restore CA1031 // Do not catch general exception types
-            {
-                _logger.LogError(error, error.Message);
+                {
+                    _logger.LogError(error, error.Message);
+                }
             }
         }
 
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            var thread = new ThreadModel(turnContext, _codeModel);
-            _arenas.Add(thread);
-            _threads.Add(thread);
-            _threadByTurnId.TryAdd(TurnIdFor(turnContext), thread);
-            try
+            if ((this as IDialogDebugger).TraceSteps)
             {
-                thread.Run.Post(Phase.Started);
-                await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
+                var thread = new ThreadModel(turnContext, _codeModel);
+                _arenas.Add(thread);
+                _threads.Add(thread);
+                _threadByTurnId.TryAdd(TurnIdFor(turnContext), thread);
+                try
+                {
+                    thread.Run.Post(Phase.Started);
+                    await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
 
-                IDialogDebugger trace = this;
-                turnContext.TurnState.Add(trace);
-                await next(cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                thread.Run.Post(Phase.Exited);
-                await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
+                    IDialogDebugger trace = this;
+                    turnContext.TurnState.Add(trace);
+                    await next(cancellationToken).ConfigureAwait(false);
+                }
+                finally
+                {
+                    thread.Run.Post(Phase.Exited);
+                    await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
 
-                _threadByTurnId.TryRemove(TurnIdFor(turnContext), out var ignored);
-                _threads.Remove(thread);
-                _arenas.Remove(thread);
+                    _threadByTurnId.TryRemove(TurnIdFor(turnContext), out var ignored);
+                    _threads.Remove(thread);
+                    _arenas.Remove(thread);
+                }
             }
         }
 

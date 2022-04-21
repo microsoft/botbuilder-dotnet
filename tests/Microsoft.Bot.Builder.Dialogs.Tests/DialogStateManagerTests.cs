@@ -12,7 +12,9 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -760,6 +762,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             await CreateDialogContext(async (dc, ct) =>
             {
+                Debugging.DebugSupport.GetDebugger(dc).TraceSteps = true;
+
                 var state = dc.State;
                 var dialogPaths = state.TrackPaths(new List<string> { "dialog.user.first", "dialog.user.last" });
 
