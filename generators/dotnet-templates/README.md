@@ -3,7 +3,7 @@
 using core AI capabilities.
 
 ## About
-.NET Core Templates will help you to quickly build new conversational AI bots using [Bot Framework v4][1].  As of May 2020, these templates and the code they generate **require** [.NET Core 3.1][60].  
+.NET Core Templates will help you to quickly build new conversational AI bots using [Bot Framework v4][1].  As of May 2020, these templates and the code they generate **require** [.NET Core 3.1][60].
 
 ## Templates
 There are three different template options.  The table below can help guide which template is right for you.
@@ -121,7 +121,7 @@ dotnet new -i Microsoft.Bot.Framework.CSharp.EmptyBot
 dotnet new echobot -n MyEchoBot
 ```
 
-#### Create CoreBot 
+#### Create CoreBot
 > Note: For a core bot project, only the parent folder receives the bot name
 ```bash
 # Generate a Core Bot
@@ -226,7 +226,7 @@ To work on the templates you need to package, install, and test locally build so
 Install [NuGet CLI][70] version 3.3 or higher:
 ```bash
 # determine nuget cli version
-nuget 
+nuget
 ```
 
 ```bash
@@ -250,16 +250,16 @@ nuget pack Microsoft.BotFramework.CSharp.CoreBot
 
 The `nuget pack` command will build a package using a filename convention that includes the value of the `version` tag of the project's `.nuspec` file.  For example, a `.nuspec` file that has the following `version` tag specified:
 ```xml
-  <version>4.15.2</version>
+  <version>4.16.0</version>
 ```
-Given the example above with `.nuspec` `version` of 4.15.2, running `nuget pack Microsoft.BotFramework.CSharp.EchoBot` will create a NuGet package named `Microsoft.Bot.Framework.CSharp.EchoBot.4.15.2.nupkg`. We'll use this NuGet package name in subsequent steps.
+Given the example above with `.nuspec` `version` of 4.16.0, running `nuget pack Microsoft.BotFramework.CSharp.EchoBot` will create a NuGet package named `Microsoft.Bot.Framework.CSharp.EchoBot.4.16.0.nupkg`. We'll use this NuGet package name in subsequent steps.
 
 ```bash
 # install the locally built .nupkg (EchoBot template, assuming 4.9.0 version tag)
-dotnet new -i ./Microsoft.Bot.Framework.CSharp.EchoBot.4.15.2.nupkg
+dotnet new -i ./Microsoft.Bot.Framework.CSharp.EchoBot.4.16.0.nupkg
 ```
 
-To see a list of currently installed templates.  With this command you should now see the locally build and installed NuGet package.  
+To see a list of currently installed templates.  With this command you should now see the locally build and installed NuGet package.
 ```bash
 # list installed templates
 dotnet new --list
@@ -270,7 +270,7 @@ dotnet new --list
 dotnet new echobot -n MyEchoBot
 ```
 
-Build and test the newly generated project.  
+Build and test the newly generated project.
 
 ```bash
 # uninstall the locally built .nupkg (EchoBot template)
