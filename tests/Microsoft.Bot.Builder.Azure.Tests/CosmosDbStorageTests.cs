@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [Trait("TestCategory", "Storage - CosmosDB")]
     public class CosmosDbStorageTests
     {
-        private readonly Uri _cosmosDBEndpoint = new Uri("https://localhost:8081");
-        private readonly string _authKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+        private const string AuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+        private readonly Uri _cosmosDbEndpoint = new Uri("https://localhost:8081");
 
         private CosmosDbStorage _storage;
         private readonly Mock<IDocumentClient> _documentClient = new Mock<IDocumentClient>();
@@ -39,8 +39,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _ = new CosmosDbStorage(
                 cosmosDbStorageOptions: new CosmosDbStorageOptions
                 {
-                    CosmosDBEndpoint = _cosmosDBEndpoint,
-                    AuthKey = _authKey,
+                    CosmosDBEndpoint = _cosmosDbEndpoint,
+                    AuthKey = AuthKey,
                     DatabaseId = "DatabaseId",
                     CollectionId = "CollectionId",
                 },
@@ -59,15 +59,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // No Auth Key. Should throw.
             Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions()
             {
-                CosmosDBEndpoint = _cosmosDBEndpoint,
+                CosmosDBEndpoint = _cosmosDbEndpoint,
                 AuthKey = null,
             }));
 
             // No Database Id. Should throw.
             Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions()
             {
-                CosmosDBEndpoint = _cosmosDBEndpoint,
-                AuthKey = _authKey,
+                CosmosDBEndpoint = _cosmosDbEndpoint,
+                AuthKey = AuthKey,
                 DatabaseId = null,
             }));
             Assert.Throws<ArgumentException>(() => new CosmosDbStorage(documentClient, new CosmosDbCustomClientOptions()
@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // No Collection Id. Should throw.
             Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions()
             {
-                CosmosDBEndpoint = _cosmosDBEndpoint,
-                AuthKey = _authKey,
+                CosmosDBEndpoint = _cosmosDbEndpoint,
+                AuthKey = AuthKey,
                 DatabaseId = "DatabaseId",
                 CollectionId = null,
             }));
@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.Throws<ArgumentNullException>(() => new CosmosDbStorage(
                 new CosmosDbStorageOptions()
                 {
-                    CosmosDBEndpoint = _cosmosDBEndpoint,
-                    AuthKey = _authKey,
+                    CosmosDBEndpoint = _cosmosDbEndpoint,
+                    AuthKey = AuthKey,
                     DatabaseId = "DatabaseId",
                     CollectionId = "CollectionId",
                 }, null));
