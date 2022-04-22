@@ -7,14 +7,6 @@ steps:
    New-Item CodeCoverage -ItemType Directory -Force
   displayName: 'Create Code Coverage directory'
 
-# - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Build-InlinePowershell.Xpirit-Vsts-Build-InlinePowershell.InlinePowershell@1
-#   displayName: 'Start CosmosDB Emulator'
-#   inputs:
-#     Script: |
-#         Write-Host "Starting CosmosDB Emulator on Windows"
-#         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
-#         Start-CosmosDbEmulator
-
 - task: Npm@1
   displayName: 'install botframework-cli to set up for Schema merge tests.'
   inputs:
