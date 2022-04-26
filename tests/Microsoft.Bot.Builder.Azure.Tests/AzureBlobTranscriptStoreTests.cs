@@ -203,6 +203,43 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
+        public async Task LogActivityAsyncInternalFindActivityBlobAsync()
+        {
+            _activity = new Activity
+            {
+                Type = ActivityTypes.MessageUpdate,
+                Text = "Hello",
+                Id = "test-id",
+                ChannelId = "channel-id",
+                Conversation = new ConversationAccount { Id = "conversation-id" },
+                Timestamp = new DateTimeOffset(),
+                From = new ChannelAccount { Id = "account-1" },
+                Recipient = new ChannelAccount { Id = "account-2" }
+            };
+
+            InitStorage();
+
+            _mockBlockBlob.Object.Metadata["Id"] = "test-id";
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
+
+            await _blobTranscript.LogActivityAsync(_activity);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+
+            _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
+
+            _mockDirectory.Verify(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    It.IsAny<int>(),
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>()), Times.Once);
+        }
+
+        [Fact]
         public async Task GetTranscriptActivitiesAsyncValidations()
         {
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
@@ -419,43 +456,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     It.IsAny<BlobRequestOptions>(),
                     It.IsAny<OperationContext>()), Times.Once);
             _mockBlockBlob.Verify(x => x.DeleteIfExistsAsync(), Times.Once);
-        }
-
-        [Fact]
-        public async Task LogActivityAsyncInternalFindActivityBlobAsync()
-        {
-            _activity = new Activity
-            {
-                Type = ActivityTypes.MessageUpdate,
-                Text = "Hello",
-                Id = "test-id",
-                ChannelId = "channel-id",
-                Conversation = new ConversationAccount { Id = "conversation-id" },
-                Timestamp = new DateTimeOffset(),
-                From = new ChannelAccount { Id = "account-1" },
-                Recipient = new ChannelAccount { Id = "account-2" }
-            };
-
-            InitStorage();
-
-            _mockBlockBlob.Object.Metadata["Id"] = "test-id";
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
-
-            await _blobTranscript.LogActivityAsync(_activity);
-
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-
-            _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
-
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    It.IsAny<int>(),
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
         }
 
         private static IEnumerable<CloudBlockBlob> CreateSegment(int count, CloudBlockBlob blob)
