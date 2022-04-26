@@ -16,6 +16,8 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
+    [Trait("TestCategory", "Storage")]
+    [Trait("TestCategory", "Storage - BlobTranscripts")]
     public class AzureBlobTranscriptStoreTests
     {
         protected const string ConnectionString = @"UseDevelopmentStorage=true";
