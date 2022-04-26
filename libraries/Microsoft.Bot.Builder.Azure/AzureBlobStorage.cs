@@ -8,11 +8,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Blob.Protocol;
-using Microsoft.WindowsAzure.Storage.Core;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
+using Microsoft.Azure.Storage.Blob.Protocol;
+using Microsoft.Azure.Storage.Core;
+using Microsoft.Azure.Storage.RetryPolicies;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
