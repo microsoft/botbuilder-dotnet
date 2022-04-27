@@ -31,7 +31,18 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private AzureBlobTranscriptStore _blobTranscript;
         private BlobResultSegment _segment;
         private Mock<CloudBlobDirectory> _mockDirectory;
-        private Activity _activity;
+
+        private Activity _activity = new Activity
+        {
+            Type = ActivityTypes.Message,
+            Text = "Hello",
+            Id = "test-id",
+            ChannelId = "channel-id",
+            Conversation = new ConversationAccount() { Id = "conversation-id" },
+            Timestamp = new DateTimeOffset(),
+            From = new ChannelAccount() { Id = "account-1" },
+            Recipient = new ChannelAccount() { Id = "account-2" }
+        };
 
         [Fact]
         public void ConstructorValidation()
@@ -66,17 +77,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             InitStorage();
 
-            _activity = new Activity
-            {
-                Type = ActivityTypes.Message,
-                Text = "Hello",
-                Id = "test-id",
-                ChannelId = "channel-id",
-                Conversation = new ConversationAccount() { Id = "conversation-id" },
-                Timestamp = new DateTimeOffset(),
-                From = new ChannelAccount() { Id = "account-1" },
-                Recipient = new ChannelAccount() { Id = "account-2" }
-            };
+            _activity.Type = ActivityTypes.Message;
 
             await _blobTranscript.LogActivityAsync(_activity);
 
@@ -89,17 +90,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [Fact]
         public async Task LogActivityAsyncMessageUpdate()
         {
-            _activity = new Activity
-            {
-                Type = ActivityTypes.MessageUpdate,
-                Text = "Hello",
-                Id = "test-id",
-                ChannelId = "channel-id",
-                Conversation = new ConversationAccount { Id = "conversation-id" },
-                Timestamp = new DateTimeOffset(),
-                From = new ChannelAccount { Id = "account-1" },
-                Recipient = new ChannelAccount { Id = "account-2" }
-            };
+            _activity.Type = ActivityTypes.MessageUpdate;
 
             InitStorage();
 
@@ -125,17 +116,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [Fact]
         public async Task LogActivityAsyncMessageUpdateNullBlob()
         {
-            _activity = new Activity
-            {
-                Type = ActivityTypes.MessageUpdate,
-                Text = "Hello",
-                Id = "test-id",
-                ChannelId = "channel-id",
-                Conversation = new ConversationAccount() { Id = "conversation-id" },
-                Timestamp = new DateTimeOffset(),
-                From = new ChannelAccount() { Id = "account-1" },
-                Recipient = new ChannelAccount() { Id = "account-2" }
-            };
+            _activity.Type = ActivityTypes.MessageUpdate;
 
             InitStorage();
 
@@ -171,17 +152,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [Fact]
         public async Task LogActivityAsyncMessageDelete()
         {
-            _activity = new Activity
-            {
-                Type = ActivityTypes.MessageDelete,
-                Text = "Hello",
-                Id = "test-id",
-                ChannelId = "channel-id",
-                Conversation = new ConversationAccount { Id = "conversation-id" },
-                Timestamp = new DateTimeOffset(),
-                From = new ChannelAccount { Id = "account-1" },
-                Recipient = new ChannelAccount { Id = "account-2" }
-            };
+            _activity.Type = ActivityTypes.MessageDelete;
 
             InitStorage();
 
@@ -207,17 +178,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [Fact]
         public async Task LogActivityAsyncInternalFindActivityBlobAsync()
         {
-            _activity = new Activity
-            {
-                Type = ActivityTypes.MessageUpdate,
-                Text = "Hello",
-                Id = "test-id",
-                ChannelId = "channel-id",
-                Conversation = new ConversationAccount { Id = "conversation-id" },
-                Timestamp = new DateTimeOffset(),
-                From = new ChannelAccount { Id = "account-1" },
-                Recipient = new ChannelAccount { Id = "account-2" }
-            };
+            _activity.Type = ActivityTypes.MessageUpdate;
 
             InitStorage();
 
