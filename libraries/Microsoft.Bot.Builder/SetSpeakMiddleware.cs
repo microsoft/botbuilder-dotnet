@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -65,10 +67,10 @@ namespace Microsoft.Bot.Builder
                             {
                                 if (!HasTag("voice", activity.Speak))
                                 {
-                                    activity.Speak = $"<voice name='{_voiceName}'>{activity.Speak}</voice>";
+                                    activity.Speak = CreateVoiceTag(activity);
                                 }
 
-                                activity.Speak = $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{activity.Locale ?? "en-US"}'>{activity.Speak}</speak>";
+                                activity.Speak = CreateSpeakTag(activity);
                             }
                         }
                     }
@@ -86,6 +88,8 @@ namespace Microsoft.Bot.Builder
             {
                 var speakSsmlDoc = XDocument.Parse(speakText);
 
+                var mytest = speakSsmlDoc;
+
                 if (speakSsmlDoc.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
                 {
                     return true;
@@ -97,6 +101,31 @@ namespace Microsoft.Bot.Builder
             {
                 return false;
             }
+        }
+
+        private string CreateSpeakTag(Activity activity)
+        {
+            XNamespace xmlns = "http://www.w3.org/2001/10/synthesis";
+            XDocument xml = new XDocument(
+                    new XElement(
+                        xmlns + "speak",
+                        new XAttribute("version", "1.0"),
+                        new XAttribute(XNamespace.Xml + "lang", activity.Locale ?? "en - US"),
+                        activity.Speak));
+
+            return xml.ToString();
+        }
+
+        private string CreateVoiceTag(Activity activity)
+        {
+            XDocument xml = new XDocument(
+                new XDeclaration("1.0", "utf-8", null),
+                new XElement(
+                    "voice",
+                    new XAttribute("name", _voiceName),
+                    activity.Speak));
+
+            return xml.ToString();
         }
     }
 }
