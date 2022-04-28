@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private BlobResultSegment _segment;
         private Mock<CloudBlobDirectory> _mockDirectory;
 
-        private Activity _activity = new Activity
+        private readonly Activity _activity = new Activity
         {
             Type = ActivityTypes.Message,
             Text = "Hello",
@@ -76,8 +76,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task LogActivityAsyncDefault()
         {
             InitStorage();
-
-            _activity.Type = ActivityTypes.Message;
 
             await _blobTranscript.LogActivityAsync(_activity);
 
