@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Auth;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.Bot.Schema;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -30,7 +31,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private Mock<CloudStorageAccount> _mockAccount;
         private AzureBlobTranscriptStore _blobTranscript;
         private BlobResultSegment _segment;
-        private Mock<CloudBlobDirectory> _mockDirectory;
 
         private readonly Activity _activity = new Activity
         {
@@ -92,23 +92,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             InitStorage();
 
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).ReturnsAsync(JsonConvert.SerializeObject(_activity));
 
             await _blobTranscript.LogActivityAsync(_activity);
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
+
             _mockBlockBlob.Verify(x => x.DownloadTextAsync(), Times.Exactly(2));
             _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
             _mockBlockBlob.Verify(x => x.SetMetadataAsync(), Times.Exactly(2));
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    It.IsAny<int>(),
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
         }
 
         [Fact]
@@ -120,31 +112,25 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             var segment = new BlobResultSegment(new List<CloudBlockBlob>(), null);
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                It.IsAny<int>(),
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(segment));
-
-            _mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(_mockDirectory.Object);
+            _mockContainer.Setup(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    It.IsAny<int?>(),
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(segment);
 
             await _blobTranscript.LogActivityAsync(_activity);
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
+
             _mockContainer.Verify(x => x.GetBlockBlobReference(It.IsAny<string>()), Times.Once);
             _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
             _mockBlockBlob.Verify(x => x.SetMetadataAsync(), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    It.IsAny<int>(),
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
         }
 
         [Fact]
@@ -154,23 +140,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             InitStorage();
 
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).ReturnsAsync(JsonConvert.SerializeObject(_activity));
 
             await _blobTranscript.LogActivityAsync(_activity);
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
+
             _mockBlockBlob.Verify(x => x.DownloadTextAsync(), Times.Exactly(2));
             _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
             _mockBlockBlob.Verify(x => x.SetMetadataAsync(), Times.Exactly(2));
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    It.IsAny<int>(),
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
         }
 
         [Fact]
@@ -181,23 +159,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             InitStorage();
 
             _mockBlockBlob.Object.Metadata["Id"] = "test-id";
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).ReturnsAsync(JsonConvert.SerializeObject(_activity));
 
             await _blobTranscript.LogActivityAsync(_activity);
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
 
             _mockBlockBlob.Verify(x => x.OpenWriteAsync(), Times.Once);
-
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    It.IsAny<int>(),
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
         }
 
         [Fact]
@@ -218,26 +186,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             InitStorage();
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                null,
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
-
             await _blobTranscript.GetTranscriptActivitiesAsync("channelId", "conversationId");
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    null,
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
+            BaseVerification();
         }
 
         [Fact]
@@ -247,28 +198,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             _mockBlockBlob.Object.Metadata["Timestamp"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                null,
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
-
             await _blobTranscript.GetTranscriptActivitiesAsync("channelId", "conversationId");
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    null,
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
-
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
         }
 
         [Fact]
@@ -279,28 +211,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _mockBlockBlob.Object.Metadata["Timestamp"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             _mockBlockBlob.SetupGet(x => x.Name).Returns("token-name");
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                null,
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
-
             await _blobTranscript.GetTranscriptActivitiesAsync("channelId", "conversationId", "token-name");
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    null,
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
-
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
         }
 
         [Fact]
@@ -309,34 +222,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             InitStorage();
 
             var jsonString = JsonConvert.SerializeObject(new Activity());
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(jsonString));
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).ReturnsAsync(jsonString);
             _mockBlockBlob.Object.Metadata["Timestamp"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             _mockBlockBlob.SetupGet(x => x.Name).Returns("token-name");
 
             var segment = new BlobResultSegment(CreateSegment(21, _mockBlockBlob.Object).ToList(), null);
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                null,
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(segment));
+            _mockContainer.Setup(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    It.IsAny<int?>(),
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(segment);
 
             await _blobTranscript.GetTranscriptActivitiesAsync("channelId", "conversationId", "token-name");
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    null,
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
-
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            BaseVerification();
         }
 
         [Fact]
@@ -354,28 +260,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             InitStorage();
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                null,
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
-
-            _mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(_mockDirectory.Object);
-
             await _blobTranscript.ListTranscriptsAsync("channelId", null);
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    null,
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
+            BaseVerification();
         }
 
         [Fact]
@@ -396,32 +283,33 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             InitStorage();
 
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                null,
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
-
             await _blobTranscript.DeleteTranscriptAsync("channelId", "convo-id");
 
-            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
-            _mockDirectory.Verify(
-                x => x.ListBlobsSegmentedAsync(
-                    It.IsAny<bool>(),
-                    It.IsAny<BlobListingDetails>(),
-                    null,
-                    It.IsAny<BlobContinuationToken>(),
-                    It.IsAny<BlobRequestOptions>(),
-                    It.IsAny<OperationContext>()), Times.Once);
+            BaseVerification();
+
             _mockBlockBlob.Verify(x => x.DeleteIfExistsAsync(), Times.Once);
         }
 
         private static IEnumerable<CloudBlockBlob> CreateSegment(int count, CloudBlockBlob blob)
         {
             return Enumerable.Range(0, count).Select(x => blob);
+        }
+
+        private void BaseVerification()
+        {
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetDirectoryReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(
+                x => x.ListBlobsSegmentedAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<BlobListingDetails>(),
+                    It.IsAny<int?>(),
+                    It.IsAny<BlobContinuationToken>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         private void InitStorage()
@@ -432,26 +320,26 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _stream.SetupGet(x => x.CanWrite).Returns(true);
 
             _mockBlockBlob = new Mock<CloudBlockBlob>(new Uri("http://test/myaccount/blob"));
-            _mockBlockBlob.Setup(x => x.OpenWriteAsync()).Returns(Task.FromResult(_stream.Object));
+            _mockBlockBlob.Setup(x => x.OpenWriteAsync()).ReturnsAsync(_stream.Object);
             _mockBlockBlob.Setup(x => x.SetMetadataAsync());
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(JsonConvert.SerializeObject(_activity)));
-            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).Returns(Task.FromResult(jsonString));
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).ReturnsAsync(JsonConvert.SerializeObject(_activity));
+            _mockBlockBlob.Setup(x => x.DownloadTextAsync()).ReturnsAsync(jsonString);
 
             _segment = new BlobResultSegment(new List<CloudBlockBlob> { _mockBlockBlob.Object }, null);
-
-            _mockDirectory = new Mock<CloudBlobDirectory>();
-            _mockDirectory.Setup(x => x.ListBlobsSegmentedAsync(
-                It.IsAny<bool>(),
-                It.IsAny<BlobListingDetails>(),
-                It.IsAny<int>(),
-                It.IsAny<BlobContinuationToken>(),
-                It.IsAny<BlobRequestOptions>(),
-                It.IsAny<OperationContext>())).Returns(Task.FromResult(_segment));
 
             _mockContainer = new Mock<CloudBlobContainer>(new Uri("https://testuri.com"));
             _mockContainer.Setup(x => x.GetBlockBlobReference(It.IsAny<string>())).Returns(_mockBlockBlob.Object);
             _mockContainer.Setup(x => x.CreateIfNotExistsAsync());
-            _mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).Returns(_mockDirectory.Object);
+            _mockContainer.Setup(x => x.GetDirectoryReference(It.IsAny<string>())).CallBase();
+            _mockContainer.Setup(x => x.ListBlobsSegmentedAsync(
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<BlobListingDetails>(),
+                It.IsAny<int?>(),
+                It.IsAny<BlobContinuationToken>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>())).ReturnsAsync(_segment);
 
             _mockBlobClient = new Mock<CloudBlobClient>(new Uri("https://testuri.com"), null);
             _mockBlobClient.Setup(x => x.GetContainerReference(It.IsAny<string>())).Returns(_mockContainer.Object);
