@@ -4,10 +4,8 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Auth;
-using Microsoft.Azure.Storage.Blob;
-using Microsoft.Azure.Storage.Core;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
