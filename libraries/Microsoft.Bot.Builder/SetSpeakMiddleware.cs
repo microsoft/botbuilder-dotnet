@@ -65,10 +65,10 @@ namespace Microsoft.Bot.Builder
                             {
                                 if (!HasTag("voice", activity.Speak))
                                 {
-                                    activity.Speak = CreateVoiceTag(activity);
+                                    activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
                                 }
 
-                                activity.Speak = CreateSpeakTag(activity);
+                                activity.Speak = CreateXmlSpeakTag(activity).ToString(SaveOptions.DisableFormatting);
                             }
                         }
                     }
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder
             {
                 var speakSsmlDoc = XDocument.Parse(speakText);
 
-                if (speakSsmlDoc.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
+                if (speakSsmlDoc != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
                 {
                     return true;
                 }
@@ -99,33 +99,41 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private string CreateSpeakTag(Activity activity)
+        private XDocument CreateXmlSpeakTag(Activity activity)
         {
             XNamespace xmlns = "http://www.w3.org/2001/10/synthesis";
+            var xdec = new XDeclaration("1.0", "utf-8", "yes");
             XDocument xml = new XDocument(
+                    xdec,
                     new XElement(
                         xmlns + "speak",
                         new XAttribute("version", "1.0"),
                         new XAttribute(XNamespace.Xml + "lang", activity.Locale ?? "en - US"),
                         XElement.Parse(activity.Speak)));
 
-            foreach (var node in xml.Root.Descendants())
-            {
-                node.Attributes("xmlns").Remove();
-                node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
-            }
+            RemoveEmptyAttributes(xml);
 
-            return xml.ToString();
+            return xml;
         }
 
-        private string CreateVoiceTag(Activity activity)
+        private XElement CreateXmlVoiceTag(Activity activity)
         {
             XElement voiceTag = new XElement(
                 "voice",
                 new XAttribute("name", _voiceName),
                 activity.Speak);
 
-            return voiceTag.ToString();
+            return voiceTag;
+        }
+
+        private void RemoveEmptyAttributes(XDocument xml)
+        {
+            foreach (var node in xml.Root.Descendants())
+            {
+                // Remove empty xmlns="" in child nodes
+                node.Attributes("xmlns").Remove();
+                node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
+            }
         }
     }
 }

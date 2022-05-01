@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
@@ -100,9 +99,9 @@ namespace Microsoft.Bot.Builder.Tests
                 .AssertReply(obj =>
                 {
                     var activity = obj.AsMessageActivity();
-                    Assert.Equal(
-                        "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-us'><voice name='male'>OK</voice></speak>", 
-                        activity.Speak);
+                    var speakTag = "<speak version=\"1.0\" xml:lang=\"en-us\" xmlns=\"http://www.w3.org/2001/10/synthesis\"><voice name=\"male\">OK</voice></speak>";
+
+                    Assert.Equal(speakTag, activity.Speak);
                 })
                 .StartTestAsync();
         }
