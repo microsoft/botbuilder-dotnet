@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder
 
                 var speakSsmlDoc = XDocument.Parse(speakText);
 
-                if (speakSsmlDoc.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
+                if (speakSsmlDoc != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
                 {
                     return true;
                 }
