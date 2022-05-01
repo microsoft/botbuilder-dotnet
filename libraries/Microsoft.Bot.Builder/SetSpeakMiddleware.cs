@@ -55,21 +55,9 @@ namespace Microsoft.Bot.Builder
                             activity.Speak = activity.Text;
                         }
 
-                        if (!string.IsNullOrEmpty(activity.Speak)
-                            && !string.IsNullOrEmpty(_voiceName)
-                            && (string.Equals(turnContext.Activity.ChannelId, Channels.DirectlineSpeech, StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(turnContext.Activity.ChannelId, Channels.Telephony, StringComparison.OrdinalIgnoreCase)))
+                        if (IsSpeakActivitySet(activity) && IsChannelActivitySet(turnContext))
                         {
-                            if (!HasTag("speak", activity.Speak))
-                            {
-                                if (!HasTag("voice", activity.Speak))
-                                {
-                                    activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
-                                }
-
-                                activity.Speak = CreateXmlSpeakTag(activity).ToString(SaveOptions.DisableFormatting);
-                            }
+                            SetXmlSpeakTag(activity);
                         }
                     }
                 }
@@ -80,23 +68,41 @@ namespace Microsoft.Bot.Builder
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private bool HasTag(string tagName, string speakText)
+        private void SetXmlSpeakTag(Activity activity)
         {
-            try
+            if (IsMultiVoiceTag(activity.Speak))
             {
-                var speakSsmlDoc = XDocument.Parse(speakText);
+                activity.Speak = CreateMultiVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
+            }
 
-                if (speakSsmlDoc != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
+            if (!HasTag("speak", activity.Speak))
+            {
+                if (!HasTag("voice", activity.Speak))
                 {
-                    return true;
+                    activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
                 }
 
-                return false;
+                activity.Speak = CreateXmlSpeakTag(activity).ToString(SaveOptions.DisableFormatting);
             }
-            catch (XmlException)
+        }
+
+        private void RemoveEmptyAttributes(XDocument xml)
+        {
+            foreach (var node in xml.Root.Descendants())
             {
-                return false;
+                // Remove empty xmlns="" in child nodes
+                node.Attributes("xmlns").Remove();
+                node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
             }
+        }
+
+        private XDocument CreateMultiVoiceTag(Activity activity)
+        {
+            // wrap voice tag under one virtual root before invoking the XDocument.Parse
+            var speakTagTemplate = $"<speak version=\"1.0\" xml:lang=\"en-us\" xmlns=\"http://www.w3.org/2001/10/synthesis\">{activity.Speak}</speak>";
+            var speakTag = XDocument.Parse(speakTagTemplate);
+
+            return speakTag;
         }
 
         private XDocument CreateXmlSpeakTag(Activity activity)
@@ -126,14 +132,47 @@ namespace Microsoft.Bot.Builder
             return voiceTag;
         }
 
-        private void RemoveEmptyAttributes(XDocument xml)
+        private bool HasTag(string tagName, string speakText)
         {
-            foreach (var node in xml.Root.Descendants())
+            try
             {
-                // Remove empty xmlns="" in child nodes
-                node.Attributes("xmlns").Remove();
-                node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
+                var speakSsmlDoc = XDocument.Parse(speakText);
+
+                if (speakSsmlDoc.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
+                {
+                    return true;
+                }
+
+                return false;
             }
+            catch (XmlException)
+            {
+                return false;
+            }
+        }
+
+        private bool IsMultiVoiceTag(string speakText)
+        {
+            var openingVoiceTag = "<voice";
+            if (speakText.Contains(openingVoiceTag))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsSpeakActivitySet(Activity activity)
+        {
+            return !string.IsNullOrEmpty(activity.Speak)
+                            && !string.IsNullOrEmpty(_voiceName);
+        }
+
+        private bool IsChannelActivitySet(ITurnContext turnContext)
+        {
+            return string.Equals(turnContext.Activity.ChannelId, Channels.DirectlineSpeech, StringComparison.OrdinalIgnoreCase)
+                                || string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.OrdinalIgnoreCase)
+                                || string.Equals(turnContext.Activity.ChannelId, Channels.Telephony, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
