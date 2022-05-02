@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder
 
         private void SetXmlSpeakTag(Activity activity)
         {
-            if (IsMultiVoiceTag(activity.Speak))
+            if (IsVoiceTag(activity.Speak))
             {
                 activity.Speak = CreateMultiVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
             }
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private bool IsMultiVoiceTag(string speakText)
+        private bool IsVoiceTag(string speakText)
         {
             var openingVoiceTag = "<voice";
             if (speakText.Contains(openingVoiceTag))
