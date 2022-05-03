@@ -1,3 +1,9 @@
+parameters:
+  - name: SkipGovernance
+    displayName: Skip Governance
+    type: boolean
+    default: false
+
 steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'
@@ -27,11 +33,12 @@ steps:
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
     logProjectEvents: false
-    
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection'
-  inputs:
-    failOnAlert: true
+
+- ${{ if not(parameters.SkipGovernance) }}:
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection'
+    inputs:
+      failOnAlert: true
 
 - script: |
    cd ..

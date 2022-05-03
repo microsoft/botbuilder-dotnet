@@ -14,6 +14,12 @@ pool:
 trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
+parameters:
+  - name: SkipGovernance
+    displayName: Skip Governance
+    type: boolean
+    default: false
+
 variables:
   ApiCompatVersion: 4.6.3
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
@@ -46,8 +52,11 @@ stages:
       BuildTarget: 'netcoreapp31' # set the TargetFramework property for tests to use netcoreapp3.1
     steps:
     - template: ci-build-steps.yml
+      parameters:
+        SkipGovernance: ${{ parameters.SkipGovernance }}
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
+    - ${{ if not(parameters.SkipGovernance) }}:
+      - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_31
     variables:
       BuildConfiguration: Release-Windows
@@ -55,8 +64,11 @@ stages:
       PublishCoverage: true
     steps:
     - template: ci-build-steps.yml
+      parameters:
+        SkipGovernance: ${{ parameters.SkipGovernance }}
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
+    - ${{ if not(parameters.SkipGovernance) }}:
+      - template: ci-component-detection-steps.yml
 
 - stage: API_Compatibility_Validation
   dependsOn: Build
