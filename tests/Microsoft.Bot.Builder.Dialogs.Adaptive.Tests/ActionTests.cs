@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
@@ -817,6 +820,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal(2, ((Dictionary<string, string>)testEventInvocation.Arguments[1]).Count);
             Assert.Equal("value1", ((Dictionary<string, string>)testEventInvocation.Arguments[1])["prop1"]);
             Assert.Equal("value2", ((Dictionary<string, string>)testEventInvocation.Arguments[1])["prop2"]);
+        }
+
+        [Fact]
+        public async Task Action_MultiChoicesProperties()
+        {
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+
+            var testAdapter = new TestAdapter()
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            var promptChoices = new List<Choice>()
+            {
+                new Choice() { Value = "option1" },
+                new Choice() { Value = "option2" },
+                new Choice() { Value = "option3" }
+            };
+
+            var rootDialog = new AdaptiveDialog
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new ChoiceInput()
+                            {
+                                Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
+                                Property = "conversation.dialogChoice",
+                                AlwaysPrompt = true,
+                                Choices = new ChoiceSet(promptChoices)
+                            }
+                        }
+                    }
+                },
+                TelemetryClient = mockTelemetryClient.Object
+            };
+
+            var dm = new DialogManager(rootDialog)
+                .UseResourceExplorer(new ResourceExplorer())
+                .UseLanguageGeneration();
+
+            await new TestFlow((TestAdapter)testAdapter, dm.OnTurnAsync)
+                .SendConversationUpdate()
+                .StartTestAsync();
+
+            var choicesCollection = ((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["choices"];
+            var choices = JsonConvert.DeserializeObject<List<Choice>>(choicesCollection);
+
+            Assert.Equal("GeneratorResult", mockTelemetryClient.Invocations[4].Arguments[0]);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("choices"));
+            Assert.Equal("option1", choices[0].Value);
+            Assert.Equal("option2", choices[1].Value);
+            Assert.Equal("option3", choices[2].Value);
         }
 
         private class SetSkillConversationIdFactoryBaseMiddleware : IMiddleware

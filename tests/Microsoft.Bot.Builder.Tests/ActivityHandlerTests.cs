@@ -655,6 +655,110 @@ namespace Microsoft.Bot.Builder.Tests
             turnContextMock.Verify(tc => tc.UpdateActivityAsync(It.IsAny<IActivity>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
+        [Fact]
+        public async Task TestOnSearchInvokeAsync()
+        {
+            // Arrange
+            var value = JObject.FromObject(new SearchInvokeValue { Kind = SearchInvokeTypes.Search, QueryText = "bot" });
+            var activity = GetSearchActivity(value);
+            var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnSearchInvokeAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestOnSearchInvokeAsync_NoKindOnTeamsDefaults()
+        {
+            // Arrange
+            var value = JObject.FromObject(new SearchInvokeValue { Kind = null, QueryText = "bot" });
+            var activity = GetSearchActivity(value);
+            activity.ChannelId = Channels.Msteams;
+            var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnSearchInvokeAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestGetSearchInvokeValue_NullValueThrows()
+        {
+            var activity = GetSearchActivity(null);
+            await AssertErrorThroughInvokeAdapter(activity, "Missing value property for search");
+        }
+
+        [Fact]
+        public async Task TestGetSearchInvokeValue_InvalidValueThrows()
+        {
+            var activity = GetSearchActivity(new object());
+            await AssertErrorThroughInvokeAdapter(activity, "Value property is not properly formed for search");
+        }
+
+        [Fact]
+        public async Task TestGetSearchInvokeValue_MissingKindThrows()
+        {
+            var activity = GetSearchActivity(JObject.FromObject(new SearchInvokeValue { Kind = null, QueryText = "test" }));
+            await AssertErrorThroughInvokeAdapter(activity, "Missing kind property for search");
+        }
+
+        [Fact]
+        public async Task TestGetSearchInvokeValue_MissingQueryTextThrows()
+        {
+            var activity = GetSearchActivity(JObject.FromObject(new SearchInvokeValue { Kind = SearchInvokeTypes.Typeahead }));
+            await AssertErrorThroughInvokeAdapter(activity, "Missing queryText property for search");
+        }
+
+        private Activity GetSearchActivity(object value)
+        {
+            return new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "application/search",
+                Value = value
+            };
+        }
+
+        private async Task AssertErrorThroughInvokeAdapter(Activity activity, string errorMessage)
+        {
+            // Arrange
+            var adapter = new TestInvokeAdapter();
+            var turnContext = new TurnContext(adapter, activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            var sent = adapter.Activity as Activity;
+            Assert.Equal(ActivityTypesEx.InvokeResponse, sent.Type);
+
+            Assert.IsType<InvokeResponse>(sent.Value);
+            var value = sent.Value as InvokeResponse;
+            Assert.Equal(400, value.Status);
+
+            Assert.IsType<AdaptiveCardInvokeResponse>(value.Body);
+            var body = value.Body as AdaptiveCardInvokeResponse;
+            Assert.Equal("application/vnd.microsoft.error", body.Type);
+            Assert.Equal(400, body.StatusCode);
+
+            Assert.IsType<Error>(body.Value);
+            var error = body.Value as Error;
+            Assert.Equal("BadRequest", error.Code);
+            Assert.Equal(errorMessage, error.Message);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -817,6 +921,12 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new AdaptiveCardInvokeResponse());
+            }
+
+            protected override Task<SearchInvokeResponse> OnSearchInvokeAsync(ITurnContext<IInvokeActivity> turnContext, SearchInvokeValue invokeValue, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(new SearchInvokeResponse());
             }
         }
 

@@ -21,6 +21,47 @@ namespace Microsoft.Bot.Builder.Tests
     public class BotFrameworkAdapterOAuthTests
     {
         [Fact]
+        public async Task CreateOAuthClientWithDifferentEndpoints()
+        {
+            var mockAppCredentials = new MockAppCredentials();
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var adapter = new MockAdapter(mockCredentialProvider.Object, () => new TokenResponse());
+
+            var claimsIdentity = new ClaimsIdentity();
+            claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, "AppId"));
+            
+            var turnStateCollection = new TurnContextStateCollection();
+            turnStateCollection.Add(BotAdapter.BotIdentityKey, claimsIdentity);
+
+            var turnContext = new Mock<ITurnContext>();
+            turnContext.SetupGet(x => x.Activity).Returns(new Activity());
+            turnContext.SetupGet(x => x.TurnState).Returns(turnStateCollection);
+
+            var oauthEndpoint1 = "https://foo.com";
+            OAuthClientConfig.OAuthEndpoint = oauthEndpoint1;
+            var client = await adapter.CallCreateOAuthApiClientAsync(turnContext.Object, mockAppCredentials);
+            Assert.NotNull(client);
+            Assert.Equal(new Uri(oauthEndpoint1), client.BaseUri);
+            Assert.Same(mockAppCredentials, client.Credentials);
+
+            // client2 should come from the cache so it should be the same object
+            var client2 = await adapter.CallCreateOAuthApiClientAsync(turnContext.Object, mockAppCredentials);
+            Assert.NotNull(client2);
+            Assert.Same(client, client2);  
+            Assert.Equal(new Uri(oauthEndpoint1), client2.BaseUri);
+            Assert.Same(mockAppCredentials, client2.Credentials);
+
+            // Changing the OAuthEndpoint should result in a different OAuthClient
+            var oauthEndpoint2 = "https://bar.com";
+            OAuthClientConfig.OAuthEndpoint = oauthEndpoint2;
+            var client3 = await adapter.CallCreateOAuthApiClientAsync(turnContext.Object, mockAppCredentials);
+            Assert.NotNull(client3);
+            Assert.NotSame(client3, client);
+            Assert.Equal(new Uri(oauthEndpoint2), client3.BaseUri);
+            Assert.Same(mockAppCredentials, client3.Credentials);
+        }
+
+        [Fact]
         public async Task BotFrameworkAdapterFindsOAuthCards()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -344,6 +385,11 @@ namespace Microsoft.Bot.Builder.Tests
             public override Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials appCredentials, string connectionName, string magicCode, CancellationToken cancellationToken)
             {
                 return Task.FromResult(_getUserTokenAction());
+            }
+
+            public Task<OAuthClient> CallCreateOAuthApiClientAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials)
+            {
+                return CreateOAuthApiClientAsync(turnContext, oAuthAppCredentials);
             }
         }
 
