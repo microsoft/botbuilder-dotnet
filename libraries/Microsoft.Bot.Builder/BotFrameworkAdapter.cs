@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
 
         // Cache for OAuthClient to speed up OAuth operations
-        // _oAuthClients is a cache using [appId + oAuthCredentialAppId]
+        // _oAuthClients is a cache using [appId + oAuthCredentialAppId + oAuthEndpoint]
         private readonly ConcurrentDictionary<string, OAuthClient> _oAuthClients = new ConcurrentDictionary<string, OAuthClient>();
 
         /// <summary>
@@ -1395,7 +1395,6 @@ namespace Microsoft.Bot.Builder
 
             var appId = GetBotAppId(turnContext);
 
-            var clientKey = $"{appId}:{oAuthAppCredentials?.MicrosoftAppId}";
             var oAuthScope = GetBotFrameworkOAuthScope();
 
             var appCredentials = oAuthAppCredentials ?? await GetAppCredentialsAsync(appId, oAuthScope).ConfigureAwait(false);
@@ -1407,6 +1406,8 @@ namespace Microsoft.Bot.Builder
                 OAuthClientConfig.EmulateOAuthCards = true;
             }
 
+            var oAuthEndpoint = OAuthClientConfig.OAuthEndpoint;
+            var clientKey = $"{appId}:{oAuthAppCredentials?.MicrosoftAppId}:{oAuthEndpoint}";
             var oAuthClient = _oAuthClients.GetOrAdd(clientKey, (key) =>
             {
                 OAuthClient oAuthClientInner;
@@ -1418,7 +1419,7 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    oAuthClientInner = new OAuthClient(new Uri(OAuthClientConfig.OAuthEndpoint), appCredentials);
+                    oAuthClientInner = new OAuthClient(new Uri(oAuthEndpoint), appCredentials);
                 }
 
                 return oAuthClientInner;
