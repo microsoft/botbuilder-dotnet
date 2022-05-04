@@ -345,6 +345,9 @@ namespace Microsoft.Bot.Builder.Azure
 
                 if (_client == null)
                 {
+                    var assemblyName = this.GetType().Assembly.GetName();
+                    cosmosClientOptions.ApplicationName = string.Concat(assemblyName.Name, " ", assemblyName.Version.ToString());
+
                     _client = new CosmosClient(
                         _cosmosDbStorageOptions.CosmosDbEndpoint,
                         _cosmosDbStorageOptions.AuthKey,
