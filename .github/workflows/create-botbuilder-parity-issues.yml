@@ -48,7 +48,7 @@ jobs:
 
     strategy:
       matrix:
-        repo: [dotnet, java, js, python]
+        repo: [java, js, python]
 
     steps:
       - run: echo "::notice ::Creating issue for ${{ matrix.repo }}"
