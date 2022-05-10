@@ -28,10 +28,10 @@ steps:
     maximumCpuCount: true
     logProjectEvents: false
     
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection'
-  inputs:
-    failOnAlert: true
+# - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+#   displayName: 'Component Detection'
+#   inputs:
+#     failOnAlert: true
 
 - script: |
    cd ..
