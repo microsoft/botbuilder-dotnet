@@ -6,7 +6,7 @@
 name: $(Build.BuildId)
 
 pool:
-  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2022' ) ] # or 'windows-latest' or 'vs2017-win2016'
 
 trigger: none
 
@@ -21,6 +21,13 @@ variables:
 
 steps:
 - template: ci-build-steps.yml
+
+- task: Npm@1
+  displayName: 'install botframework-cli to set up for Schema merge tests'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g @microsoft/botframework-cli@next'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
