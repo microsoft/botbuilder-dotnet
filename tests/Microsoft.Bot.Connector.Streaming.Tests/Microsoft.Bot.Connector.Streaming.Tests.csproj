@@ -2,25 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework Condition="'$(BuildTarget)' == 'netcoreapp31'">netcoreapp3.1</TargetFramework>
-    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1</TargetFrameworks>
+    <TargetFramework Condition="'$(BuildTarget)' == 'net6'">net6.0</TargetFramework>
+    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1;net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Resources\architecture-resize.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="coverlet.msbuild" Version="2.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

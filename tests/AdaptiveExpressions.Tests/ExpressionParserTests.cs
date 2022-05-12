@@ -1047,7 +1047,11 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("lastIndexOf(nullObj, '-')", -1),
+#if NET5_0_OR_GREATER
+            Test("lastIndexOf(hello, nullObj)", 5),
+#else
             Test("lastIndexOf(hello, nullObj)", 4),
+#endif
             Test("lastIndexOf(json('[\"a\", \"b\", \"a\"]'), 'a')", 2),
             Test("lastIndexOf(json('[\"a\", \"b\"]'), 'c')", -1),
             Test("lastIndexOf(createArray('abc', 'def', 'ghi', 'def'), 'def')", 3),

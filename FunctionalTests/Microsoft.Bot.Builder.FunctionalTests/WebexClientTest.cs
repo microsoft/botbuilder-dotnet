@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -47,43 +48,49 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private async Task SendMessageAsync(string echoGuid)
         {
-            var data = new NameValueCollection
+            var data = new FormUrlEncodedContent(new[]
             {
-                ["roomId"] = _roomId,
-                ["text"] = echoGuid,
-            };
+                new KeyValuePair<string, string>("roomId", _roomId),
+                new KeyValuePair<string, string>("text", echoGuid)
+            });
 
-            using (var client = new WebClient())
-            {
-                client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _userAccessToken;
-                await client.UploadValuesTaskAsync($"{WebexUrlBase}/messages", "POST", data);
-            }
+            using var client = new HttpClient();
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _userAccessToken);
+
+            await client.PostAsync($"{WebexUrlBase}/messages", data);
         }
 
         private async Task<string> ReceiveMessageAsync()
         {
-            using (var client = new WebClient())
+            var resultMessage = string.Empty;
+            using var client = new HttpClient();
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _userAccessToken);
+
+            var query = new Dictionary<string, string>()
             {
-                client.Headers[HttpRequestHeader.Authorization] = "Bearer " + _userAccessToken;
+                ["roomId"] = _roomId,
+            };
 
-                client.QueryString.Add("roomId", _roomId);
+            var uri = QueryHelpers.AddQueryString($"{WebexUrlBase}/messages", query);
 
-                var response = await client.DownloadStringTaskAsync(new Uri($"{WebexUrlBase}/messages"));
-                var jObject = JObject.Parse(response);
+            var response = await client.GetAsync(uri);
 
-                var result = JsonConvert.DeserializeObject<Message[]>(jObject["items"].ToString());
+            using var content = response.Content;
+            var jObject = JObject.Parse(content.ReadAsStringAsync().Result);
 
-                string resultMessage = string.Empty;
-                foreach (var message in result)
+            var result = JsonConvert.DeserializeObject<Message[]>(jObject["items"].ToString());
+
+            foreach (var message in result)
+            {
+                if (message.PersonEmail.Equals(_targetBotEmail, StringComparison.Ordinal))
                 {
-                    if (message.PersonEmail.Equals(_targetBotEmail))
-                    {
-                        return message.Text;
-                    }
+                    return message.Text;
                 }
-
-                return resultMessage;
             }
+
+            return resultMessage;
         }
 
         private async Task RefreshAccessToken()

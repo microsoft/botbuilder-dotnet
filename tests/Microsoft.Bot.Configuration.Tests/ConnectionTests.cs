@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Configuration.Tests
             // Choose a duplicated service and remove the correct one.
             // We should have at least an ABS and generic service with the name "testAbs".
             const string name = "testAbs";
-            var duplicateServices = config2.Services.Where(s => s.Name.Equals(name)).ToArray();
+            var duplicateServices = config2.Services.Where(s => s.Name.Equals(name, StringComparison.Ordinal)).ToArray();
             Assert.True(duplicateServices.Length > 1, "Should have at least two services with this name.");
 
             var botService = config2.DisconnectServiceByNameOrId<BotService>(name);

@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             string content;
-            if (string.Equals(Path.GetExtension(path), ".chat", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(Path.GetExtension(path), ".chat", StringComparison.OrdinalIgnoreCase))
             {
                 content = ExecuteChatdownTool(path);
             }
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// <returns>A valid conversation reference to the activity provides.</returns>
         public static ConversationReference GetConversationReference(this IActivity activity)
         {
-            bool IsReply(IActivity act) => string.Equals("bot", act.From?.Role, StringComparison.InvariantCultureIgnoreCase);
+            bool IsReply(IActivity act) => string.Equals("bot", act.From?.Role, StringComparison.OrdinalIgnoreCase);
             var bot = IsReply(activity) ? activity.From : activity.Recipient;
             var user = IsReply(activity) ? activity.Recipient : activity.From;
             return new ConversationReference

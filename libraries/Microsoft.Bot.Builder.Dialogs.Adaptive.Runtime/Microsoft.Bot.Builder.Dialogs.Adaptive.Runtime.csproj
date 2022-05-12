@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net6.0</TargetFrameworks>
     <PackageId>Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime</PackageId>
     <Description>Library for building Adaptive Runtime bots using the Bot Framework SDK</Description>
     <Summary>Library for building Adaptive Runtime bots using the Bot Framework SDK</Summary>
@@ -23,6 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

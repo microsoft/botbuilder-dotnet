@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Tests
                 textActions.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
                 "The message's suggested actions have the wrong set of titles.");
             Assert.True(
-                message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
+                message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack, StringComparison.Ordinal)),
                 "The message's suggested actions are of the wrong action type.");
         }
 
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Tests
                 titles.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
                 "The message's suggested actions have the wrong set of titles.");
             Assert.True(
-                message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
+                message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack, StringComparison.Ordinal)),
                 "The message's suggested actions are of the wrong action type.");
         }
 
