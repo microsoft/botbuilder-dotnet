@@ -5,14 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure
 {
