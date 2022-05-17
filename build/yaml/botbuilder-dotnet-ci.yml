@@ -104,10 +104,11 @@ stages:
           }
        }
        $multiconfig = $multiconfig.TrimEnd(' ').TrimEnd(',') + "}";
+       echo 'Matrix variable:'
        echo $multiconfig
        "##vso[task.setVariable variable=MULTICONFIG;isOutput=true]$multiconfig"
       name: generate_var
-    - script: echo $(generate_var.MULTICONFIG)
+      displayName: Generate matrix variable
 
   - job: check_api_for
     dependsOn: generate_multiconfig_var

@@ -42,6 +42,7 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
         private int _checkforContainerExistance;
+        private readonly CloudBlobClient _blobClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
@@ -87,6 +88,18 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
+        /// </summary>
+        /// <param name="storageAccount">Azure CloudStorageAccount instance.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
+        /// <param name="blobClient">Custom implementation of CloudBlobClient.</param>
+        internal AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient)
+            : this(storageAccount, containerName, JsonSerializer)
+        {
+            _blobClient = blobClient;
+        }
+
+        /// <summary>
         /// Deletes entity blobs from the configured container.
         /// </summary>
         /// <param name="keys">An array of entity keys.</param>
@@ -100,7 +113,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            var blobClient = _storageAccount.CreateCloudBlobClient();
+            var blobClient = _blobClient ?? _storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(_containerName);
             foreach (var key in keys)
             {
@@ -124,7 +137,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(keys));
             }
 
-            var blobClient = _storageAccount.CreateCloudBlobClient();
+            var blobClient = _blobClient ?? _storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(_containerName);
 
             var items = new Dictionary<string, object>();
@@ -168,7 +181,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(changes));
             }
 
-            var blobClient = _storageAccount.CreateCloudBlobClient();
+            var blobClient = _blobClient ?? _storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(_containerName);
 
             // this should only happen once - assuming this is a singleton
