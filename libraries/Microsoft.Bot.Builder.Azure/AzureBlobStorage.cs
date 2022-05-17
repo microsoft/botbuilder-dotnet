@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -15,8 +14,6 @@ using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
-
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure
 {
