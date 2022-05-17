@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage;
@@ -15,8 +14,6 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure.Blobs
 {
