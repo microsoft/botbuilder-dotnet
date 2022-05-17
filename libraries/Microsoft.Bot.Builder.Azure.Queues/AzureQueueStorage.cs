@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +9,6 @@ using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
 
 namespace Microsoft.Bot.Builder.Azure.Queues
 {
