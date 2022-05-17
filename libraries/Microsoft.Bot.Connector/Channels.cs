@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Connector
 {
     /// <summary>
@@ -110,6 +112,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Twilio channel.
         /// </summary>
+        [Obsolete("This channel is deprecated. Use Sms instead.")]
         public const string Twilio = "twilio-sms";
 
         /// <summary>
@@ -121,5 +124,10 @@ namespace Microsoft.Bot.Connector
         /// Omni channel.
         /// </summary>
         public const string Omni = "omnichannel";
+
+        /// <summary>
+        /// Outlook channel.
+        /// </summary>
+        public const string Outlook = "outlook";
     }
 }
