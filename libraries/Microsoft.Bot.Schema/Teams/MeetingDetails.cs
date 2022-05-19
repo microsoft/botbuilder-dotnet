@@ -31,8 +31,8 @@ namespace Microsoft.Bot.Schema.Teams
         public MeetingDetails(
             string id,
             string msGraphResourceId = null,
-            DateTime scheduledStartTime = default,
-            DateTime scheduledEndTime = default,
+            DateTime? scheduledStartTime = null,
+            DateTime? scheduledEndTime = null,
             Uri joinUrl = null,
             string title = null,
             string type = "Scheduled")
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// The meeting's scheduled start time, in UTC.
         /// </value>
         [JsonProperty(PropertyName = "scheduledStartTime")]
-        public DateTime ScheduledStartTime { get; set; }
+        public DateTime? ScheduledStartTime { get; set; }
 
         /// <summary>
         /// Gets or sets the meeting's scheduled end time, in UTC.
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// The meeting's scheduled end time, in UTC.
         /// </value>
         [JsonProperty(PropertyName = "scheduledEndTime")]
-        public DateTime ScheduledEndTime { get; set; }
+        public DateTime? ScheduledEndTime { get; set; }
 
         /// <summary>
         /// Gets or sets the meeting's type.
