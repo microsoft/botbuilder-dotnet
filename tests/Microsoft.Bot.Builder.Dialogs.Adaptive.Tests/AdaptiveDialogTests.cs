@@ -96,6 +96,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task AdaptiveDialog_LoadDialogFromProperty()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task AdaptiveDialog_BeginDialog()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
