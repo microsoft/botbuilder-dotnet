@@ -63,7 +63,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private async Task<string> ReceiveMessageAsync()
         {
-            var resultMessage = string.Empty;
             using var client = new HttpClient();
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _userAccessToken);
@@ -90,7 +89,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 }
             }
 
-            return resultMessage;
+            return string.Empty;
         }
 
         private async Task RefreshAccessToken()
