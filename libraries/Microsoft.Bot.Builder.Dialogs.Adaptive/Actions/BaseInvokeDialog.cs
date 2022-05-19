@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -95,8 +96,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // NOTE: we want the result of the expression as a string so we can look up the string using external FindDialog().
             var se = new StringExpression($"={this.Dialog.ExpressionText}");
-            var dialogId = se.GetValue(dc.State);
-            return dc.FindDialog(dialogId ?? throw new InvalidOperationException($"{this.Dialog.ToString()} not found."));
+            var dialogId = se.GetValue(dc.State) ?? throw new InvalidOperationException($"{this.Dialog.ToString()} not found.");
+            var dialog = dc.FindDialog(dialogId);
+            var resourceExplorer = dc.Context.TurnState.Get<ResourceExplorer>();
+            
+            if (resourceExplorer != null && dialog == null)
+            {
+                dialog = resourceExplorer.LoadType<AdaptiveDialog>($"{dialogId}.dialog");
+                dc.Dialogs.Add(dialog);
+            }
+
+            return dialog;
         }
 
         /// <summary>
