@@ -20,6 +20,13 @@ namespace Microsoft.Bot.Builder
     {
         private readonly string _voiceName;
         private readonly bool _fallbackToTextForSpeak;
+        private readonly XNamespace _nameSpaceUri = @"http://www.w3.org/2001/10/synthesis";
+        private readonly string _speakTag = "speak";
+        private readonly string _voiceTag = "voice";
+        private readonly string _nameAttribute = "name";
+        private readonly string _languageAttribute = "lang";
+        private readonly string _ssmlVersionAttribute = "version";
+        private readonly string _ssmlVersionSupported = "1.0";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetSpeakMiddleware"/> class.
@@ -75,9 +82,9 @@ namespace Microsoft.Bot.Builder
                 activity.Speak = CreateMultiVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
             }
 
-            if (!HasTag("speak", activity.Speak))
+            if (!HasTag(_speakTag, activity.Speak))
             {
-                if (!HasTag("voice", activity.Speak))
+                if (!HasTag(_voiceTag, activity.Speak))
                 {
                     activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
                 }
@@ -86,48 +93,58 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private void RemoveEmptyAttributes(XDocument xml)
+        private void RemoveEmptyXmlnsAttribute(XElement xml)
         {
-            foreach (var node in xml.Root.Descendants())
+            foreach (var node in xml.Descendants())
             {
-                // Remove empty xmlns="" in child nodes
                 node.Attributes("xmlns").Remove();
                 node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
             }
         }
 
-        private XDocument CreateMultiVoiceTag(Activity activity)
+        private XElement CreateMultiVoiceTag(Activity activity)
         {
-            // wrap voice tag under one virtual root before invoking the XDocument.Parse
-            var speakTagTemplate = $"<speak version=\"1.0\" xml:lang=\"en-us\" xmlns=\"http://www.w3.org/2001/10/synthesis\">{activity.Speak}</speak>";
-            var speakTag = XDocument.Parse(speakTagTemplate);
+            try
+            {
+                // Wrap voice tag under one virtual root before invoking the XDocument.Parse
+                var speakTagTemplate = $"<speak version=\"1.0\" xml:lang=\"{activity.Locale ?? "en - US"}\" xmlns=\"{_nameSpaceUri}\">{activity.Speak}</speak>";
+                var speakTag = XElement.Parse(speakTagTemplate);
 
-            return speakTag;
+                return speakTag;
+            }
+            catch (XmlException)
+            {
+                throw;
+            }
         }
 
-        private XDocument CreateXmlSpeakTag(Activity activity)
+        private XElement CreateXmlSpeakTag(Activity activity)
         {
-            XNamespace xmlns = "http://www.w3.org/2001/10/synthesis";
-            var xdec = new XDeclaration("1.0", "utf-8", "yes");
-            XDocument xml = new XDocument(
-                    xdec,
-                    new XElement(
-                        xmlns + "speak",
-                        new XAttribute("version", "1.0"),
-                        new XAttribute(XNamespace.Xml + "lang", activity.Locale ?? "en - US"),
-                        XElement.Parse(activity.Speak)));
+            try
+            {
+                XElement xml = new XElement(
+                            _nameSpaceUri + _speakTag,
+                            new XAttribute(_ssmlVersionAttribute, _ssmlVersionSupported),
+                            new XAttribute(XNamespace.Xml + _languageAttribute, activity.Locale ?? "en - US"),
+                            XElement.Parse(activity.Speak));
 
-            RemoveEmptyAttributes(xml);
+                // Attribute xmlns="" added due to child nodes containing empty namespace value.
+                RemoveEmptyXmlnsAttribute(xml);
 
-            return xml;
+                return xml;
+            }
+            catch (XmlException)
+            {
+                throw;
+            }
         }
 
         private XElement CreateXmlVoiceTag(Activity activity)
         {
             XElement voiceTag = new XElement(
-                "voice",
-                new XAttribute("name", _voiceName),
-                activity.Speak);
+            _voiceTag,
+            new XAttribute(_nameAttribute, _voiceName),
+            activity.Speak);
 
             return voiceTag;
         }
@@ -136,6 +153,22 @@ namespace Microsoft.Bot.Builder
         {
             try
             {
+                foreach (char c in speakText)
+                {
+                    if (c == '<')
+                    {
+                        break;
+                    }
+                    else if (char.IsWhiteSpace(c))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
                 var speakSsmlDoc = XDocument.Parse(speakText);
 
                 if (speakSsmlDoc.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
@@ -147,19 +180,13 @@ namespace Microsoft.Bot.Builder
             }
             catch (XmlException)
             {
-                return false;
+                throw;
             }
         }
 
         private bool IsVoiceTag(string speakText)
         {
-            var openingVoiceTag = "<voice";
-            if (speakText.Contains(openingVoiceTag))
-            {
-                return true;
-            }
-
-            return false;
+            return speakText.Contains("<voice");
         }
 
         private bool IsSpeakActivitySet(Activity activity)
