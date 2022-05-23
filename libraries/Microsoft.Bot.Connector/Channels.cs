@@ -22,11 +22,13 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Console channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Console = "console";
 
         /// <summary>
         /// Cortana channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Cortana = "cortana";
 
         /// <summary>
@@ -62,6 +64,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Kik channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Kik = "kik";
 
         /// <summary>
@@ -82,6 +85,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Skype for Business channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Skypeforbusiness = "skypeforbusiness";
 
         /// <summary>
@@ -118,6 +122,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Telephony channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Telephony = "telephony";
 
         /// <summary>
