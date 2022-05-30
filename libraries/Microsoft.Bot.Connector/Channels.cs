@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Console channel.
         /// </summary>
-        [Obsolete("This channel is deprecated.")]
         public const string Console = "console";
 
         /// <summary>
@@ -52,6 +51,12 @@ namespace Microsoft.Bot.Connector
         public const string Emulator = "emulator";
 
         /// <summary>
+        /// EnterpriseChannel channel.
+        /// </summary>
+        [Obsolete("This channel is deprecated.")]
+        public const string EnterpriseChannel = "enterprisechannel";
+
+        /// <summary>
         /// Facebook channel.
         /// </summary>
         public const string Facebook = "facebook";
@@ -60,6 +65,12 @@ namespace Microsoft.Bot.Connector
         /// Group Me channel.
         /// </summary>
         public const string Groupme = "groupme";
+
+        /// <summary>
+        /// Kaizala channel.
+        /// </summary>
+        [Obsolete("This channel is deprecated.")]
+        public const string Kaizala = "kaizala";
 
         /// <summary>
         /// Kik channel.
@@ -122,7 +133,6 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Telephony channel.
         /// </summary>
-        [Obsolete("This channel is deprecated.")]
         public const string Telephony = "telephony";
 
         /// <summary>
