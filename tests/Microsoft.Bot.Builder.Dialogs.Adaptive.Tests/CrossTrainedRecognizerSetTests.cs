@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
@@ -74,8 +75,99 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             recognizers.TelemetryClient = telemetryClient.Object;
             recognizers.LogPersonalInformation = logPersonalInformation;
 
-            await RecognizeIntentAndValidateTelemetry(CrossTrainText, recognizers, telemetryClient,  1);
-            await RecognizeIntentAndValidateTelemetry("x", recognizers, telemetryClient,  2);
+            await RecognizeIntentAndValidateTelemetry(CrossTrainText, recognizers, telemetryClient, 1);
+            await RecognizeIntentAndValidateTelemetry("x", recognizers, telemetryClient, 2);
+        }
+
+        [Fact]
+        public async Task NoneIntent()
+        {
+            var recognizer = new CrossTrainedRecognizerSet()
+            {
+                Recognizers = new List<Recognizer>
+                {
+                    new RegexRecognizer()
+                    {
+                        Id = "x",
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("None", string.Empty)
+                        }
+                    }
+                }
+            };
+            var dc = TestUtils.CreateContext(CrossTrainText);
+            var activity = dc.Context.Activity;
+            var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.Single(result.Intents);
+            Assert.Equal("None", result.Intents.First().Key);
+            Assert.Equal("x", result.Properties["id"]);
+        }
+
+        [Fact]
+        public async Task NoneIntentDeferToRecognizer()
+        {
+            var recognizer = new CrossTrainedRecognizerSet()
+            {
+                Recognizers = new List<Recognizer>
+                {
+                    new RegexRecognizer()
+                    {
+                        Id = "x",
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("DeferToRecognizer_x", string.Empty)
+                        }
+                    }
+                }
+            };
+            var dc = TestUtils.CreateContext(CrossTrainText);
+            var activity = dc.Context.Activity;
+            var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.Single(result.Intents);
+            Assert.Equal("None", result.Intents.First().Key);
+            Assert.Equal("x", result.Properties["id"]);
+        }
+
+        [Fact]
+        public async Task ChooseIntentAmbiguous()
+        {
+            var recognizer = new CrossTrainedRecognizerSet()
+            {
+                Recognizers = new List<Recognizer>
+                {
+                    new RegexRecognizer()
+                    {
+                        Id = "x",
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("x", string.Empty),
+                            new IntentPattern("x", "x")
+                        }
+                    },
+                    new RegexRecognizer()
+                    {
+                        Id = "y",
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("y", string.Empty)
+                        }
+                    }
+                }
+            };
+            var dc = TestUtils.CreateContext(CrossTrainText);
+            var activity = dc.Context.Activity;
+            var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+
+            Assert.NotNull(result);
+            Assert.Single(result.Intents);
+            Assert.Equal("ChooseIntent", result.Intents.First().Key);
+            Assert.Equal("y", result.Properties["id"]);
+            Assert.NotNull(result.Properties["candidates"]);
         }
 
         [Fact]
