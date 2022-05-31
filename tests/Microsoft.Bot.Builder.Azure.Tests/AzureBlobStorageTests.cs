@@ -2,100 +2,257 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Core;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    public class AzureBlobStorageTests : BlobStorageBaseTests, IAsyncLifetime
+    public class AzureBlobStorageTests
     {
-        private readonly string _testName;
+        protected const string ConnectionString = @"UseDevelopmentStorage=true";
+        protected const string ContainerName = "containername";
 
-        public AzureBlobStorageTests(ITestOutputHelper testOutputHelper)
+        private AzureBlobStorage _blobStorage;
+        private Mock<CloudBlob> _mockBlob;
+        private Mock<CloudBlobContainer> _mockContainer;
+        private Mock<CloudBlobClient> _mockBlobClient;
+        private Mock<CloudStorageAccount> _mockAccount;
+        private Mock<CloudBlockBlob> _mockBlockBlob;
+
+        [Fact]
+        public void ConstructorValidation()
         {
-            var helper = (TestOutputHelper)testOutputHelper;
+            // Should work.
+            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
 
-            var test = (ITest)helper.GetType().GetField("test", BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(helper);
+            Assert.NotNull(new AzureBlobStorage(ConnectionString, ContainerName));
+            Assert.NotNull(new AzureBlobStorage(storageAccount, ContainerName));
+            Assert.NotNull(new AzureBlobStorage(storageAccount, ContainerName, new JsonSerializer()));
+            Assert.NotNull(new AzureBlobStorage(storageAccount, ContainerName, new CloudBlobClient(new Uri("http://mytest"))));
 
-            _testName = test.TestCase.TestMethod.Method.Name;
+            // No JsonSerializer. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new AzureBlobStorage(storageAccount, ContainerName, jsonSerializer: null));
 
-            if (StorageEmulatorHelper.CheckEmulator())
-            {
-                CloudStorageAccount.Parse(ConnectionString)
-                    .CreateCloudBlobClient()
-                    .GetContainerReference(ContainerName)
-                    .DeleteIfExistsAsync().ConfigureAwait(false);
-            }
-        }
+            // No storageAccount. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new AzureBlobStorage(null, ContainerName, new JsonSerializer()));
 
-        protected override string ContainerName
-        {
-            get
-            {
-                var containerName = _testName.ToLower().Replace("_", string.Empty);
-                NameValidator.ValidateContainerName(containerName);
-                return containerName;
-            }
-        }
-
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public async Task DisposeAsync()
-        {
-            if (StorageEmulatorHelper.CheckEmulator())
-            {
-                await CloudStorageAccount.Parse(ConnectionString)
-                                .CreateCloudBlobClient()
-                                .GetContainerReference(ContainerName)
-                                .DeleteIfExistsAsync().ConfigureAwait(false);
-            }
+            // No containerName. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new AzureBlobStorage(storageAccount, null, new JsonSerializer()));
         }
 
         [Fact]
-        public void BlobStorageParamTest()
+        public async Task DeleteAsyncNullKeysFailure()
         {
-            if (StorageEmulatorHelper.CheckEmulator())
-            {
-                Assert.Throws<FormatException>(() => new AzureBlobStorage("123", ContainerName));
+            _blobStorage = new AzureBlobStorage(ConnectionString, ContainerName);
 
-                Assert.Throws<ArgumentNullException>(() =>
-                    new AzureBlobStorage((CloudStorageAccount)null, ContainerName));
-
-                Assert.Throws<ArgumentNullException>(() =>
-                    new AzureBlobStorage((string)null, ContainerName));
-
-                Assert.Throws<ArgumentNullException>(() =>
-                    new AzureBlobStorage((CloudStorageAccount)null, null));
-
-                Assert.Throws<ArgumentNullException>(() => new AzureBlobStorage((string)null, null));
-
-                Assert.Throws<ArgumentNullException>(() =>
-                    new AzureBlobStorage(CloudStorageAccount.Parse(ConnectionString), ContainerName, (JsonSerializer)null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _blobStorage.DeleteAsync(null));
         }
 
-        protected override IStorage GetStorage(bool typeNameHandlingNone = false)
+        [Fact]
+        public async Task DeleteAsyncEmptyKeysFailure()
         {
-            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-            if (typeNameHandlingNone)
-            {
-                return new AzureBlobStorage(
-                    storageAccount,
-                    ContainerName,
-                    new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
-            }
+            var keys = new[] { string.Empty };
 
-            return new AzureBlobStorage(storageAccount, ContainerName);
+            InitStorage();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _blobStorage.DeleteAsync(keys, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task DeleteAsyncTwoKeys()
+        {
+            var keys = new[] { "key1", "key2" };
+
+            InitStorage();
+
+            await _blobStorage.DeleteAsync(keys, CancellationToken.None);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetBlobReference(It.IsAny<string>()), Times.Exactly(2));
+            _mockBlob.Verify(x => x.DeleteIfExistsAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task ReadAsyncNullKeysFailure()
+        {
+            _blobStorage = new AzureBlobStorage(ConnectionString, ContainerName);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _blobStorage.ReadAsync(null));
+        }
+
+        [Fact]
+        public async Task ReadAsyncOneKey()
+        {
+            var keys = new[] { "key1" };
+            
+            InitStorage();
+
+            var items = await _blobStorage.ReadAsync(keys, CancellationToken.None);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetBlobReference(It.IsAny<string>()), Times.Once);
+            _mockBlob.Verify(
+                x => x.OpenReadAsync(
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
+            Assert.Equal(1, items.Count);            
+            Assert.True(items.ContainsKey(keys[0]));
+        }
+
+        [Fact]
+        public async Task ReadAsyncContinueOnNotFoundException()
+        {
+            var keys = new[] { "key1" };
+            var result = new RequestResult { HttpStatusCode = 404 };
+
+            InitStorage();
+
+            _mockBlob.Setup(x => x.OpenReadAsync(
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>())).Throws(new StorageException(result, "exception thrown", new Exception()));
+
+            var items = await _blobStorage.ReadAsync(keys, CancellationToken.None);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetBlobReference(It.IsAny<string>()), Times.Once);
+            _mockBlob.Verify(
+                x => x.OpenReadAsync(
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
+            Assert.Equal(0, items.Count);
+        }
+
+        [Fact]
+        public async Task ReadAsyncContinueOnAggregateException()
+        {
+            var keys = new[] { "key1" };
+            var result = new RequestResult { HttpStatusCode = 404 };
+
+            InitStorage();
+            
+            _mockBlob.Setup(x => x.OpenReadAsync(
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>())).Throws(new AggregateException(new StorageException(result, "exception thrown", new Exception())));
+
+            var items = await _blobStorage.ReadAsync(keys, CancellationToken.None);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetBlobReference(It.IsAny<string>()), Times.Once);
+            _mockBlob.Verify(
+                x => x.OpenReadAsync(
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
+            Assert.Equal(0, items.Count);
+        }
+
+        [Fact]
+        public async Task WriteAsyncNullChangesFailure()
+        {
+            _blobStorage = new AzureBlobStorage(ConnectionString, ContainerName);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _blobStorage.WriteAsync(null));
+        }
+
+        [Fact]
+        public async Task WriteAsyncTwoChanges()
+        {
+            var changes = new Dictionary<string, object>
+            {
+                { "key1", "value1" },
+                { "key2", "value2" }
+            };
+
+            InitStorage();
+
+            await _blobStorage.WriteAsync(changes, CancellationToken.None);
+
+            _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
+            _mockContainer.Verify(x => x.GetBlockBlobReference(It.IsAny<string>()), Times.Exactly(2));
+            _mockBlockBlob.Verify(
+                x => x.UploadFromStreamAsync(
+                    It.IsAny<MultiBufferMemoryStream>(),
+                    It.IsAny<AccessCondition>(),
+                    It.IsAny<BlobRequestOptions>(),
+                    It.IsAny<OperationContext>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task WriteAsyncFailure()
+        {
+            var changes = new Dictionary<string, object>
+            {
+                { "key1", "value1" },
+                { "key2", "value2" }
+            };
+            var result = new RequestResult { HttpStatusCode = 400 };
+
+            InitStorage();
+            
+            _mockBlockBlob.Setup(x => x.UploadFromStreamAsync(
+                It.IsAny<MultiBufferMemoryStream>(),
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>())).Throws(new StorageException(result, "exception thrown", new Exception()));
+
+            await Assert.ThrowsAsync<StorageException>(() => _blobStorage.WriteAsync(changes, CancellationToken.None));
+        }
+
+        private void InitStorage()
+        {
+            Stream stream = new MemoryStream(Encoding.ASCII.GetBytes("{\"Id\":0,\"Topic\":\"car\"}"));
+
+            _mockBlob = new Mock<CloudBlob>(new Uri("http://test/myaccount/blob"));
+            _mockBlob.Setup(x => x.DeleteIfExistsAsync(It.IsAny<CancellationToken>()));
+            _mockBlob.Setup(x => x.OpenReadAsync(
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>())).Returns(Task.FromResult(stream));
+
+            _mockBlockBlob = new Mock<CloudBlockBlob>(new Uri("http://test/myaccount/blob"));
+            _mockBlockBlob.Setup(x => x.UploadFromStreamAsync(
+                It.IsAny<MultiBufferMemoryStream>(),
+                It.IsAny<AccessCondition>(),
+                It.IsAny<BlobRequestOptions>(),
+                It.IsAny<OperationContext>(),
+                It.IsAny<CancellationToken>()));
+
+            _mockContainer = new Mock<CloudBlobContainer>(new Uri("https://testuri.com"));
+            _mockContainer.Setup(x => x.GetBlobReference(It.IsAny<string>())).Returns(_mockBlob.Object);
+            _mockContainer.Setup(x => x.GetBlockBlobReference(It.IsAny<string>())).Returns(_mockBlockBlob.Object);
+
+            _mockBlobClient = new Mock<CloudBlobClient>(new Uri("https://testuri.com"), null);
+            _mockBlobClient.Setup(x => x.GetContainerReference(It.IsAny<string>())).Returns(_mockContainer.Object);
+
+            _mockAccount = new Mock<CloudStorageAccount>(new StorageCredentials("accountName", "S2V5VmFsdWU=", "key"), false);
+
+            _blobStorage = new AzureBlobStorage(_mockAccount.Object, ContainerName, _mockBlobClient.Object);
         }
     }
 }

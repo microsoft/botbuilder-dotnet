@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Connector
 {
     /// <summary>
@@ -25,6 +27,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Cortana channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Cortana = "cortana";
 
         /// <summary>
@@ -48,6 +51,12 @@ namespace Microsoft.Bot.Connector
         public const string Emulator = "emulator";
 
         /// <summary>
+        /// EnterpriseChannel channel.
+        /// </summary>
+        [Obsolete("This channel is deprecated.")]
+        public const string EnterpriseChannel = "enterprisechannel";
+
+        /// <summary>
         /// Facebook channel.
         /// </summary>
         public const string Facebook = "facebook";
@@ -58,8 +67,15 @@ namespace Microsoft.Bot.Connector
         public const string Groupme = "groupme";
 
         /// <summary>
+        /// Kaizala channel.
+        /// </summary>
+        [Obsolete("This channel is deprecated.")]
+        public const string Kaizala = "kaizala";
+
+        /// <summary>
         /// Kik channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Kik = "kik";
 
         /// <summary>
@@ -80,6 +96,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Skype for Business channel.
         /// </summary>
+        [Obsolete("This channel is deprecated.")]
         public const string Skypeforbusiness = "skypeforbusiness";
 
         /// <summary>
@@ -110,6 +127,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Twilio channel.
         /// </summary>
+        [Obsolete("This channel is deprecated. Use Sms instead.")]
         public const string Twilio = "twilio-sms";
 
         /// <summary>
@@ -121,5 +139,10 @@ namespace Microsoft.Bot.Connector
         /// Omni channel.
         /// </summary>
         public const string Omni = "omnichannel";
+
+        /// <summary>
+        /// Outlook channel.
+        /// </summary>
+        public const string Outlook = "outlook";
     }
 }
