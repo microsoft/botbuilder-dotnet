@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework Condition="'$(BuildTarget)' == 'net6'">net6.0</TargetFramework>
-    <TargetFrameworks Condition="'$(BuildTarget)' == ''">net6.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release;</Configurations>
   </PropertyGroup>
