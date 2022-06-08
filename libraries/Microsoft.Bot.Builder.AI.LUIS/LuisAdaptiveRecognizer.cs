@@ -134,14 +134,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
             else if (this.Options != null)
             {
-                options.DateTimeReference = this.Options.DateTimeReference?.GetValue(dialogContext);
-                options.ExternalEntities = this.Options.ExternalEntities?.GetValue(dialogContext);
-                options.IncludeAllIntents = this.Options.IncludeAllIntents?.GetValue(dialogContext) ?? false;
-                options.IncludeInstanceData = this.Options.IncludeInstanceData?.GetValue(dialogContext) ?? true;
-                options.IncludeAPIResults = this.Options.IncludeAPIResults?.GetValue(dialogContext) ?? false;
-                options.Log = this.Options.Log?.GetValue(dialogContext) ?? true;
-                options.PreferExternalEntities = this.Options.PreferExternalEntities?.GetValue(dialogContext) ?? true;
-                options.Slot = this.Options.Slot?.GetValue(dialogContext);
+                options.DateTimeReference = this.Options.DateTimeReference?.GetValue(dialogContext.State);
+                options.ExternalEntities = this.Options.ExternalEntities?.GetValue(dialogContext.State);
+                options.IncludeAllIntents = this.Options.IncludeAllIntents?.GetValue(dialogContext.State) ?? false;
+                options.IncludeInstanceData = this.Options.IncludeInstanceData?.GetValue(dialogContext.State) ?? true;
+                options.IncludeAPIResults = this.Options.IncludeAPIResults?.GetValue(dialogContext.State) ?? false;
+                options.Log = this.Options.Log?.GetValue(dialogContext.State) ?? true;
+                options.PreferExternalEntities = this.Options.PreferExternalEntities?.GetValue(dialogContext.State) ?? true;
+                options.Slot = this.Options.Slot?.GetValue(dialogContext.State);
             }
 
             if (this.Version != null)
