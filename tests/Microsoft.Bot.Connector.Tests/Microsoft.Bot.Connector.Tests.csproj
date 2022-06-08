@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
     <!-- The MockHttp package isn't signed, so supress the warning. -->
-    <NoWarn>$(NoWarn),CS8002,NU1608,CA1416</NoWarn>
+    <NoWarn>$(NoWarn),CS8002,NU1608</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1047,7 +1047,7 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("lastIndexOf(nullObj, '-')", -1),
-#if NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER //There's a breaking change in .NET5 for this particular case. See https://docs.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/5.0/lastindexof-improved-handling-of-empty-values#change-description
             Test("lastIndexOf(hello, nullObj)", 5),
 #else
             Test("lastIndexOf(hello, nullObj)", 4),
