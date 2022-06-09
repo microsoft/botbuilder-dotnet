@@ -1,0 +1,35 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "outer",
+        "autoEndDialog": false,
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "value": "TellJokeDialog",
+                        "property": "turn.dialogToStart"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": "=turn.dialogToStart"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        }
+    ]
+}
