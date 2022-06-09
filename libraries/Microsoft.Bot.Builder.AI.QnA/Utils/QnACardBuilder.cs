@@ -117,9 +117,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     buttonList.Add(
                         new CardAction()
                         {
-                            Value = prompt.DisplayText,
-                            Type = "imBack",
+                            Value = prompt.QnaId,
+                            Type = "messageBack",
                             Title = prompt.DisplayText,
+                            Text = prompt.DisplayText,
+                            DisplayText = prompt.DisplayText,
                         });
                 }
             }
