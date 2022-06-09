@@ -53,6 +53,25 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AzureQueueStorage"/> class.
+        /// </summary>
+        /// <param name="queueClient">The custom implementation of QueueClient.</param>
+        /// <param name="jsonSerializerSettings">If passing in custom JsonSerializerSettings, we 
+        /// recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Ignore.</para>
+        /// </param>
+        internal AzureQueueStorage(QueueClient queueClient, JsonSerializerSettings jsonSerializerSettings = null)
+        {
+            _queueClient = queueClient;
+            _jsonSettings = jsonSerializerSettings ?? new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.None,
+                NullValueHandling = NullValueHandling.Ignore
+            };
+        }
+
+        /// <summary>
         /// Queue an Activity to an Azure.Storage.Queues.QueueClient. The visibility timeout specifies how long the message should be invisible
         /// to Dequeue and Peek operations. The message content must be a UTF-8 encoded string that is up to 64KB in size.
         /// </summary>

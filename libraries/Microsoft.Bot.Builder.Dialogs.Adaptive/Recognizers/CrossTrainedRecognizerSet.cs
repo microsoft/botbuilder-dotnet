@@ -140,7 +140,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                         return new RecognizerResult()
                         {
                             Text = recognizerResults[recognizer.Id].Text,
-                            Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+                            Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } },
+                            Properties = recognizerResults[recognizer.Id].Properties,
                         };
                     }
                 }
@@ -196,11 +197,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             // return none.
+            var recognizerResult = recognizerResults.Values.First();
             return new RecognizerResult()
             {
-                Text = recognizerResults.Values.First().Text,
+                Text = recognizerResult.Text,
                 Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } },
-                Entities = mergedEntities
+                Entities = mergedEntities,
+                Properties = recognizerResult.Properties
             };
         }
 

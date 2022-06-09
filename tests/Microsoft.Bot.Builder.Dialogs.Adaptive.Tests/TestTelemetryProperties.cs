@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"ChooseIntent\":{\"score\":1.0}}" },
                 { "Entities", "{}" },
-                { "AdditionalProperties", "{\"candidates\":[{\"id\":\"y\",\"intent\":\"y\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"y\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"y\"}},{\"id\":\"z\",\"intent\":\"z\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"z\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"z\"}}]}" },
+                { "AdditionalProperties", "{\"id\":\"z\",\"candidates\":[{\"id\":\"y\",\"intent\":\"y\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"y\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"y\"}},{\"id\":\"z\",\"intent\":\"z\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"z\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"z\"}}]}" },
             };
         }
 

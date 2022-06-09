@@ -97,6 +97,18 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="CosmosDbPartitionedStorage"/> class.
+        /// using the provided CosmosDB credentials, database ID, and collection ID.
+        /// </summary>
+        /// <param name="client">The custom implementation of CosmosClient.</param>
+        /// <param name="cosmosDbStorageOptions">Cosmos DB partitioned storage configuration options.</param>
+        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions)
+            : this(cosmosDbStorageOptions)
+        {
+            _client = client;
+        }
+
+        /// <summary>
         /// Reads one or more items with matching keys from the Cosmos DB container.
         /// </summary>
         /// <param name="keys">A collection of Ids for each item to be retrieved.</param>
@@ -445,40 +457,58 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
-        private class DocumentStoreItem : IStoreItem
+        internal class DocumentStoreItem : IStoreItem
         {
             /// <summary>
             /// Gets the PartitionKey path to be used for this document type.
             /// </summary>
+            /// <value>
+            /// The PartitionKey path to be used for this document type.
+            /// </value>
             public static string PartitionKeyPath => "/id";
 
             /// <summary>
             /// Gets or sets the sanitized Id/Key used as PrimaryKey.
             /// </summary>
+            /// <value>
+            /// The sanitized Id/Key used as PrimaryKey.
+            /// </value>
             [JsonProperty("id")]
             public string Id { get; set; }
 
             /// <summary>
             /// Gets or sets the un-sanitized Id/Key.
             /// </summary>
+            /// <value>
+            /// The un-sanitized Id/Key.
+            /// </value>
             [JsonProperty("realId")]
             public string RealId { get; internal set; }
 
             /// <summary>
             /// Gets or sets the persisted object.
             /// </summary>
+            /// <value>
+            /// The persisted object.
+            /// </value>
             [JsonProperty("document")]
             public JObject Document { get; set; }
 
             /// <summary>
             /// Gets or sets the ETag information for handling optimistic concurrency updates.
             /// </summary>
+            /// <value>
+            /// The ETag information for handling optimistic concurrency updates.
+            /// </value>
             [JsonProperty("_etag")]
             public string ETag { get; set; }
 
             /// <summary>
             /// Gets the PartitionKey value for the document.
             /// </summary>
+            /// <value>
+            /// The PartitionKey value for the document.
+            /// </value>
             public string PartitionKey => this.Id;
         }
     }
