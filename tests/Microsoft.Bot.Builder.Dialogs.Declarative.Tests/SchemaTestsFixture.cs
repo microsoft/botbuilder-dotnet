@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 {
                     // Check if the new schema file has changed.
                     var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
-                    if (!newSchema.Equals(oldSchema))
+                    if (!newSchema.Equals(oldSchema, StringComparison.Ordinal))
                     {
                         throw new InvalidOperationException("tests.schema has changed when running tests on the build server.");
                     }

@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build does not throw an exception.
                 await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChannelId", "dummyCode");
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await Assert.ThrowsAsync<ErrorResponseException>(() => client.UserToken.SignOutAsync(
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.BotSignIn.GetSignInUrlAsync(
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
  
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetTokenStatusAsync(
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetAadTokensAsync(
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await OAuthClientConfig.SendEmulateOAuthCardsAsync(client, true);
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.GetSignInResourceAsync(
@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Connector.Tests
             ServiceClientTracing.IsEnabled = true;
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT", StringComparison.Ordinal))
             {
                 // Automated Windows build exception:
                 await client.ExchangeAsyncAsync(

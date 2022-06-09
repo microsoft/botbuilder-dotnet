@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.Bots
             {
                 var metadata = ((FacebookThreadControl)turnContext.Activity.Value).Metadata;
 
-                if (metadata.Equals(HandoverConstants.MetadataPassThreadControl))
+                if (metadata.Equals(HandoverConstants.MetadataPassThreadControl, System.StringComparison.Ordinal))
                 {
                     var activity = MessageFactory.Text("Hello, I'm the secondary bot. How can I help you?");
                     await turnContext.SendActivityAsync(activity, cancellationToken);

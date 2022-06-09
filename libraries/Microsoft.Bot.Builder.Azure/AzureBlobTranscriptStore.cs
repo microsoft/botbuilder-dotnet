@@ -348,13 +348,14 @@ namespace Microsoft.Bot.Builder.Azure
             blobReference.Metadata["FromId"] = activity.From.Id;
             blobReference.Metadata["RecipientId"] = activity.Recipient.Id;
             blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O", CultureInfo.InvariantCulture);
-            using (var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false))
-            {
-                using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
-                {
-                    _jsonSerializer.Serialize(jsonWriter, activity);
-                }
-            }
+            
+            using var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false);
+            using var streamWriter = new StreamWriter(blobStream);
+            using var jsonWriter = new JsonTextWriter(streamWriter);
+            
+            _jsonSerializer.Serialize(jsonWriter, activity);
+
+            await streamWriter.FlushAsync().ConfigureAwait(false);
 
             await blobReference.SetMetadataAsync().ConfigureAwait(false);
         }
