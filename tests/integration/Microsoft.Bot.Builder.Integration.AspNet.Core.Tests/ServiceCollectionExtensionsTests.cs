@@ -2,13 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Mocks;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,17 +17,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 {
     public class ServiceCollectionExtensionsTests
     {
-        private static Mock<IServiceCollection> CreateServiceCollectionMock()
-        {
-            var serviceCollectionMock = new Mock<IServiceCollection>();
-            var registeredServices = new List<ServiceDescriptor>();
-
-            serviceCollectionMock.Setup(sc => sc.Add(It.IsAny<ServiceDescriptor>())).Callback<ServiceDescriptor>(sd => registeredServices.Add(sd));
-            serviceCollectionMock.Setup(sc => sc.GetEnumerator()).Returns(() => registeredServices.GetEnumerator());
-
-            return serviceCollectionMock;
-        }
-
         public class AddBotFrameworkAdapterIntegrationTests : ServiceCollectionExtensionsTests
         {
             [Fact]
@@ -45,65 +32,63 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             [Fact]
             public void WithoutConfigurationCallback()
             {
-                var serviceCollectionMock = CreateServiceCollectionMock();
+                var serviceCollection = new ServiceCollection();
 
-                serviceCollectionMock.Object.AddBotFrameworkAdapterIntegration();
+                serviceCollection.AddBotFrameworkAdapterIntegration();
 
-                VerifyBotFrameworkAdapterIntegrationIsRegistered(serviceCollectionMock);
+                Assert.Single(serviceCollection);
+                Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                Assert.NotNull(serviceCollection[0].ImplementationFactory);
             }
 
             [Fact]
             public void WithExplicitNullConfigurationCallback()
             {
-                var serviceCollectionMock = CreateServiceCollectionMock();
+                var serviceCollection = new ServiceCollection();
 
-                serviceCollectionMock.Object.AddBotFrameworkAdapterIntegration((Action<BotFrameworkOptions>)null);
+                serviceCollection.AddBotFrameworkAdapterIntegration((Action<BotFrameworkOptions>)null);
 
-                VerifyBotFrameworkAdapterIntegrationIsRegistered(serviceCollectionMock);
+                Assert.Single(serviceCollection);
+                Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                Assert.NotNull(serviceCollection[0].ImplementationFactory);
             }
 
             [Fact]
             public void WithConfigurationCallback()
             {
-                var serviceCollectionMock = CreateServiceCollectionMock();
+                var serviceCollection = new ServiceCollection();
 
                 var configAction = new Action<BotFrameworkOptions>(options =>
                 {
                 });
 
-                serviceCollectionMock.Object.AddBotFrameworkAdapterIntegration(configAction);
+                serviceCollection.AddBotFrameworkAdapterIntegration(configAction);
 
-                VerifyBotFrameworkAdapterIntegrationIsRegistered(serviceCollectionMock);
-
-                // Make sure the configuration action was registered
-                serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => (sd.ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>) && ((ConfigureNamedOptions<BotFrameworkOptions>)sd.ImplementationInstance).Action == configAction)));
+                Assert.Equal(7, serviceCollection.Count);
+                Assert.Equal(typeof(IAdapterIntegration), serviceCollection[6].ServiceType);
+                Assert.NotNull(serviceCollection[6].ImplementationFactory);
+                Assert.True(serviceCollection[5].ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>);
+                Assert.Equal(configAction, ((ConfigureNamedOptions<BotFrameworkOptions>)serviceCollection[5].ImplementationInstance).Action);
             }
 
             [Fact]
             public void RegistersEvenIfAnExistingIAdapterIntegrationIsAlreadyRegistered()
             {
-                var serviceCollectionMock = CreateServiceCollectionMock();
+                var serviceCollection = new ServiceCollection();
 
-                serviceCollectionMock.Object.AddSingleton<IAdapterIntegration>(Mock.Of<IAdapterIntegration>());
+                serviceCollection.AddSingleton<IAdapterIntegration>(Mock.Of<IAdapterIntegration>());
 
-                serviceCollectionMock.Object.AddBotFrameworkAdapterIntegration();
+                serviceCollection.AddBotFrameworkAdapterIntegration();
 
-                serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration))), Times.Exactly(2));
-            }
-
-            private static void VerifyBotFrameworkAdapterIntegrationIsRegistered(Mock<IServiceCollection> serviceCollectionMock)
-            {
-                serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.ImplementationFactory != null)));
+                Assert.Equal(2, serviceCollection.Count);
+                Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                Assert.Equal(typeof(IAdapterIntegration), serviceCollection[1].ServiceType);
+                Assert.NotNull(serviceCollection[1].ImplementationFactory);
             }
         }
 
         public class AddBotTests
         {
-            private static void VerifyStandardBotServicesAreRegistered(Mock<IServiceCollection> serviceCollectionMock)
-            {
-                serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.Lifetime == ServiceLifetime.Singleton)));
-            }
-
             public class TBotOnly : AddBotTests
             {
                 [Fact]
@@ -119,47 +104,58 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void WithoutConfigurationCallback()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>();
+                    serviceCollection.AddBot<ServiceRegistrationTestBot>();
 
-                    VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[0].Lifetime);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
+                    Assert.Equal(typeof(ServiceRegistrationTestBot), serviceCollection[1].ImplementationType);
+                    Assert.Equal(ServiceLifetime.Transient, serviceCollection[1].Lifetime);
                 }
 
                 [Fact]
                 public void WithExplicitNullConfigurationCallback()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>((Action<BotFrameworkOptions>)null);
+                    serviceCollection.AddBot<ServiceRegistrationTestBot>((Action<BotFrameworkOptions>)null);
 
-                    VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[0].Lifetime);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
+                    Assert.Equal(typeof(ServiceRegistrationTestBot), serviceCollection[1].ImplementationType);
+                    Assert.Equal(ServiceLifetime.Transient, serviceCollection[1].Lifetime);
                 }
 
                 [Fact]
                 public void WithConfigurationCallback()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
 
                     var configAction = new Action<BotFrameworkOptions>(options =>
                     {
                     });
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>(configAction);
+                    serviceCollection.AddBot<ServiceRegistrationTestBot>(configAction);
 
-                    VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
-
-                    // Make sure the configuration action was registered
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => (sd.ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>) && ((ConfigureNamedOptions<BotFrameworkOptions>)sd.ImplementationInstance).Action == configAction)));
+                    Assert.Equal(8, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[6].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[6].Lifetime);
+                    Assert.Equal(typeof(IBot), serviceCollection[7].ServiceType);
+                    Assert.Equal(typeof(ServiceRegistrationTestBot), serviceCollection[7].ImplementationType);
+                    Assert.Equal(ServiceLifetime.Transient, serviceCollection[7].Lifetime);
+                    Assert.True(serviceCollection[5].ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>);
+                    Assert.Equal(configAction, ((ConfigureNamedOptions<BotFrameworkOptions>)serviceCollection[5].ImplementationInstance).Action);
                 }
 
                 [Fact]
                 public void WithConfigurationCallbackWithOptions()
                 {
-                    var serviceCollectionMock = new Mock<IServiceCollection>();
-                    var registeredServices = new List<ServiceDescriptor>();
-                    serviceCollectionMock.Setup(sc => sc.Add(It.IsAny<ServiceDescriptor>())).Callback<ServiceDescriptor>(sd => registeredServices.Add(sd));
-                    serviceCollectionMock.Setup(sc => sc.GetEnumerator()).Returns(() => registeredServices.GetEnumerator());
+                    var serviceCollection = new ServiceCollection();
 
                     Func<ITurnContext, Exception, Task> onTurnError = (turnContext, exception) =>
                     {
@@ -175,11 +171,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                         options.Middleware.Add(middlewareMock.Object);
                     });
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>(configAction);
+                    serviceCollection.AddBot<ServiceRegistrationTestBot>(configAction);
 
-                    VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(8, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[6].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[6].Lifetime);
 
-                    var adapterServiceDescriptor = registeredServices.FirstOrDefault(sd => sd.ServiceType == typeof(IAdapterIntegration));
+                    var adapterServiceDescriptor = serviceCollection.FirstOrDefault(sd => sd.ServiceType == typeof(IAdapterIntegration));
 
                     Assert.NotNull(adapterServiceDescriptor);
 
@@ -221,16 +219,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                     Assert.Equal(onTurnError, adapter.OnTurnError);
 
                     // Make sure the configuration action was registered.
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => (sd.ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>) && ((ConfigureNamedOptions<BotFrameworkOptions>)sd.ImplementationInstance).Action == configAction)));
+                    Assert.True(serviceCollection[5].ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>);
+                    Assert.Equal(configAction, ((ConfigureNamedOptions<BotFrameworkOptions>)serviceCollection[5].ImplementationInstance).Action);
                 }
 
                 [Fact]
                 public void WithConfigurationCallbackWithOptionsAndCustomAppCredentials()
                 {
-                    var serviceCollectionMock = new Mock<IServiceCollection>();
-                    var registeredServices = new List<ServiceDescriptor>();
-                    serviceCollectionMock.Setup(sc => sc.Add(It.IsAny<ServiceDescriptor>())).Callback<ServiceDescriptor>(sd => registeredServices.Add(sd));
-                    serviceCollectionMock.Setup(sc => sc.GetEnumerator()).Returns(() => registeredServices.GetEnumerator());
+                    var serviceCollection = new ServiceCollection();
 
                     Func<ITurnContext, Exception, Task> onTurnError = (turnContext, exception) =>
                     {
@@ -246,11 +242,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                         options.OnTurnError = onTurnError;
                     });
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>(configAction);
+                    serviceCollection.AddBot<ServiceRegistrationTestBot>(configAction);
 
-                    VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(8, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[6].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[6].Lifetime);
 
-                    var adapterServiceDescriptor = registeredServices.FirstOrDefault(sd => sd.ServiceType == typeof(IAdapterIntegration));
+                    var adapterServiceDescriptor = serviceCollection.FirstOrDefault(sd => sd.ServiceType == typeof(IAdapterIntegration));
 
                     Assert.NotNull(adapterServiceDescriptor);
 
@@ -274,22 +272,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void DoesntReplaceExistingAdapterIntegration()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
                     var adapterIntegration = Mock.Of<IAdapterIntegration>();
 
-                    serviceCollectionMock.Object.AddSingleton<IAdapterIntegration>(adapterIntegration);
+                    serviceCollection.AddSingleton(adapterIntegration);
+                    serviceCollection.AddBot<ServiceRegistrationTestBot>();
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>();
-
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration))), Times.Once());
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.ImplementationInstance == adapterIntegration)));
-                }
-
-                private void VerifyExpectedBotServicesAreRegistered(Mock<IServiceCollection> serviceCollectionMock)
-                {
-                    VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
-
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IBot) && sd.ImplementationType == typeof(ServiceRegistrationTestBot) && sd.Lifetime == ServiceLifetime.Transient)));
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(adapterIntegration, serviceCollection[0].ImplementationInstance);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
                 }
             }
 
@@ -298,7 +290,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void NullServiceCollectionThrows()
                 {
-                    var nullServiceCollection = default(IServiceCollection);
+                    var nullServiceCollection = default(ServiceCollection);
 
                     var action = new Action(() => nullServiceCollection.AddBot(sp => new ServiceRegistrationTestBot()));
 
@@ -308,9 +300,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void NullFactoryMethodThrows()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
 
-                    var action = new Action(() => serviceCollectionMock.Object.AddBot((Func<IServiceProvider, IBot>)null));
+                    var action = new Action(() => serviceCollection.AddBot((Func<IServiceProvider, IBot>)null));
 
                     action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("botFactory");
                 }
@@ -361,22 +353,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void DoesntReplaceExistingAdapterIntegration()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
                     var adapterIntegration = Mock.Of<IAdapterIntegration>();
 
-                    serviceCollectionMock.Object.AddSingleton<IAdapterIntegration>(adapterIntegration);
+                    serviceCollection.AddSingleton(adapterIntegration);
+                    serviceCollection.AddBot(sp => new ServiceRegistrationTestBot());
 
-                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>(sp => new ServiceRegistrationTestBot());
-
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration))), Times.Once());
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.ImplementationInstance == adapterIntegration)));
-                }
-
-                private void VerifyExpectedBotServicesAreRegistered(Mock<IServiceCollection> serviceCollectionMock)
-                {
-                    VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
-
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IBot) && sd.ImplementationFactory != null && sd.Lifetime == ServiceLifetime.Transient)));
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(adapterIntegration, serviceCollection[0].ImplementationInstance);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
                 }
             }
 
@@ -385,7 +371,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void NullServiceCollectionThrows()
                 {
-                    var nullServiceCollection = default(IServiceCollection);
+                    var nullServiceCollection = default(ServiceCollection);
 
                     var action = new Action(() => nullServiceCollection.AddBot(sp => new ServiceRegistrationTestBot()));
 
@@ -395,9 +381,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void NullBotInstanceThrows()
                 {
-                    var serviceCollectionMock = new Mock<IServiceCollection>();
+                    var serviceCollection = new ServiceCollection();
 
-                    var action = new Action(() => serviceCollectionMock.Object.AddBot((IBot)null));
+                    var action = new Action(() => serviceCollection.AddBot((IBot)null));
 
                     action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("bot");
                 }
@@ -405,63 +391,64 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 [Fact]
                 public void WithoutConfigurationCallback()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
-
+                    var serviceCollection = new ServiceCollection();
                     var botInstance = Mock.Of<IBot>();
 
-                    serviceCollectionMock.Object.AddBot(botInstance);
+                    serviceCollection.AddBot(botInstance);
 
-                    VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[0].Lifetime);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
+                    Assert.NotNull(serviceCollection[1].ImplementationInstance);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[1].Lifetime);
                 }
 
                 [Fact]
                 public void WithExplicitNullConfigurationCallback()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
-
+                    var serviceCollection = new ServiceCollection();
                     var botInstance = Mock.Of<IBot>();
 
-                    serviceCollectionMock.Object.AddBot(botInstance, (Action<BotFrameworkOptions>)null);
+                    serviceCollection.AddBot(botInstance, null);
 
-                    VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[0].Lifetime);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
+                    Assert.NotNull(serviceCollection[1].ImplementationInstance);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[1].Lifetime);
                 }
 
                 [Fact]
                 public void WithConfigurationCallback()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
-
+                    var serviceCollection = new ServiceCollection();
                     var botInstance = Mock.Of<IBot>();
 
-                    serviceCollectionMock.Object.AddBot(
-                        botInstance,
-                        options =>
-                        {
-                            options.Should().NotBeNull();
-                        });
+                    serviceCollection.AddBot(botInstance, options => options.Should().NotBeNull());
 
-                    VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
+                    Assert.Equal(8, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[6].ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[6].Lifetime);
+                    Assert.Equal(typeof(IBot), serviceCollection[7].ServiceType);
+                    Assert.NotNull(serviceCollection[7].ImplementationInstance);
+                    Assert.Equal(ServiceLifetime.Singleton, serviceCollection[7].Lifetime);
                 }
 
                 [Fact]
                 public void DoesntReplaceExistingAdapterIntegration()
                 {
-                    var serviceCollectionMock = CreateServiceCollectionMock();
+                    var serviceCollection = new ServiceCollection();
                     var adapterIntegration = Mock.Of<IAdapterIntegration>();
 
-                    serviceCollectionMock.Object.AddSingleton<IAdapterIntegration>(adapterIntegration);
+                    serviceCollection.AddSingleton(adapterIntegration);
+                    serviceCollection.AddBot(new ServiceRegistrationTestBot());
 
-                    serviceCollectionMock.Object.AddBot(new ServiceRegistrationTestBot());
-
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration))), Times.Once());
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IAdapterIntegration) && sd.ImplementationInstance == adapterIntegration)));
-                }
-
-                private void VerifyExpectedBotServicesAreRegistered(Mock<IServiceCollection> serviceCollectionMock)
-                {
-                    VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
-
-                    serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IBot) && sd.ImplementationInstance != null && sd.Lifetime == ServiceLifetime.Singleton)));
+                    Assert.Equal(2, serviceCollection.Count);
+                    Assert.Equal(typeof(IAdapterIntegration), serviceCollection[0].ServiceType);
+                    Assert.Equal(adapterIntegration, serviceCollection[0].ImplementationInstance);
+                    Assert.Equal(typeof(IBot), serviceCollection[1].ServiceType);
                 }
             }
         }

@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             int retries = 3;
 
             // Poll the bot for replies once per second.
-            while (answer.Equals(string.Empty) && retries-- > 0)
+            while (answer.Equals(string.Empty, StringComparison.Ordinal) && retries-- > 0)
             {
                 // Retrieve the activity sent from the bot.
                 var activitySet = await client.Conversations.GetActivitiesAsync(conversationId, watermark);
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     }
                 }
 
-                if (answer.Equals(string.Empty))
+                if (answer.Equals(string.Empty, StringComparison.Ordinal))
                 {
                     // Wait for one second before polling the bot again.
                     await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);

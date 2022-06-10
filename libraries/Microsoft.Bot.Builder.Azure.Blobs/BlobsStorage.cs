@@ -87,6 +87,28 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
+        /// </summary>
+        /// <param name="containerClient">The custom implementation of BlobContainerClient.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        internal BlobsStorage(BlobContainerClient containerClient, JsonSerializer jsonSerializer = null)
+        {
+            _containerClient = containerClient;
+
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+            });
+
+            // Triggers a check for the existence of the container
+            _checkForContainerExistence = 1;
+        }
+
+        /// <summary>
         /// Deletes entity blobs from the configured container.
         /// </summary>
         /// <param name="keys">An array of entity keys.</param>

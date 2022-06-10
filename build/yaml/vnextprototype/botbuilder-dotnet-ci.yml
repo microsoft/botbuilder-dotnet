@@ -6,7 +6,7 @@
 name: $(Build.BuildId)
 
 pool:
-  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2022' ) ] # or 'windows-latest'
   demands:
   - msbuild
   - visualstudio
@@ -44,6 +44,13 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
+  - job: Debug_Windows_Configuration_6
+    variables:
+      BuildConfiguration: Debug-Windows
+      BuildTarget: 'net6' # set the TargetFramework property for tests to use net6.0
+    steps:
+    - template: ci-build-steps.yml
+    - template: ci-test-steps.yml
   - job: Release_Windows_Configuration_31
     variables:
       BuildConfiguration: Release-Windows
@@ -53,3 +60,12 @@ stages:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
     #- template: ci-component-detection-steps.yml
+  - job: Release_Windows_Configuration_6
+    variables:
+      BuildConfiguration: Release-Windows
+      BuildTarget: 'net6' # set the TargetFramework property for tests to use net6.0
+      PublishCoverage: false
+    steps:
+    - template: ci-build-steps.yml
+    - template: ci-test-steps.yml
+    # - template: ci-component-detection-steps.yml

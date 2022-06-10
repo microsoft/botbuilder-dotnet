@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             //Accept response from either primary or secondary test bot.
             Assert.IsTrue(
-                response.Equals($"Echo: {echoGuid}") || response.Equals($"Echo Secondary: {echoGuid}"),
+                response.Equals($"Echo: {echoGuid}", StringComparison.Ordinal) || response.Equals($"Echo Secondary: {echoGuid}", StringComparison.Ordinal),
                 $"Expected:<Echo...{echoGuid}>. Actual:<{response}>.");
         }
 

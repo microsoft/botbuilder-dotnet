@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net6.0</TargetFrameworks>
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.Core</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

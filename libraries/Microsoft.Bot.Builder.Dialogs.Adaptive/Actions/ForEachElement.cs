@@ -132,16 +132,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <inheritdoc/>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
-            return await RunItemsAsync(dc, beginDialog: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var handled = await base.OnDialogEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
+
+            if (!handled && e?.Name == DialogEvents.RepromptDialog)
+            {
+                var childState = GetActionScopeState(dc);
+                var childDc = CreateChildContext(dc, childState);
+                await childDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                handled = true;
+            }
+
+            return handled;
         }
 
         /// <inheritdoc/>
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            var res = await base.ResumeDialogAsync(dc, reason, result, cancellationToken).ConfigureAwait(false);
-            return res;
+            return await RunItemsAsync(dc, beginDialog: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -301,11 +310,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (state == null)
             {
                 state = new DialogState();
-            }
-
-            if (activeDialogState != null)
-            {
-                activeDialogState[ActionScopeState] = state;
+                if (activeDialogState != null)
+                {
+                    activeDialogState[ActionScopeState] = state;
+                }
             }
 
             return state;

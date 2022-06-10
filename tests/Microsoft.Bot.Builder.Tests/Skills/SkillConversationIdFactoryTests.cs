@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                     return false;
                 }
 
-                return x.Conversation.Id.Equals(y.Conversation?.Id) && x.ServiceUrl.Equals(y.ServiceUrl);
+                return x.Conversation.Id.Equals(y.Conversation?.Id, StringComparison.Ordinal) && x.ServiceUrl.Equals(y.ServiceUrl, StringComparison.Ordinal);
             }
 
             public override int GetHashCode(ConversationReference obj)

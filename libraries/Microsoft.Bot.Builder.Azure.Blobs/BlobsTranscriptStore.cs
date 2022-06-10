@@ -100,6 +100,25 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
+        /// </summary>
+        /// <param name="containerClient">The custom implementation of BlobContainerClient.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        internal BlobsTranscriptStore(BlobContainerClient containerClient, JsonSerializer jsonSerializer = null)
+        {
+            _containerClient = new Lazy<BlobContainerClient>(() => containerClient);
+
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+            });
+        }
+
+        /// <summary>
         /// Log an activity to the transcript.
         /// </summary>
         /// <param name="activity">Activity being logged.</param>

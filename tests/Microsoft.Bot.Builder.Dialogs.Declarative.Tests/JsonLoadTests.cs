@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
                     retries = -1;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retries--;
                     if (retries > 0)
@@ -367,7 +367,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                     } 
                     else
                     {
-                        throw ex;
+                        throw;
                     }
                 }
             }

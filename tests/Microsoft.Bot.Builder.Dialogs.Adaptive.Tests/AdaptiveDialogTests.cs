@@ -21,6 +21,7 @@ using Microsoft.Bot.Schema;
 using AdaptiveExpressions.Properties;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -90,6 +91,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [Fact]
         public async Task AdaptiveDialog_AllowInterruptionWithMaxCount()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task AdaptiveDialog_LoadDialogFromProperty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
@@ -296,6 +303,231 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task AdaptiveDialog_NestedMemoryAccess()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestForEachElementReprompt()
+        {
+            var testFlow = new TestScript()
+            {
+                Dialog = new ForEachElementRepromptMainDialog()
+            }
+            .SendConversationUpdate();
+
+            testFlow = testFlow.AssertReply("send me some text inside the old foreach");
+            testFlow.Script.Add(new UserSays() { Text = "interrupt" });
+            testFlow = testFlow.AssertReply("Hello from InterruptDialog");
+            testFlow = testFlow.AssertReply("send me some text inside the old foreach");
+            testFlow.Script.Add(new UserSays() { Text = "message one" });
+            testFlow = testFlow.AssertReply("Foreach You said: 'message one'");
+
+            testFlow = testFlow.AssertReply("send me some text inside the new foreach element");
+            testFlow.Script.Add(new UserSays() { Text = "interrupt" });
+            testFlow = testFlow.AssertReply("Hello from InterruptDialog");
+            testFlow = testFlow.AssertReply("send me some text inside the new foreach element");
+            testFlow.Script.Add(new UserSays() { Text = "message two" });
+            testFlow = testFlow.AssertReply("ForEachElement You said: 'message two'");
+
+            await testFlow.ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        private class ForEachElementRepromptMainDialog : ComponentDialog
+        {
+            public ForEachElementRepromptMainDialog()
+                : base(nameof(ForEachElementRepromptMainDialog))
+            {
+                AddDialog(new FlowDialog());
+                AddDialog(new InterruptDialog());
+            }
+
+            protected override Task<DialogTurnResult> OnBeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default)
+                 => ProcessTurnAsync(dc, cancellationToken);
+
+            protected override Task<DialogTurnResult> OnContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+                => ProcessTurnAsync(dc, cancellationToken);
+
+            public async Task<DialogTurnResult> ProcessTurnAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                if (dc.Context.Activity.Text == "interrupt")
+                {
+                    dc.Context.Activity.Text = string.Empty;
+                    dc.Context.Activity.Value = null;
+                    var interuptDialogTurnResult = await dc.BeginDialogAsync(nameof(InterruptDialog), null, cancellationToken).ConfigureAwait(false);
+
+                    if (interuptDialogTurnResult.Status == DialogTurnStatus.CompleteAndWait || interuptDialogTurnResult.Status == DialogTurnStatus.Waiting)
+                    {
+                        return interuptDialogTurnResult;
+                    }
+                }
+
+                if (dc.ActiveDialog == null)
+                {
+                    if (dc.Context.Activity.Type == ActivityTypes.ConversationUpdate)
+                    {
+                        var dialogTurnResult = await dc.BeginDialogAsync(nameof(FlowDialog)).ConfigureAwait(false);
+
+                        switch (dialogTurnResult.Status)
+                        {
+                            case DialogTurnStatus.Empty:
+                            case DialogTurnStatus.Complete:
+                            case DialogTurnStatus.Cancelled:
+                                dc.Context.Activity.Text = string.Empty;
+                                dc.Context.Activity.Value = null;
+                                return await dc.BeginDialogAsync(nameof(FlowDialog), null, cancellationToken).ConfigureAwait(false);
+                            default:
+                                return dialogTurnResult;
+                        }
+                    }
+                    else
+                    {
+                        return await dc.BeginDialogAsync(nameof(FlowDialog));
+                    }
+                }
+                else
+                {
+                    var dialogTurnResult = await dc.ContinueDialogAsync(cancellationToken);
+                    switch (dialogTurnResult.Status)
+                    {
+                        case DialogTurnStatus.Empty:
+                        case DialogTurnStatus.Complete:
+                        case DialogTurnStatus.Cancelled:
+                            dc.Context.Activity.Text = string.Empty;
+                            dc.Context.Activity.Value = null;
+                            dialogTurnResult = await dc.BeginDialogAsync(nameof(FlowDialog), null, cancellationToken).ConfigureAwait(false);
+                            break;
+                    }
+
+                    return dialogTurnResult;
+                }
+            }
+
+            private class InterruptDialog : ComponentDialog
+            {
+                public InterruptDialog()
+                    : base(nameof(InterruptDialog))
+                {
+                    var proactiveDialog = new AdaptiveDialog(nameof(InterruptDialog)) { Generator = new TemplateEngineLanguageGenerator() };
+
+                    proactiveDialog.Triggers.Add(new OnBeginDialog()
+                    {
+                        Actions =
+                {
+                    new CodeAction(async (dc, obj) =>
+                    {
+                        await dc.Context.SendActivityAsync($"Hello from {nameof(InterruptDialog)}");
+                        return await dc.EndDialogAsync();
+                    }),
+                }
+                    });
+
+                    AddDialog(proactiveDialog);
+                    InitialDialogId = nameof(InterruptDialog);
+                }
+            }
+
+            private class FlowDialog : ComponentDialog
+            {
+                public FlowDialog()
+                    : base(nameof(FlowDialog))
+                {
+                    var flowDialogStart = new AdaptiveDialog(nameof(FlowDialog)) { Generator = new TemplateEngineLanguageGenerator() };
+
+                    flowDialogStart.Triggers.Add(new OnBeginDialog()
+                    {
+                        Actions =
+                        {
+                            new CodeAction(async (dc, obj) =>
+                            {
+                                dc.State.SetValue("$items", new List<string> { "1" });
+                                return await dc.EndDialogAsync();
+                            }),
+                            new Foreach
+                            {
+                                ItemsProperty = "$items",
+                                Actions = new List<Dialog>
+                                {
+                                    new InputDialogWithRePrompt<TextInput>(
+                                            new TextInput
+                                            {
+                                                Prompt = new ActivityTemplate("send me some text inside the old foreach"),
+                                                Property = "$answer",
+                                                AlwaysPrompt = true
+                                            },
+                                            "inputtext"),
+                                    new SendActivity { Activity = new ActivityTemplate("Foreach You said: '${$answer}'") }
+                                }
+                            },
+                            new ForEachElement
+                            {
+                                ItemsProperty = "$items",
+                                Actions = new List<Dialog>
+                                {
+                                    new InputDialogWithRePrompt<TextInput>(
+                                            new TextInput
+                                            {
+                                                Prompt = new ActivityTemplate("send me some text inside the new foreach element"),
+                                                Property = "$answer",
+                                                AlwaysPrompt = true
+                                            },
+                                            "inputtext"),
+                                    new SendActivity { Activity = new ActivityTemplate("ForEachElement You said: '${$answer}'") }
+                                }
+                            }
+                        }
+                    });
+
+                    AddDialog(flowDialogStart);
+                    InitialDialogId = nameof(FlowDialog);
+                }
+            }
+
+            private class InputDialogWithRePrompt<T>
+                : Dialog
+                where T : InputDialog
+            {
+                public InputDialogWithRePrompt(T inputDialog, string id)
+                {
+                    InputDialog = inputDialog;
+                    this.Id = id;
+                }
+
+                public T InputDialog { get; }
+
+                public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+                {
+                    this.DialogContext = dc;
+                    return this.InputDialog.BeginDialogAsync(dc, options, cancellationToken);
+                }
+
+                public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+                {
+                    this.DialogContext = dc;
+                    return this.InputDialog.ContinueDialogAsync(dc, cancellationToken);
+                }
+
+                public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
+                {
+                    return this.InputDialog.EndDialogAsync(turnContext, instance, reason, cancellationToken);
+                }
+
+                public override Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+                {
+                    this.DialogContext = dc;
+                    return InputDialog.OnDialogEventAsync(dc, e, cancellationToken);
+                }
+
+                public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
+                {
+                    var dialogContext = this.DialogContext ?? turnContext.TurnState.Get<DialogContext>();
+                    if (dialogContext != null)
+                    {
+                        var messageActivity = await this.InputDialog.Prompt.BindAsync(dialogContext, null, cancellationToken);
+                        await turnContext.SendActivityAsync(messageActivity, cancellationToken);
+                    }
+                }
+
+                private DialogContext DialogContext { get; set; }
+            }
         }
 
         [Theory]

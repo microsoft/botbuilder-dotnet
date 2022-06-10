@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework Condition="'$(BuildTarget)' == 'netcoreapp31'">netcoreapp3.1</TargetFramework>
-    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1</TargetFrameworks>
+    <TargetFramework Condition="'$(BuildTarget)' == 'net6'">net6.0</TargetFramework>
+    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1;net6.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
@@ -13,11 +14,8 @@
     <StartupObject />
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="xunit" Version="2.4.1" />

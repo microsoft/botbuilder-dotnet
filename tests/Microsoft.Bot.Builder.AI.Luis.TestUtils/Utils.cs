@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 {
                     if (expectedToken.Type == JTokenType.String)
                     {
-                        withinDelta = expectedToken.Value<string>().Equals(actualToken.Value<string>(), StringComparison.InvariantCultureIgnoreCase);
+                        withinDelta = expectedToken.Value<string>().Equals(actualToken.Value<string>(), StringComparison.OrdinalIgnoreCase);
                     }
                     else
                     {

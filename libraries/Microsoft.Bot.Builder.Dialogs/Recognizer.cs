@@ -126,11 +126,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected static RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
         {
             string text = null;
+            IDictionary<string, object> properties = null;
             var candidates = new List<JObject>();
 
             foreach (var recognizerResult in recognizerResults)
             {
                 text = recognizerResult.Value.Text;
+                properties = recognizerResult.Value.Properties;
                 var (intent, score) = recognizerResult.Value.GetTopScoringIntent();
                 if (intent != NoneIntent)
                 {
@@ -145,12 +147,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (candidates.Any())
             {
+                properties.Add("candidates", candidates);
+
                 // return ChooseIntent with candidates array
                 return new RecognizerResult()
                 {
                     Text = text,
                     Intents = new Dictionary<string, IntentScore>() { { ChooseIntent, new IntentScore() { Score = 1.0 } } },
-                    Properties = new Dictionary<string, object>() { { "candidates", candidates } },
+                    Properties = properties
                 };
             }
 
@@ -158,7 +162,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             return new RecognizerResult()
             {
                 Text = text,
-                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } },
+                Properties = properties
             };
         }
 

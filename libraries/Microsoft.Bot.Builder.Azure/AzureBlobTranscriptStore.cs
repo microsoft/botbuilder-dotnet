@@ -31,6 +31,8 @@ namespace Microsoft.Bot.Builder.Azure
 
         private static HashSet<string> _checkedContainers = new HashSet<string>();
 
+        private readonly CloudBlobClient _blobClient;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobTranscriptStore"/> class.
         /// Creates an instance of AzureBlobTranscriptStore.
@@ -63,7 +65,7 @@ namespace Microsoft.Bot.Builder.Azure
                 () =>
             {
                 containerName = containerName.ToLowerInvariant();
-                var blobClient = storageAccount.CreateCloudBlobClient();
+                var blobClient = _blobClient ?? storageAccount.CreateCloudBlobClient();
                 NameValidator.ValidateContainerName(containerName);
                 var container = blobClient.GetContainerReference(containerName);
                 if (!_checkedContainers.Contains(containerName))
@@ -74,6 +76,19 @@ namespace Microsoft.Bot.Builder.Azure
 
                 return container;
             }, isThreadSafe: true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureBlobTranscriptStore"/> class.
+        /// Creates an instance of AzureBlobTranscriptStore.
+        /// </summary>
+        /// <param name="storageAccount">.</param>
+        /// <param name="containerName">Name of the container where transcript blobs will be stored.</param>
+        /// <param name="blobClient">Custom implementation of CloudBlobClient.</param>
+        internal AzureBlobTranscriptStore(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient)
+            : this(storageAccount, containerName)
+        {
+            _blobClient = blobClient;
         }
 
         private Lazy<CloudBlobContainer> Container { get; set; }
@@ -333,13 +348,14 @@ namespace Microsoft.Bot.Builder.Azure
             blobReference.Metadata["FromId"] = activity.From.Id;
             blobReference.Metadata["RecipientId"] = activity.Recipient.Id;
             blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O", CultureInfo.InvariantCulture);
-            using (var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false))
-            {
-                using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
-                {
-                    _jsonSerializer.Serialize(jsonWriter, activity);
-                }
-            }
+            
+            using var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false);
+            using var streamWriter = new StreamWriter(blobStream);
+            using var jsonWriter = new JsonTextWriter(streamWriter);
+            
+            _jsonSerializer.Serialize(jsonWriter, activity);
+
+            await streamWriter.FlushAsync().ConfigureAwait(false);
 
             await blobReference.SetMetadataAsync().ConfigureAwait(false);
         }

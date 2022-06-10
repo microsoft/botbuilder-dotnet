@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the starting position or index value of the last occurrence of a substring.
     /// This function is case-insensitive, and indexes start with the number 0.
     /// </summary>
+    /// <remarks>
+    /// A breaking change was introduced in .NET5 for native LastIndexOf when the substring is an empty value.
+    /// See https://docs.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/5.0/lastindexof-improved-handling-of-empty-values#change-description.
+    /// </remarks>
     internal class LastIndexOf : ExpressionEvaluator
     {
         /// <summary>
@@ -32,6 +36,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (args[1] is string || args[1] == null)
                     {
+                        // A breaking change was introduced in .NET5 for LastIndexOf when the substring is an empty value.
+                        // See https://docs.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/5.0/lastindexof-improved-handling-of-empty-values#change-description
                         result = FunctionUtils.ParseStringOrNull(args[0]).LastIndexOf(FunctionUtils.ParseStringOrNull(args[1]), StringComparison.Ordinal);
                     }
                     else
