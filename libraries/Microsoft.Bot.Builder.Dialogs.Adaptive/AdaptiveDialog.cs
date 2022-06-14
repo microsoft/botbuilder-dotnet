@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -677,6 +678,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var actionDC = CreateChildContext(actionContext);
             while (actionDC != null)
             {
+                if (actionDC.ActiveDialog != null)
+                {
+                    var dialog = FindDialog(actionDC.ActiveDialog.Id);
+                    if (dialog == null)
+                    {
+                        var resourceExplorer = actionDC.Context.TurnState.Get<ResourceExplorer>();
+                        if (resourceExplorer != null)
+                        {
+                            dialog = resourceExplorer.LoadType<AdaptiveDialog>($"{actionDC.ActiveDialog.Id}.dialog");
+                            actionDC.Dialogs.Add(dialog);
+                        }
+                    }
+                }
+
                 // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
                 //        statement for actionContext.Actions.
                 DialogTurnResult result;
