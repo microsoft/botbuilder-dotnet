@@ -13,6 +13,17 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsActivityExtensions
     {
         /// <summary>
+        /// Gets the Team's selected channel id from the current activity.
+        /// </summary>
+        /// <param name="activity"> The current activity. </param>
+        /// <returns>The current activity's team's selected channel, or empty string.</returns>
+        public static string TeamsGetSelectedChannelId(this IActivity activity)
+        {
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+            return channelData?.Settings?.SelectedChannel?.Id;
+        }
+
+        /// <summary>
         /// Gets the TeamsMeetingInfo object from the current activity.
         /// </summary>
         /// <param name="activity">This activity.</param>
