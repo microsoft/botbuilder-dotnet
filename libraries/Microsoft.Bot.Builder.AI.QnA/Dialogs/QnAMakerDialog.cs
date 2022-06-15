@@ -645,8 +645,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
         private static void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
         {
-            // Resetting context and QnAId
-            dialogOptions.QnAMakerOptions.QnAId = 0;
+            // Initializing qnaId if present in value, otherwise resetting to 0
+            var qnaIdFromContext = dc.Context.Activity.Value;
+
+            if (qnaIdFromContext != null)
+            {
+                dialogOptions.QnAMakerOptions.QnAId = (int)(long)qnaIdFromContext;
+            }
+            else
+            {
+                dialogOptions.QnAMakerOptions.QnAId = 0;
+            }
+
+            // Resetting context;
             dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
 
             // -Check if previous context is present, if yes then put it with the query
