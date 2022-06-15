@@ -1680,7 +1680,7 @@
               }
             },
             {
-              "$ref": "#/definitions/equalsExpression"
+              "$ref": "#/definitions/stringExpression"
             }
           ]
         },
@@ -2023,7 +2023,7 @@
               }
             },
             {
-              "$ref": "#/definitions/equalsExpression"
+              "$ref": "#/definitions/stringExpression"
             }
           ]
         },
