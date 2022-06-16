@@ -45,12 +45,12 @@
       "datatype": "choice",
       "choices": [
         {
-          "choice": "netcoreapp3.1",
-          "description": "Target netcoreapp3.1"
+          "choice": "net6.0",
+          "description": "Target net6.0"
         }
       ],
       "replaces": "__NETCOREAPP_VERSION__",
-      "defaultValue": "netcoreapp3.1"
+      "defaultValue": "net6.0"
     },
     "ReadmeNetCorePrereqVersion": {
       "type":"generated",
@@ -61,8 +61,8 @@
         "evaluator": "C++",
         "cases": [
           {
-            "condition": "(Framework==\"netcoreapp3.1\")",
-            "value": "3.1"
+            "condition": "(Framework==\"net6.0\")",
+            "value": "6.0"
           }
         ]
       }

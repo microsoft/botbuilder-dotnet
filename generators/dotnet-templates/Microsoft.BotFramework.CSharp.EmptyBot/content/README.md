@@ -6,7 +6,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
 ## Prerequisites
 
-- [.NET Core SDK](https://dotnet.microsoft.com/download) version __NETCORE_VERSION__
+- [.NET SDK](https://dotnet.microsoft.com/download) version __NETCORE_VERSION__
 
   ```bash
   # determine dotnet version
