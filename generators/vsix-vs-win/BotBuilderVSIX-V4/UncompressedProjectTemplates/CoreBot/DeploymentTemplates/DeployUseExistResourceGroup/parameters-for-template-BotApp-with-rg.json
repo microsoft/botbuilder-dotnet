@@ -2,22 +2,22 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "groupName": {
-      "value": ""
-    },
-    "groupLocation": {
-      "value": ""
-    },
     "appServiceName": {
       "value": ""
     },
-    "appServicePlanName": {
+    "existingAppServicePlanName": {
       "value": ""
     },
-    "appServicePlanLocation": {
+    "existingAppServicePlanLocation": {
       "value": ""
     },
-    "appServicePlanSku": {
+    "newAppServicePlanName": {
+      "value": ""
+    },
+    "newAppServicePlanLocation": {
+      "value": ""
+    },
+    "newAppServicePlanSku": {
       "value": {
         "name": "S1",
         "tier": "Standard",
@@ -27,7 +27,7 @@
       }
     },
     "appType": {
-      "value": ""
+      "value": "MultiTenant"
     },
     "appId": {
       "value": ""

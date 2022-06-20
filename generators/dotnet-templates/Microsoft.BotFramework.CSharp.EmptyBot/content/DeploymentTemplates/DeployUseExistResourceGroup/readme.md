@@ -4,7 +4,7 @@ az login
 az deployment group create --resource-group <group-name> --template-file <template-file> --parameters @<parameters-file>
 ---
 
-# parameters-for_template1_Bot-AppService:
+# parameters-for-template-BotApp-with-rg:
 
 **appServiceName**:(required)   The Name of the Bot App Service.
 
@@ -25,7 +25,7 @@ az deployment group create --resource-group <group-name> --template-file <templa
 
 
 
-# parameters-for_template2_AzureBot:
+# parameters-for-template-AzureBot-with-rg:
 
 **azureBotId**:(required)           The globally unique and immutable bot ID.
 **azureBotSku**:                    The pricing tier of the Bot Service Registration. **Allowed values are: F0, S1(default)**.

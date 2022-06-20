@@ -4,7 +4,7 @@ az login
 az deployment sub create --template-file <template-file> --location <bot-region> --parameters @<parameters-file>
 ---
 
-# parameters-for_template1_Bot-AppService:
+# parameters-for-template-BotApp-new-rg:
 
 **groupName**:(required)                Specifies the name of the new Resource Group.
 **groupLocation**:(required)            Specifies the location of the new Resource Group.
@@ -24,7 +24,7 @@ az deployment sub create --template-file <template-file> --location <bot-region>
 
 
 
-# parameters-for_template2_AzureBot:
+# parameters-for-template-AzureBot-new-rg:
 
 **groupName**:(required)            Specifies the name of the new Resource Group.
 **groupLocation**:(required)        Specifies the location of the new Resource Group.
