@@ -227,7 +227,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var locale = DetermineCulture(dc);
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var channelId = dc.Context.Activity.ChannelId;
-            var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? DefaultChoiceOptions[locale];
+            var opts = await GetChoiceOptionsAsync(dc, locale).ConfigureAwait(false);
+            var choiceOptions = opts ?? DefaultChoiceOptions[locale];
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
 
             return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions);
@@ -244,6 +245,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 // use Expression to bind
                 return Choices.TryGetValue(dc.State).Value;
+            }
+        }
+
+        private async Task<ChoiceFactoryOptions> GetChoiceOptionsAsync(DialogContext dc, string locale)
+        {
+            if (ChoiceOptions != null)
+            {
+                if (ChoiceOptions.ExpressionText != null && ChoiceOptions.ExpressionText.TrimStart().StartsWith("${", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // use ITemplate<ChoiceOptionsSet> to bind (aka LG)
+                    return await new ChoiceOptionsSet(ChoiceOptions.ExpressionText).BindAsync(dc).ConfigureAwait(false);
+                }
+                else
+                {
+                    // use Expression to bind
+                    return ChoiceOptions.TryGetValue(dc.State).Value;
+                }
+            }
+            else
+            {
+                return DefaultChoiceOptions[locale];
             }
         }
 

@@ -169,7 +169,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var channelId = dc.Context.Activity.ChannelId;
             var culture = DetermineCulture(dc);
             var defaults = DefaultChoiceOptions[culture];
-            var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? defaults.Item3;
+            var opts = await GetChoiceOptionsAsync(dc, defaults).ConfigureAwait(false);
+            var choiceOptions = opts ?? defaults.Item3;
             var confirmChoices = await GetConfirmChoicesAsync(dc, defaults).ConfigureAwait(false);
 
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
@@ -213,6 +214,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return confirmChoices;
+        }
+
+        private async Task<ChoiceFactoryOptions> GetChoiceOptionsAsync(DialogContext dc, (Choice, Choice, ChoiceFactoryOptions) defaults)
+        {
+            if (ChoiceOptions != null)
+            {
+                if (ChoiceOptions.ExpressionText != null && ChoiceOptions.ExpressionText.TrimStart().StartsWith("${", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // use ITemplate<ChoiceOptionsSet> to bind (aka LG)
+                    return await new ChoiceOptionsSet(ChoiceOptions.ExpressionText).BindAsync(dc).ConfigureAwait(false);
+                }
+                else
+                {
+                    // use Expression to bind
+                    return ChoiceOptions.TryGetValue(dc.State).Value;
+                }
+            }
+            else
+            {
+                return defaults.Item3;
+            }
         }
     }
 }
