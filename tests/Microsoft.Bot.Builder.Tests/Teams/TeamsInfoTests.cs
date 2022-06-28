@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,7 +13,9 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Rest;
 using Moq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -28,7 +31,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            
+
             var connectorClient = new ConnectorClient(new Uri("https://test.coffee"), MicrosoftAppCredentials.Empty, customHttpClient);
 
             var activity = new Activity
@@ -350,6 +353,63 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
+        [Theory]
+        [InlineData("202")]
+        [InlineData("207")]
+        [InlineData("400")]
+        [InlineData("403")]
+        public async Task TestSendMeetingNotificationAsync(string statusCode)
+        {
+            /* 
+               202: accepted
+
+               207: if the notifications are sent only to parital number of recipients because 
+                            the validation on some recipients’ ids failed or some recipients were not found in the roster. 
+                        • In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot 
+                            (ex: if a bot sent encrypted user MRIs, return encrypted one).
+             
+                400: when Meeting Notification request payload validation fails. For instance, 
+                    • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
+                    • Surface: 
+                        o Surface list is empty or null 
+                        o Surface type is invalid 
+                        o Duplicative surface type exists in one payload
+
+                403: if the bot is not allowed to send the notification.
+                    In this case, the payload should contain more detail error message.
+                    There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
+                    the bot does not have a correct RSC permission for a specific surface type, etc
+             */
+
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMeetingNotificationAsync",
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount()
+                {
+                    Id = "id-1",
+
+                    // Hack for test. use the Name field to pass expected status code to test code
+                    Name = statusCode
+                },
+                Conversation = new ConversationAccount() { Id = "conversation-id" }
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
         private class TestTeamsActivityHandler : TeamsActivityHandler
         {
             public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
@@ -381,6 +441,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         break;
                     case "Test-GetMeetingInfoAsync":
                         await CallTeamsInfoGetMeetingInfoAsync(turnContext);
+                        break;
+                    case "Test-SendMeetingNotificationAsync":
+                        await CallSendMeetingNotificationAsync(turnContext);
                         break;
                     default:
                         Assert.True(false);
@@ -457,6 +520,80 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.Equal("meetingConversationId-1", meeting.Conversation.Id);
             }
 
+            private MeetingNotification GetMeetingNotification(ChannelAccount from)
+            {
+                var surface = new TeamsNotificationSurface
+                {
+                    Surface = "contentBubble",
+                    ContentType = "task",
+                    Content = new TaskModuleContinueResponse
+                    {
+                        Value = new TaskModuleTaskInfo
+                        {
+                            Title = "title here",
+                            Height = 3,
+                            Width = 2,
+                        }
+                    }
+                };
+
+                var recipients = new List<string> { from.Id };
+                if (from.Name == "207")
+                {
+                    recipients.Add("failingid");
+                }
+
+                return new MeetingNotification
+                {
+                    Recipients = recipients,
+                    Surfaces = new[] { surface }
+                };
+            }
+
+            private async Task CallSendMeetingNotificationAsync(ITurnContext turnContext)
+            {
+                var from = turnContext.Activity.From;
+                var obo = new OnBehalfOf
+                {
+                    DisplayName = from.Name,
+                    Mri = from.Id
+                };
+
+                try
+                {
+                    var failedParticipants = await TeamsInfo.SendMeetingNotificationAsync(turnContext, GetMeetingNotification(from), "meeting-id", new[] { obo }).ConfigureAwait(false);
+
+                    switch (from.Name)
+                    {
+                        case "207":
+                            Assert.Equal("failingid", failedParticipants.RecipientsFailureInfo.First().RecipientMri);
+                            break;
+                        case "202":
+                            Assert.Null(failedParticipants);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+                catch (HttpOperationException ex)
+                {
+                    Assert.Equal(from.Name, ((int)ex.Response.StatusCode).ToString());
+                    var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(ex.Response.Content);
+
+                    switch (from.Name)
+                    {
+                        case "400":
+                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
+                            break;
+                        case "403":
+                            Assert.Equal("BotNotInConversationRoster", errorResponse.Error.Code);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+            }
+
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
             {
                 var members = (await TeamsInfo.GetMembersAsync(turnContext)).ToArray();
@@ -490,7 +627,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
         private class RosterHttpMessageHandler : HttpMessageHandler
         {
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
 
@@ -509,8 +646,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 // SendMessageToThreadInTeams
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/conversations"))
                 {
-                    var content = new JObject 
-                    { 
+                    var content = new JObject
+                    {
                         new JProperty("id", "id123"),
                         new JProperty("serviceUrl", "https://serviceUrl/"),
                         new JProperty("activityId", "activityId123")
@@ -639,7 +776,41 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     response.Content = new StringContent(content.ToString());
                 }
 
-                return Task.FromResult(response);
+                // Post meeting notification
+                else if (request.RequestUri.PathAndQuery.EndsWith("v1/meetings/meeting-id/notification"))
+                {
+                    var responseBody = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var notification = JsonConvert.DeserializeObject<MeetingNotificationEnvelope>(responseBody);
+                    var obo = notification.NotificationData.OnBehalfOf.First();
+
+                    // hack displayname as expected status code, for testing
+                    switch (obo.DisplayName)
+                    {
+                        case "207":
+                            var failureInfo = new MeetingNotificationRecipientFailureInfo { RecipientMri = notification.Value.Recipients.First(r => !r.Equals(obo.Mri, StringComparison.OrdinalIgnoreCase)) };
+                            var infos = new MeetingNotificationRecipientFailureInfos
+                            {
+                                RecipientsFailureInfo = new List<MeetingNotificationRecipientFailureInfo> { failureInfo }
+                            };
+
+                            response.Content = new StringContent(JsonConvert.SerializeObject(infos));
+                            response.StatusCode = HttpStatusCode.MultiStatus;
+                            break;
+                        case "403":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BotNotInConversationRoster\"}}");
+                            response.StatusCode = HttpStatusCode.Forbidden;
+                            break;
+                        case "400":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
+                            response.StatusCode = HttpStatusCode.BadRequest;
+                            break;
+                        default:
+                            response.StatusCode = HttpStatusCode.Accepted;
+                            break;
+                    }
+                }
+
+                return response;
             }
         }
 
