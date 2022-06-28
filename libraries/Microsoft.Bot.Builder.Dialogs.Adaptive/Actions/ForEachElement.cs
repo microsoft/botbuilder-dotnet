@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
@@ -30,8 +31,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private readonly ActionScope _scope;
 
-        private List<Dialog> _actions = new List<Dialog>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ForEachElement"/> class.
         /// </summary>
@@ -39,12 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ForEachElement(IEnumerable<Dialog> actions = null)
             : base(true)
         {
-            if (actions != null)
-            {
-                _actions = new List<Dialog>(actions);
-            }
-
-            _scope = new ActionScope(actions);
+            _scope = new ActionScope(actions?.ToList());
         }
 
         /// <summary>
@@ -56,13 +50,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             get
             {
-                return this._actions;
+                return this._scope.Actions;
             }
 
             set
             {
-                _actions = value ?? new List<Dialog>();
-                _scope.Actions = _actions;
+                _scope.Actions = value ?? new List<Dialog>();
             }
         }
 #pragma warning restore CA2227 // Collection properties should be read only
