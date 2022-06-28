@@ -112,5 +112,36 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new InvalidOperationException("TeamsOperations with GetParticipantWithHttpMessagesAsync is required for FetchParticipantAsync.");
             }
         }
+
+        /// <summary>
+        /// Sends a notification to participants of a Teams meeting.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='meetingId'>
+        /// Team meeting Id.
+        /// </param>
+        /// <param name='notification'>
+        /// Team meeting notification.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>Information regarding which participant notifications failed.</returns>
+        public static async Task<MeetingNotificationRecipientFailureInfos> SendMeetingNotificationAsync(this ITeamsOperations operations, string meetingId, MeetingNotificationEnvelope notification, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.SendMeetingNotificationMessageAsync(meetingId, notification, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with GetParticipantWithHttpMessagesAsync is required for FetchParticipantAsync.");
+            }
+        }
     }
 }

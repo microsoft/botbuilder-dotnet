@@ -22,6 +22,34 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsInfo
     {
         /// <summary>
+        /// Sends a notification to meeting participants. This functionality is available only in teams meeting scoped conversations. 
+        /// </summary>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="notification">The notification to send to Teams.</param>
+        /// <param name="meetingId">The id of the Teams meeting. TeamsChannelData.Meeting.Id will be used if none provided.</param>
+        /// <param name="onBehalfOf">Optional list of <see cref="OnBehalfOf"/> to send with the <see cref="MeetingNotification"/>.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>InvalidOperationException will be thrown if meetingId or notification have not been
+        /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
+        /// <returns>List of <see cref="MeetingNotificationRecipientFailureInfo"/> for whom the notification failed.</returns>
+        public static async Task<MeetingNotificationRecipientFailureInfos> SendMeetingNotificationAsync(ITurnContext turnContext, MeetingNotification notification, string meetingId = null, IList<OnBehalfOf> onBehalfOf = null, CancellationToken cancellationToken = default)
+        {
+            meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
+            notification = notification ?? throw new InvalidOperationException($"{nameof(notification)} is required.");
+
+            var envelope = new MeetingNotificationEnvelope 
+            { 
+                Value = notification, 
+                NotificationData = new MeetingNotificationData { OnBehalfOf = onBehalfOf } 
+            };
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMeetingNotificationAsync(meetingId, envelope, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Gets the details for the given meeting participant. This only works in teams meeting scoped conversations. 
         /// </summary>
         /// <param name="turnContext">Turn context.</param>
