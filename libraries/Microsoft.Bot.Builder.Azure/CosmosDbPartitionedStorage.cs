@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
@@ -19,7 +21,7 @@ namespace Microsoft.Bot.Builder.Azure
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
-        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, MaxDepth = null });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
@@ -94,6 +96,7 @@ namespace Microsoft.Bot.Builder.Azure
             : this(cosmosDbStorageOptions)
         {
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
+            _jsonSerializer.MaxDepth = null;
         }
 
         /// <summary>
@@ -354,6 +357,7 @@ namespace Microsoft.Bot.Builder.Azure
             if (_container == null)
             {
                 var cosmosClientOptions = _cosmosDbStorageOptions.CosmosClientOptions ?? new CosmosClientOptions();
+                cosmosClientOptions.Serializer = new CosmosJsonSerializer(new JsonSerializerSettings { MaxDepth = null });
 
                 if (_client == null)
                 {
@@ -417,6 +421,7 @@ namespace Microsoft.Bot.Builder.Azure
         private bool IsNestingError(JObject json, out string errorMessage)
         {
             using var reader = new JTokenReader(json);
+            reader.MaxDepth = null;
 
             while (reader.Read())
             {
@@ -453,6 +458,89 @@ namespace Microsoft.Bot.Builder.Azure
                 .StartsWith(
                     "Microsoft.Bot.Builder.Dialogs.DialogState",
                     StringComparison.OrdinalIgnoreCase) is true);
+
+        /// <summary>
+        /// Azure Cosmos DB does not expose a default implementation of CosmosSerializer that is required to set the custom JSON serializer settings.
+        /// To fix this, we have to create our own implementation.
+        /// <remarks>
+        /// See: https://github.com/Azure/azure-cosmos-dotnet-v3/blob/master/Microsoft.Azure.Cosmos/src/Serializer/CosmosJsonDotNetSerializer.cs
+        /// </remarks>
+        /// </summary>
+        internal class CosmosJsonSerializer : CosmosSerializer
+        {
+            private static readonly Encoding DefaultEncoding = new UTF8Encoding(false, true);
+            private readonly JsonSerializerSettings _serializerSettings;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CosmosJsonSerializer"/> class that uses the JSON.net serializer.
+            /// </summary>
+            /// <param name="jsonSerializerSettings">The JSON.net serializer.</param>
+            public CosmosJsonSerializer(JsonSerializerSettings jsonSerializerSettings)
+            {
+                _serializerSettings = jsonSerializerSettings ??
+                      throw new ArgumentNullException(nameof(jsonSerializerSettings));
+            }
+
+            /// <summary>
+            /// Convert a Stream to the passed in type.
+            /// </summary>
+            /// <typeparam name="T">The type of object that should be deserialized.</typeparam>
+            /// <param name="stream">An open stream that is readable that contains JSON.</param>
+            /// <returns>The object representing the deserialized stream.</returns>
+            public override T FromStream<T>(Stream stream)
+            {
+                using (stream)
+                {
+                    if (typeof(Stream).IsAssignableFrom(typeof(T)))
+                    {
+                        return (T)(object)stream;
+                    }
+
+                    using (var sr = new StreamReader(stream))
+                    {
+                        using (var jsonTextReader = new JsonTextReader(sr))
+                        {
+                            var jsonSerializer = GetSerializer();
+                            return jsonSerializer.Deserialize<T>(jsonTextReader);
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Converts an object to a open readable stream.
+            /// </summary>
+            /// <typeparam name="T">The type of object being serialized.</typeparam>
+            /// <param name="input">The object to be serialized.</param>
+            /// <returns>An open readable stream containing the JSON of the serialized object.</returns>
+            public override Stream ToStream<T>(T input)
+            {
+                var streamPayload = new MemoryStream();
+                using (var streamWriter = new StreamWriter(streamPayload, encoding: DefaultEncoding, bufferSize: 1024, leaveOpen: true))
+                {
+                    using (JsonWriter writer = new JsonTextWriter(streamWriter))
+                    {
+                        writer.Formatting = Formatting.None;
+                        var jsonSerializer = GetSerializer();
+                        jsonSerializer.Serialize(writer, input);
+                        writer.Flush();
+                        streamWriter.Flush();
+                    }
+                }
+
+                streamPayload.Position = 0;
+                return streamPayload;
+            }
+
+            /// <summary>
+            /// JsonSerializer has hit a race conditions with custom settings that cause null reference exception.
+            /// To avoid the race condition a new JsonSerializer is created for each call.
+            /// </summary>
+            private JsonSerializer GetSerializer()
+            {
+                return JsonSerializer.Create(_serializerSettings);
+            }
+        }
 
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
