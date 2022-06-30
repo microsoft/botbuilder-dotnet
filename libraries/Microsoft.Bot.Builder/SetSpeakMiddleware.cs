@@ -77,18 +77,12 @@ namespace Microsoft.Bot.Builder
 
         private void SetXmlSpeakTag(Activity activity)
         {
-            if (IsVoiceTag(activity.Speak))
+            if (!HasTag(activity))
             {
-                activity.Speak = CreateMultiVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
-            }
+                // Create child node "<voice" tag
+                activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
 
-            if (!HasTag(_speakTag, activity.Speak))
-            {
-                if (!HasTag(_voiceTag, activity.Speak))
-                {
-                    activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
-                }
-
+                // Create root node "<speak" with voice tag as it's child node
                 activity.Speak = CreateXmlSpeakTag(activity).ToString(SaveOptions.DisableFormatting);
             }
         }
@@ -97,8 +91,11 @@ namespace Microsoft.Bot.Builder
         {
             foreach (var node in xml.Descendants())
             {
-                node.Attributes("xmlns").Remove();
-                node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
+                if (node.Name.Namespace == string.Empty)
+                {
+                    node.Attributes("xmlns").Remove();
+                    node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
+                }
             }
         }
 
@@ -107,7 +104,7 @@ namespace Microsoft.Bot.Builder
             try
             {
                 // Wrap voice tag under one virtual root before invoking the XDocument.Parse
-                var speakTagTemplate = $"<speak version=\"1.0\" xml:lang=\"{activity.Locale ?? "en - US"}\" xmlns=\"{_nameSpaceUri}\">{activity.Speak}</speak>";
+                var speakTagTemplate = $"<{_speakTag} version=\"{_ssmlVersionSupported}\" xml:lang=\"{activity.Locale ?? "en - US"}\" xmlns=\"{_nameSpaceUri}\">{activity.Speak}</{_speakTag}>";
                 var speakTag = XElement.Parse(speakTagTemplate);
 
                 return speakTag;
@@ -149,11 +146,11 @@ namespace Microsoft.Bot.Builder
             return voiceTag;
         }
 
-        private bool HasTag(string tagName, string speakText)
+        private bool HasTag(Activity activity)
         {
             try
             {
-                foreach (char c in speakText)
+                foreach (char c in activity.Speak)
                 {
                     if (c == '<')
                     {
@@ -169,9 +166,16 @@ namespace Microsoft.Bot.Builder
                     }
                 }
 
-                var speakSsmlDoc = XDocument.Parse(speakText);
+                // Support multiple "<voice" tags inside the root node
+                if (IsVoiceTag(activity.Speak))
+                {
+                    activity.Speak = CreateMultiVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
+                    return true;
+                }
 
-                if (speakSsmlDoc != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
+                var speakSsmlDoc = XDocument.Parse(activity.Speak);
+
+                if (speakSsmlDoc?.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == _speakTag))
                 {
                     return true;
                 }
@@ -184,9 +188,9 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private bool IsVoiceTag(string speakText)
+        private bool IsVoiceTag(string tag)
         {
-            return speakText.Contains("<voice");
+            return tag.StartsWith("<voice", StringComparison.OrdinalIgnoreCase);
         }
 
         private bool IsSpeakActivitySet(Activity activity)
