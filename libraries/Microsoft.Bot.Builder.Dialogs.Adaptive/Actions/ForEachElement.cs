@@ -249,7 +249,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private DialogContext CreateChildContext(DialogContext dc, DialogState childDialogState)
         {
-            var childDc = new DialogContext(new DialogSet().Add(_scope), dc.Parent ?? dc, childDialogState);
+            var dialogSet = new DialogSet();
+            dialogSet.TelemetryClient = TelemetryClient ?? dc.Context.TurnState.Get<IBotTelemetryClient>() ?? NullBotTelemetryClient.Instance;
+            dialogSet.Add(_scope);
+
+            var childDc = new DialogContext(dialogSet, dc.Parent ?? dc, childDialogState);
             childDc.Parent = dc.Parent;
 
             if (dc.Services != null)
