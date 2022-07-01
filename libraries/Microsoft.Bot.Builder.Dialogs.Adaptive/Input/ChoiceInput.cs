@@ -143,10 +143,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         internal override void TrackGeneratorResultEvent(DialogContext dc, ITemplate<Activity> activityTemplate, IMessageActivity msg)
         {
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
-            var serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+            var serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null };
             var properties = new Dictionary<string, string>()
             {
-                { "template", JsonConvert.SerializeObject(activityTemplate) },
+                { "template", JsonConvert.SerializeObject(activityTemplate, new JsonSerializerSettings { MaxDepth = null }) },
                 { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, serializationSettings) },
                 { "choices", options.Choices == null ? string.Empty : JsonConvert.SerializeObject(options.Choices, serializationSettings) },
                 { "context", TelemetryLoggerConstants.InputDialogResultEvent }

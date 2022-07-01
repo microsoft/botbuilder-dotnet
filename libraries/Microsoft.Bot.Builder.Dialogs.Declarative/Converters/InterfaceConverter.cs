@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                         return unKnownResult;
                     }
 
-                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jToken)}");
+                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jToken, new JsonSerializerSettings { MaxDepth = null })}");
                 }
 
                 // if reference resolution made a source context available for the JToken, then add it to the context stack

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null };
         private readonly ITranscriptLogger _logger;
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder
 
         private static IActivity CloneActivity(IActivity activity)
         {
-            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _jsonSettings));
+            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _jsonSettings),  new JsonSerializerSettings { MaxDepth = null });
             var activityWithId = EnsureActivityHasId(activity);
 
             return activityWithId;

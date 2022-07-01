@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 {
                     try
                     {
-                        using (var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\"")))
+                        using (var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\"")) { MaxDepth = null })
                         {
                             var dialog = (Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer);
                             result = UpdateOrCreateExpression(id, dialog);
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             }
             else
             {
-                using (var jTokenReader = new JTokenReader(jToken))
+                using (var jTokenReader = new JTokenReader(jToken) { MaxDepth = null })
                 {
                     var dialog = (Dialog)this.converter.ReadJson(jTokenReader, objectType, existingValue, serializer);
                     result = UpdateOrCreateExpression(dialog?.Id, dialog);

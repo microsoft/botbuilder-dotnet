@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var options = new BlobRequestOptions { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(20), 4) };
 
                     using (var blobStream = await blobReference.OpenReadAsync(null, options, new OperationContext(), cancellationToken).ConfigureAwait(false))
-                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
+                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)) { MaxDepth = null })
                     {
                         var obj = _jsonSerializer.Deserialize(jsonReader);
 

@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 try
                 {
-                    var jObj = (JArray)JsonConvert.DeserializeObject(str);
+                    var jObj = (JArray)JsonConvert.DeserializeObject(str, new JsonSerializerSettings { MaxDepth = null });
 
                     var options = new ChoiceFactoryOptions
                     {

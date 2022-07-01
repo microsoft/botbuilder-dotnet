@@ -135,6 +135,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
             var s = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
+                MaxDepth = null
             };
             Output.WriteLine(JsonConvert.SerializeObject(activity, s));
         }

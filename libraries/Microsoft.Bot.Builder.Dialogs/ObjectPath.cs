@@ -17,12 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
-        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, MaxDepth = null };
 
         private static readonly JsonSerializerSettings _expressionCaseSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
             NullValueHandling = NullValueHandling.Ignore,
+            MaxDepth = null
         };
 
         /// <summary>
@@ -463,7 +464,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return (T)val;
             }
 
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(val, _expressionCaseSettings));
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(val, _expressionCaseSettings), new JsonSerializerSettings { MaxDepth = null });
         }
 
         /// <summary>
@@ -738,7 +739,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else
                 {
-                    val = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, _expressionCaseSettings));
+                    val = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, _expressionCaseSettings), new JsonSerializerSettings { MaxDepth = null });
                 }
             }
             else
