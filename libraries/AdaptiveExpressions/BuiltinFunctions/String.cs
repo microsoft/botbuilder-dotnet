@@ -59,7 +59,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         }
                         else
                         {
-                            result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');
+                            result = JsonConvert.SerializeObject(args[0], new JsonSerializerSettings { MaxDepth = null }).TrimStart('"').TrimEnd('"');
                         }
                     }
 

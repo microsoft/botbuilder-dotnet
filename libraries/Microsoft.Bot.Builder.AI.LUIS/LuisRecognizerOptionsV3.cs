@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             content.Add("options", queryOptions);
 
-            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null };
             if (options.DynamicLists != null)
             {
                 foreach (var list in options.DynamicLists)
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     list.Validate();
                 }
 
-                content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
+                content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings),  new JsonSerializerSettings { MaxDepth = null }));
             }
 
             if (options.ExternalEntities != null)
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     entity.Validate();
                 }
 
-                content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
+                content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings),  new JsonSerializerSettings { MaxDepth = null }));
             }
 
             return content;
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            return (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false),  new JsonSerializerSettings { MaxDepth = null });
         }
 
         private RecognizerResult BuildRecognizerResultFromLuisResponse(JObject luisResponse, string utterance)

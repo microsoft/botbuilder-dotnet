@@ -111,7 +111,7 @@ namespace AdaptiveExpressions.Properties
             }
 
             // return expression for json object
-            _expression = Expression.Parse($"json({JsonConvert.SerializeObject(this.Value)})");
+            _expression = Expression.Parse($"json({JsonConvert.SerializeObject(this.Value, new JsonSerializerSettings { MaxDepth = null })})");
             return _expression;
         }
 

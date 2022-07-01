@@ -176,9 +176,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 return null;
             }
 
-            var data = JsonConvert.SerializeObject(decryptedMessage);
+            var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
+            var data = JsonConvert.SerializeObject(decryptedMessage, serializerSettings);
 
-            var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+            var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data, serializerSettings);
 
             var activity = new Activity
             {

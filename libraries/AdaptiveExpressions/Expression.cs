@@ -630,7 +630,8 @@ namespace AdaptiveExpressions
                     return (default(T), error);
                 }
 
-                return (JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(result)), null);
+                var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
+                return (JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(result, serializerSettings), serializerSettings), null);
             }
 #pragma warning disable CA1031 // Do not catch general exception types (just return an error)
             catch

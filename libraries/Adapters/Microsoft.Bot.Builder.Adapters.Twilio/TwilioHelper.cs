@@ -110,7 +110,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(payload));
+            var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
+            var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(payload, serializerSettings), serializerSettings);
 
             return new Activity()
             {

@@ -63,13 +63,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             if (activity.Attachments != null && activity.Attachments.Count > 0 && facebookMessage.Message != null)
             {
-                var payload = JsonConvert.DeserializeObject<AttachmentPayload>(JsonConvert.SerializeObject(
-                    activity.Attachments[0].Content,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                    }));
+                var payload = JsonConvert.DeserializeObject<AttachmentPayload>(
+                    JsonConvert.SerializeObject(
+                        activity.Attachments[0].Content,
+                        Formatting.None,
+                        new JsonSerializerSettings
+                        {
+                            NullValueHandling = NullValueHandling.Ignore,
+                            MaxDepth = null
+                        }),
+                    new JsonSerializerSettings { MaxDepth = null });
 
                 var facebookAttachment = new FacebookAttachment
                 {

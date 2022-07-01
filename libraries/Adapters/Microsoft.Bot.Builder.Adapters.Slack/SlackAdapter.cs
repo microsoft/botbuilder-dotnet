@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         private readonly SlackClientWrapper _slackClient;
         private readonly ILogger _logger;
         private readonly SlackAdapterOptions _options;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class using configuration settings.
@@ -295,13 +296,13 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                 if (postValues.ContainsKey("payload"))
                 {
-                    var payload = JsonConvert.DeserializeObject<InteractionPayload>(postValues["payload"]);
+                    var payload = JsonConvert.DeserializeObject<InteractionPayload>(postValues["payload"], _settings);
                     activity = SlackHelper.PayloadToActivity(payload);
                 }
                 else if (postValues.ContainsKey("command"))
                 {
-                    var serializedPayload = JsonConvert.SerializeObject(postValues);
-                    var payload = JsonConvert.DeserializeObject<CommandPayload>(serializedPayload);
+                    var serializedPayload = JsonConvert.SerializeObject(postValues, _settings);
+                    var payload = JsonConvert.DeserializeObject<CommandPayload>(serializedPayload, _settings);
                     activity = SlackHelper.CommandToActivity(payload, _slackClient);
                 }
             }
