@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
         private readonly SemaphoreSlim _writeLock = new SemaphoreSlim(1);
         private readonly TimeSpan _semaphoreTimeout = TimeSpan.FromSeconds(10);
         private readonly byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         private IObserver<(Header, ReadOnlySequence<byte>)> _observer;
         private bool _disposedValue;
@@ -154,7 +155,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 throw new ArgumentNullException(nameof(response));
             }
 
-            var responseBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
+            var responseBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, _settings));
 
             var responseHeader = new Header()
             {
@@ -176,7 +177,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var requestBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
+            var requestBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, _settings));
 
             var requestHeader = new Header()
             {

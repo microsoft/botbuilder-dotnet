@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
             var adaptiveCardAttachment = new Attachment()
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCardJson),
+                Content = JsonConvert.DeserializeObject(adaptiveCardJson, new JsonSerializerSettings { MaxDepth = null }),
             };
             return adaptiveCardAttachment;
         }

@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Connector
 #pragma warning disable CA1801 // Review unused parameters (this class is deprecated, we won't fix FxCop issues)
         private readonly ConnectorClient _client;
         private readonly string _uri;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthClientOld"/> class.
@@ -143,7 +144,7 @@ namespace Microsoft.Bot.Connector
                 string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    var tokenResponse = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenResponse>(responseContent);
+                    var tokenResponse = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenResponse>(responseContent, _settings);
                     return tokenResponse;
                 }
                 catch (JsonException)
@@ -389,7 +390,7 @@ namespace Microsoft.Bot.Connector
                 string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    var statuses = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenStatus[]>(responseContent);
+                    var statuses = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenStatus[]>(responseContent, _settings);
                     return statuses;
                 }
                 catch (JsonException)
@@ -510,7 +511,7 @@ namespace Microsoft.Bot.Connector
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     try
                     {
-                        var tokens = Rest.Serialization.SafeJsonConvert.DeserializeObject<Dictionary<string, TokenResponse>>(responseContent);
+                        var tokens = Rest.Serialization.SafeJsonConvert.DeserializeObject<Dictionary<string, TokenResponse>>(responseContent, _settings);
                         return tokens;
                     }
                     catch (JsonException)
