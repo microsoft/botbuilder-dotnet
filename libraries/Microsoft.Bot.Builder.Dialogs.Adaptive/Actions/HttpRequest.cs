@@ -32,6 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.HttpRequest";
 
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpRequest"/> class.
         /// </summary>
@@ -352,13 +354,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 switch (ResponseType.GetValue(dc.State))
                 {
                     case ResponseTypes.Activity:
-                        var activity = JsonConvert.DeserializeObject<Activity>((string)content);
+                        var activity = JsonConvert.DeserializeObject<Activity>((string)content, _settings);
                         requestResult.Content = JObject.FromObject(activity);
                         await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
                         break;
 
                     case ResponseTypes.Activities:
-                        var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
+                        var activities = JsonConvert.DeserializeObject<Activity[]>((string)content, _settings);
                         requestResult.Content = JArray.FromObject(activities);
                         await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
                         break;

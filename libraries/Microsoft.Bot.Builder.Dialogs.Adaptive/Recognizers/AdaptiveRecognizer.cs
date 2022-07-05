@@ -17,6 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public abstract class AdaptiveRecognizer : Recognizer
     {
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveRecognizer"/> class.
         /// </summary>
@@ -55,9 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
                 { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
-                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents, _settings) : null },
                 { "Entities", recognizerResult.Entities?.ToString() },
-                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties, _settings) : null },
             };
 
             var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);

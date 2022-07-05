@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder
 
                 if (activity.Attachments != null && activity.Attachments.Any())
                 {
-                    properties.Add(TelemetryConstants.AttachmentsProperty, JsonConvert.SerializeObject(activity.Attachments));
+                    properties.Add(TelemetryConstants.AttachmentsProperty, JsonConvert.SerializeObject(activity.Attachments,  new JsonSerializerSettings { MaxDepth = null }));
                 }
             }
 
@@ -385,7 +385,7 @@ namespace Microsoft.Bot.Builder
 
                     if (teamsChannelData?.Team != null)
                     {
-                        properties.Add("TeamsTeamInfo", JsonConvert.SerializeObject(teamsChannelData.Team));
+                        properties.Add("TeamsTeamInfo", JsonConvert.SerializeObject(teamsChannelData.Team,  new JsonSerializerSettings { MaxDepth = null }));
                     }
 
                     break;

@@ -46,7 +46,8 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             _jsonSettings = jsonSerializerSettings ?? new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.None,
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                MaxDepth = null
             };
 
             _queueClient = new QueueClient(queuesStorageConnectionString, queueName);
@@ -95,7 +96,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, _jsonSettings)));
             var receipt = await _queueClient.SendMessageAsync(message, visibilityTimeout, timeToLive, cancellationToken).ConfigureAwait(false);
 
-            return JsonConvert.SerializeObject(receipt.Value);
+            return JsonConvert.SerializeObject(receipt.Value, new JsonSerializerSettings { MaxDepth = null });
         }
     }
 }

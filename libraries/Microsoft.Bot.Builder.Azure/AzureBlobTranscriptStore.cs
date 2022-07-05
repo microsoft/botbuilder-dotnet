@@ -33,6 +33,8 @@ namespace Microsoft.Bot.Builder.Azure
 
         private readonly CloudBlobClient _blobClient;
 
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobTranscriptStore"/> class.
         /// Creates an instance of AzureBlobTranscriptStore.
@@ -106,13 +108,13 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 case ActivityTypes.MessageUpdate:
                     {
-                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _settings), _settings);
                         updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
 
                         var blob = await FindActivityBlobAsync(activity).ConfigureAwait(false);
                         if (blob != null)
                         {
-                            var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
+                            var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false), _settings);
 
                             updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
                             updatedActivity.Timestamp = originalActivity.Timestamp;
@@ -132,7 +134,7 @@ namespace Microsoft.Bot.Builder.Azure
                         var blob = await FindActivityBlobAsync(activity).ConfigureAwait(false);
                         if (blob != null)
                         {
-                            var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
+                            var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false), _settings);
 
                             // tombstone the original message
                             var tombstonedActivity = new Activity()
@@ -229,7 +231,7 @@ namespace Microsoft.Bot.Builder.Azure
                 .Select(async bl =>
                 {
                     var json = await bl.DownloadTextAsync().ConfigureAwait(false);
-                    return JsonConvert.DeserializeObject<Activity>(json);
+                    return JsonConvert.DeserializeObject<Activity>(json, _settings);
                 })
                 .Select(t => t.Result)
                 .ToArray();
@@ -422,7 +424,7 @@ namespace Microsoft.Bot.Builder.Azure
                     else
                     {
                         // we have to read full activity as it's an old blob
-                        var entry = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
+                        var entry = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false), _settings);
                         blob.Metadata["Id"] = entry.Id;
 
                         // update metadata with Id so we don't have to download again.  This effectively "patches" old metadata records

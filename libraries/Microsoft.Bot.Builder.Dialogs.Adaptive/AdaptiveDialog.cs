@@ -57,6 +57,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private SchemaHelper dialogSchema;
 
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialog"/> class.
         /// </summary>
@@ -168,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // replace initial activeDialog.State with clone of options
             if (options != null)
             {
-                dc.ActiveDialog.State = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(options));
+                dc.ActiveDialog.State = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(options, _settings), _settings);
             }
 
             if (!dc.State.ContainsKey(DialogPath.EventCounter))
@@ -394,7 +396,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // change version if the schema has changed.
             if (this.Schema != null)
             {
-                sb.Append(JsonConvert.SerializeObject(this.Schema));
+                sb.Append(JsonConvert.SerializeObject(this.Schema, _settings));
             }
 
             // change if triggers type/constraint change 

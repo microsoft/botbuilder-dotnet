@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TraceTranscriptLogger : ITranscriptLogger
     {
-        private static readonly JsonSerializerSettings _serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+        private static readonly JsonSerializerSettings _serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented, MaxDepth = null };
 
         private readonly bool _traceActivity;
 

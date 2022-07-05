@@ -518,7 +518,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             using (var readerText = new StreamReader(await resource.OpenStreamAsync().ConfigureAwait(false)))
-            using (var readerJson = new JsonTextReader(readerText) { DateParseHandling = DateParseHandling.None })
+            using (var readerJson = new JsonTextReader(readerText) { DateParseHandling = DateParseHandling.None, MaxDepth = null })
             {
                 if (advanceJsonReader)
                 {

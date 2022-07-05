@@ -498,7 +498,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                     using (var sr = new StreamReader(stream))
                     {
-                        using (var jsonTextReader = new JsonTextReader(sr))
+                        using (var jsonTextReader = new JsonTextReader(sr) { MaxDepth = null })
                         {
                             var jsonSerializer = GetSerializer();
                             return jsonSerializer.Deserialize<T>(jsonTextReader);

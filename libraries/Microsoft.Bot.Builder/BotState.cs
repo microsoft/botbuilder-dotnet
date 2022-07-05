@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder
 
             internal static string ComputeHash(object obj)
             {
-                return JsonConvert.SerializeObject(obj);
+                return JsonConvert.SerializeObject(obj, new JsonSerializerSettings { MaxDepth = null });
             }
 
             internal bool IsChanged()

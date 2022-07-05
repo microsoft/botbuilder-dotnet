@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
     public class TestDataObject : IXunitSerializable
     {
         private const string TestObjectKey = "TestObjectKey";
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestDataObject"/> class.
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <param name="testData">An object with the data to be used in the test.</param>
         public TestDataObject(object testData)
         {
-            TestObject = JsonConvert.SerializeObject(testData);
+            TestObject = JsonConvert.SerializeObject(testData, _settings);
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <returns>The test object instance.</returns>
         public T GetObject<T>()
         {
-            return JsonConvert.DeserializeObject<T>(TestObject);
+            return JsonConvert.DeserializeObject<T>(TestObject, _settings);
         }
     }
 }

@@ -126,12 +126,13 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         public async Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
+            var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
 
             switch (activity.Type)
             {
                 case ActivityTypes.MessageUpdate:
                     {
-                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, serializerSettings), serializerSettings);
                         updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
 
                         var activityAndBlob = await InnerReadBlobAsync(activity).ConfigureAwait(false);
@@ -416,7 +417,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         private async Task<Activity> GetActivityFromBlobClientAsync(BlobClient blobClient)
         {
             using BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false);
-            using var jsonReader = new JsonTextReader(new StreamReader(download.Content));
+            using var jsonReader = new JsonTextReader(new StreamReader(download.Content)) { MaxDepth = null };
             return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
         }
 

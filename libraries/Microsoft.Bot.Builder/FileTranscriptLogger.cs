@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Builder
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
+            MaxDepth = null
         };
 
         private readonly string _folder;
@@ -194,7 +195,7 @@ namespace Microsoft.Bot.Builder
                     using (var reader = new StreamReader(stream) as TextReader)
                     {
                         var json = await reader.ReadToEndAsync().ConfigureAwait(false);
-                        return JsonConvert.DeserializeObject<Activity[]>(json);
+                        return JsonConvert.DeserializeObject<Activity[]>(json, new JsonSerializerSettings { MaxDepth = null });
                     }
                 }
             }
@@ -230,7 +231,8 @@ namespace Microsoft.Bot.Builder
                 var originalActivity = transcript[i];
                 if (originalActivity.Id == activity.Id)
                 {
-                    var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                    var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
+                    var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, serializerSettings), serializerSettings);
                     updatedActivity.Type = originalActivity.Type; // fixup original type (should be Message)
                     updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
                     updatedActivity.Timestamp = originalActivity.Timestamp;

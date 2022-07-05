@@ -42,6 +42,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         public const string NoneIntent = "None";
 
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Recognizer"/> class to recognize user input.
         /// </summary>
@@ -182,9 +184,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { "AlteredText", recognizerResult.AlteredText },
                 { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
                 { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
-                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents, _settings) : null },
                 { "Entities", recognizerResult.Entities?.ToString() },
-                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties, _settings) : null },
             };
 
             // Additional Properties can override "stock" properties.

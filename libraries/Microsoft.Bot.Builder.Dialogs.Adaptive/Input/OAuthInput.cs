@@ -249,8 +249,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                             var properties = new Dictionary<string, string>()
                             {
-                                { "template", JsonConvert.SerializeObject(this.DefaultValueResponse) },
-                                { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                                { "template", JsonConvert.SerializeObject(this.DefaultValueResponse, new JsonSerializerSettings { MaxDepth = null }) },
+                                { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }) },
                                 { "context", TelemetryLoggerConstants.OAuthInputResultEvent }
                             };
                             TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
