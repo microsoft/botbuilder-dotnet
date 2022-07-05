@@ -351,7 +351,8 @@ namespace Microsoft.Bot.Connector
                 Converters = new List<JsonConverter>
                     {
                         new Iso8601TimeSpanConverter()
-                    }
+                    },
+                MaxDepth = null
             };
             DeserializationSettings = new JsonSerializerSettings
             {
@@ -363,7 +364,8 @@ namespace Microsoft.Bot.Connector
                 Converters = new List<JsonConverter>
                     {
                         new Iso8601TimeSpanConverter()
-                    }
+                    },
+                MaxDepth = null
             };
             CustomInitialize();
         }

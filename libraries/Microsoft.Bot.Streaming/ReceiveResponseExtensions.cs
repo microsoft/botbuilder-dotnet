@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Streaming
 
             using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
             {
-                using (var jsonReader = new JsonTextReader(reader))
+                using (var jsonReader = new JsonTextReader(reader) { MaxDepth = null })
                 {
                     var serializer = JsonSerializer.Create(SerializationSettings.DefaultDeserializationSettings);
                     return serializer.Deserialize<T>(jsonReader);

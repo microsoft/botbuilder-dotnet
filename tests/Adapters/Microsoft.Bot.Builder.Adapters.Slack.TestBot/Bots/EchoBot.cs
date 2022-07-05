@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
         private static Attachment CreateInteractiveMessage(string filePath)
         {
             var interactiveMessageJson = System.IO.File.ReadAllText(filePath);
-            var adaptiveCardAttachment = JsonConvert.DeserializeObject<Block[]>(interactiveMessageJson);
+            var adaptiveCardAttachment = JsonConvert.DeserializeObject<Block[]>(interactiveMessageJson, new JsonSerializerSettings { MaxDepth = null });
 
             var blockList = adaptiveCardAttachment.ToList();
 

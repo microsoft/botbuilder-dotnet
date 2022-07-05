@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
             var templateAttachment = new Attachment()
             {
                 ContentType = "template",
-                Content = JsonConvert.DeserializeObject(templateAttachmentJson),
+                Content = JsonConvert.DeserializeObject(templateAttachmentJson, new JsonSerializerSettings { MaxDepth = null }),
             };
             return templateAttachment;
         }

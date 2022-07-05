@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.CognitiveModels
 
         public void Convert(dynamic result)
         {
-            var app = JsonConvert.DeserializeObject<FlightBooking>(JsonConvert.SerializeObject(result));
+            var app = JsonConvert.DeserializeObject<FlightBooking>(JsonConvert.SerializeObject(result, new JsonSerializerSettings { MaxDepth = null }));
             Text = app.Text;
             AlteredText = app.AlteredText;
             Intents = app.Intents;

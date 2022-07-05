@@ -113,7 +113,7 @@ namespace Bot2
 
             if ((turnContext.Activity as Activity)?.Value != null)
             {
-                eocActivityMessage += $"\n\nValue: {JsonConvert.SerializeObject((turnContext.Activity as Activity)?.Value)}";
+                eocActivityMessage += $"\n\nValue: {JsonConvert.SerializeObject((turnContext.Activity as Activity)?.Value, new JsonSerializerSettings { MaxDepth = null })}";
             }
 
             await turnContext.SendActivityAsync(MessageFactory.Text(eocActivityMessage), cancellationToken);

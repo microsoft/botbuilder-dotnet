@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Configuration
                 json = await stream.ReadToEndAsync().ConfigureAwait(false);
             }
 
-            var bot = JsonConvert.DeserializeObject<BotConfiguration>(json);
+            var bot = JsonConvert.DeserializeObject<BotConfiguration>(json, new JsonSerializerSettings { MaxDepth = null });
             bot.Location = file;
             bot.MigrateData();
 
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Configuration
             {
                 using (var textWriter = new StreamWriter(file))
                 {
-                    await textWriter.WriteLineAsync(JsonConvert.SerializeObject(this, Formatting.Indented)).ConfigureAwait(false);
+                    await textWriter.WriteLineAsync(JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings { MaxDepth = null })).ConfigureAwait(false);
                 }
             }
 

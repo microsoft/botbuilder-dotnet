@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Schema
     /// </summary>
     public class Entity
     {
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>Initializes a new instance of the <see cref="Entity"/> class.</summary>
         public Entity()
         {
@@ -51,7 +53,7 @@ namespace Microsoft.Bot.Schema
         /// <returns>T as T.</returns>
         public T GetAs<T>()
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this));
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this, _settings), _settings);
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="obj">obj.</param>
         public void SetAs<T>(T obj)
         {
-            var entity = JsonConvert.DeserializeObject<Entity>(JsonConvert.SerializeObject(obj));
+            var entity = JsonConvert.DeserializeObject<Entity>(JsonConvert.SerializeObject(obj, _settings), _settings);
             Type = entity.Type;
             Properties = entity.Properties;
         }
@@ -78,7 +80,7 @@ namespace Microsoft.Bot.Schema
                 return false;
             }
 
-            return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other), StringComparison.Ordinal);
+            return JsonConvert.SerializeObject(this, _settings).Equals(JsonConvert.SerializeObject(other, _settings), StringComparison.Ordinal);
         }
 
         /// <summary>

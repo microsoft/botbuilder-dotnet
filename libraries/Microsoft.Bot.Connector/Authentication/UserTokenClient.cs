@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 RelatesTo = activity.RelatesTo,
                 MsAppId = appId,
             };
-            var json = JsonConvert.SerializeObject(tokenExchangeState);
+            var json = JsonConvert.SerializeObject(tokenExchangeState, new JsonSerializerSettings { MaxDepth = null });
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
         }
 

@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly HttpClient _httpClient;
         private readonly string _loginEndpoint;
         private readonly ILogger _logger;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
         private bool _disposed;
 
         public BotFrameworkClientImpl(
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var credentials = await _credentialsFactory.CreateCredentialsAsync(fromBotId, toBotId, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
 
             // Clone the activity so we can modify it before sending without impacting the original object.
-            var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+            var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _settings), _settings);
 
             // Apply the appropriate addressing to the newly created Activity.
             activityClone.RelatesTo = new ConversationReference
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Connector.Authentication
             activityClone.Recipient.Role = RoleTypes.Skill;
 
             // Create the HTTP request from the cloned Activity and send it to the Skill.
-            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activityClone, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
+            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activityClone, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }), Encoding.UTF8, "application/json"))
             {
                 using (var httpRequestMessage = new HttpRequestMessage())
                 {
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Connector.Authentication
                             return new InvokeResponse<T>
                             {
                                 Status = (int)httpResponseMessage.StatusCode,
-                                Body = content?.Length > 0 ? JsonConvert.DeserializeObject<T>(content) : default
+                                Body = content?.Length > 0 ? JsonConvert.DeserializeObject<T>(content, _settings) : default
                             };
                         }
                         else
