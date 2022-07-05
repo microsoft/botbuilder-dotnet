@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 {
                     await request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
-                    using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
+                    using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)) { MaxDepth = null })
                     {
                         return BotMessageSerializer.Deserialize<T>(bodyReader);
                     }

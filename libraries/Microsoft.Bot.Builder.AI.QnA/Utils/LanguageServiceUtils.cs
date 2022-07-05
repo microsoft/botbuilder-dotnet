@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         private readonly HttpClient _httpClient;
         private readonly QnAMakerOptions _options;
         private readonly QnAMakerEndpoint _endpoint;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageServiceUtils"/> class.
@@ -170,7 +171,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         {
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var results = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(jsonResponse);
+            var results = JsonConvert.DeserializeObject<KnowledgeBaseAnswers>(jsonResponse, _settings);
 
             return new QueryResults
             {
@@ -197,7 +198,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
                     rankerType = options.RankerType,
                     answerSpanRequest = new { enable = options.EnablePreciseAnswer },
                     includeUnstructuredSources = options.IncludeUnstructuredSources
-                }, Formatting.None);
+                }, Formatting.None,
+                _settings);
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
 
@@ -212,7 +214,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             var feedbackRecordsRequest = new FeedbackRecordsRequest();
             feedbackRecordsRequest.Records.AddRange(feedbackRecords.Records.ToList());
 
-            var jsonRequest = JsonConvert.SerializeObject(feedbackRecordsRequest);
+            var jsonRequest = JsonConvert.SerializeObject(feedbackRecordsRequest, _settings);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
@@ -225,7 +227,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <returns>Return modified options for the Custom Question Answering Knowledge Base.</returns>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(_options));
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(_options, _settings), _settings);
 
             if (queryOptions != null)
             {

@@ -180,6 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 data["blocks"] = JsonConvert.SerializeObject(message.Blocks, new JsonSerializerSettings()
                 {
                     NullValueHandling = NullValueHandling.Ignore,
+                    MaxDepth = null
                 });
             }
 
@@ -193,7 +194,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 response = await client.UploadValuesTaskAsync(url, "POST", data).ConfigureAwait(false);
             }
 
-            return JsonConvert.DeserializeObject<SlackResponse>(Encoding.UTF8.GetString(response));
+            return JsonConvert.DeserializeObject<SlackResponse>(Encoding.UTF8.GetString(response), new JsonSerializerSettings { MaxDepth = null });
         }
 
         /// <summary>

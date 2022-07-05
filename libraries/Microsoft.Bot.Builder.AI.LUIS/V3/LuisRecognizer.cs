@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
 
         private readonly LuisApplication _application;
         private readonly LuisPredictionOptions _predictionOptions;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
@@ -374,7 +375,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                 };
                 content.Add("options", queryOptions);
 
-                var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+                var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null };
                 if (options.DynamicLists != null)
                 {
                     foreach (var list in options.DynamicLists)
@@ -382,7 +383,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                         list.Validate();
                     }
 
-                    content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
+                    content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings), _settings));
                 }
 
                 if (options.ExternalEntities != null)
@@ -392,7 +393,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
                         entity.Validate();
                     }
 
-                    content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
+                    content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings), _settings));
                 }
 
                 if (options.Version == null)
@@ -406,7 +407,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
 
                 var response = await DefaultHttpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
-                luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false), _settings);
                 var prediction = (JObject)luisResponse["prediction"];
                 recognizerResult = new RecognizerResult
                 {

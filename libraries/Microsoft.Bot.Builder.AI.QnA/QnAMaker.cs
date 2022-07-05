@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (queryResults.Length > 0)
             {
                 var queryResult = queryResults[0];
-                properties.Add(QnATelemetryConstants.MatchedQuestionProperty, JsonConvert.SerializeObject(queryResult.Questions));
+                properties.Add(QnATelemetryConstants.MatchedQuestionProperty, JsonConvert.SerializeObject(queryResult.Questions, new JsonSerializerSettings { MaxDepth = null }));
                 properties.Add(QnATelemetryConstants.QuestionIdProperty, queryResult.Id.ToString(CultureInfo.InvariantCulture));
                 properties.Add(QnATelemetryConstants.AnswerProperty, queryResult.Answer);
                 metrics.Add(QnATelemetryConstants.ScoreProperty, queryResult.Score);

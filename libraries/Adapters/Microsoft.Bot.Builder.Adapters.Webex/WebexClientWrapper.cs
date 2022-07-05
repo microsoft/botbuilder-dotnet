@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private const string SparkSignature = "x-spark-signature";
 
         private readonly TeamsAPIClient _api;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexClientWrapper"/> class.
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             http.ContentType = "application/json";
             http.Method = "POST";
 
-            var parsedContent = JsonConvert.SerializeObject(request);
+            var parsedContent = JsonConvert.SerializeObject(request, _settings);
             var encoding = new ASCIIEncoding();
             var bytes = encoding.GetBytes(parsedContent);
 
@@ -161,7 +162,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             using (var sr = new StreamReader(stream))
             {
                 var content = await sr.ReadToEndAsync().ConfigureAwait(false);
-                result = JsonConvert.DeserializeObject<Message>(content);
+                result = JsonConvert.DeserializeObject<Message>(content, _settings);
             }
 
             return result.Id;
@@ -191,7 +192,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             using (var sr = new StreamReader(stream))
             {
                 var content = await sr.ReadToEndAsync().ConfigureAwait(false);
-                result = JsonConvert.DeserializeObject<Message>(content);
+                result = JsonConvert.DeserializeObject<Message>(content, _settings);
             }
 
             return result;
