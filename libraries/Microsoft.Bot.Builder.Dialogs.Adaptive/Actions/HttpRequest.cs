@@ -250,6 +250,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 #pragma warning restore CA2000 // Dispose objects before losing scope
             }
 
+            dynamic traceInfo = new JObject();
+
             try
             {
                 var instanceBody = Body?.EvaluateExpression(dc.State);
@@ -274,8 +276,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 request.Headers.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
-
-                dynamic traceInfo = new JObject();
 
                 traceInfo.request = new JObject();
                 traceInfo.request.method = Method.ToString();
@@ -401,6 +401,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     dc.State.SetValue(ResultProperty.GetValue(dc.State), requestResult);
                 }
+
+                // return the actionResult as the result of this operation
+                return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            catch (HttpRequestException ex)
+            {
+                var requestResult = new Result()
+                {
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    ReasonPhrase = ex.Message
+                };
+
+                if (ResultProperty != null)
+                {
+                    dc.State.SetValue(ResultProperty.GetValue(dc.State), requestResult);
+                }
+
+                traceInfo.response = JObject.FromObject(requestResult);
+
+                // Write Trace Activity for the http request and response values
+                await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: Id).ConfigureAwait(false);
 
                 // return the actionResult as the result of this operation
                 return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
