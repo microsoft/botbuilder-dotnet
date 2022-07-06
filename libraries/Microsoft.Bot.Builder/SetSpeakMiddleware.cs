@@ -20,13 +20,6 @@ namespace Microsoft.Bot.Builder
     {
         private readonly string _voiceName;
         private readonly bool _fallbackToTextForSpeak;
-        private readonly XNamespace _nameSpaceUri = @"http://www.w3.org/2001/10/synthesis";
-        private readonly string _speakTag = "speak";
-        private readonly string _voiceTag = "voice";
-        private readonly string _nameAttribute = "name";
-        private readonly string _languageAttribute = "lang";
-        private readonly string _ssmlVersionAttribute = "version";
-        private readonly string _ssmlVersionSupported = "1.0";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetSpeakMiddleware"/> class.
@@ -62,9 +55,21 @@ namespace Microsoft.Bot.Builder
                             activity.Speak = activity.Text;
                         }
 
-                        if (IsSpeakActivitySet(activity) && IsChannelActivitySet(turnContext))
+                        if (!string.IsNullOrEmpty(activity.Speak)
+                            && !string.IsNullOrEmpty(_voiceName)
+                            && (string.Equals(turnContext.Activity.ChannelId, Channels.DirectlineSpeech, StringComparison.OrdinalIgnoreCase)
+                                || string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.OrdinalIgnoreCase)
+                                || string.Equals(turnContext.Activity.ChannelId, Channels.Telephony, StringComparison.OrdinalIgnoreCase)))
                         {
-                            SetXmlSpeakTag(activity);
+                            if (!HasTag("speak", activity.Speak))
+                            {
+                                if (!HasTag("voice", activity.Speak))
+                                {
+                                    activity.Speak = $"<voice name='{_voiceName}'>{activity.Speak}</voice>";
+                                }
+
+                                activity.Speak = $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{activity.Locale ?? "en-US"}'>{activity.Speak}</speak>";
+                            }
                         }
                     }
                 }
@@ -75,100 +80,10 @@ namespace Microsoft.Bot.Builder
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private void SetXmlSpeakTag(Activity activity)
-        {
-            if (IsVoiceTag(activity.Speak))
-            {
-                activity.Speak = CreateMultiVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
-            }
-
-            if (!HasTag(_speakTag, activity.Speak))
-            {
-                if (!HasTag(_voiceTag, activity.Speak))
-                {
-                    activity.Speak = CreateXmlVoiceTag(activity).ToString(SaveOptions.DisableFormatting);
-                }
-
-                activity.Speak = CreateXmlSpeakTag(activity).ToString(SaveOptions.DisableFormatting);
-            }
-        }
-
-        private void RemoveEmptyXmlnsAttribute(XElement xml)
-        {
-            foreach (var node in xml.Descendants())
-            {
-                node.Attributes("xmlns").Remove();
-                node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
-            }
-        }
-
-        private XElement CreateMultiVoiceTag(Activity activity)
-        {
-            try
-            {
-                // Wrap voice tag under one virtual root before invoking the XDocument.Parse
-                var speakTagTemplate = $"<speak version=\"1.0\" xml:lang=\"{activity.Locale ?? "en - US"}\" xmlns=\"{_nameSpaceUri}\">{activity.Speak}</speak>";
-                var speakTag = XElement.Parse(speakTagTemplate);
-
-                return speakTag;
-            }
-            catch (XmlException)
-            {
-                throw;
-            }
-        }
-
-        private XElement CreateXmlSpeakTag(Activity activity)
-        {
-            try
-            {
-                XElement xml = new XElement(
-                            _nameSpaceUri + _speakTag,
-                            new XAttribute(_ssmlVersionAttribute, _ssmlVersionSupported),
-                            new XAttribute(XNamespace.Xml + _languageAttribute, activity.Locale ?? "en - US"),
-                            XElement.Parse(activity.Speak));
-
-                // Attribute xmlns="" added due to child nodes containing empty namespace value.
-                RemoveEmptyXmlnsAttribute(xml);
-
-                return xml;
-            }
-            catch (XmlException)
-            {
-                throw;
-            }
-        }
-
-        private XElement CreateXmlVoiceTag(Activity activity)
-        {
-            XElement voiceTag = new XElement(
-            _voiceTag,
-            new XAttribute(_nameAttribute, _voiceName),
-            activity.Speak);
-
-            return voiceTag;
-        }
-
         private bool HasTag(string tagName, string speakText)
         {
             try
             {
-                foreach (char c in speakText)
-                {
-                    if (c == '<')
-                    {
-                        break;
-                    }
-                    else if (char.IsWhiteSpace(c))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-
                 var speakSsmlDoc = XDocument.Parse(speakText);
 
                 if (speakSsmlDoc.Root != null && speakSsmlDoc.Root.AncestorsAndSelf().Any(x => x.Name.LocalName.ToLowerInvariant() == tagName))
@@ -180,26 +95,8 @@ namespace Microsoft.Bot.Builder
             }
             catch (XmlException)
             {
-                throw;
+                return false;
             }
-        }
-
-        private bool IsVoiceTag(string speakText)
-        {
-            return speakText.Contains("<voice");
-        }
-
-        private bool IsSpeakActivitySet(Activity activity)
-        {
-            return !string.IsNullOrEmpty(activity.Speak)
-                            && !string.IsNullOrEmpty(_voiceName);
-        }
-
-        private bool IsChannelActivitySet(ITurnContext turnContext)
-        {
-            return string.Equals(turnContext.Activity.ChannelId, Channels.DirectlineSpeech, StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(turnContext.Activity.ChannelId, Channels.Telephony, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
