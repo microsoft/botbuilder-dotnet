@@ -18,10 +18,11 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             var notification = new NotificationInfo(true);
             var tenant = new TenantInfo("uniqueTenantId");
             var meeting = new TeamsMeetingInfo("BFSE Stand Up");
-
+            var settings = new TeamsChannelDataSettings(channel);
             var channelData = new TeamsChannelData(channel, eventType, team, notification, tenant)
             {
-                Meeting = meeting
+                Meeting = meeting,
+                Settings = settings
             };
 
             Assert.NotNull(channelData);
@@ -31,9 +32,10 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(team, channelData.Team);
             Assert.Equal(notification, channelData.Notification);
             Assert.Equal(tenant, channelData.Tenant);
-            Assert.Equal(meeting, channelData.Meeting);
+            Assert.Equal(settings, channelData.Settings);
+            Assert.Equal(channel, channelData.Settings.SelectedChannel);
         }
-        
+
         [Fact]
         public void TeamsChannelDataInitsWithNoArgs()
         {

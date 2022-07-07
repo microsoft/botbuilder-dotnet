@@ -85,6 +85,13 @@ namespace Microsoft.Bot.Schema.Teams
         public TeamsMeetingInfo Meeting { get; set; }
 
         /// <summary>
+        /// Gets or sets information about the settings sent with this <see cref="TeamsChannelData"/>.
+        /// </summary>
+        /// <value>The <see cref="TeamsChannelDataSettings"/> for this <see cref="TeamsChannelData"/>.</value>
+        [JsonProperty(PropertyName = "settings")]
+        public TeamsChannelDataSettings Settings { get; set; }
+
+        /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="TeamsChannelData"/> type but that
         /// might appear in the REST JSON object.
         /// </summary>

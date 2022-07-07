@@ -16,11 +16,13 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             var aadGroupId = "0000-0000-0000-0000-0000-0000";
             var channelCount = 1;
             var memberCount = 2;
+            var type = "standard";
 
             var teamDetails = new TeamDetails(id, name, aadGroupId)
             {
                 ChannelCount = channelCount,
                 MemberCount = memberCount,
+                Type = type
             };
 
             Assert.NotNull(teamDetails);
@@ -30,6 +32,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(aadGroupId, teamDetails.AadGroupId);
             Assert.Equal(channelCount, teamDetails.ChannelCount);
             Assert.Equal(memberCount, teamDetails.MemberCount);
+            Assert.Equal(type, teamDetails.Type);
         }
         
         [Fact]

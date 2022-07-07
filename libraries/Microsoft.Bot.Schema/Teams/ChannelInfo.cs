@@ -46,6 +46,13 @@ namespace Microsoft.Bot.Schema.Teams
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets type of the channel. Valid values are standard, shared and private.
+        /// </summary>
+        /// <value>The channel type.</value>
+        [JsonProperty(PropertyName = "type")]
+        public string Type { get; set; }
+
+        /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
