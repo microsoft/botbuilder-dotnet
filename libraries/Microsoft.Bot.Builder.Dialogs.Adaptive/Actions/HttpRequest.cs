@@ -396,6 +396,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
             catch (HttpRequestException ex)
             {
+                //If a socket level exception occurs, we have no HttpStatusCode to return. Instead we
+                //mock up a NotFound response so consuming dialogs can handle the failure gracefully.
                 var requestResult = new Result()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
