@@ -798,6 +798,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_HttpRequestError()
+        {
+            var handler = new MockHttpMessageHandler();
+
+            handler
+                .When(HttpMethod.Post, "http://foo.com/")
+                .WithContent("hello")
+                .Throw(new HttpRequestException("error reason here"));
+
+            var testAdapter = new TestAdapter()
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            var rootDialog = new AdaptiveDialog()
+            {
+                Triggers = new List<Conditions.OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.POST,
+                                ContentType = "plain/text",
+                                Body = "hello",
+                                ResultProperty = "dialog.requestResult"
+                            },
+                            new SendActivity("${dialog.requestResult}"),
+                            new SendActivity("done")
+                        }
+                    }
+                }
+            };
+
+            var dm = new DialogManager(rootDialog)
+                .UseResourceExplorer(new ResourceExplorer())
+                .UseLanguageGeneration();
+            dm.InitialTurnState.Set<HttpClient>(handler.ToHttpClient());
+
+            await new TestFlow((TestAdapter)testAdapter, dm.OnTurnAsync)
+                .SendConversationUpdate()
+                    .AssertReply("{\r\n  \"statusCode\": 404,\r\n  \"reasonPhrase\": \"error reason here\",\r\n  \"headers\": {},\r\n  \"content\": null\r\n}")
+                    .AssertReply("done")
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task Action_TelemetryTrackEvent()
         {
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
