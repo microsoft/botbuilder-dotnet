@@ -23,7 +23,7 @@ namespace $safeprojectname$
         {
             services.AddHttpClient().AddControllers().AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.MaxDepth = 128;
+                options.SerializerSettings.MaxDepth = HttpHelper.BotMessageSerializerSettings.MaxDepth;
             });
 
             // Create the Bot Framework Authentication to be used with the Bot Adapter.
