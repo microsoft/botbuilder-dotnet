@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary> Gets or sets indicates whether the conversation contains more than two participants at the time the activity was generated.</summary>
-        /// <value>Boolean indicating whether conversation has more thatn two participants.</value>
+        /// <value>Boolean indicating whether conversation has more than two participants.</value>
         [JsonProperty(PropertyName = "isGroup")]
         public bool? IsGroup { get; set; }
 
