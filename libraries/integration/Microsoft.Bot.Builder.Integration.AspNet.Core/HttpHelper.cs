@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             ContractResolver = new ReadOnlyJsonContractResolver(),
-            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
+            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
+            MaxDepth = 128
         };
 
         /// <summary>
