@@ -457,7 +457,16 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             await streamWriter.FlushAsync().ConfigureAwait(false);
             memoryStream.Seek(0, SeekOrigin.Begin);
 
-            await blobClient.UploadAsync(memoryStream, options).ConfigureAwait(false);
+            var blobExist = await blobClient.ExistsAsync().ConfigureAwait(false);
+            try 
+            {
+                await blobClient.UploadAsync(memoryStream, options).ConfigureAwait(false);
+            }
+            catch (RequestFailedException ex)
+                    when ((HttpStatusCode)ex.Status == HttpStatusCode.Conflict && blobExist == false)
+            {
+                // ignore the conflict led by transient error when uploading
+            }
         }
 
         private string GetBlobName(IActivity activity)
