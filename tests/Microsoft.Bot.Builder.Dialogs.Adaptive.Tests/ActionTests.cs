@@ -841,7 +841,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await new TestFlow((TestAdapter)testAdapter, dm.OnTurnAsync)
                 .SendConversationUpdate()
-                    .AssertReply("{\r\n  \"statusCode\": 404,\r\n  \"reasonPhrase\": \"error reason here\",\r\n  \"headers\": {},\r\n  \"content\": null\r\n}")
+                    .AssertReply(a => (a as Activity).Text.Replace("\r\n", string.Empty).Equals("{\"statusCode\": 404, \"reasonPhrase\": \"error reason here\", \"headers\": {}, \"content\": null}", StringComparison.OrdinalIgnoreCase))
                     .AssertReply("done")
                 .StartTestAsync();
         }
