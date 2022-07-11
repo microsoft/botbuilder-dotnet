@@ -250,6 +250,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 #pragma warning restore CA2000 // Dispose objects before losing scope
             }
 
+            dynamic traceInfo = new JObject();
+
             try
             {
                 var instanceBody = Body?.EvaluateExpression(dc.State);
@@ -274,8 +276,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 request.Headers.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
-
-                dynamic traceInfo = new JObject();
 
                 traceInfo.request = new JObject();
                 traceInfo.request.method = Method.ToString();
@@ -392,18 +392,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         break;
                 }
 
-                traceInfo.response = JObject.FromObject(requestResult);
-
-                // Write Trace Activity for the http request and response values
-                await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: Id).ConfigureAwait(false);
-
-                if (ResultProperty != null)
+                return await EndDialogWithResultAsync(dc, requestResult, traceInfo, cancellationToken).ConfigureAwait(false);
+            }
+            catch (HttpRequestException ex)
+            {
+                //If a socket level exception occurs, we have no HttpStatusCode to return. Instead we
+                //mock up a NotFound response so consuming dialogs can handle the failure gracefully.
+                var requestResult = new Result()
                 {
-                    dc.State.SetValue(ResultProperty.GetValue(dc.State), requestResult);
-                }
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    ReasonPhrase = ex.Message
+                };
 
-                // return the actionResult as the result of this operation
-                return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await EndDialogWithResultAsync(dc, requestResult, traceInfo, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -418,6 +419,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{GetType().Name}[{Method}]";
+        }
+
+        private async Task<DialogTurnResult> EndDialogWithResultAsync(DialogContext dc, Result result, JObject traceInfo, CancellationToken cancellationToken)
+        {
+            if (ResultProperty != null)
+            {
+                dc.State.SetValue(ResultProperty.GetValue(dc.State), result);
+            }
+
+            traceInfo["response"] = JObject.FromObject(result);
+
+            // Write Trace Activity for the http request and response values
+            await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: Id).ConfigureAwait(false);
+
+            // return the actionResult as the result of this operation
+            return await dc.EndDialogAsync(result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
