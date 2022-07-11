@@ -755,6 +755,8 @@ namespace Microsoft.Bot.Builder.Teams
             {
                 switch (turnContext.Activity.Name)
                 {
+                    case "application/vnd.microsoft.readReceipt":
+                        return OnTeamsReadReceiptAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<ReadReceiptInfo>(), turnContext, cancellationToken);
                     case "application/vnd.microsoft.meetingStart":
                         return OnTeamsMeetingStartAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingStartEventDetails>(), turnContext, cancellationToken);
                     case "application/vnd.microsoft.meetingEnd":
@@ -789,6 +791,20 @@ namespace Microsoft.Bot.Builder.Teams
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnTeamsMeetingEndAsync(MeetingEndEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a read receipt for a previously sent message is received from the connector.
+        /// Override this in a derived class to provide logic for when the bot receives a read receipt event.
+        /// </summary>
+        /// <param name="readReceiptInfo">Information regarding the read receipt. i.e. Id of the message last read by the user.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsReadReceiptAsync(ReadReceiptInfo readReceiptInfo, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

@@ -1138,6 +1138,39 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Contains("1:02:03 AM", activitiesToSend[0].Text); // Date format differs between OSs, so we just Assert.Contains instead of Assert.Equals
         }
 
+        [Fact]
+        public async Task TeamsReadReceiptEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.readReceipt",
+                Value = JObject.Parse(@"{""lastReadMessageId"":""10101010""}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsReadReceiptAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("10101010", activitiesToSend[0].Text);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -1248,6 +1281,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             protected override Task OnMembersRemovedAsync(IList<ChannelAccount> membersRemoved, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.CompletedTask;
+            }
+
+            protected override Task OnTeamsReadReceiptAsync(ReadReceiptInfo readReceiptInfo, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(readReceiptInfo.LastReadMessageId);
                 return Task.CompletedTask;
             }
 
