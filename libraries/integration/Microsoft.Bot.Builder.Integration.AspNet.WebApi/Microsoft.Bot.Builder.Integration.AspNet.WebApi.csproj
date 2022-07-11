@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Integration.AspNet.WebApi</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET WebAPI. It offers idiomatic configuration APIs in addition to providing all the plumbing to direct incoming bot messages to a configured bot.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET WebAPI.</Summary>
