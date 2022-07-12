@@ -128,6 +128,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="audience">The audience to use for outbound communication. This will vary by cloud environment.</param>
         /// <param name="callerId">The callerId, this may be NULL.</param>
         /// <returns>A <see cref="Task"/> that represents the work queued to execute.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions to reconnect.")]
         public async Task ConnectNamedPipeAsync(string pipeName, IBot bot, string appId, string audience, string callerId)
         {
             if (string.IsNullOrEmpty(pipeName))
@@ -154,18 +155,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-#pragma warning disable CA2000 // Dispose objects before losing scope: StreamingRequestHandler is responsible for disposing StreamingConnection
-                var connection = new NamedPipeStreamingConnection(pipeName, Logger);
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
-                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                try
                 {
-                    // Start receiving activities on the named pipe
-                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                    Log.WebSocketConnectionStarted(Logger);
-                    await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
-                    _streamingConnections.TryRemove(connectionId, out _);
-                    Log.WebSocketConnectionCompleted(Logger);
+                    await CreateConnectionAsync(pipeName, authenticationRequestResult, bot, connectionId).ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    await CreateConnectionAsync(pipeName, authenticationRequestResult, bot, connectionId).ConfigureAwait(false);
                 }
             }
         }
@@ -198,6 +194,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             return new WebSocketStreamingConnection(socket, logger);
+        }
+
+        private async Task CreateConnectionAsync(string pipeName, AuthenticateRequestResult authenticationRequestResult, IBot bot, Guid connectionId)
+        {
+#pragma warning disable CA2000 // Dispose objects before losing scope: StreamingRequestHandler is responsible for disposing StreamingConnection
+            var connection = new NamedPipeStreamingConnection(pipeName, Logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
+            using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+            {
+                // Start receiving activities on the named pipe
+                _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                Log.WebSocketConnectionStarted(Logger);
+                await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                _streamingConnections.TryRemove(connectionId, out _);
+                Log.WebSocketConnectionCompleted(Logger);
+            }
         }
 
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
