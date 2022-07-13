@@ -465,7 +465,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     when ((HttpStatusCode)ex.Status == HttpStatusCode.Conflict)
             {
                 // ignore the conflict led by transient error when uploading
-                if(overwrite || await blobClient.ExistsAsync().ConfigureAwait(false) == false)
+                if (overwrite || await blobClient.ExistsAsync().ConfigureAwait(false) == false)
                 {
                     throw;
                 }
