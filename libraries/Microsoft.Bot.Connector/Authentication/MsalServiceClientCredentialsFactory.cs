@@ -2,13 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Rest;
 
@@ -20,6 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
     public class MsalServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly IConfidentialClientApplication _clientApplication;
+        private readonly MsalAppCredentialsOptions _msalAppCredentialsOptions;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -27,10 +27,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="configuration"><see cref="IConfiguration"/> where to get the AppId from.</param>
         /// <param name="clientApplication"><see cref="IConfidentialClientApplication"/> used to acquire tokens.</param>
+        /// <param name="msalAppCredentialsOptions">The msal app credential options.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> for credential acquisition telemetry.</param>
-        public MsalServiceClientCredentialsFactory(IConfiguration configuration, IConfidentialClientApplication clientApplication, ILogger logger = null)
+        public MsalServiceClientCredentialsFactory(IConfiguration configuration, IConfidentialClientApplication clientApplication, IOptions<MsalAppCredentialsOptions> msalAppCredentialsOptions, ILogger logger = null)
         {
             AppId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+            _msalAppCredentialsOptions = msalAppCredentialsOptions?.Value ?? new MsalAppCredentialsOptions();
             _clientApplication = clientApplication;
             _logger = logger ?? NullLogger.Instance;
         }
@@ -62,26 +64,27 @@ namespace Microsoft.Bot.Connector.Authentication
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(
-                    new MsalAppCredentials(_clientApplication, appId, authority: null, scope: audience, validateAuthority: validateAuthority, logger: _logger));
+                    new MsalAppCredentials(_clientApplication, appId, _msalAppCredentialsOptions, authority: null, scope: audience, validateAuthority: validateAuthority, logger: _logger));
             }
-            
+
             // Legacy gov: Set the authority (login url) to the legacy gov url, and allow for passed in scope for skill auth in
             // gov, or otherwise leave the default channel scope for gov.
             if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
-                        _clientApplication, 
-                        appId, 
-                        authority: GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, 
-                        scope: audience ?? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 
+                        _clientApplication,
+                        appId,
+                        _msalAppCredentialsOptions,
+                        authority: GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
+                        scope: audience ?? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
                         validateAuthority: validateAuthority,
                         logger: _logger));
             }
 
             // Private cloud: use the passed in authority and scope since they were parametrized in a higher layer.
             return Task.FromResult<ServiceClientCredentials>(
-                new MsalAppCredentials(_clientApplication, appId, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
+                new MsalAppCredentials(_clientApplication, appId, _msalAppCredentialsOptions, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
         }
 
         /// <inheritdoc/>
