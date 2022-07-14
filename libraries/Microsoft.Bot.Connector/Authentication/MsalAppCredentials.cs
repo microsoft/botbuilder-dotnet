@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// An empty set of credentials.
         /// </summary>
-        public static readonly MsalAppCredentials Empty = new MsalAppCredentials(clientApplication: null, appId: null, new MsalAppCredentialsOptions());
+        public static readonly MsalAppCredentials Empty = new MsalAppCredentials(clientApplication: null, appId: null);
 
         // Semaphore to control concurrency while refreshing tokens from MSAL.
         // Whenever a token expires, we want only one request to retrieve a token.
@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
         // Our MSAL application. Acquires tokens and manages token caching for us.
         private readonly IConfidentialClientApplication _clientApplication;
-        private readonly MsalAppCredentialsOptions _msalAppCredentialsOptions;
 
         private readonly ILogger _logger;
         private readonly string _scope;
@@ -42,17 +41,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="clientApplication">The client application to use to acquire tokens.</param>
         /// <param name="appId">The Microsoft application Id.</param>
-        /// <param name="msalAppCredentialsOptions">The msal app credential options.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="validateAuthority">Whether to validate the authority.</param>
         /// <param name="scope">Optional custom scope.</param>
-        public MsalAppCredentials(IConfidentialClientApplication clientApplication, string appId, MsalAppCredentialsOptions msalAppCredentialsOptions, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(IConfidentialClientApplication clientApplication, string appId, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : base(null, null, logger, scope)
         {
             MicrosoftAppId = appId;
             _clientApplication = clientApplication;
-            _msalAppCredentialsOptions = msalAppCredentialsOptions;
             _logger = logger;
             _scope = scope;
             _authority = authority;
@@ -64,17 +61,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="appPassword">The Microsoft application password.</param>
-        /// <param name="msalAppCredentialsOptions">The msal app credential options.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="validateAuthority">Whether to validate the authority.</param>
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, string appPassword, MsalAppCredentialsOptions msalAppCredentialsOptions, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(string appId, string appPassword, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
                   clientApplication: ConfidentialClientApplicationBuilder.Create(appId).WithClientSecret(appPassword).Build(),
                   appId: appId,
-                  msalAppCredentialsOptions,
                   authority: authority,
                   scope: scope,
                   validateAuthority: validateAuthority,
@@ -87,17 +82,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="certificate">The certificate to use for authentication.</param>
-        /// <param name="msalAppCredentialsOptions">The msal app credential options.</param>
         /// <param name="validateAuthority">Optional switch for whether to validate the authority.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, X509Certificate2 certificate, MsalAppCredentialsOptions msalAppCredentialsOptions, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(string appId, X509Certificate2 certificate, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
                   clientApplication: ConfidentialClientApplicationBuilder.Create(appId).WithCertificate(certificate).Build(),
                   appId: appId,
-                  msalAppCredentialsOptions,
                   authority: authority,
                   scope: scope,
                   validateAuthority: validateAuthority,
@@ -170,12 +163,11 @@ namespace Microsoft.Bot.Connector.Authentication
                         .AcquireTokenForClient(new[] { scope })
                         .WithAuthority(_authority ?? OAuthEndpoint, _validateAuthority)
                         .WithForceRefresh(forceRefresh)
-                        .WithSendX5C(_msalAppCredentialsOptions.SendX5c)
                         .ExecuteAsync().ConfigureAwait(false);
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
                     return new AuthenticatorResult()
-                    {
+                    { 
                         AccessToken = msalResult.AccessToken,
                         ExpiresOn = msalResult.ExpiresOn
                     };
