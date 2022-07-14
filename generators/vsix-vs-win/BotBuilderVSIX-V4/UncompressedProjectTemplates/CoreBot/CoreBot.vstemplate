@@ -1,6 +1,6 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>Core Bot (Bot Framework v4 - .NET 6)</Name>
+    <Name>Core Bot (Bot Framework v4 - .NET Core 3.1)</Name>
     <Description>Core Bot Template for Bot Framework v4.  Our most feature rich template, it shows how to use LUIS and multi-turn conversational patterns.
     </Description>
     <ProjectType>CSharp</ProjectType>
@@ -71,10 +71,17 @@
       <ProjectItem ReplaceParameters="true">Startup.cs</ProjectItem>
 
       <Folder Name="DeploymentTemplates" TargetFolderName="DeploymentTemplates">
-        <ProjectItem ReplaceParameters="false">template-with-new-rg.json</ProjectItem>
-        <ProjectItem ReplaceParameters="false">template-with-preexisting-rg.json</ProjectItem>
-        <ProjectItem ReplaceParameters="false">new-rg-parameters.json</ProjectItem>
-        <ProjectItem ReplaceParameters="false">preexisting-rg-parameters.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployUseExistResourceGroup\template-AzureBot-with-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployUseExistResourceGroup\template-BotApp-with-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployUseExistResourceGroup\parameters-for-template-AzureBot-with-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployUseExistResourceGroup\parameters-for-template-BotApp-with-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployUseExistResourceGroup\readme.md</ProjectItem>
+
+          <ProjectItem ReplaceParameters="false">DeployWithNewResourceGroup\template-AzureBot-new-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployWithNewResourceGroup\template-BotApp-new-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployWithNewResourceGroup\parameters-for-template-AzureBot-new-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployWithNewResourceGroup\parameters-for-template-BotApp-new-rg.json</ProjectItem>
+          <ProjectItem ReplaceParameters="false">DeployWithNewResourceGroup\readme.md</ProjectItem>
       </Folder>
 
     </Project>
