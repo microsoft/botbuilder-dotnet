@@ -47,11 +47,6 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             // Wait for send or receive to complete
             var trigger = await Task.WhenAny(receiving, sending).ConfigureAwait(false);
 
-            if (trigger.Exception != null)
-            {
-                throw trigger.Exception;
-            }
-
             if (trigger == receiving)
             {
                 Log.WaitingForSend(Logger);
@@ -196,8 +191,6 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     await _application.Output.CompleteAsync(ex).ConfigureAwait(false);
                     Log.TransportError(Logger, ex);
                 }
-
-                throw;
             }
             finally
             {

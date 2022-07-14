@@ -60,11 +60,6 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception)
-            {
-                Log.NamedPipeClosed(Logger);
-                throw;
-            }
             finally
             {
                 Log.NamedPipeClosed(Logger);
