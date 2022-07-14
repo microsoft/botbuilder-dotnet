@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-                do
+                while (true)
                 {
 #pragma warning disable CA2000 // Dispose objects before losing scope: StreamingRequestHandler is responsible for disposing StreamingConnection
                     var connection = new NamedPipeStreamingConnection(pipeName, Logger);
@@ -168,9 +168,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
                         _streamingConnections.TryRemove(connectionId, out _);
                         Log.WebSocketConnectionCompleted(Logger);
+                        Logger.LogWarning("Named pipe got disconnected. Reconnecting.");
                     }
                 }
-                while (_streamingConnections.IsEmpty);
             }
         }
 
