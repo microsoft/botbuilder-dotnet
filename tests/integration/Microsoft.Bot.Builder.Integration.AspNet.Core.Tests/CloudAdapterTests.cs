@@ -149,27 +149,33 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Arrange
             var headerDictionaryMock = new Mock<IHeaderDictionary>();
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-            
-            var validContent = new StringContent(JsonConvert.SerializeObject(new Activity()), Encoding.UTF8, "application/json");
+
             var webSocketReceiveResult = new Mock<WebSocketReceiveResult>(MockBehavior.Strict, new object[] { 1, WebSocketMessageType.Binary, false });
+
+            var webSocketMock = new Mock<WebSocket>();
+            webSocketMock.Setup(ws => ws.State).Returns(WebSocketState.Open);
+            webSocketMock.Setup(ws => ws.ReceiveAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webSocketReceiveResult.Object));
+            webSocketMock.Setup(ws => ws.SendAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<WebSocketMessageType>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            webSocketMock.Setup(ws => ws.CloseAsync(It.IsAny<WebSocketCloseStatus>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            webSocketMock.Setup(ws => ws.Dispose());
+
+            var webSocketManagerMock = new Mock<WebSocketManager>();
+            webSocketManagerMock.Setup(w => w.IsWebSocketRequest).Returns(true);
+            webSocketManagerMock.Setup(w => w.AcceptWebSocketAsync()).Returns(Task.FromResult(webSocketMock.Object));
+            var httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(c => c.WebSockets).Returns(webSocketManagerMock.Object);
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns("GET");
+            httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.HttpContext).Returns(httpContextMock.Object);
+
             var httpResponseMock = new Mock<HttpResponse>().SetupAllProperties();
+
             var authenticateRequestResult = new AuthenticateRequestResult
             {
                 Audience = "audience",
             };
-
-            var webSocket = new ClientWebSocket();
-            var webSocketManagerMock = new Mock<WebSocketManager>();
-            webSocketManagerMock.Setup(m => m.IsWebSocketRequest).Returns(true);
-            webSocketManagerMock.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult<WebSocket>(webSocket));
-            
-            var httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(c => c.WebSockets).Returns(webSocketManagerMock.Object);
-            
-            var httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(r => r.Method).Returns("GET");
-            httpRequestMock.Setup(r => r.HttpContext).Returns(httpContextMock.Object);
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
             var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
             botFrameworkAuthenticationMock.Setup(
@@ -178,31 +184,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var bot = new MessageBot();
 
-            var streamingConnectionMock = new Mock<StreamingConnection>(null);
-            streamingConnectionMock
-                .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
-                .Returns<RequestHandler, CancellationToken>((handler, cancellationToken) => handler.ProcessRequestAsync(
-                    new ReceiveRequest
-                    {
-                        Verb = "POST",
-                        Path = "/api/messages",
-                        Streams = new List<IContentStream>
-                        {
-                            new TestContentStream
-                            {
-                                Id = Guid.NewGuid(),
-                                ContentType = "application/json",
-                                Length = (int?)validContent.Headers.ContentLength,
-                                Stream = validContent.ReadAsStreamAsync().GetAwaiter().GetResult()
-                            }
-                        }
-                    },
-                    null,
-                    cancellationToken: cancellationToken));
-
             // Act
-            var adapter = new StreamingTestCloudAdapter(botFrameworkAuthenticationMock.Object, new Dictionary<WebSocket, StreamingConnection> { { webSocket, streamingConnectionMock.Object } });
-            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot, CancellationToken.None);
+            var adapter = new CloudAdapter(botFrameworkAuthenticationMock.Object);
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
             botFrameworkAuthenticationMock.Verify(x => x.AuthenticateStreamingRequestAsync(It.Is<string>(v => true), It.Is<string>(v => true), It.Is<CancellationToken>(ct => true)), Times.Once());
