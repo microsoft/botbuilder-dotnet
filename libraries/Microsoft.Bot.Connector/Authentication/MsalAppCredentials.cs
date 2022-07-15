@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public static readonly MsalAppCredentials Empty = new MsalAppCredentials(clientApplication: null, appId: null, false);
 
+        private const string TemporarilyUnavailable = "temporarily_unavailable";
+
         // Semaphore to control concurrency while refreshing tokens from MSAL.
         // Whenever a token expires, we want only one request to retrieve a token.
         // Cached requests take less than 0.1 millisecond to resolve, so the semaphore doesn't hurt performance under load tests
@@ -122,6 +124,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <inheritdoc/>
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
+            // This class is not supposed to use adal authentication and it should use msal authentication instead.
             throw new NotImplementedException();
         }
 
@@ -222,7 +225,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 // Service error with status code "temporarily_unavailable" is retryable.
                 // Spec and reference: https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-aadsts-error-codes.
-                if (msalException.ErrorCode == "temporarily_unavailable")
+                if (msalException.ErrorCode == TemporarilyUnavailable)
                 {
                     return RetryParams.DefaultBackOff(ct);
                 }

@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <see cref="MsalAppCredentials"/> for more infromation.
         /// <code>
         ///  // MSAL certificate authentication
-        ///  services.AddTransient&lt;IConfidentialClientApplication&gt;(
+        ///  services.AddSingleton&lt;IConfidentialClientApplication&gt;(
         ///  serviceProvider => ConfidentialClientApplicationBuilder.Create(Configuration.GetSection("MicrosoftAppId").Value)
         ///      .WithCertificate(new X509Certificate2("pathToCertFile", "certPassword"))
         ///      .Build());
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Authentication
         ///  services.AddSingleton(sp => new AuthenticationConfiguration { SendX5c = true });
         ///  
         ///  // MSAL credential factory: regardless of secret, cert or custom auth, need to add the line below
-        ///  services.AddTransient&lt;ServiceClientCredentialsFactory, Authentication.MsalServiceClientCredentialsFactory&gt;();
+        ///  services.AddSingleton&lt;ServiceClientCredentialsFactory, Authentication.MsalServiceClientCredentialsFactory&gt;();
         ///  
         ///  // Create the Bot Framework Authentication to be used with the Bot Adapter.
         ///  services.AddSingleton&lt;BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication&gt;();
