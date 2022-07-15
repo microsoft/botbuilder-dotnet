@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 It.Is<string>(v => v == toBotId),
                 It.Is<string>(v => v == loginUrl),
                 It.IsAny<bool>(),
+                It.IsAny<bool>(),
                 It.IsAny<CancellationToken>())).ReturnsAsync(MicrosoftAppCredentials.Empty);
 
             var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);

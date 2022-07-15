@@ -114,10 +114,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         /// <inheritdoc />
         public override Task<ServiceClientCredentials> CreateCredentialsAsync(
-            string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
+            string appId, string audience, string loginEndpoint, bool validateAuthority, bool sendX5c, CancellationToken cancellationToken)
         {
             return _inner.CreateCredentialsAsync(
-                appId, audience, loginEndpoint, validateAuthority, cancellationToken);
+                appId, audience, loginEndpoint, validateAuthority, sendX5c, cancellationToken);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public string AppId { get; }
 
         /// <inheritdoc/>
-        public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
+        public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, bool sendX5c, CancellationToken cancellationToken)
         {
             // No Auth: let pass through.
             if (string.IsNullOrEmpty(AppId))
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Connector.Authentication
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(
-                    new MsalAppCredentials(_clientApplication, appId, authority: null, scope: audience, validateAuthority: validateAuthority, logger: _logger));
+                    new MsalAppCredentials(_clientApplication, appId, sendX5c, authority: null, scope: audience, validateAuthority: validateAuthority, logger: _logger));
             }
             
             // Legacy gov: Set the authority (login url) to the legacy gov url, and allow for passed in scope for skill auth in
@@ -72,7 +72,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
                         _clientApplication, 
-                        appId, 
+                        appId,
+                        sendX5c,
                         authority: GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, 
                         scope: audience ?? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 
                         validateAuthority: validateAuthority,
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Private cloud: use the passed in authority and scope since they were parametrized in a higher layer.
             return Task.FromResult<ServiceClientCredentials>(
-                new MsalAppCredentials(_clientApplication, appId, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
+                new MsalAppCredentials(_clientApplication, appId, sendX5c, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
         }
 
         /// <inheritdoc/>

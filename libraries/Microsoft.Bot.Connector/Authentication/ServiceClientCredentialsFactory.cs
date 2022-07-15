@@ -47,8 +47,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="audience">The audience.</param>
         /// <param name="loginEndpoint">The login url.</param>
         /// <param name="validateAuthority">The validate authority vale to use.</param>
+        /// <param name="sendX5c">Whether the x5c claim (public key of the certificate) should be sent to the STS or not, <see cref="AuthenticationConfiguration"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        public abstract Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken);
+        public abstract Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, bool sendX5c, CancellationToken cancellationToken);
     }
 }

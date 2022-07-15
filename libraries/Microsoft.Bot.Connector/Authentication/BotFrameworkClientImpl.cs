@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ServiceClientCredentialsFactory _credentialsFactory;
         private readonly HttpClient _httpClient;
         private readonly string _loginEndpoint;
+        private readonly bool _sendX5c;
         private readonly ILogger _logger;
         private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
         private bool _disposed;
@@ -28,11 +29,13 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentialsFactory credentialsFactory,
             IHttpClientFactory httpClientFactory,
             string loginEndpoint,
+            bool sendX5c,
             ILogger logger)
         {
             _credentialsFactory = credentialsFactory;
             _httpClient = httpClientFactory?.CreateClient() ?? new HttpClient();
             _loginEndpoint = loginEndpoint;
+            _sendX5c = sendX5c;
             _logger = logger ?? NullLogger.Instance;
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
@@ -48,7 +51,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             _logger.LogInformation($"post to skill '{toBotId}' at '{toUrl}'");
 
-            var credentials = await _credentialsFactory.CreateCredentialsAsync(fromBotId, toBotId, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
+            var credentials = await _credentialsFactory.CreateCredentialsAsync(fromBotId, toBotId, _loginEndpoint, true, _sendX5c, cancellationToken).ConfigureAwait(false);
 
             // Clone the activity so we can modify it before sending without impacting the original object.
             var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _settings), _settings);

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// An empty set of credentials.
         /// </summary>
-        public static readonly MsalAppCredentials Empty = new MsalAppCredentials(clientApplication: null, appId: null);
+        public static readonly MsalAppCredentials Empty = new MsalAppCredentials(clientApplication: null, appId: null, false);
 
         // Semaphore to control concurrency while refreshing tokens from MSAL.
         // Whenever a token expires, we want only one request to retrieve a token.
@@ -35,21 +35,24 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _scope;
         private readonly string _authority;
         private readonly bool _validateAuthority;
+        private readonly bool _sendX5c;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalAppCredentials"/> class.
         /// </summary>
         /// <param name="clientApplication">The client application to use to acquire tokens.</param>
         /// <param name="appId">The Microsoft application Id.</param>
+        /// <param name="sendX5c">Whether the x5c claim (public key of the certificate) should be sent to the STS or not, <see cref="AuthenticationConfiguration"/>.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="validateAuthority">Whether to validate the authority.</param>
         /// <param name="scope">Optional custom scope.</param>
-        public MsalAppCredentials(IConfidentialClientApplication clientApplication, string appId, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(IConfidentialClientApplication clientApplication, string appId, bool sendX5c, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : base(null, null, logger, scope)
         {
             MicrosoftAppId = appId;
             _clientApplication = clientApplication;
+            _sendX5c = sendX5c;
             _logger = logger;
             _scope = scope;
             _authority = authority;
@@ -61,15 +64,17 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="appPassword">The Microsoft application password.</param>
+        /// <param name="sendX5c">Whether the x5c claim (public key of the certificate) should be sent to the STS or not, <see cref="AuthenticationConfiguration"/>.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="validateAuthority">Whether to validate the authority.</param>
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, string appPassword, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(string appId, string appPassword, bool sendX5c, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
                   clientApplication: ConfidentialClientApplicationBuilder.Create(appId).WithClientSecret(appPassword).Build(),
                   appId: appId,
+                  sendX5c: sendX5c,
                   authority: authority,
                   scope: scope,
                   validateAuthority: validateAuthority,
@@ -82,15 +87,17 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="certificate">The certificate to use for authentication.</param>
+        /// <param name="sendX5c">Whether the x5c claim (public key of the certificate) should be sent to the STS or not, <see cref="AuthenticationConfiguration"/>.</param>
         /// <param name="validateAuthority">Optional switch for whether to validate the authority.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, X509Certificate2 certificate, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(string appId, X509Certificate2 certificate, bool sendX5c, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
                   clientApplication: ConfidentialClientApplicationBuilder.Create(appId).WithCertificate(certificate).Build(),
                   appId: appId,
+                  sendX5c: sendX5c,
                   authority: authority,
                   scope: scope,
                   validateAuthority: validateAuthority,
@@ -163,6 +170,7 @@ namespace Microsoft.Bot.Connector.Authentication
                         .AcquireTokenForClient(new[] { scope })
                         .WithAuthority(_authority ?? OAuthEndpoint, _validateAuthority)
                         .WithForceRefresh(forceRefresh)
+                        .WithSendX5C(_sendX5c)
                         .ExecuteAsync().ConfigureAwait(false);
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.

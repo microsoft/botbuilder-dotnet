@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         /// <inheritdoc />
         public override Task<ServiceClientCredentials> CreateCredentialsAsync(
-            string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
+            string appId, string audience, string loginEndpoint, bool validateAuthority, bool sendX5c, CancellationToken cancellationToken)
         {
             if (appId != _appId)
             {

@@ -15,16 +15,18 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _toChannelFromBotOAuthScope;
         private readonly string _loginEndpoint;
         private readonly bool _validateAuthority;
+        private readonly bool _sendx5c;
         private readonly ServiceClientCredentialsFactory _credentialFactory;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger)
+        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, bool sendX5c, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger)
         {
             _appId = appId;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
             _validateAuthority = validateAuthority;
+            _sendx5c = sendX5c;
             _credentialFactory = credentialFactory;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -33,7 +35,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public override async Task<IConnectorClient> CreateAsync(string serviceUrl, string audience, CancellationToken cancellationToken)
         {
             // Use the credentials factory to create credentails specific to this particular cloud environment.
-            var credentials = await _credentialFactory.CreateCredentialsAsync(_appId, audience ?? _toChannelFromBotOAuthScope, _loginEndpoint, _validateAuthority, cancellationToken).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(_appId, audience ?? _toChannelFromBotOAuthScope, _loginEndpoint, _validateAuthority, _sendx5c, cancellationToken).ConfigureAwait(false);
 
             // A new connector client for making calls against this serviceUrl using credentials derived from the current appId and the specified audience.
 #pragma warning disable CA2000 // Dispose objects before losing scope

@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     {
         private string testAppId = null;
         private string testPassword = null;
+        private readonly bool sendX5c = false;
 
         public void EnsureSettings()
         {
@@ -30,7 +31,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public async Task MsalAppCredentials_GetToken_WithPassword()
         {
             EnsureSettings();
-            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword);
+            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, sendX5c);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
         }
@@ -39,7 +40,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public async Task MsalAppCredentials_GetToken_Refresh()
         {
             EnsureSettings();
-            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword);
+            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, sendX5c);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
             var result2 = await credentials.GetTokenAsync();
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public async Task MsalAppCredentials_GetToken_Skills()
         {
             EnsureSettings();
-            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, scope: testAppId);
+            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, sendX5c, scope: testAppId);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
         }
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public async Task MsalAppCredentials_GetToken_Refresh_ParallelLoad()
         {
             EnsureSettings();
-            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword);
+            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, sendX5c);
             List<Task<string>> tasks = new List<Task<string>>();
             for (int i = 0; i < 1000; i++)
             {

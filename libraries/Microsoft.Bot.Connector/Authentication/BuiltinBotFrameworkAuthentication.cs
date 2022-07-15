@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
-            var connectorFactory = new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialsFactory, _httpClientFactory, _logger);
+            var connectorFactory = new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _authConfiguration.SendX5c, _credentialsFactory, _httpClientFactory, _logger);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
@@ -121,21 +121,21 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialsFactory, _httpClientFactory, _logger);
+            return new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _authConfiguration.SendX5c, _credentialsFactory, _httpClientFactory, _logger);
         }
 
         public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await _credentialsFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
+            var credentials = await _credentialsFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _loginEndpoint, true, _authConfiguration.SendX5c, cancellationToken).ConfigureAwait(false);
 
             return new UserTokenClientImpl(appId, credentials, _oauthEndpoint, _httpClientFactory?.CreateClient(), _logger);
         }
 
         public override BotFrameworkClient CreateBotFrameworkClient()
         {
-            return new BotFrameworkClientImpl(_credentialsFactory, _httpClientFactory, _loginEndpoint, _logger);
+            return new BotFrameworkClientImpl(_credentialsFactory, _httpClientFactory, _loginEndpoint, _authConfiguration.SendX5c, _logger);
         }
 
         private IChannelProvider GetChannelProvider()
