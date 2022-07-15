@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var sut = new ManagedIdentityServiceClientCredentialsFactory(TestAppId, tokenProviderFactory.Object);
 
             var credentials = sut.CreateCredentialsAsync(
-                TestAppId, TestAudience, "https://login.microsoftonline.com", true, CancellationToken.None);
+                TestAppId, TestAudience, "https://login.microsoftonline.com", true, false, CancellationToken.None);
             Assert.NotNull(credentials);
         }
 
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             Assert.Throws<InvalidOperationException>(() =>
             {
                 _ = sut.CreateCredentialsAsync(
-                    "InvalidAppId", TestAudience, "https://login.microsoftonline.com", true, CancellationToken.None);
+                    "InvalidAppId", TestAudience, "https://login.microsoftonline.com", true, false, CancellationToken.None);
             });
         }
     }
