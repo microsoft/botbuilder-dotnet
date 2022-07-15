@@ -154,18 +154,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
+                while (true)
+                {
 #pragma warning disable CA2000 // Dispose objects before losing scope: StreamingRequestHandler is responsible for disposing StreamingConnection
-                var connection = new NamedPipeStreamingConnection(pipeName, Logger);
+                    var connection = new NamedPipeStreamingConnection(pipeName, Logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
-                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
-                {
-                    // Start receiving activities on the named pipe
-                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                    Log.WebSocketConnectionStarted(Logger);
-                    await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
-                    _streamingConnections.TryRemove(connectionId, out _);
-                    Log.WebSocketConnectionCompleted(Logger);
+                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                    {
+                        // Start receiving activities on the named pipe
+                        _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                        Log.WebSocketConnectionStarted(Logger);
+                        await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                        _streamingConnections.TryRemove(connectionId, out _);
+                        Log.WebSocketConnectionCompleted(Logger);
+                        Logger.LogWarning("Named pipe got disconnected. Reconnecting.");
+                    }
                 }
             }
         }
