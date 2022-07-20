@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -106,6 +106,33 @@ namespace Microsoft.Bot.Builder.Tests
                 })
                 .StartTestAsync();
         }
+        
+        // Speak is added with voice tag
+        [Theory]
+        [InlineData(Channels.Emulator)]
+        [InlineData(Channels.DirectlineSpeech)]
+        [InlineData("telephony")]
+        public async Task AddSpeakWithVoice(string channelId)
+        {
+            var adapter = new TestAdapter(CreateConversation("Fallback", channelId: channelId))
+                .Use(new SetSpeakMiddleware("male", true));
+
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+                {
+                    var activity = MessageFactory.Text("<speak><voice>OK</voice></speak>");
+
+                    await context.SendActivityAsync(activity);
+                })
+                .Send("foo")
+                .AssertReply(obj =>
+                {
+                    var activity = obj.AsMessageActivity();
+                    var speakTag = "<speak><voice>OK</voice></speak>";
+
+                    Assert.Equal(speakTag, activity.Speak);
+                })
+                .StartTestAsync();
+        }
 
         // Speak is added with special or invalid characters
         [Theory]
@@ -117,7 +144,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter(CreateConversation("Fallback", channelId: channelId))
                 .Use(new SetSpeakMiddleware("male", true));
 
-            await Assert.ThrowsAsync<XmlException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
