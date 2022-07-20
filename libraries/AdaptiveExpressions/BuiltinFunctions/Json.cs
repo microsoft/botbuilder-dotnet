@@ -31,7 +31,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             string error = null;
                             using (var textReader = new StringReader(args[0].ToString()))
                             {
-                                using (var jsonReader = new JsonTextReader(textReader) { DateParseHandling = DateParseHandling.None })
+                                using (var jsonReader = new JsonTextReader(textReader) { DateParseHandling = DateParseHandling.None, MaxDepth = null })
                                 {
                                     try
                                     {

@@ -82,7 +82,8 @@ namespace Microsoft.Bot.Builder
                             var originalActivity = transcript[i];
                             if (originalActivity.Id == activity.Id)
                             {
-                                var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                                var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
+                                var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, serializerSettings), serializerSettings);
                                 updatedActivity.Type = originalActivity.Type; // fixup original type (should be Message)
                                 updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
                                 updatedActivity.Timestamp = originalActivity.Timestamp;

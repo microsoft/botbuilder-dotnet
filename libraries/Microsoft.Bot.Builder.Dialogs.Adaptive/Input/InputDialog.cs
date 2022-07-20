@@ -33,6 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 #pragma warning restore CA1707 // Identifiers should not contain underscores
 #pragma warning restore SA1310 // Field should not contain underscore.
 
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
@@ -276,8 +278,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                         var properties = new Dictionary<string, string>()
                         {
-                            { "template", JsonConvert.SerializeObject(DefaultValueResponse) },
-                            { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                            { "template", JsonConvert.SerializeObject(DefaultValueResponse, _settings) },
+                            { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }) },
                             { "context", TelemetryLoggerConstants.InputDialogResultEvent }
                         };
                         TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
@@ -322,8 +324,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             var properties = new Dictionary<string, string>()
             {
-                { "template", JsonConvert.SerializeObject(activityTemplate) },
-                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                { "template", JsonConvert.SerializeObject(activityTemplate, _settings) },
+                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }) },
                 { "context", TelemetryLoggerConstants.InputDialogResultEvent }
             };
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);
@@ -415,7 +417,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (prompt != null)
             {
                 // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
-                prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
+                prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt, _settings), _settings);
 
                 prompt.Text = msg.Text;
 

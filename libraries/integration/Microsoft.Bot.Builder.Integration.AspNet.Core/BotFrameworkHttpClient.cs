@@ -30,6 +30,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     [Obsolete("Use `BotFrameworkAuthentication.CreateBotFrameworkClient()` to obtain a client and perform the operations that were accomplished through `BotFrameworkHttpClient`.", false)]
     public class BotFrameworkHttpClient : BotFrameworkClient
     {
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpClient"/> class.
         /// </summary>
@@ -132,7 +134,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // Clone the activity so we can modify it before sending without impacting the original object.
-            var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+            var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _settings), _settings);
             activityClone.RelatesTo = new ConversationReference
             {
                 ServiceUrl = activityClone.ServiceUrl,
@@ -215,7 +217,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             try
             {
-                return JsonConvert.DeserializeObject<T>(content);
+                return JsonConvert.DeserializeObject<T>(content, new JsonSerializerSettings { MaxDepth = null });
             }
             catch (JsonException)
             {
@@ -226,7 +228,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private async Task<InvokeResponse<T>> SecurePostActivityAsync<T>(Uri toUrl, Activity activity, string token, CancellationToken cancellationToken)
         {
-            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
+            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }), Encoding.UTF8, "application/json"))
             {
                 using (var httpRequestMessage = new HttpRequestMessage())
                 {

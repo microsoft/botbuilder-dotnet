@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Streaming
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            MaxDepth = null,
         };
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace Microsoft.Bot.Streaming
             DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+            MaxDepth = null,
         };
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace Microsoft.Bot.Streaming
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             NullValueHandling = NullValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+            MaxDepth = null,
         };
     }
 }

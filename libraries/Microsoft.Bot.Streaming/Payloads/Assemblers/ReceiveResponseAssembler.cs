@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Streaming.Payloads
         {
             using (var textReader = new StreamReader(stream))
             {
-                using (var jsonReader = new JsonTextReader(textReader))
+                using (var jsonReader = new JsonTextReader(textReader) { MaxDepth = null })
                 {
                     var responsePayload = Serializer.Deserialize<ResponsePayload>(jsonReader);
 

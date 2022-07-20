@@ -94,8 +94,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
             var properties = new Dictionary<string, string>()
             {
-                { "template", JsonConvert.SerializeObject(Activity) },
-                { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                { "template", JsonConvert.SerializeObject(Activity, new JsonSerializerSettings { MaxDepth = null }) },
+                { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }) },
                 { "context", TelemetryLoggerConstants.SendActivityResultEvent }
             };
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);

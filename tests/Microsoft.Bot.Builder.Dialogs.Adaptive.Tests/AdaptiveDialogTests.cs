@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable SA1204 // Static elements should appear before instance elements
 #pragma warning disable SA1210 // Using directives should be ordered alphabetically by namespace
 #pragma warning disable SA1202 // Elements should be ordered by access
 #pragma warning disable SA1201 // Elements should appear in the correct order
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
@@ -19,9 +19,9 @@ using Xunit;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Schema;
 using AdaptiveExpressions.Properties;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -329,6 +329,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testFlow = testFlow.AssertReply("ForEachElement You said: 'message two'");
 
             await testFlow.ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
+        }
+        
+        [Fact]
+        public async Task TestForEachElement_TelemetryTrackEvent()
+        {
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+
+            var testAdapter = new TestAdapter()
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            var rootDialog = new AdaptiveDialog
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new CodeAction(async (dc, obj) =>
+                            {
+                                dc.State.SetValue("$items", new List<string> { "1" });
+                                return await dc.EndDialogAsync();
+                            }),
+                            new ForEachElement
+                            {
+                                ItemsProperty = "$items",
+                                Actions = new List<Dialog>
+                                {
+                                    new TelemetryTrackEventAction("testEvent")
+                                    {
+                                        Properties = new Dictionary<string, StringExpression>()
+                                        {
+                                            { "prop1", "value1" },
+                                            { "prop2", "value2" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                TelemetryClient = mockTelemetryClient.Object
+            };
+
+            var dialogManager = new DialogManager(rootDialog);
+
+            await new TestFlow((TestAdapter)testAdapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+            .SendConversationUpdate()
+            .StartTestAsync();
+
+            var trackEvent = mockTelemetryClient.Invocations.FirstOrDefault(i => i.Arguments[0]?.ToString() == "testEvent");
+
+            Assert.NotNull(trackEvent);
+            Assert.Equal(2, ((Dictionary<string, string>)trackEvent.Arguments[1]).Count);
+            Assert.Equal("value1", ((Dictionary<string, string>)trackEvent.Arguments[1])["prop1"]);
+            Assert.Equal("value2", ((Dictionary<string, string>)trackEvent.Arguments[1])["prop2"]);
         }
 
         private class ForEachElementRepromptMainDialog : ComponentDialog

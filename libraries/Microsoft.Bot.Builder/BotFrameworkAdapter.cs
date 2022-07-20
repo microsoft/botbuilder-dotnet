@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
         // AppCredentials are cached using appId + skillId (this last parameter is only used if the app credentials are used to call a skill)
@@ -850,7 +851,7 @@ namespace Microsoft.Bot.Builder
                 MsAppId = appId,
             };
 
-            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState, _settings);
             var encodedState = Encoding.UTF8.GetBytes(serializedState);
             var state = Convert.ToBase64String(encodedState);
 
@@ -918,7 +919,7 @@ namespace Microsoft.Bot.Builder
                 MsAppId = appId,
             };
 
-            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState, _settings);
             var encodedState = Encoding.UTF8.GetBytes(serializedState);
             var state = Convert.ToBase64String(encodedState);
 
@@ -1124,7 +1125,7 @@ namespace Microsoft.Bot.Builder
                 MsAppId = appId,
             };
 
-            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState, _settings);
             var encodedState = Encoding.UTF8.GetBytes(serializedState);
             var state = Convert.ToBase64String(encodedState);
 

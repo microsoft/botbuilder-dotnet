@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private readonly WebexClientWrapper _webexClient;
         private readonly ILogger _logger;
         private readonly WebexAdapterOptions _options;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class using configuration settings.
@@ -255,7 +256,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             using (var bodyStream = new StreamReader(request.Body))
             {
                 json = await bodyStream.ReadToEndAsync().ConfigureAwait(false);
-                payload = JsonConvert.DeserializeObject<WebhookEventData>(json);
+                payload = JsonConvert.DeserializeObject<WebhookEventData>(json, _settings);
             }
 
             if (_options.ValidateIncomingRequests && !_webexClient.ValidateSignature(request, json))
@@ -274,9 +275,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var extraData = payload.GetResourceData<TeamsData>();
 
-                var data = JsonConvert.SerializeObject(extraData);
+                var data = JsonConvert.SerializeObject(extraData, _settings);
 
-                var jsonData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+                var jsonData = JsonConvert.DeserializeObject<AttachmentActionData>(data, _settings);
 
                 var decryptedMessage = await _webexClient.GetAttachmentActionAsync(jsonData.Id, cancellationToken).ConfigureAwait(false);
 

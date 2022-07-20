@@ -25,6 +25,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// An instance of the FacebookClientWrapperOptions class.
         /// </summary>
         private readonly FacebookClientWrapperOptions _options;
+        
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookClientWrapper"/> class.
@@ -74,6 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
+                        MaxDepth = null
                     });
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -84,7 +87,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     if (res.IsSuccessStatusCode)
                     {
                         var responseBody = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var stringResponse = JsonConvert.DeserializeObject<FacebookResponseOk>(responseBody);
+                        var stringResponse = JsonConvert.DeserializeObject<FacebookResponseOk>(responseBody, _settings);
                         return stringResponse.MessageId;
                     }
                     else
@@ -231,7 +234,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.RequestThreadControl}", JsonConvert.SerializeObject(content, _settings), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -251,7 +254,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.TakeThreadControl}", JsonConvert.SerializeObject(content, _settings), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -277,7 +280,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var content = new { recipient = new { id = userId }, target_app_id = targetAppId, metadata = message };
-            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content), cancellationToken).ConfigureAwait(false);
+            return await PostToFacebookApiAsync($"/me/{HandoverConstants.PassThreadControl}", JsonConvert.SerializeObject(content, _settings), cancellationToken).ConfigureAwait(false);
         }
     }
 }

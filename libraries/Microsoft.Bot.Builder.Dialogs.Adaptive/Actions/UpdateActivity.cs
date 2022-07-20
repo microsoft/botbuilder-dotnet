@@ -101,8 +101,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var properties = new Dictionary<string, string>()
             {
-                { "template", JsonConvert.SerializeObject(Activity) },
-                { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                { "template", JsonConvert.SerializeObject(Activity, new JsonSerializerSettings { MaxDepth = null }) },
+                { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null }) },
                 { "context", TelemetryLoggerConstants.UpdateActivityResultEvent }
             };
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.GeneratorResultEvent, properties);

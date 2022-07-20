@@ -80,6 +80,13 @@ namespace Microsoft.Bot.Schema.Teams
         public int MemberCount { get; set; }
 
         /// <summary>
+        /// Gets or sets type of the team. Valid values are standard, sharedChannel and privateChannel.
+        /// </summary>
+        /// <value>The team type.</value>
+        [JsonProperty(PropertyName = "type")]
+        public string Type { get; set; }
+
+        /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();

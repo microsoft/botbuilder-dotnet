@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 {
                     using (BlobDownloadInfo download = await blobReference.DownloadAsync(cancellationToken).ConfigureAwait(false))
                     {
-                        using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
+                        using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)) { MaxDepth = null })
                         {
                             var obj = _jsonSerializer.Deserialize(jsonReader);
 

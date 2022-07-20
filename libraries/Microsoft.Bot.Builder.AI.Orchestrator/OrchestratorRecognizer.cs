@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         private OrchestratorDictionaryEntry _orchestrator = null;
         private ILabelResolver _resolver = null;
         private bool _isResolverMockup = false;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
@@ -269,9 +270,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 { "TopIntentScore", recognizerResult.Intents.Any() ? orderedIntents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
                 { "NextIntent", recognizerResult.Intents.Count > 1 ? orderedIntents.ElementAtOrDefault(1).Key : null },
                 { "NextIntentScore", recognizerResult.Intents.Count > 1 ? orderedIntents.ElementAtOrDefault(1).Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
-                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents, _settings) : null },
                 { "Entities", recognizerResult.Entities?.ToString() },
-                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties, _settings) : null },
             };
 
             var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);

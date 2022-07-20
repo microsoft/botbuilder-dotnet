@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private readonly HttpClient _httpClient;
         private readonly IBotTelemetryClient _telemetryClient;
         private readonly QnAMakerEndpoint _endpoint;
+        private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateAnswerUtils"/> class.
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+            var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse, new JsonSerializerSettings { MaxDepth = null });
 
             foreach (var answer in results.Answers)
             {
@@ -159,7 +160,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(Options));
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(Options, _settings), _settings);
 
             if (queryOptions != null)
             {
@@ -209,7 +210,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     isTest = options.IsTest,
                     rankerType = options.RankerType,
                     StrictFiltersCompoundOperationType = Enum.TryParse(options.Filters?.MetadataFilter?.LogicalOperation, out JoinOperator operation) ? operation : JoinOperator.AND,
-                }, Formatting.None);
+                }, Formatting.None,
+                _settings);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);

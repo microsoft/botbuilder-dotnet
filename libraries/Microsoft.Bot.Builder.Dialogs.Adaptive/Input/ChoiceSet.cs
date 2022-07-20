@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 try
                 {
-                    var jObj = (JToken)JsonConvert.DeserializeObject(str);
+                    var jObj = (JToken)JsonConvert.DeserializeObject(str, new JsonSerializerSettings { MaxDepth = null });
 
                     if (jObj is JArray jarr)
                     {

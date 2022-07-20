@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public PropertySchema Property { get; }
 
         public static SchemaHelper ReadSchema(string path)
-            => new SchemaHelper(JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path)));
+            => new SchemaHelper(JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path), new JsonSerializerSettings { MaxDepth = null }));
 
         public IEnumerable<PropertySchema> Properties()
             => Property.Children;

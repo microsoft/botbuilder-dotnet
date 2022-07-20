@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var properties = new Dictionary<string, string>()
             {
-                { "template", JsonConvert.SerializeObject(Text) },
+                { "template", JsonConvert.SerializeObject(Text, new JsonSerializerSettings { MaxDepth = null }) },
                 { "result", text ?? string.Empty },
                 { "context", TelemetryLoggerConstants.LogActionResultEvent }
             };

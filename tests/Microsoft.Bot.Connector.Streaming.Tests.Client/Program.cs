@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
                 Text = text,
             };
 
-            var request = StreamingRequest.CreatePost("/api/messages", new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json"));
+            var request = StreamingRequest.CreatePost("/api/messages", new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { MaxDepth = null }), Encoding.UTF8, "application/json"));
 
             var stopwatch = Stopwatch.StartNew();
 

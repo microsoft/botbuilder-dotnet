@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
 
             if (serverResponse.Status == (int)HttpStatusCode.OK)
             {
-                return JsonConvert.DeserializeObject<Schema.ResourceResponse>(serverResponse.Body.ToString());
+                return JsonConvert.DeserializeObject<Schema.ResourceResponse>(serverResponse.Body.ToString(), new JsonSerializerSettings { MaxDepth = null });
             }
 
             throw new Exception("SendActivityAsync failed");

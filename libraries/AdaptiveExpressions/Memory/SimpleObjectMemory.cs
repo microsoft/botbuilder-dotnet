@@ -193,7 +193,8 @@ namespace AdaptiveExpressions.Memory
         {
             return JsonConvert.SerializeObject(_memory, new JsonSerializerSettings
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                MaxDepth = null
             });
         }
 

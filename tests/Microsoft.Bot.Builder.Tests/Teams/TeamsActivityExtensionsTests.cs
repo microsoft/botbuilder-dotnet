@@ -10,6 +10,32 @@ namespace Microsoft.Bot.Builder.Teams.Tests
     public class TeamsActivityExtensionsTests
     {
         [Fact]
+        public void TeamsGetSelectedChannelId()
+        {
+            // Arrange
+            var activity = new Activity { ChannelData = new TeamsChannelData { Settings = new TeamsChannelDataSettings { SelectedChannel = new ChannelInfo("channel123") } } };
+
+            // Act
+            var channelId = activity.TeamsGetSelectedChannelId();
+
+            // Assert
+            Assert.Equal("channel123", channelId);
+        }
+        
+        [Fact]
+        public void TeamsGetSelectedChannelIdNullSettings()
+        {
+            // Arrange
+            var activity = new Activity { ChannelData = new TeamsChannelData { Settings = null } };
+
+            // Act
+            var channelId = activity.TeamsGetSelectedChannelId();
+
+            // Assert
+            Assert.Null(channelId);
+        }
+
+        [Fact]
         public void TeamsGetMeetingInfo()
         {
             // Arrange

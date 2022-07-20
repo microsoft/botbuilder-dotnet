@@ -313,8 +313,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Update prompt with text, actions and attachments
             if (prompt != null)
             {
+                var serializerSettings = new JsonSerializerSettings { MaxDepth = null };
+                
                 // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
-                prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
+                prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt, serializerSettings), serializerSettings);
 
                 prompt.Text = msg.Text;
 

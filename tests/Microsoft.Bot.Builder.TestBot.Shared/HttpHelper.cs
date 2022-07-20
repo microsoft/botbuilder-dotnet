@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             ContractResolver = new ReadOnlyJsonContractResolver(),
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
+            MaxDepth = null
         });
 
         public static Activity ReadRequest(HttpRequest request)
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.TestBot.Shared
 
             var activity = default(Activity);
 
-            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
+            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)) { MaxDepth = null })
             {
                 activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }

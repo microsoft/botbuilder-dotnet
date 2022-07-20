@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             FacebookResponseEvent facebookResponseEvent = null;
 
-            facebookResponseEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifiedBody);
+            facebookResponseEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifiedBody, new JsonSerializerSettings { MaxDepth = null });
 
             foreach (var entry in facebookResponseEvent.Entry)
             {

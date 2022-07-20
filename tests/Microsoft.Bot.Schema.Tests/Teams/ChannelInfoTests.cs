@@ -13,12 +13,16 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         {
             var id = "channelId";
             var name = "watercooler";
+            var type = "standard";
+
             var channelInfo = new ChannelInfo(id, name);
+            channelInfo.Type = type;
 
             Assert.NotNull(channelInfo);
             Assert.IsType<ChannelInfo>(channelInfo);
             Assert.Equal(id, channelInfo.Id);
             Assert.Equal(name, channelInfo.Name);
+            Assert.Equal(type, channelInfo.Type);
         }
 
         [Fact]
