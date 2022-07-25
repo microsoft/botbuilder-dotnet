@@ -1150,6 +1150,8 @@ namespace AdaptiveExpressions.Tests
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
             Test(@"isMatch('12.5', '[0-9]+(\\.5)')", true), // "\." (match .)
             Test(@"isMatch('12x5', '[0-9]+(\\.5)')", false), // "\." (match .)
+            Test("isMatch('', '([0-9])')", false), // empty string
+            Test("isMatch(nullObj, '([0-9])')", false), // null object
             #endregion
 
             #region type checking
