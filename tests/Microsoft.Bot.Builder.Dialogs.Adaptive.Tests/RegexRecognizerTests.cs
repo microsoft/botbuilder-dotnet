@@ -31,6 +31,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
+        public async Task RegexRecognizerTests_Priority()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task RegexRecognizerTests_Intents()
         {
             var recognizer = GetRecognizer();
