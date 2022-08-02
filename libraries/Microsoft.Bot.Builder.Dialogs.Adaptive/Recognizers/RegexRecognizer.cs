@@ -131,9 +131,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                             }
                         }
                     }
-
-                    // found
-                    break;
                 }
             }
 

@@ -851,20 +851,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 if (result.Intents.Any())
                 {
-                    // just deal with topIntent
-                    IntentScore topScore = null;
-                    var topIntent = string.Empty;
-                    foreach (var intent in result.Intents)
+                    // Score
+                    // Gathers all the intents with the highest Score value.
+                    var scoreSorted = result.Intents.OrderByDescending(e => e.Value.Score).ToList();
+                    var topIntents = scoreSorted.TakeWhile(e => e.Value.Score == scoreSorted[0].Value.Score).ToList();
+                    
+                    // Priority
+                    // Gathers the Intent with the highest Priority (0 being the highest).
+                    // Note: this functionality is based on the FirstSelector.SelectAsync method.
+                    var topIntent = topIntents.FirstOrDefault();
+
+                    if (topIntents.Count > 1)
                     {
-                        if (topScore == null || topScore.Score < intent.Value.Score)
+                        var highestPriority = double.MaxValue;
+                        foreach (var intent in topIntents)
                         {
-                            topIntent = intent.Key;
-                            topScore = intent.Value;
+                            var triggerIntent = Triggers.SingleOrDefault(x => x is OnIntent && (x as OnIntent).Intent == intent.Key);
+                            var priority = triggerIntent.CurrentPriority(actionContext);
+                            if (priority >= 0 && priority < highestPriority)
+                            {
+                                topIntent = intent;
+                                highestPriority = priority;
+                            }
                         }
                     }
 
                     result.Intents.Clear();
-                    result.Intents.Add(topIntent, topScore);
+                    result.Intents.Add(topIntent);
                 }
                 else
                 {
