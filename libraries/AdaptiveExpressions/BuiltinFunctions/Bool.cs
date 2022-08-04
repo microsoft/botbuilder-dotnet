@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -27,6 +29,18 @@ namespace AdaptiveExpressions.BuiltinFunctions
             if (arg is int @int)
             {
                 arg = @int != 0;
+            }
+
+            if (arg is string @string)
+            {
+                try
+                {
+                    arg = Convert.ToBoolean(@string, CultureInfo.InvariantCulture);
+                }
+                catch (FormatException)
+                {
+                    // Any string other than 'true' or 'false' will throw an exception. We'll ignore them.
+                }
             }
 
             return FunctionUtils.IsLogicTrue(arg);
