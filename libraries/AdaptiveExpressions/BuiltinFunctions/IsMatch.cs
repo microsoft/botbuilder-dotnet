@@ -21,22 +21,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return FunctionUtils.ApplyWithError(
                         args =>
                         {
-                            var value = false;
-                            string error = null;
+                            var regex = CommonRegex.CreateRegex(args[1].ToString());
+                            var inputString = args[0]?.ToString() ?? string.Empty;
+                            var value = regex.IsMatch(inputString);
 
-                            string inputString = args[0]?.ToString();
-                            if (string.IsNullOrEmpty(inputString))
-                            {
-                                value = false;
-                                error = "regular expression is empty.";
-                            }
-                            else
-                            {
-                                var regex = CommonRegex.CreateRegex(args[1].ToString());
-                                value = regex.IsMatch(inputString);
-                            }
-
-                            return (value, error);
+                            return (value, null);
                         }, FunctionUtils.VerifyStringOrNull);
         }
 
