@@ -43,6 +43,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly LanguageGeneratorManager _lazyLanguageGeneratorManager;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.  Creates LanguageGenerationManager using supplied ResourceExplorer.
+        /// </summary>
+        /// <param name="adaptiveDialogId">The id of the <see cref="AdaptiveDialog"/> to load from the <see cref="ResourceExplorer"/>.</param>
+        /// <param name="languageGeneratorId">The id of the <see cref="LanguageGenerator"/> to load from the <see cref="ResourceExplorer"/>.</param>
+        /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="Dialog"/> from.</param>
+        /// <param name="conversationState">A <see cref="ConversationState"/> implementation.</param>
+        /// <param name="userState">A <see cref="UserState"/> implementation.</param>
+        /// <param name="skillConversationIdFactoryBase">A <see cref="SkillConversationIdFactoryBase"/> implementation.</param>
+        /// <param name="languagePolicy">A <see cref="LanguagePolicy"/> to use.</param>
+        /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
+        /// <param name="telemetryClient">A <see cref="IBotTelemetryClient"/> used to log bot telemetry events.</param>
+        /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
+        /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
+        /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
+        /// <param name="logger">An <see cref="ILogger"/> instance.</param>
+        public AdaptiveDialogBot(
+            string adaptiveDialogId,
+            string languageGeneratorId,
+            ResourceExplorer resourceExplorer,
+            ConversationState conversationState,
+            UserState userState,
+            SkillConversationIdFactoryBase skillConversationIdFactoryBase,
+            LanguagePolicy languagePolicy,
+            BotFrameworkAuthentication botFrameworkAuthentication,
+            IBotTelemetryClient telemetryClient,
+            IEnumerable<MemoryScope> scopes = default,
+            IEnumerable<IPathResolver> pathResolvers = default,
+            IEnumerable<Dialog> dialogs = default,
+            ILogger logger = null) 
+            : this(
+                  adaptiveDialogId,
+                  languageGeneratorId,
+                  resourceExplorer,
+                  conversationState,
+                  userState,
+                  skillConversationIdFactoryBase,
+                  languagePolicy,
+                  new LanguageGeneratorManager(resourceExplorer),
+                  botFrameworkAuthentication,
+                  telemetryClient,
+                  scopes,
+                  pathResolvers,
+                  dialogs,
+                  logger)
+        { 
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
         /// </summary>
         /// <param name="adaptiveDialogId">The id of the <see cref="AdaptiveDialog"/> to load from the <see cref="ResourceExplorer"/>.</param>
@@ -102,7 +150,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             using (var botFrameworkClient = _botFrameworkAuthentication.CreateBotFrameworkClient())
             {
                 // Set up the TurnState the Dialog is expecting
-                await SetUpTurnStateAsync(turnContext, botFrameworkClient).ConfigureAwait(false);
+                SetUpTurnState(turnContext, botFrameworkClient);
+
+                await SetupTestOptionsAsync(turnContext).ConfigureAwait(false);
 
                 // Load the Dialog from the ResourceExplorer - the actual load should only happen once
                 var rootDialog = await _lazyRootDialog.Value.ConfigureAwait(false);
@@ -116,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private async Task SetUpTurnStateAsync(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
+        private void SetUpTurnState(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
         {
             turnContext.TurnState.Add(botFrameworkClient);
             turnContext.TurnState.Add(_skillConversationIdFactoryBase);
@@ -130,6 +180,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_languagePolicy);
             turnContext.TurnState.Add(_telemetryClient);
 
+            // Register the BotCallbackHandler in the TurnState using Set as opposed to Add
+            // because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
+            turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
+        }
+
+        private async Task SetupTestOptionsAsync(ITurnContext turnContext)
+        {
             // Catch "SetTestOptions" event and save into "Conversation.TestOptions".
             // Note: This is consumed by AdaptiveExpressions Extensions.RandomNext
             if (turnContext.Activity.Type == ActivityTypes.Event)
@@ -144,10 +201,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     await property.SetAsync(turnContext, eventActivity.Value).ConfigureAwait(false);
                 }
             }
-
-            // Register the BotCallbackHandler in the TurnState using Set as opposed to Add
-            // because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
-            turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
         private async Task<Dialog> CreateDialogAsync()
