@@ -231,10 +231,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId)
                 : new TemplateEngineLanguageGenerator();
         }
-
-        private LanguageGeneratorManager CreateLanguageGeneratorManager()
-        {
-            return new LanguageGeneratorManager(_resourceExplorer);
-        }
     }
 }
