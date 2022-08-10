@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Azure.Blobs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Component;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Settings;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -89,10 +90,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
             // IBot
-            services.TryAddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
+            services.AddTransient<IBot, ConfigurationAdaptiveDialogBot>();
 
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
+            services.TryAddSingleton<LanguageGeneratorManager, LanguageGeneratorManager>();
 
             // Language policy
             services.TryAddSingleton<LanguagePolicy, ConfigurationLanguagePolicy>();

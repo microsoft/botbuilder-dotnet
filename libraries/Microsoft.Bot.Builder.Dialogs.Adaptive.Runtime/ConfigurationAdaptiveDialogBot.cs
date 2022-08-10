@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ApplicationInsights;
 using Microsoft.Bot.Builder.ApplicationInsights;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -29,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
         /// <param name="userState">The <see cref="UserState"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="skillConversationIdFactoryBase">The <see cref="SkillConversationIdFactoryBase"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="languagePolicy">The <see cref="LanguagePolicy"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
+        /// <param name="languageGeneratorManager">A <see cref="LanguageGeneratorManager"/>.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> for making calls to Bot Builder Skills.</param>
         /// <param name="telemetryClient">A <see cref="IBotTelemetryClient"/> for logging bot telemetry events.</param>
         /// <param name="scopes">A set of <see cref="MemoryScope"/> that will be added to the <see cref="ITurnContext"/>.</param>
@@ -42,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             LanguagePolicy languagePolicy,
+            LanguageGeneratorManager languageGeneratorManager,
             BotFrameworkAuthentication botFrameworkAuthentication = null,
             IBotTelemetryClient telemetryClient = null,
             IEnumerable<MemoryScope> scopes = default,
@@ -56,6 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
                 userState,
                 skillConversationIdFactoryBase,
                 languagePolicy,
+                languageGeneratorManager,
                 botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),
                 telemetryClient ?? new NullBotTelemetryClient(),
                 scopes ?? Enumerable.Empty<MemoryScope>(),

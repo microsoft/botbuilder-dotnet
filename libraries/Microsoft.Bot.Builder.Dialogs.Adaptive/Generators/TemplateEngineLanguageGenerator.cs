@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
         [Obsolete("This method will soon be deprecated. Use LGResource as the first parameter instead.")]
-        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<Resource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string lgText, string id, IDictionary<string, IList<Resource>> resourceMapping)
         {
             Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="filePath">lg template file absolute path.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
         [Obsolete("This method will soon be deprecated. Use LGResource as the first parameter instead.")]
-        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<Resource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string filePath, IDictionary<string, IList<Resource>> resourceMapping)
         {
             filePath = PathUtils.NormalizePath(filePath);
             Id = Path.GetFileName(filePath);
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="resource">Resource.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(Resource resource, Dictionary<string, IList<Resource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(Resource resource, IDictionary<string, IList<Resource>> resourceMapping)
         {
             Id = resource.Id;
             _lg = new Lazy<Task<LanguageGeneration.Templates>>(() => CreateTemplatesAsync(resource, resourceMapping));
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="resource">Resource.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
         /// <returns>The loaded language generation templates.</returns>
-        private async Task<LanguageGeneration.Templates> CreateTemplatesAsync(Resource resource, Dictionary<string, IList<Resource>> resourceMapping)
+        private async Task<LanguageGeneration.Templates> CreateTemplatesAsync(Resource resource, IDictionary<string, IList<Resource>> resourceMapping)
         {
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);

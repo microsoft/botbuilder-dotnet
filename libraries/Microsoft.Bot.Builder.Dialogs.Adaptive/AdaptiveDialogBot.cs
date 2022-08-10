@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private readonly Lazy<Task<Dialog>> _lazyRootDialog;
         private readonly Lazy<LanguageGenerator> _lazyLanguageGenerator;
-        private readonly Lazy<LanguageGeneratorManager> _lazyLanguageGeneratorManager;
+        private readonly LanguageGeneratorManager _lazyLanguageGeneratorManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="languagePolicy">A <see cref="LanguagePolicy"/> to use.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
         /// <param name="telemetryClient">A <see cref="IBotTelemetryClient"/> used to log bot telemetry events.</param>
+        /// <param name="languageGeneratorManager">A <see cref="LanguageGeneratorManager"/>.</param>
         /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
         /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
@@ -66,6 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             LanguagePolicy languagePolicy,
+            LanguageGeneratorManager languageGeneratorManager,
             BotFrameworkAuthentication botFrameworkAuthentication,
             IBotTelemetryClient telemetryClient,
             IEnumerable<MemoryScope> scopes = default,
@@ -89,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             _lazyRootDialog = new Lazy<Task<Dialog>>(CreateDialogAsync);
             _lazyLanguageGenerator = new Lazy<LanguageGenerator>(CreateLanguageGenerator);
-            _lazyLanguageGeneratorManager = new Lazy<LanguageGeneratorManager>(CreateLanguageGeneratorManager);
+            _lazyLanguageGeneratorManager = languageGeneratorManager;
         }
 
         /// <inheritdoc/>
@@ -124,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_memoryScopes);
             turnContext.TurnState.Add(_pathResolvers);
             turnContext.TurnState.Add(_lazyLanguageGenerator.Value);
-            turnContext.TurnState.Add(_lazyLanguageGeneratorManager.Value);
+            turnContext.TurnState.Add(_lazyLanguageGeneratorManager);
             turnContext.TurnState.Add(_languagePolicy);
             turnContext.TurnState.Add(_telemetryClient);
 
