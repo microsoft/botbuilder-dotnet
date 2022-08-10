@@ -185,6 +185,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
+        // TestOptions is enabled via Emulator for introducing randomization.  Set when opening a bot in Emulator using
+        // the "Test Options - Random Seed" and "Test Options - Random Value".
         private async Task SetupTestOptionsAsync(ITurnContext turnContext)
         {
             // Catch "SetTestOptions" event and save into "Conversation.TestOptions".
