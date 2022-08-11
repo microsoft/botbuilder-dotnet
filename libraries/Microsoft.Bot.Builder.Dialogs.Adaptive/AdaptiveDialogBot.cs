@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -194,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (turnContext.Activity.Type == ActivityTypes.Event)
             {
                 var eventActivity = turnContext.Activity.AsEventActivity();
-                if (eventActivity.Name == "SetTestOptions")
+                if (eventActivity.Name == "SetTestOptions" && eventActivity.ChannelId == Channels.Emulator)
                 {
                     _logger.LogInformation("SetTestOptions received.  This could change the behavior of AdaptiveExpression RandomNext.");
 
