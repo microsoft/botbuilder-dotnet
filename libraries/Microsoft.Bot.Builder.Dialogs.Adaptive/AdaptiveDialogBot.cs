@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             using (var botFrameworkClient = _botFrameworkAuthentication.CreateBotFrameworkClient())
             {
                 // Set up the TurnState the Dialog is expecting
-                SetUpTurnState(turnContext, botFrameworkClient);
+                SetupTurnState(turnContext, botFrameworkClient);
 
                 await SetupTestOptionsAsync(turnContext).ConfigureAwait(false);
 
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private void SetUpTurnState(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
+        private void SetupTurnState(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
         {
             turnContext.TurnState.Add(botFrameworkClient);
             turnContext.TurnState.Add(_skillConversationIdFactoryBase);
