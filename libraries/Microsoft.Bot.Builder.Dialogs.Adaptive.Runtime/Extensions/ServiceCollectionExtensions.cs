@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
 
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
-            services.TryAddSingleton<LanguageGeneratorManager, LanguageGeneratorManager>();
+            services.TryAddSingleton<LanguageGeneratorManager>();
 
             // Language policy
             services.TryAddSingleton<LanguagePolicy, ConfigurationLanguagePolicy>();
