@@ -13,6 +13,7 @@ steps:
     userToken: '$(GitHubCommentApiKey)'
     bodyFilePath: '$(System.ArtifactsDirectory)\ApiCompat'
     getSubFolders: true
+    keepCommentHistory: false
   # Skip forks, as they can't get credentials.
   condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
