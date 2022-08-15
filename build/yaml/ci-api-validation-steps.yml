@@ -110,7 +110,7 @@ steps:
       Write-Host "`nProcessed result:"; 
       $baseline;
     }
-  displayName: 'Compatibility Check'
+  displayName: 'Exclude specified classes from compare binaries'
   condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
