@@ -1006,6 +1006,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .StartTestAsync();
         }
 
+        [Fact]
+        public async Task AdaptiveDialog_BeginDialog_With_ComponentDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new BeginDialog(nameof(ForeachItemsDialog))
+                        }
+                    }
+                },
+            };
+
+            var dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(_resourceExplorerFixture.ResourceExplorer);
+            dialogManager.Dialogs.Add(new ForeachItemsDialog(1));
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .SendConversationUpdate()
+                .Send("hi")
+                    .AssertReply("Send me some text.")
+                .StartTestAsync();
+        }
+
         private static AdaptiveDialog CreateDialog(string custom)
         {
             return new AdaptiveDialog()
