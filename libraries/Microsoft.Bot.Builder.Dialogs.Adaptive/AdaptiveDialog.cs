@@ -384,6 +384,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
+        /// Finds a child dialog that was previously added to the container.
+        /// Uses DialogContext as fallback to gather the dialog from the <see cref="ResourceExplorer"/>.
+        /// </summary>
+        /// <param name="dialogId">The ID of the dialog to lookup.</param>
+        /// <param name="dc">The dialog context where to find the dialog.</param>
+        /// <returns>The Dialog if found; otherwise null.</returns>
+        /// <remarks>
+        /// When the Dialog is gathered from the <see cref="ResourceExplorer"/>,
+        /// automatically will be loaded into the <see cref="DialogContext.Dialogs"/> stack.
+        /// </remarks>
+        public override Dialog FindDialog(string dialogId, DialogContext dc = null)
+        {
+            var dialog = FindDialog(dialogId);
+            if (dialog != null)
+            {
+                return dialog;
+            }
+
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            var resourceExplorer = dc.Context.TurnState.Get<ResourceExplorer>();
+            var resourceId = $"{dialogId}.dialog";
+            var foundResource = resourceExplorer?.TryGetResource(resourceId, out _) ?? false;
+            if (!foundResource)
+            {
+                return null;
+            }
+            
+            dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
+            dialog.Id = dialogId;
+            dc.Dialogs.Add(dialog);
+            return dialog;
+        }
+
+        /// <summary>
         /// Gets the internal version string.
         /// </summary>
         /// <returns>Internal version string.</returns>
@@ -680,22 +718,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var actionDC = CreateChildContext(actionContext);
             while (actionDC != null)
             {
-                if (actionDC.ActiveDialog != null)
-                {
-                    var dialog = FindDialog(actionDC.ActiveDialog.Id);
-                    if (dialog == null)
-                    {
-                        var resourceExplorer = actionDC.Context.TurnState.Get<ResourceExplorer>();
-                        var resourceId = $"{actionDC.ActiveDialog.Id}.dialog";
-                        var foundResource = resourceExplorer?.TryGetResource(resourceId, out _) ?? false;
-                        if (foundResource)
-                        {
-                            dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
-                            actionDC.Dialogs.Add(dialog);
-                        }
-                    }
-                }
-
                 // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
                 //        statement for actionContext.Actions.
                 DialogTurnResult result;
