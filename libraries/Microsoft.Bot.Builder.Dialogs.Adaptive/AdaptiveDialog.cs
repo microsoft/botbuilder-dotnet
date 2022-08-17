@@ -686,9 +686,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (dialog == null)
                     {
                         var resourceExplorer = actionDC.Context.TurnState.Get<ResourceExplorer>();
-                        if (resourceExplorer != null)
+                        var resourceId = $"{actionDC.ActiveDialog.Id}.dialog";
+                        var foundResource = resourceExplorer?.TryGetResource(resourceId, out _) ?? false;
+                        if (foundResource)
                         {
-                            dialog = resourceExplorer.LoadType<AdaptiveDialog>($"{actionDC.ActiveDialog.Id}.dialog");
+                            dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
                             actionDC.Dialogs.Add(dialog);
                         }
                     }
