@@ -204,6 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 else
                 {
                     turnResult = await childDc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                    childDialogState = GetActionScopeState(dc);
                 }
 
                 if (turnResult.Status == DialogTurnStatus.Waiting)
