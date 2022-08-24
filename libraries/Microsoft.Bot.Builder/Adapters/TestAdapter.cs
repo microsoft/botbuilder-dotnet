@@ -810,7 +810,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="finalRedirect">A final redirect URL.</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>A SignInResource with the link and token exchange info.</returns>
-        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        public virtual Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(new SignInResource()
             {

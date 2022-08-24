@@ -45,6 +45,13 @@ namespace Microsoft.Bot.Schema
         public TokenExchangeResource TokenExchangeResource { get; set; }
 
         /// <summary>
+        /// Gets or sets additional properties that can be used for direct token posting operations.
+        /// </summary>
+        /// <value>The additional properties can be used for token posting operations.</value>
+        [JsonProperty(PropertyName = "tokenPostResource")]
+        public TokenPostResource TokenPostResource { get; set; }
+        
+        /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();

@@ -177,6 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             },
                         },
                         TokenExchangeResource = signInResource.TokenExchangeResource,
+                        TokenPostResource = signInResource.TokenPostResource
                     },
                 });
             }
