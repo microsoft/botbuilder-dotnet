@@ -297,6 +297,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_Foreach_Nested_WithCancel()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_Foreach_Object()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
