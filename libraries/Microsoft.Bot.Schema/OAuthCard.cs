@@ -58,6 +58,13 @@ namespace Microsoft.Bot.Schema
         public TokenExchangeResource TokenExchangeResource { get; set; }
 
         /// <summary>
+        /// Gets or sets the resource to directly post a token to token service.
+        /// </summary>
+        /// <value>The resource to directly post a token to token service.</value>
+        [JsonProperty(PropertyName = "tokenPostResource")]
+        public TokenPostResource TokenPostResource { get; set; }
+        
+        /// <summary>
         /// Gets or sets action to use to perform signin.
         /// </summary>
         /// <value>The actions used to perform sign-in.</value>

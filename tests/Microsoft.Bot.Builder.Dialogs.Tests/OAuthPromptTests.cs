@@ -6,7 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -15,14 +17,21 @@ using Xunit.Sdk;
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class OAuthPromptTests
-    { 
+    {
         private const string UserId = "user-id";
         private const string ConnectionName = "connection-name";
         private const string ChannelId = "channel-id";
         private const string MagicCode = "888999";
         private const string Token = "token123";
         private const string ExchangeToken = "exch123";
-        
+
+        public static TheoryData<TestAdapter, bool> SasTestData =>
+        new TheoryData<TestAdapter, bool>
+        {
+            { new TestAdapter(), false },
+            { new SignInResourceAdapter(), true }
+        };
+
         [Fact]
         public void OAuthPromptWithEmptySettingsShouldFail()
         {
@@ -589,7 +598,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [InlineData(true, Channels.Msteams, true)] //Override: show link;  ChannelRequiresSingInLink() returns true; Result: show link
         public async Task OAuthPromptSignInLinkSettingsCases(bool? showSignInLinkValue, string channelId, bool shouldHaveSignInLink)
         {
-            var oAuthPromptSettings = new OAuthPromptSettings(); 
+            var oAuthPromptSettings = new OAuthPromptSettings();
             oAuthPromptSettings.ShowSignInLink = showSignInLinkValue;
 
             var convoState = new ConversationState(new MemoryStorage());
@@ -620,11 +629,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             await new TestFlow(adapter, botCallbackHandler)
                 .Send(initialActivity)
-                .AssertReply(activity => 
-                { 
-                    Assert.Single(((Activity)activity).Attachments); 
-                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType); 
-                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content; 
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
                     var cardAction = oAuthCard.Buttons[0];
                     Assert.Equal(shouldHaveSignInLink, cardAction.Value != null);
                 })
@@ -710,6 +719,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [Theory]
+        [MemberData(nameof(SasTestData))]
+        public async Task OAuthPromptSasUrlPresentInOAuthCard(TestAdapter testAdapter, bool containsSasurl)
+        {
+            var oAuthPromptSettings = new OAuthPromptSettings();
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = testAdapter
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", oAuthPromptSettings));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                }
+            };
+
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send("hello")
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
+                    if (containsSasurl)
+                    {
+                        Assert.NotNull(oAuthCard.TokenPostResource);
+                        Assert.NotNull(oAuthCard.TokenPostResource.SasUrl);
+                    }
+                    else
+                    {
+                        Assert.Null(oAuthCard.TokenPostResource);
+                    }
+
+                    Assert.NotNull(oAuthCard.TokenExchangeResource);
+                })
+                .StartTestAsync();
+        }
+
         [Fact]
         public async Task OAuthPromptEndOnInvalidMessageSetting()
         {
@@ -788,7 +846,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var turnContext = new TurnContext(adapter, activity);
 
             var userToken = await prompt.GetUserTokenAsync(turnContext, CancellationToken.None);
-            
+
             Assert.Equal(Token, userToken.Token);
         }
 
@@ -918,6 +976,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
 
             return eventActivity;
+        }
+
+        private class SignInResourceAdapter : TestAdapter
+        {
+            public override async Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+            {
+                var result = await base.GetSignInResourceAsync(turnContext, oAuthAppCredentials, connectionName, userId, finalRedirect, cancellationToken);
+                result.TokenPostResource = new TokenPostResource()
+                {
+                    SasUrl = $"https://www.fakesas.com/{connectionName}/{userId}"
+                };
+                return result;
+            }
         }
     }
 }
