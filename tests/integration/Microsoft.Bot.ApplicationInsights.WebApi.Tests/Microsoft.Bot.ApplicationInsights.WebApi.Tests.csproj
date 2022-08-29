@@ -98,9 +98,6 @@
     <PackageReference Include="Microsoft.AspNet.WebApi">
       <Version>5.2.6</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Owin">
-      <Version>5.2.6</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.CodeCoverage">
       <Version>16.3.0</Version>
     </PackageReference>
