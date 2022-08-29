@@ -96,10 +96,10 @@
       <Version>2.8.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi">
-      <Version>5.2.6</Version>
+      <Version>5.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.Owin">
-      <Version>5.2.6</Version>
+      <Version>5.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeCoverage">
       <Version>16.3.0</Version>
