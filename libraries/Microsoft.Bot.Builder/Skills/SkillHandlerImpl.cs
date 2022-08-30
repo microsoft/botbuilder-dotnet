@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -89,6 +90,23 @@ namespace Microsoft.Bot.Builder.Skills
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
 
             return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+        }
+
+        internal async Task<ChannelAccount> OnGetMemberAsync(ClaimsIdentity claimsIdentity, string userId, string conversationId, CancellationToken cancellationToken = default)
+        {
+            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+            ChannelAccount member = null;
+
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                var client = turnContext.TurnState.Get<IConnectorClient>();
+                var conversationId = turnContext.Activity.Conversation.Id;
+                member = await ((Conversations)client.Conversations).GetConversationMemberAsync(userId, conversationId, cancellationToken).ConfigureAwait(false);
+            });
+
+            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
+
+            return member;
         }
 
         private static void ApplySkillActivityToTurnContext(ITurnContext turnContext, Activity activity)

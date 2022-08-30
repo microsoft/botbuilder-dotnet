@@ -130,6 +130,20 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Gets the account of a single conversation member.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public async Task<ChannelAccount> HandleGetConversationMemberAsync(string authHeader, string userId, string conversationId, CancellationToken cancellationToken = default)
+        {
+            var claimsIdentity = await AuthenticateAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            return await OnGetConversationMemberAsync(claimsIdentity, userId, conversationId, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Enumerates the members of a conversation one page at a time.
         /// </summary>
         /// <param name="authHeader">The authentication header.</param>
@@ -388,6 +402,25 @@ namespace Microsoft.Bot.Builder
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <returns>task for a response.</returns>
         protected virtual Task<IList<ChannelAccount>> OnGetConversationMembersAsync(ClaimsIdentity claimsIdentity, string conversationId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// GetConversationMember() API for Skill.
+        /// </summary>
+        /// <remarks>
+        /// Override this method to get the account of a single conversation member.
+        ///
+        /// This REST API takes a ConversationId and UserId and returns the ChannelAccount
+        /// objects representing the member of the conversation.
+        /// </remarks>
+        /// <param name="claimsIdentity">claimsIdentity for the bot, should have AudienceClaim, AppIdClaim and ServiceUrlClaim.</param>
+        /// <param name="userId">User ID.</param>
+        /// <param name='conversationId'>Conversation ID.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>task for a response.</returns>
+        protected virtual Task<ChannelAccount> OnGetConversationMemberAsync(ClaimsIdentity claimsIdentity, string userId, string conversationId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

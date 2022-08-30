@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Moq;
@@ -19,6 +21,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
     {
         private static readonly string TestSkillId = Guid.NewGuid().ToString("N");
         private static readonly string TestAuthHeader = string.Empty; // Empty since claims extraction is being mocked
+        private static readonly ChannelAccount TestMember = new ChannelAccount()
+        {
+            Id = "userId",
+            Name = "userName"
+        };
 
         [Theory]
         [InlineData(ActivityTypes.Message, null)]
@@ -155,6 +162,23 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             Assert.Equal(activity.Text, mockObjects.UpdateActivity.Text);
         }
 
+        [Fact]
+        public async void TestGetConversationMemberAsync()
+        {
+            // Arrange
+            var mockObjects = new CloudSkillHandlerTestMocks();            
+            var activity = new Activity(ActivityTypes.Message) { Text = $"Get Member." };
+            var conversationId = await mockObjects.CreateAndApplyConversationIdAsync(activity);
+
+            // Act
+            var sut = new CloudSkillHandler(mockObjects.Adapter.Object, mockObjects.Bot.Object, mockObjects.ConversationIdFactory, mockObjects.Auth.Object);
+            var member = await sut.HandleGetConversationMemberAsync(TestAuthHeader, TestMember.Id, conversationId);
+
+            // Assert
+            Assert.Equal(TestMember.Id, member.Id);
+            Assert.Equal(TestMember.Name, member.Name);
+        }
+
         /// <summary>
         /// Helper class with mocks for adapter, bot and auth needed to instantiate CloudSkillHandler and run tests.
         /// This class also captures the turnContext and activities sent back to the bot and the channel so we can run asserts on them.
@@ -172,6 +196,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 Auth = CreateMockBotFrameworkAuthentication();
                 Bot = CreateMockBot();
                 ConversationIdFactory = new TestSkillConversationIdFactory();
+                Client = CreateMockConnectorClient(); 
             }
 
             public SkillConversationIdFactoryBase ConversationIdFactory { get; }
@@ -181,6 +206,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             public Mock<BotFrameworkAuthentication> Auth { get;  }
 
             public Mock<IBot> Bot { get;  }
+
+            public IConnectorClient Client { get; }
 
             // Gets the TurnContext created to call the bot.
             public TurnContext TurnContext { get; private set; }
@@ -242,6 +269,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                     {
                         // Create and capture the TurnContext so we can run assertions on it.
                         TurnContext = new TurnContext(adapter.Object, conv.GetContinuationActivity());
+                        TurnContext.TurnState.Add(Client);
+
                         await botCallbackHandler(TurnContext, cancel);
                     });
 
@@ -306,6 +335,21 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                         return Task.FromResult(claimsIdentity);
                     });
                 return auth;
+            }
+
+            private IConnectorClient CreateMockConnectorClient()
+            {
+                var httpResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(TestMember))
+                };
+
+                var httpClient = new Mock<HttpClient>();
+                httpClient.Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(httpResponse);
+
+                var client = new ConnectorClient(MicrosoftAppCredentials.Empty, httpClient.Object, false);
+
+                return client;
             }
         }
 
