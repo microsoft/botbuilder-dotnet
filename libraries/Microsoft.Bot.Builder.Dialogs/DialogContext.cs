@@ -578,7 +578,19 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (this.Parent != null)
                 {
-                    return this.Parent.FindDialog(dialogId);
+                    var dialog = Parent.FindDialog(dialogId);
+                    
+                    if (dialog != null)
+                    {
+                        return dialog;
+                    }
+
+                    var parentDialog = Parent.ActiveDialog?.Id != null ? Parent.FindDialog(Parent.ActiveDialog.Id) : null;
+                    if (parentDialog is DialogContainer)
+                    {
+                        dialog = (parentDialog as DialogContainer).FindDialog(dialogId, this);
+                        return dialog;
+                    }
                 }
 
                 return null;

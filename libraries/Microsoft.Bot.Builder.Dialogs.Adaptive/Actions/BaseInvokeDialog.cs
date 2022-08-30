@@ -98,17 +98,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var se = new StringExpression($"={this.Dialog.ExpressionText}");
             var dialogId = se.GetValue(dc.State) ?? throw new InvalidOperationException($"{this.Dialog.ToString()} not found.");
             var dialog = dc.FindDialog(dialogId);
-
-            if (dialog == null)
-            {
-                var resourceExplorer = dc.Context.TurnState.Get<ResourceExplorer>();
-                if (resourceExplorer != null)
-                {
-                    dialog = resourceExplorer.LoadType<AdaptiveDialog>($"{dialogId}.dialog");
-                    dc.Dialogs.Add(dialog);
-                }
-            }
-
             return dialog;
         }
 

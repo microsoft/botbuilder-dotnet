@@ -5,13 +5,42 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "outer",
         "autoEndDialog": false,
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "TellJokeDialog",
+                    "pattern": "joke"
+                },
+                {
+                    "intent": "UnknownDialog",
+                    "pattern": "unknown"
+                }
+            ]
+        },
         "triggers": [
             {
-                "$kind": "Microsoft.OnBeginDialog",
+                "$kind": "Microsoft.OnIntent",
+                "intent": "TellJokeDialog",
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
                         "value": "TellJokeDialog",
+                        "property": "turn.dialogToStart"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": "=turn.dialogToStart"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "UnknownDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "value": "UnknownDialog",
                         "property": "turn.dialogToStart"
                     },
                     {
@@ -25,11 +54,19 @@
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "hi"
+            "text": "joke"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "unknown"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Object reference not set to an instance of an object."
         }
     ]
 }
