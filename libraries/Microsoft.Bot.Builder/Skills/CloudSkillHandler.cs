@@ -132,5 +132,11 @@ namespace Microsoft.Bot.Builder.Skills
         {
             return await _inner.OnUpdateActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
+
+        /// <inheritdoc/>
+        protected override async Task<ChannelAccount> OnGetConversationMemberAsync(ClaimsIdentity claimsIdentity, string userId, string conversationId, CancellationToken cancellationToken = default)
+        {
+            return await _inner.OnGetMemberAsync(claimsIdentity, userId, conversationId, cancellationToken).ConfigureAwait(false);
+        }
     }
 }
