@@ -1,0 +1,95 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.RegexRecognizer",
+      "id": "x",
+      "intents": [
+        {
+          "intent": "cancel",
+          "pattern": "^(?:cancel|quit|stop|end)"
+        },
+        {
+          "intent": "MyCommand",
+          "pattern": "."
+        },
+        {
+          "intent": "help",
+          "pattern": "^(?:support|advice|help|\\?)"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "cancel",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${turn.recognized.intent}"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "MyCommand",
+        "priority": 1,
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${turn.recognized.intent}"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "help",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${turn.recognized.intent}"
+          }
+        ]
+      }
+    ]
+  },
+  "locale": "en-us",
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "help"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "help"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "?"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "help"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "cancel"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "cancel"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "random-text"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "MyCommand"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
@@ -22,6 +23,7 @@ using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Moq;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -266,13 +268,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public async Task TestForeachWithPrompt()
         {
-               await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
         public async Task TestForeachWithEndDialog()
         {
-               await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
@@ -330,7 +332,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await testFlow.ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
         }
-        
+
         [Fact]
         public async Task TestForEachElement_TelemetryTrackEvent()
         {
@@ -389,6 +391,107 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal(2, ((Dictionary<string, string>)trackEvent.Arguments[1]).Count);
             Assert.Equal("value1", ((Dictionary<string, string>)trackEvent.Arguments[1])["prop1"]);
             Assert.Equal("value2", ((Dictionary<string, string>)trackEvent.Arguments[1])["prop2"]);
+        }
+
+        [Fact]
+        public async Task TestForEachElement_RecursiveContinueDialog()
+        {
+            var testFlow = new TestScript()
+            {
+                Dialog = new ForEachElementRecursiveContinueDialog()
+            }
+            .SendConversationUpdate();
+
+            testFlow = testFlow.AssertReply("When prompted to 'Enter text', enter some.");
+            testFlow = testFlow.AssertReply("Top of loop 0");
+            testFlow = testFlow.AssertReply("Enter text");
+            testFlow.Script.Add(new UserSays() { Text = "hi" });
+            testFlow = testFlow.AssertReply("In Some Other Dialog");
+            testFlow = testFlow.AssertReply("hi");
+            testFlow = testFlow.AssertReply("Top of loop 1");
+            testFlow = testFlow.AssertReply("Enter text");
+            testFlow.Script.Add(new UserSays() { Text = "hello" });
+            testFlow = testFlow.AssertReply("In Some Other Dialog");
+            testFlow = testFlow.AssertReply("hello");
+            testFlow = testFlow.AssertReply("Top of loop 2");
+            testFlow = testFlow.AssertReply("Enter text");
+
+            await testFlow.ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        private class ForEachElementRecursiveContinueDialog : ComponentDialog
+        {
+            public ForEachElementRecursiveContinueDialog()
+                : base(nameof(ForEachElementRecursiveContinueDialog))
+            {
+                AddDialog(new RootDialog());
+                AddDialog(new EditActionDialog());
+            }
+
+            private class EditActionDialog : ComponentDialog
+            {
+                public EditActionDialog()
+                    : base(nameof(EditActionDialog))
+                {
+                    var editActionDialog = new AdaptiveDialog(nameof(EditActionDialog)) { Generator = new TemplateEngineLanguageGenerator() };
+                    editActionDialog.Triggers.Add(new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new EditActions
+                            {
+                                ChangeType = ActionChangeType.ReplaceSequence,
+                                Actions = new List<Dialog>
+                                {
+                                    new SendActivity { Activity = new ActivityTemplate("In Some Other Dialog") }
+                                }
+                            }
+                        }
+                    });
+                    AddDialog(editActionDialog);
+                    InitialDialogId = nameof(EditActionDialog);
+                }
+            }
+
+            private class RootDialog : ComponentDialog
+            {
+                public RootDialog()
+                    : base(nameof(RootDialog))
+                {
+                    var rootDialog = new AdaptiveDialog(nameof(RootDialog)) { Generator = new TemplateEngineLanguageGenerator() };
+                    rootDialog.Triggers.Add(new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new CodeAction(async (dc, obj) =>
+                            {
+                                await dc.Context.SendActivityAsync("When prompted to 'Enter text', enter some.");
+                                dc.State.SetValue("$items", new List<string> { "1", "2", "3" });
+                                return await dc.EndDialogAsync();
+                            }),
+                            new ForEachElement
+                            {
+                                ItemsProperty = "$items",
+                                Index = "dialog.index",
+                                Actions = new List<Dialog>
+                                {
+                                    new SendActivity { Activity = new ActivityTemplate("Top of loop ${dialog.index}") },
+                                    new TextInput
+                                    {
+                                        Prompt = new ActivityTemplate("Enter text"),
+                                        Property = "$answer",
+                                        AlwaysPrompt = true
+                                    },
+                                    new BeginDialog(nameof(EditActionDialog)),
+                                    new SendActivity { Activity = new ActivityTemplate("${dialog.answer}") }
+                                }
+                            }
+                        }
+                    });
+                    AddDialog(rootDialog);
+                    InitialDialogId = nameof(RootDialog);
+                }
+            }
         }
 
         private class ForEachElementRepromptMainDialog : ComponentDialog
@@ -1003,6 +1106,126 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("child dialog has ended and returned back")
                  .Send("where")
                     .AssertReply("outer dialog..")
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task AdaptiveDialog_BeginDialog_With_ComponentDialog()
+        {
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new BeginDialog(nameof(ForeachItemsDialog))
+                        }
+                    }
+                },
+            };
+
+            var dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(_resourceExplorerFixture.ResourceExplorer);
+            dialogManager.Dialogs.Add(new ForeachItemsDialog(1));
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .SendConversationUpdate()
+                .Send("hi")
+                    .AssertReply("Send me some text.")
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task AdaptiveDialog_LoadDialogFromProperty_With_BotRestart()
+        {
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer
+                {
+                    Intents = new List<IntentPattern>
+                    {
+                        new IntentPattern
+                        {
+                            Intent = "Start",
+                            Pattern = "start"
+                        }
+                    }
+                },
+                Triggers = new List<OnCondition>()
+                {
+                    new OnIntent()
+                    {
+                        Intent = "Start",
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperty
+                            {
+                                Property = "turn.dialogToStart",
+                                Value = "AskNameDialog"
+                            },
+                            new BeginDialog("=turn.dialogToStart")
+                        }
+                    },
+                    new OnDialogEvent(DialogEvents.VersionChanged)
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperty
+                            {
+                                Property = "user.name",
+                                Value = $"John Doe ({DialogEvents.VersionChanged})"
+                            },
+                        }
+                    }
+                },
+            };
+
+            var resourceExplorer = new ResourceExplorer();
+            var folderPath = Path.Combine(TestUtils.GetProjectPath(), "Tests", "ActionTests");
+            resourceExplorer = resourceExplorer.AddFolder(folderPath, monitorChanges: false);
+
+            var dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(resourceExplorer);
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .Send("start")
+                    .AssertReply("Hello, what is your name?")
+                .StartTestAsync();
+
+            // Simulate bot restart, maintaining storage information.
+            adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(resourceExplorer);
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .Send("John Doe")
+                    .AssertReply($"Hello John Doe ({DialogEvents.VersionChanged}), nice to meet you!")
                 .StartTestAsync();
         }
 

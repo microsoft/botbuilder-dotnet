@@ -131,6 +131,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
+        /// GetConversationMember.
+        /// </summary>
+        /// <param name="userId">User ID.</param>
+        /// <param name="conversationId">Conversation ID.</param>
+        /// <returns>The ChannelAccount of the conversation member.</returns>
+        [HttpGet("v3/conversations/{conversationId}/members/{userId}")]
+        public virtual async Task<IActionResult> GetConversationMemberAsync(string userId, string conversationId)
+        {
+            var result = await _handler.HandleGetConversationMemberAsync(HttpContext.Request.Headers["Authorization"], userId, conversationId).ConfigureAwait(false);
+            return new JsonResult(result, HttpHelper.BotMessageSerializerSettings);
+        }
+
+        /// <summary>
         /// GetConversationPagedMembers.
         /// </summary>
         /// <param name="conversationId">Conversation ID.</param>

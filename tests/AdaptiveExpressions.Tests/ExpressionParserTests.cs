@@ -734,7 +734,8 @@ namespace AdaptiveExpressions.Tests
             Test("bool(0)", false),
             Test("bool(null)", false),
             Test("bool(hello * 5)", false),
-            Test("bool('false')", true),
+            Test("bool('false')", false),
+            Test("bool('true')", true),
             Test("bool('hi')", true),
             Test("[1,2,3]", new List<object> { 1, 2, 3 }),
             Test("[1,2,3, [4,5]]", new List<object> { 1, 2, 3, new List<object> { 4, 5 } }),
@@ -1150,6 +1151,8 @@ namespace AdaptiveExpressions.Tests
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
             Test(@"isMatch('12.5', '[0-9]+(\\.5)')", true), // "\." (match .)
             Test(@"isMatch('12x5', '[0-9]+(\\.5)')", false), // "\." (match .)
+            Test("isMatch('', '([0-9])')", false), // empty string
+            Test("isMatch(nullObj, '([0-9])')", false), // null object
             #endregion
 
             #region type checking
