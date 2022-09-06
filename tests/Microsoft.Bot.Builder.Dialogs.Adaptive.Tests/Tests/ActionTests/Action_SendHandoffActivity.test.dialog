@@ -10,9 +10,15 @@
                 "actions": [
                     {
                       "$kind": "Microsoft.SetProperty",
+                      "property": "user.name",
+                      "value": "John Doe"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
                       "property": "$context",
-                      "value": "={\"context\": \"test-context\"}"
-                    },{
+                      "value": "={\"user\": \"${user.name}\"}"
+                    },
+                    {
                       "$kind": "Microsoft.SetProperty",
                       "property": "$transcript",
                       "value": "={\"activities\": [{\"id\": \"activity1\"}, {\"id\": \"activity2\"}]}"
@@ -37,7 +43,7 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
                 "type == 'event'",
-                "value.context == 'test-context'",
+                "value.user == 'John Doe'",
                 "attachments[0].name == 'Transcript'",
                 "attachments[0].content.activities[0].id == 'activity1'"
             ]
