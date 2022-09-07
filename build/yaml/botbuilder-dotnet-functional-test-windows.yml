@@ -163,3 +163,10 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
+
+- powershell: |
+   cd ..
+   ls -R
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()
