@@ -297,16 +297,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         {
                             if (instanceBody.GetType() == typeof(byte[]))
                             {
-                                using var postContent = new ByteArrayContent((byte[])instanceBody);
-                                request.Content = postContent;
+                                using var bodyContent = new ByteArrayContent((byte[])instanceBody);
+                                request.Content = bodyContent;
                                 traceInfo.request.content = JsonConvert.SerializeObject(instanceBody);
                                 traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                                 response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                             }
                             else
                             {
-                                using var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                                request.Content = postContent;
+                                using var bodyContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
+                                request.Content = bodyContent;
                                 traceInfo.request.content = instanceBody.ToString();
                                 traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                                 response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
