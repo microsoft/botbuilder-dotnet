@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -22,6 +24,7 @@ namespace Microsoft.Bot.Builder
     {
         private readonly TimeSpan _delay;
         private readonly TimeSpan _period;
+        private readonly ConcurrentDictionary<string, (Task, CancellationTokenSource)> _tasks = new ConcurrentDictionary<string, (Task, CancellationTokenSource)>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShowTypingMiddleware"/> class.
@@ -58,29 +61,29 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            using (var cts = new CancellationTokenSource())
+            turnContext.OnSendActivities(async (ctx, activities, nextSend) =>
             {
-                Task typingTask = null;
-                try
+                var containsMessage = activities.Any(e => e.Type == ActivityTypes.Message);
+                if (containsMessage)
                 {
-                    // Start a timer to periodically send the typing activity (bots running as skills should not send typing activity)
-                    if (!IsSkillBot(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
-                    {
-                        // do not await task - we want this to run in the background and we will cancel it when its done
-                        typingTask = SendTypingAsync(turnContext, _delay, _period, cts.Token);
-                    }
+                    await FinishTypingTaskAsync(ctx).ConfigureAwait(false);
+                }
 
-                    await next(cancellationToken).ConfigureAwait(false);
-                }
-                finally
-                {
-                    if (typingTask != null && !typingTask.IsCanceled)
-                    {
-                        // Cancel the typing loop.
-                        cts.Cancel();
-                    }
-                }
+                return await nextSend().ConfigureAwait(false);
+            });
+
+            // Start a timer to periodically send the typing activity (bots running as skills should not send typing activity)
+            if (!IsSkillBot(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
+            {
+                // Override the typing background task.
+                await FinishTypingTaskAsync(turnContext).ConfigureAwait(false);
+                StartTypingTask(turnContext);
             }
+
+            await next(cancellationToken).ConfigureAwait(false);
+
+            // Ensures there are no Tasks left running.
+            await FinishTypingTaskAsync(turnContext).ConfigureAwait(false);
         }
 
         private static bool IsSkillBot(ITurnContext turnContext)
@@ -128,6 +131,51 @@ namespace Microsoft.Bot.Builder
 
             // make sure to send the Activity directly on the Adapter rather than via the TurnContext
             await turnContext.Adapter.SendActivitiesAsync(turnContext, new Activity[] { typingActivity }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Starts the typing background task for the current conversation.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        private void StartTypingTask(ITurnContext turnContext)
+        {
+            if (string.IsNullOrEmpty(turnContext?.Activity?.Conversation?.Id) &&
+                _tasks.ContainsKey(turnContext.Activity.Conversation.Id))
+            {
+                return;
+            }
+
+            var cts = new CancellationTokenSource();
+
+            // do not await task - we want this to run in the background and we will cancel it when its done
+            var typingTask = SendTypingAsync(turnContext, _delay, _period, cts.Token);
+            _tasks.TryAdd(turnContext.Activity.Conversation.Id, (typingTask, cts));
+        }
+
+        /// <summary>
+        /// Finishes the typing background task for the current conversation.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        private async Task FinishTypingTaskAsync(ITurnContext turnContext)
+        {
+            if (string.IsNullOrEmpty(turnContext?.Activity?.Conversation?.Id) &&
+                !_tasks.ContainsKey(turnContext.Activity.Conversation.Id))
+            {
+                return;
+            }
+
+            // Cancel the typing loop.
+            _tasks.TryGetValue(turnContext.Activity.Conversation.Id, out var item);
+            var (typingTask, cts) = item;
+            cts?.Cancel();
+            cts?.Dispose();
+            if (typingTask != null)
+            {
+                await typingTask.ConfigureAwait(false);
+                typingTask.Dispose();
+            }
+
+            _tasks.TryRemove(turnContext.Activity.Conversation.Id, out _);
         }
     }
 }
