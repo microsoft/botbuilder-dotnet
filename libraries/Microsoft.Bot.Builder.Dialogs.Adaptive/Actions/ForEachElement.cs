@@ -263,7 +263,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private bool ShouldEndDialog(DialogTurnResult turnResult, out DialogTurnResult finalTurnResult)
         {
-            DialogTurnStatus[] endedDialog = { DialogTurnStatus.Complete, DialogTurnStatus.Cancelled };
             finalTurnResult = null;
 
             // Insure BreakLoop ends the dialog
@@ -280,12 +279,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // the result will be nested.
             while (finalTurnResult.Result != null
                 && finalTurnResult.Result is DialogTurnResult dtr
-                && dtr.ParentEnded && endedDialog.Contains(dtr.Status))
+                && dtr.ParentEnded && dtr.Status == DialogTurnStatus.Complete)
             {
                 finalTurnResult = dtr;
             }
 
-            return finalTurnResult.ParentEnded && endedDialog.Contains(finalTurnResult.Status);
+            return finalTurnResult.ParentEnded && finalTurnResult.Status == DialogTurnStatus.Complete;
         }
 
         private void UpdateActionScopeState(DialogContext dc, DialogState state)
