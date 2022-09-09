@@ -52,22 +52,6 @@ variables:
 steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
-    verbosityRestore: 'Detailed'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Dotnet publish test bot'
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
-    zipAfterPublish: false
-    modifyOutputPath: false
 
 - task: AzureResourceGroupDeployment@2
   displayName: 'Azure deployment: Create or update resource group $(LinuxTestBotBotGroup)'
@@ -84,6 +68,24 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: 'call az bot directline create -n "$(LinuxTestBotBotName)" -g "$(LinuxTestBotBotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"'
+
+# The next tasks are put here before "Git bot deployment" to give time for the new Azure resources to settle.
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet publish test bot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
+    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
+    zipAfterPublish: false
+    modifyOutputPath: false
 
 - script: |
    Move $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\DeploymentScripts\Linux\* $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot
