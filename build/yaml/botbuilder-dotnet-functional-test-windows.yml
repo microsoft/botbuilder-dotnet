@@ -61,21 +61,6 @@ steps:
    "##vso[task.setvariable variable=DateTimeTag]$DateTimeTag";
   displayName: 'Create DateTimeTag for Resource Group'
   # Get-Date on Azure DevOps returns a datetime relative to UTC-0, so "Z" is being used instead of the dynamic "K".
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
-    verbosityRestore: 'Detailed'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Dotnet Publish TestBot'
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
-    modifyOutputPath: false
 
 - task: AzureCLI@2
   displayName: 'Preexisting RG: create Azure resources. Runs in even builds.'
@@ -126,6 +111,23 @@ steps:
      :: Option 2: Use the "preexisting-rg" template:
      ::call az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)"
      ::call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" --name "$(BotName)"
+
+# The next tasks are put here before "Deploy the bot" to give time for the new Azure resources to settle.
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Publish TestBot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
+    modifyOutputPath: false
 
 - task: AzureCLI@1
   displayName: 'Deploy the bot, create DirectLine channel'

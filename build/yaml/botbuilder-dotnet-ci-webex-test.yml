@@ -92,23 +92,6 @@ steps:
       Write-Host "##vso[task.complete result=Failed;]DONE"
     }
   displayName: Validate variables
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
-    verbosityRestore: 'Detailed'
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
-    modifyOutputPath: false
-    verbosityPack: 'Diagnostic'
-    verbosityRestore: 'Diagnostic'
 
 - task: AzureCLI@2
   displayName: 'Preexisting RG: create Azure resources. Runs in even builds.'
@@ -144,6 +127,25 @@ steps:
      az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" groupName="$(BotGroup)" groupLocation="westus" groupTags='{\"buildName\":\"$(Build.DefinitionName)\", \"cause\":\"automation\", \"date\":\"$(DateTimeTag)\", \"product\":\"$(Build.Repository.Name)\", \"sourceBranch\":\"$(Build.SourceBranch)\"}';
      Set-PSDebug -Trace 0;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
+
+# The next tasks are put here before "Deploy the bot" to give time for the new Azure resources to settle.
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
+    modifyOutputPath: false
+    verbosityPack: 'Diagnostic'
+    verbosityRestore: 'Diagnostic'
 
 - task: AzureCLI@1
   displayName: 'Deploy the bot'
