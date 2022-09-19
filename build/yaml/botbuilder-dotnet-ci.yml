@@ -26,7 +26,8 @@ variables:
   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
   system_accesstoken: $(System.AccessToken)
-#  ApiCompatExcludeClasses: (optional) define this in Azure
+  LGTM.UploadSnapshot: true
+  Semmle.SkipAnalysis: true#  ApiCompatExcludeClasses: (optional) define this in Azure
 #  DisableApiCompatibityValidation: (optional) define this in Azure
 #  DotNetCoverallsToken: define this in Azure
 #  GitHubCommentApiKey: define this in Azure
