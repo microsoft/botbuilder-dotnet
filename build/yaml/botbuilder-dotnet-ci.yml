@@ -27,7 +27,8 @@ variables:
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
   system_accesstoken: $(System.AccessToken)
   LGTM.UploadSnapshot: true
-  Semmle.SkipAnalysis: true#  ApiCompatExcludeClasses: (optional) define this in Azure
+  Semmle.SkipAnalysis: true
+#  ApiCompatExcludeClasses: (optional) define this in Azure
 #  DisableApiCompatibityValidation: (optional) define this in Azure
 #  DotNetCoverallsToken: define this in Azure
 #  GitHubCommentApiKey: define this in Azure
