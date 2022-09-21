@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Teams
             var conversationParameters = new ConversationParameters
             {
                 IsGroup = true,
-                ChannelData = new { channel = new { id = teamsChannelId } },
+                ChannelData = new TeamsChannelData { Channel = new ChannelInfo() { Id = teamsChannelId } },
                 Activity = (Activity)activity,
             };
 
@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.Teams
             var conversationParameters = new ConversationParameters
             {
                 IsGroup = true,
-                ChannelData = new { channel = new { id = teamsChannelId } },
+                ChannelData = new TeamsChannelData { Channel = new ChannelInfo() { Id = teamsChannelId } },
                 Activity = (Activity)activity,
             };
 
