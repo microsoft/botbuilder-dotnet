@@ -6,10 +6,10 @@ steps:
     targetPath: '$(System.ArtifactsDirectory)/Artifacts'
 
 - task: NuGetCommand@2
-  displayName: 'Install Compatability Target Contract: $(BotBuilderDll) version $(ApiCompatVersion)'
+  displayName: 'Install Compatability Target Contract: $(BotBuilderDll) v $(ApiCompatVersion)'
   inputs:
     command: custom
-    arguments: 'install $(BotBuilderDll) -Version $(ApiCompatVersion) -OutputDirectory $(System.DefaultWorkingDirectory)\DownloadedNuGet'
+    arguments: 'install $(BotBuilderDll) -Version $(ApiCompatVersion) -OutputDirectory $(System.DefaultWorkingDirectory)\TargetContract'
 
 - task: CmdLine@1
   displayName: 'Run dir'
@@ -21,7 +21,7 @@ steps:
 - task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
   displayName: 'Compare Binaries'
   inputs:
-    contractsRootFolder: 'DownloadedNuGet\$(BotBuilderDll).$(ApiCompatVersion)\lib\netstandard2.0'
+    contractsRootFolder: 'TargetContract\$(BotBuilderDll).$(ApiCompatVersion)\lib\netstandard2.0'
     contractsFileName: '$(BotBuilderDll).dll'
     implFolder: '$(System.ArtifactsDirectory)/Artifacts'
     failOnIssue: false
