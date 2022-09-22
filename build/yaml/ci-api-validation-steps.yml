@@ -6,7 +6,7 @@ steps:
     targetPath: '$(System.ArtifactsDirectory)/Artifacts'
 
 - task: NuGetCommand@2
-  displayName: 'NuGet Install of Compatability Target Package: $(BotBuilderDll)'
+  displayName: 'Install Compatability Target Contract: $(BotBuilderDll) version $(ApiCompatVersion)'
   inputs:
     command: custom
     arguments: 'install $(BotBuilderDll) -Version $(ApiCompatVersion) -OutputDirectory $(System.DefaultWorkingDirectory)\DownloadedNuGet'
