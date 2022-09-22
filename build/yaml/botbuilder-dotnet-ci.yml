@@ -15,7 +15,7 @@ trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
 variables:
-  ApiCompatVersion: 4.6.3
+  ApiCompatVersion: 4.17.1
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
