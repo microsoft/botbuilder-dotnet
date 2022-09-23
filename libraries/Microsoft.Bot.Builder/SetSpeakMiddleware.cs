@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -99,10 +99,10 @@ namespace Microsoft.Bot.Builder
             catch (XmlException)
             {
             }
-            
+
             return activity.Speak;
         }
-        
+
         private string CreateXmlVoiceTag(Activity activity)
         {
             try
@@ -111,13 +111,13 @@ namespace Microsoft.Bot.Builder
                     _voiceTag,
                     new XAttribute(_nameAttribute, _voiceName),
                     activity.Speak);
-                
+
                 return voiceTag.ToString(SaveOptions.DisableFormatting);
             }
             catch (XmlException)
             {
             }
-            
+
             return activity.Speak;
         }
 
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder
                 {
                     return new Tags() { VoiceTag = true };
                 }
-                
+
                 var speakSsmlDoc = XDocument.Parse(speakText);
                 if (speakSsmlDoc.Root != null)
                 {
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder
         private class Tags
         {
             public bool SpeakTag { get; set; }
-            
+
             public bool VoiceTag { get; set; }
         }
     }
