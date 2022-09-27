@@ -75,7 +75,7 @@ steps:
    
    $buildTarget = $env:BuildConfiguration.Split("-")[0];
    
-   $env:BotBuilderDll.Split(",") | ForEach {
+   $env:PackageNames.Split(",") | ForEach {
        $library = $_.Trim()
        Write-Host $library
    

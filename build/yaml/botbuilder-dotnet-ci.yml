@@ -16,7 +16,7 @@ pr: none # pr trigger is set in ADO
 
 variables:
   ApiCompatVersion: 4.6.3
-  BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
+  PackageNames: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
   IsBuildServer: true # This is consumed by tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\SchemaTestsFixture.cs.
@@ -87,10 +87,10 @@ stages:
     - powershell: |
        $multiconfig = '{';
        if ("$(Build.Reason)" -in ('Schedule', 'Manual')) {
-         $env:BotBuilderDll.Split(",") | ForEach {
+         $env:PackageNames.Split(",") | ForEach {
            $library = $_.Trim()
            $threadName = $library -replace "Microsoft.", "";
-           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+           $multiconfig += "'" + $threadName + "':{'PackageName':'" + $library + "'}, ";
          }
        }
        else {
@@ -117,7 +117,7 @@ stages:
            if ($changedLibrary.Length -gt 0) {
              Write-Host $changedLibrary
              $threadName = $changedLibrary.Split(".")[-1];
-             $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $changedLibrary + "'}, ";
+             $multiconfig += "'" + $threadName + "':{'PackageName':'" + $changedLibrary + "'}, ";
            }
           }
        }
