@@ -32,8 +32,7 @@ steps:
   condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['System.PullRequest.IsFork'], 'True'))
 
 - script: |
-   cd ..
-   dir /s
+   dir .. /s
   displayName: 'Dir workspace'
   continueOnError: true
   condition: succeededOrFailed()

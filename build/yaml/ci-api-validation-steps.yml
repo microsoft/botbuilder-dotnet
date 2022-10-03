@@ -25,34 +25,6 @@ steps:
     useBaseline: false
   continueOnError: false
 
-- task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
-  displayName: 'Compare Binaries - Contract-to-contract'
-  inputs:
-    contractsRootFolder: '$(System.ArtifactsDirectory)/ContractDlls'
-    contractsFileName: '$(PackageName).dll'
-    implFolder: '$(System.ArtifactsDirectory)/ContractDlls'
-    failOnIssue: false
-    resolveFx: false
-    generateLog: true
-    outputFilename: '$(PackageName).$(ApiContractVersion).CompatResults-c2c.txt'
-    outputFolder: '$(Build.ArtifactStagingDirectory)'
-    useBaseline: false
-  continueOnError: false
-
-- task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
-  displayName: 'Compare Binaries - Implementation-to-implementation'
-  inputs:
-    contractsRootFolder: '$(System.ArtifactsDirectory)/OutputDlls'
-    contractsFileName: '$(PackageName).dll'
-    implFolder: '$(System.ArtifactsDirectory)/OutputDlls'
-    failOnIssue: false
-    resolveFx: false
-    generateLog: true
-    outputFilename: '$(PackageName).$(ApiContractVersion).CompatResults-i2i.txt'
-    outputFolder: '$(Build.ArtifactStagingDirectory)'
-    useBaseline: false
-  continueOnError: false
-
 - powershell: |
     $filePath = "$(Build.ArtifactStagingDirectory)\$(PackageName).$(ApiContractVersion).CompatResults.txt"
     $nugetLink = "compared against [version $(ApiContractVersion)](https://www.nuget.org/packages/$(PackageName)/$(ApiContractVersion)).";

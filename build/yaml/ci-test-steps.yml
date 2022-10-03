@@ -92,8 +92,7 @@ steps:
   continueOnError: true
 
 - script: |
-   cd ..
-   dir *.* /s
+   dir .. /s
   displayName: 'Dir workspace'
   continueOnError: true
   condition: succeededOrFailed()
