@@ -90,7 +90,6 @@ stages:
         $file = "$(Build.SourcesDirectory)\nuget.config";
         $ErrorActionPreference = 'SilentlyContinue';
         nuget sources update -ConfigFile "$file" -Name "SDK_Dotnet_V4_org" -username "ContractDlls" -password "$(System.AccessToken)";
-        nuget sources update -ConfigFile "$file" -Name "PowerFx" -username "ContractDlls" -password "$(System.AccessToken)";
         $ErrorActionPreference = 'Continue';
         '-------------'; get-content "$file"; '===================';
 
