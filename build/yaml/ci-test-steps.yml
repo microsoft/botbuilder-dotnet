@@ -75,7 +75,7 @@ steps:
    
    $buildTarget = $env:BuildConfiguration.Split("-")[0];
    
-   $env:PackageNames.Split(",") | ForEach {
+   $env:PackagesToValidate.Split(",") | ForEach {
        $library = $_.Trim()
        Write-Host $library
    
