@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            
+
             var connectorClient = new ConnectorClient(new Uri("https://test.coffee"), MicrosoftAppCredentials.Empty, customHttpClient);
 
             var activity = new Activity
@@ -100,8 +100,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             var channelData = adapter.ConversationParameters.ChannelData;
 
-            var channel = channelData.GetType().GetProperty("channel").GetValue(channelData, null);
-            var id = channel.GetType().GetProperty("id").GetValue(channel, null);
+            var channel = channelData.GetType().GetProperty("Channel").GetValue(channelData, null);
+            var id = channel.GetType().GetProperty("Id").GetValue(channel, null);
 
             Assert.Equal(expectedTeamsChannelId, id);
             Assert.Equal(adapter.ConversationParameters.Activity, activity);
@@ -509,8 +509,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 // SendMessageToThreadInTeams
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/conversations"))
                 {
-                    var content = new JObject 
-                    { 
+                    var content = new JObject
+                    {
                         new JProperty("id", "id123"),
                         new JProperty("serviceUrl", "https://serviceUrl/"),
                         new JProperty("activityId", "activityId123")
