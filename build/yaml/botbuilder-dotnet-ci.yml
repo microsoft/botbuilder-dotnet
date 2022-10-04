@@ -84,17 +84,8 @@ stages:
   jobs:
   - job: generate_multiconfig_var
     steps:
-    - template: sdk_dotnet_v4_org-feed-setup-steps.yml
-
-    # Download contract .dlls
+    # Download contract .dlls from nuget.org.
     - powershell: |
-        # Set up tokens for private sources
-        $file = "$(Build.SourcesDirectory)\nuget.config";
-        $ErrorActionPreference = 'SilentlyContinue';
-        nuget sources update -ConfigFile "$file" -Name "SDK_Dotnet_V4_org" -username "ContractDlls" -password "$(System.AccessToken)";
-        $ErrorActionPreference = 'Continue';
-        '-------------'; get-content "$file"; '===================';
-
         $PackageNames = "$(PackagesToValidate)";
         $ApiContractVersion = "$(ApiContractVersion)";
         $TempContractInstallDirectory = ".\TempContractInstallDir";
