@@ -14,7 +14,7 @@ steps:
 - powershell: |
     Write-Host "The following API compatibility issues are suppressed:";
     Get-Content "ApiCompatBaseline.txt";
-  displayName: 'Show API compat issue suppression list in ApiCompatBaseline.txt'
+  displayName: 'Show API compat issue suppressions in ApiCompatBaseline.txt'
   continueOnError: true
 
 - task: SOUTHWORKS.binaries-comparer.custom-build-release-task.binaries-comparer@0
