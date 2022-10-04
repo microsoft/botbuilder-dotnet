@@ -1,0 +1,3 @@
+TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbCustomClientOptions' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbStorage' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbStorageOptions' does not exist in the implementation but it does exist in the contract.

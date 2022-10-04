@@ -22,7 +22,8 @@ steps:
     generateLog: true
     outputFilename: '$(PackageName).$(ApiContractVersion).CompatResults.txt'
     outputFolder: '$(Build.ArtifactStagingDirectory)'
-    useBaseline: false
+    useBaseline: true
+    baselineFile: ApiCompatBaseline.txt
   continueOnError: false
 
 - powershell: |
