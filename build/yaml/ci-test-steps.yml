@@ -75,7 +75,7 @@ steps:
    
    $buildTarget = $env:BuildConfiguration.Split("-")[0];
    
-   $env:BotBuilderDll.Split(",") | ForEach {
+   $env:PackagesToValidate.Split(",") | ForEach {
        $library = $_.Trim()
        Write-Host $library
    
@@ -92,8 +92,7 @@ steps:
   continueOnError: true
 
 - script: |
-   cd ..
-   dir *.* /s
+   dir .. /s
   displayName: 'Dir workspace'
   continueOnError: true
   condition: succeededOrFailed()

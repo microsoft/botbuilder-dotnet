@@ -15,8 +15,8 @@ trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
 variables:
-  ApiCompatVersion: 4.6.3
-  BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
+  ApiContractVersion: 4.6.3
+  PackagesToValidate: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
   IsBuildServer: true # This is consumed by tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\SchemaTestsFixture.cs.
@@ -84,13 +84,47 @@ stages:
   jobs:
   - job: generate_multiconfig_var
     steps:
+    # Download contract .dlls from nuget.org.
+    - powershell: |
+        $PackageNames = "$(PackagesToValidate)";
+        $ApiContractVersion = "$(ApiContractVersion)";
+        $TempContractInstallDirectory = ".\TempContractInstallDir";
+        $OutputDirectory = ".\ContractDlls";
+
+        Write-Host "`nDownloading packages version $ApiContractVersion.";
+
+        New-Item -ItemType directory -Path $OutputDirectory -Force | Out-Null;
+
+        $Names = $PackageNames.Split(',');
+
+        foreach ($Name in $Names) {
+          "---- $Name ------------------";
+          nuget install $Name -Version $ApiContractVersion -OutputDirectory $TempContractInstallDirectory -DirectDownload -NonInteractive;
+
+          if ($LASTEXITCODE -eq 0) {
+            Copy-Item "$TempContractInstallDirectory\$Name.$ApiContractVersion\lib\netstandard2.0\$Name.dll" $OutputDirectory;
+          }
+          else {
+            Write-Host "##vso[task.complete result=Failed;]";
+          }
+        }
+      displayName: 'Download Contract DLLs to ContractDlls folder'
+      continueOnError: true
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'ContractDlls'
+        targetPath: ContractDlls
+      displayName: 'Push to ContractDlls in Artifacts'
+      continueOnError: true
+
     - powershell: |
        $multiconfig = '{';
        if ("$(Build.Reason)" -in ('Schedule', 'Manual')) {
-         $env:BotBuilderDll.Split(",") | ForEach {
+         $env:PackagesToValidate.Split(",") | ForEach {
            $library = $_.Trim()
            $threadName = $library -replace "Microsoft.", "";
-           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+           $multiconfig += "'" + $threadName + "':{'PackageName':'" + $library + "'}, ";
          }
        }
        else {
@@ -117,7 +151,7 @@ stages:
            if ($changedLibrary.Length -gt 0) {
              Write-Host $changedLibrary
              $threadName = $changedLibrary.Split(".")[-1];
-             $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $changedLibrary + "'}, ";
+             $multiconfig += "'" + $threadName + "':{'PackageName':'" + $changedLibrary + "'}, ";
            }
           }
        }
