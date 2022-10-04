@@ -105,6 +105,7 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     verbosityRestore: 'Detailed'
+  displayName: 'NuGet restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish secondarytestbot'
