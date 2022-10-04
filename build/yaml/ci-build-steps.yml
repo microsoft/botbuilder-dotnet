@@ -13,7 +13,6 @@ steps:
   displayName: 'Use NuGet latest'
 
 - task: NuGetCommand@2
-  displayName: 'NuGet restore'
   inputs:
     command: 'restore'
     feedsToUse: 'config'
