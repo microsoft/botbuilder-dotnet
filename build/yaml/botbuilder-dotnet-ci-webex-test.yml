@@ -128,6 +128,9 @@ steps:
      Set-PSDebug -Trace 0;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
 
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet latest'
+
 # The next tasks are put here before "Deploy the bot" to give time for the new Azure resources to settle.
 - task: NuGetCommand@2
   inputs:
@@ -135,6 +138,7 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     verbosityRestore: 'Detailed'
+  displayName: 'NuGet restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'

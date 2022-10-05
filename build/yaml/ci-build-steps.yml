@@ -9,13 +9,16 @@ steps:
 
 - template: sdk_dotnet_v4_org-feed-setup-steps.yml
 
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet latest'
+
 - task: NuGetCommand@2
-  displayName: 'NuGet restore'
   inputs:
     command: 'restore'
     feedsToUse: 'config'
     nugetConfigPath: 'nuget.config'
     restoreSolution: '$(Parameters.solution)'
+  displayName: 'NuGet restore'
 
 - task: VSBuild@1
   displayName: 'Build solution Microsoft.Bot.Builder.sln'

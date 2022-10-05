@@ -95,12 +95,17 @@ steps:
    $content.FacebookAccessToken = "$(FacebookTestBotFacebookAccessToken)";
    $content | ConvertTo-Json | Set-Content $file;
   displayName: 'Set values in appsettings.json file.'
+
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet latest'
+
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     verbosityRestore: 'Detailed'
+  displayName: 'NuGet restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish primarytestbot'
