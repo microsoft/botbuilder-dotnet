@@ -1,5 +1,5 @@
 ﻿##############################################################
-# Migrate Azure DevOps work items to GitHub Issues
+# Copy Azure DevOps work items to GitHub issues
 ##############################################################
 
 # From: https://github.com/joshjohanning/ado_workitems_to_github_issues/blob/main/ado_workitems_to_github_issues.ps1
@@ -26,7 +26,7 @@
 #   a. Original work item url 
 #   b. Basic details in a collapsed markdown table
 #   c. Entire work item as JSON in a collapsed section
-# 7. Creates a tag and a comment on the Azure DevOps work item saying "copied to the github"
+# 7. Creates a tag and a comment on the Azure DevOps work item saying "copied to github"
 #
 
 #
@@ -181,7 +181,9 @@ ForEach($workitem in $query) {
     Remove-Item -Path ./temp_comment_body.txt -ErrorAction SilentlyContinue;
     Remove-Item -Path ./temp_issue_body.txt -ErrorAction SilentlyContinue;
 
-    # Add tag "copied-to-github" plus a discussion comment to the work item
+    # Add a tag "copied-to-github" plus a comment to the work item
     $discussion = "This work item was copied to github as issue <a href=`"$issue_url`">$issue_url</a>";
     az boards work-item update --id "$workitemId" --fields "System.Tags=copied-to-github; $workitemTags" --discussion "$discussion";
+
+    break;
 }
