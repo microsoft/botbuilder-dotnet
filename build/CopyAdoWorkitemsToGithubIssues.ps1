@@ -85,6 +85,8 @@ ForEach($workitem in $query) {
         }
     }
 
+    Write-Host "Copying work item $workitemId to $gh_org/$gh_repo";
+
     $description="";
 
     # bug doesn't have Description field - add repro steps and/or system info
@@ -181,7 +183,7 @@ ForEach($workitem in $query) {
     Remove-Item -Path ./temp_comment_body.txt -ErrorAction SilentlyContinue;
     Remove-Item -Path ./temp_issue_body.txt -ErrorAction SilentlyContinue;
 
-    # Add a tag "copied-to-github" plus a comment to the work item
+    # Add the tag "copied-to-github" plus a comment to the work item
     $discussion = "This work item was copied to github as issue <a href=`"$issue_url`">$issue_url</a>";
     az boards work-item update --id "$workitemId" --fields "System.Tags=copied-to-github; $workitemTags" --discussion "$discussion";
 
