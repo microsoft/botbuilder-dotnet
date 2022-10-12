@@ -49,14 +49,16 @@ param (
     [switch]$gh_add_ado_comments # try to get ado comments
 )
 
-# Set the auth token for all az commands
-$env:AZURE_DEVOPS_EXT_PAT = $ado_pat
+# Set the auth token for az commands
+$env:AZURE_DEVOPS_EXT_PAT = $ado_pat;
+# Set the auth token for gh commands
+$env:GH_TOKEN = $gh_pat;
 
 az config set extension.use_dynamic_install=yes_without_prompt;
 
 #echo "$ado_pat" | az devops login --organization "https://dev.azure.com/$ado_org";
 az devops configure --defaults organization="https://dev.azure.com/$ado_org" project="$ado_project";
-echo $gh_pat | gh auth login --with-token;
+#echo $gh_pat | gh auth login --with-token;
 
 $wiql="select [ID], [Title], [System.Tags] from workitems where [State] <> 'Done' and [State] <> 'Closed' and [State] <> 'Resolved' and [State] <> 'Removed' and `
     [System.AreaPath] UNDER '$ado_area_path' and [System.Title] Contains 'CodeQL' and not [System.Tags] Contains 'copied-to-github' order by [ID]";
@@ -171,7 +173,13 @@ ForEach($workitem in $query) {
 
     # create the issue in Github
     $issue_url = gh issue create --body-file ./temp_issue_body.txt --repo "$gh_org/$gh_repo" --title "$title" --label $work_item_type;
-    write-host "issue created: $issue_url";
+    
+    if (![string]::IsNullOrEmpty($issue_url.Trim())) {
+        Write-Host "Issue created: $issue_url";
+    }
+    else {
+        throw "Issue creation failed.";
+    }
     
     # update assigned to in GitHub if the option is set - tries to use ado email to map to github username
     if ($gh_update_assigned_to) {
