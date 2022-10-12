@@ -192,6 +192,4 @@ ForEach($workitem in $query) {
     # Add the tag "copied-to-github" plus a comment to the work item
     $discussion = "This work item was copied to github as issue <a href=`"$issue_url`">$issue_url</a>";
     az boards work-item update --id "$workitemId" --fields "System.Tags=copied-to-github; $workitemTags" --discussion "$discussion" | Out-Null;
-
-    break;
 }
