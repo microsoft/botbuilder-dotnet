@@ -54,14 +54,11 @@ $env:AZURE_DEVOPS_EXT_PAT = $ado_pat;
 # Set the auth token for gh commands
 $env:GH_TOKEN = $gh_pat;
 
-#az config set extension.use_dynamic_install=yes_without_prompt;
-
 az devops configure --defaults organization="https://dev.azure.com/$ado_org" project="$ado_project";
 
-$wiql="select [ID], [Title], [System.Tags] from workitems where [State] <> 'Done' and [State] <> 'Closed' and [State] <> 'Resolved' and [State] <> 'Removed' and `
-    [System.AreaPath] UNDER '$ado_area_path' and [System.Title] Contains 'CodeQL' and not [System.Tags] Contains 'copied-to-github' order by [ID]";
+$wiql = "select [ID], [Title], [System.Tags] from workitems where [State] <> 'Done' and [State] <> 'Closed' and [State] <> 'Resolved' and [State] <> 'Removed' and [System.AreaPath] UNDER '$ado_area_path' and [System.Title] Contains 'CodeQL' and not [System.Tags] Contains 'copied-to-github' order by [ID]";
 
-$query=az boards query --wiql $wiql | ConvertFrom-Json;
+$query = az boards query --wiql $wiql | ConvertFrom-Json;
 
 Remove-Item -Path ./temp_comment_body.txt -ErrorAction SilentlyContinue;
 Remove-Item -Path ./temp_issue_body.txt -ErrorAction SilentlyContinue;
@@ -194,7 +191,7 @@ ForEach($workitem in $query) {
 
     # Add the tag "copied-to-github" plus a comment to the work item
     $discussion = "This work item was copied to github as issue <a href=`"$issue_url`">$issue_url</a>";
-    az boards work-item update --id "$workitemId" --fields "System.Tags=copied-to-github; $workitemTags" --discussion "$discussion";
+    az boards work-item update --id "$workitemId" --fields "System.Tags=copied-to-github; $workitemTags" --discussion "$discussion" | Out-Null;
 
     break;
 }
