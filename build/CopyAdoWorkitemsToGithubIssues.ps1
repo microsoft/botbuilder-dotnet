@@ -54,7 +54,7 @@ $env:AZURE_DEVOPS_EXT_PAT = $ado_pat;
 # Set the auth token for gh commands
 $env:GH_TOKEN = $gh_pat;
 
-az config set extension.use_dynamic_install=yes_without_prompt;
+#az config set extension.use_dynamic_install=yes_without_prompt;
 
 az devops configure --defaults organization="https://dev.azure.com/$ado_org" project="$ado_project";
 
