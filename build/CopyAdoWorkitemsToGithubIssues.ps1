@@ -56,9 +56,7 @@ $env:GH_TOKEN = $gh_pat;
 
 az config set extension.use_dynamic_install=yes_without_prompt;
 
-#echo "$ado_pat" | az devops login --organization "https://dev.azure.com/$ado_org";
 az devops configure --defaults organization="https://dev.azure.com/$ado_org" project="$ado_project";
-#echo $gh_pat | gh auth login --with-token;
 
 $wiql="select [ID], [Title], [System.Tags] from workitems where [State] <> 'Done' and [State] <> 'Closed' and [State] <> 'Resolved' and [State] <> 'Removed' and `
     [System.AreaPath] UNDER '$ado_area_path' and [System.Title] Contains 'CodeQL' and not [System.Tags] Contains 'copied-to-github' order by [ID]";
