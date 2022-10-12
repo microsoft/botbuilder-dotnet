@@ -13,7 +13,7 @@
 
 # How to run:
 # ./AdoWorkitemsToGithubIssues.ps1 -ado_pat "xxx" -ado_org "fuselabs" -ado_project "SDK_v4" -ado_area_path "SDK_v4\Code Analysis" `
-#   -gh_pat "xxx" -gh_org "microsoft" -gh_repo "botbuilder-dotnet" -gh_update_assigned_to $true -gh_assignee "tracyboehrer" -gh_assigned_to_user_suffix "" -gh_add_ado_comments $true
+#   -gh_pat "xxx" -gh_org "microsoft" -gh_repo "botbuilder-dotnet" -gh_update_assigned_to -gh_assignee "tracyboehrer" -gh_assigned_to_user_suffix "" -gh_add_ado_comments
 
 #
 # Things it migrates:
@@ -43,15 +43,18 @@ param (
     [string]$gh_pat, # GitHub PAT
     [string]$gh_org, # GitHub organization to create the issues in
     [string]$gh_repo, # Default gitHub repository to create the issues in. This gets overridden using the value in the title
-    [bool]$gh_update_assigned_to = $false, # try to update the assigned to field in GitHub
+    [switch]$gh_update_assigned_to, # try to update the assigned to field in GitHub
     [string]$gh_assignee = "", # github user to assign to
     [string]$gh_assigned_to_user_suffix = "", # the emu suffix, ie: "_corp"
-    [bool]$gh_add_ado_comments = $false # try to get ado comments
+    [switch]$gh_add_ado_comments # try to get ado comments
 )
+
+# Set the auth token for all az commands
+$env:AZURE_DEVOPS_EXT_PAT = $ado_pat
 
 az config set extension.use_dynamic_install=yes_without_prompt;
 
-echo "$ado_pat" | az devops login --organization "https://dev.azure.com/$ado_org";
+#echo "$ado_pat" | az devops login --organization "https://dev.azure.com/$ado_org";
 az devops configure --defaults organization="https://dev.azure.com/$ado_org" project="$ado_project";
 echo $gh_pat | gh auth login --with-token;
 
@@ -85,7 +88,7 @@ ForEach($workitem in $query) {
         }
     }
 
-    Write-Host "Copying work item $workitemId to $gh_org/$gh_repo";
+    Write-Host "Copying work item $workitemId to $gh_org/$gh_repo on github";
 
     $description="";
 
@@ -142,7 +145,7 @@ ForEach($workitem in $query) {
     $original_workitem_json_end | Add-Content -Path ./temp_comment_body.txt -Encoding ASCII;
 
     # get comments if enabled
-    if($gh_add_ado_comments -eq $true) {
+    if($gh_add_ado_comments) {
         $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]";
         $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$ado_pat"));
         $headers.Add("Authorization", "Basic $base64");
@@ -171,7 +174,7 @@ ForEach($workitem in $query) {
     write-host "issue created: $issue_url";
     
     # update assigned to in GitHub if the option is set - tries to use ado email to map to github username
-    if ($gh_update_assigned_to -eq $true) {
+    if ($gh_update_assigned_to) {
         write-host "trying to assign to: $gh_assignee";
         $assigned=gh issue edit $issue_url --add-assignee "$gh_assignee";
     }
