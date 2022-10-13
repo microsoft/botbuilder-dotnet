@@ -2,6 +2,8 @@
 # Copy Azure DevOps work items to GitHub issues
 ##############################################################
 
+# Customized for copying CodeQL work items.
+
 # From: https://github.com/joshjohanning/ado_workitems_to_github_issues/blob/main/ado_workitems_to_github_issues.ps1
 
 # Prerequisites:
@@ -26,7 +28,7 @@
 #   a. Original work item url 
 #   b. Basic details in a collapsed markdown table
 #   c. Entire work item as JSON in a collapsed section
-# 7. Creates a tag and a comment on the Azure DevOps work item saying "copied to github"
+# 7. Creates tag "copied-to-github" and a comment on the ADO work item. The tag prevents duplicate copying.
 #
 
 #
@@ -62,6 +64,7 @@ $query = az boards query --wiql $wiql | ConvertFrom-Json;
 
 Remove-Item -Path ./temp_comment_body.txt -ErrorAction SilentlyContinue;
 Remove-Item -Path ./temp_issue_body.txt -ErrorAction SilentlyContinue;
+$count = 0;
 
 ForEach($workitem in $query) {
     $original_workitem_json_beginning = "`n`n<details><summary>Original Work Item JSON</summary><p>" + "`n`n" + '```json';
@@ -167,10 +170,11 @@ ForEach($workitem in $query) {
     $work_item_type = $details.fields.{System.WorkItemType}.ToLower();
 
     # create the issue in Github
-    $issue_url = gh issue create --body-file ./temp_issue_body.txt --repo "$gh_org/$gh_repo" --title "$title" --label $work_item_type;
+    $issue_url = gh issue create --body-file ./temp_issue_body.txt --repo "$gh_org/$gh_repo" --title "$title" --label $work_item_type --label "ExemptFromDailyDRIReport";
     
     if (![string]::IsNullOrEmpty($issue_url.Trim())) {
-        Write-Host "Issue created: $issue_url";
+        Write-Host "  Issue created: $issue_url";
+        $count++;
     }
     else {
         throw "Issue creation failed.";
@@ -178,13 +182,13 @@ ForEach($workitem in $query) {
     
     # update assigned to in GitHub if the option is set - tries to use ado email to map to github username
     if ($gh_update_assigned_to) {
-        write-host "trying to assign to: $gh_assignee";
+        write-host "  Assigning issue to: $gh_assignee";
         $assigned=gh issue edit $issue_url --add-assignee "$gh_assignee";
     }
 
     # add the comment
     $comment_url=gh issue comment $issue_url --body-file ./temp_comment_body.txt;
-    write-host "comment created: $comment_url";
+    write-host "  Comment created: $comment_url";
 
     Remove-Item -Path ./temp_comment_body.txt -ErrorAction SilentlyContinue;
     Remove-Item -Path ./temp_issue_body.txt -ErrorAction SilentlyContinue;
@@ -193,3 +197,4 @@ ForEach($workitem in $query) {
     $discussion = "This work item was copied to github as issue <a href=`"$issue_url`">$issue_url</a>";
     az boards work-item update --id "$workitemId" --fields "System.Tags=copied-to-github; $workitemTags" --discussion "$discussion" | Out-Null;
 }
+Write-Host "Total items copied: $count"
