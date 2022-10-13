@@ -2,6 +2,8 @@
 # Copy Azure DevOps work items to GitHub issues
 ##############################################################
 
+# Customized for copying CodeQL work items.
+
 # From: https://github.com/joshjohanning/ado_workitems_to_github_issues/blob/main/ado_workitems_to_github_issues.ps1
 
 # Prerequisites:
