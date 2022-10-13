@@ -170,7 +170,7 @@ ForEach($workitem in $query) {
     $work_item_type = $details.fields.{System.WorkItemType}.ToLower();
 
     # create the issue in Github
-    $issue_url = gh issue create --body-file ./temp_issue_body.txt --repo "$gh_org/$gh_repo" --title "$title" --label $work_item_type;
+    $issue_url = gh issue create --body-file ./temp_issue_body.txt --repo "$gh_org/$gh_repo" --title "$title" --label $work_item_type --label "ExemptFromDailyDRIReport";
     
     if (![string]::IsNullOrEmpty($issue_url.Trim())) {
         Write-Host "  Issue created: $issue_url";
