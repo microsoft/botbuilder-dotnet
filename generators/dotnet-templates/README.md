@@ -250,13 +250,13 @@ nuget pack Microsoft.BotFramework.CSharp.CoreBot
 
 The `nuget pack` command will build a package using a filename convention that includes the value of the `version` tag of the project's `.nuspec` file.  For example, a `.nuspec` file that has the following `version` tag specified:
 ```xml
-  <version>4.16.0</version>
+  <version>4.18.1</version>
 ```
-Given the example above with `.nuspec` `version` of 4.16.0, running `nuget pack Microsoft.BotFramework.CSharp.EchoBot` will create a NuGet package named `Microsoft.Bot.Framework.CSharp.EchoBot.4.16.0.nupkg`. We'll use this NuGet package name in subsequent steps.
+Given the example above with `.nuspec` `version` of 4.18.1, running `nuget pack Microsoft.BotFramework.CSharp.EchoBot` will create a NuGet package named `Microsoft.Bot.Framework.CSharp.EchoBot.4.18.1.nupkg`. We'll use this NuGet package name in subsequent steps.
 
 ```bash
 # install the locally built .nupkg (EchoBot template, assuming 4.9.0 version tag)
-dotnet new -i ./Microsoft.Bot.Framework.CSharp.EchoBot.4.16.0.nupkg
+dotnet new -i ./Microsoft.Bot.Framework.CSharp.EchoBot.4.18.1.nupkg
 ```
 
 To see a list of currently installed templates.  With this command you should now see the locally build and installed NuGet package.
