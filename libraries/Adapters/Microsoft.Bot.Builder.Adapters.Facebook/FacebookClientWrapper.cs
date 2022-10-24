@@ -115,16 +115,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             var expected = request.Headers["x-hub-signature"].ToString().ToUpperInvariant();
 
-#pragma warning disable CA5350 // Facebook uses SHA1 as cryptographic algorithm.
-            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_options.FacebookAppSecret)))
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.FacebookAppSecret)))
             {
-                hmac.Initialize();
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
-                var hash = $"SHA1={BitConverter.ToString(hashArray).Replace("-", string.Empty)}";
-
+                var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty);
                 return expected == hash;
             }
-#pragma warning restore CA5350 // Facebook uses SHA1 as cryptographic algorithm.
         }
 
         /// <summary>

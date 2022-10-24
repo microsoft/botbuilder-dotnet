@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void VerifySignatureShouldReturnTrueWithValidRequestHash()
         {
-            const string requestHash = "SHA1=70C0E1B415F16D986EB839144FC85A941A5899C7";
+            const string requestHash = "13870D954C7CB3A6725C7C8DC58260E6EEE77D538DAFEA1A3703DCC2AE21E97F";
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
             var request = new Mock<HttpRequest>();
             var stringifyBody = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/RequestResponse.json");
