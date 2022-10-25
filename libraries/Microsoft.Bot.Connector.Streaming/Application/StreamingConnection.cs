@@ -38,14 +38,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         }
 
         /// <summary>
-        /// Gets a value indicating whether this server is currently connected.
-        /// </summary>
-        /// <value>
-        /// True if this server is currently connected, otherwise false.
-        /// </value>
-        public bool IsConnected { get; private set; } = false;
-
-        /// <summary>
         /// Gets the <see cref="ILogger"/> instance for the streaming connection.
         /// </summary>
         /// <value>A <see cref="ILogger"/> for the streaming connection.</value>
@@ -104,7 +96,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             _session = new StreamingSession(requestHandler, _application, Logger, cancellationToken);
 
             // Start transport and application
-            var transportTask = _transport.ConnectAsync(connect => IsConnected = connect, cancellationToken);
+            var transportTask = _transport.ConnectAsync(default, cancellationToken);
             var applicationTask = _application.ListenAsync(cancellationToken);
 
             var tasks = new List<Task> { transportTask, applicationTask };
