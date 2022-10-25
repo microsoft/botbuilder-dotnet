@@ -24,21 +24,23 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             _socket = socket ?? throw new ArgumentNullException(nameof(socket));
         }
 
-        public override async Task ConnectAsync(CancellationToken cancellationToken)
+        public override async Task ConnectAsync(Action<bool> connectionStatusChanged = null, CancellationToken cancellationToken = default)
         {
             Log.SocketOpened(Logger);
 
             try
             {
+                connectionStatusChanged?.Invoke(true);
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
+                connectionStatusChanged?.Invoke(false);
                 Log.SocketClosed(Logger);
             }
         }
 
-        public override async Task ConnectAsync(string url, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default)
+        public override async Task ConnectAsync(string url, Action<bool> connectionStatusChanged = null, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default)
         {
             Log.SocketOpened(Logger);
 
@@ -55,7 +57,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     }
 
                     await clientSocket.ConnectAsync(new Uri(url), cancellationToken).ConfigureAwait(false);
-
+                    connectionStatusChanged?.Invoke(true);
                     await ProcessAsync(cancellationToken).ConfigureAwait(false);
                 }
                 else
@@ -65,6 +67,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             }
             finally
             {
+                connectionStatusChanged?.Invoke(false);
                 Log.SocketClosed(Logger);
             }
         }

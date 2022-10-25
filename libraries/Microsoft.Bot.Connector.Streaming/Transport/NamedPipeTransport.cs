@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
         private PipeStream _receiver;
         private PipeStream _sender;
         private bool _disposedValue;
+        private int _tryTimes;
 
         public NamedPipeTransport(string pipeName, IDuplexPipe application, ILogger logger)
             : base(application, logger)
@@ -34,64 +35,44 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             _pipeName = pipeName;
         }
 
-        public override async Task ConnectAsync(CancellationToken cancellationToken)
+        public override async Task ConnectAsync(Action<bool> connectionStatusChanged = null, CancellationToken cancellationToken = default)
         {
             Log.NamedPipeOpened(Logger);
 
             try
             {
-                _receiver = new NamedPipeServerStream(
-                    pipeName: _pipeName + ServerIncomingPath,
-                    PipeDirection.In,
-                    NamedPipeServerStream.MaxAllowedServerInstances,
-                    PipeTransmissionMode.Byte,
-                    options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
-
-                await ((NamedPipeServerStream)_receiver).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
-
-                _sender = new NamedPipeServerStream(
-                    pipeName: _pipeName + ServerOutgoingPath,
-                    PipeDirection.Out,
-                    NamedPipeServerStream.MaxAllowedServerInstances,
-                    PipeTransmissionMode.Byte,
-                    options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
-
-                await ((NamedPipeServerStream)_sender).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
-
+                await RetryToSucceedAsync(CreateNamedPipeServerAsync, cancellationToken).ConfigureAwait(false);
+                connectionStatusChanged?.Invoke(true);
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
             }
             finally
             {
                 Log.NamedPipeClosed(Logger);
+                connectionStatusChanged?.Invoke(false);
             }
         }
 
-        public override async Task ConnectAsync(string url, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default)
+        public override async Task ConnectAsync(string url, Action<bool> connectionStatusChanged = null, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default)
         {
             Log.NamedPipeOpened(Logger);
 
             try
             {
-                _sender = new NamedPipeClientStream(
-                    serverName: ".",
-                    pipeName: _pipeName + ServerIncomingPath,
-                    PipeDirection.Out,
-                    options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
-
-                await ((NamedPipeClientStream)_sender).ConnectAsync(cancellationToken).ConfigureAwait(false);
-
-                _receiver = new NamedPipeClientStream(
-                    serverName: ".",
-                    pipeName: _pipeName + ServerOutgoingPath,
-                    PipeDirection.In,
-                    options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
-
-                await ((NamedPipeClientStream)_receiver).ConnectAsync(cancellationToken).ConfigureAwait(false);
-
+                await RetryToSucceedAsync(CreateNamedPipeClientAsync, cancellationToken).ConfigureAwait(false);
+                connectionStatusChanged?.Invoke(true);
                 await ProcessAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
             }
             finally
             {
+                connectionStatusChanged?.Invoke(false);
                 Log.NamedPipeClosed(Logger);
             }
         }
@@ -106,11 +87,12 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 var result = await _receiver.ReadAsync(temp, offset: 0, count, cancellationToken).ConfigureAwait(false);
                 temp.CopyTo(buffer.Span);
 
-                return result;
+                // NamedPipe disconnection not always throw InvalidOperationException
+                return _receiver.IsConnected ? result : -1;
             }
             catch (InvalidOperationException)
             {
-                // Named Pipe is disconnected
+                // NamedPipe is disconnected
                 return -1;
             }
         }
@@ -152,6 +134,93 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             }
         }
 
+        private async Task RetryToSucceedAsync(Func<CancellationToken, Task> createNamedPipeFactory, CancellationToken cancellationToken)
+        {
+            _tryTimes = 0;
+
+            // TryTimes exhausted happens when customers use the app.UsedNamedPipe in their bot, but do not enable ase.
+            while (!cancellationToken.IsCancellationRequested && _tryTimes < 100)
+            {
+                _tryTimes++;
+
+                // To avoid NamedPipeServer and NamedPipeClient dead lock, use random backoff when create NamePipe
+                using (var source = new CancellationTokenSource())
+                {
+                    try
+                    {
+                        // NamedPipeServer and NamedPipeClient dead lock can be break by time out
+                        // Add this random backoff to avoid a special dead lock when machine run slow.
+                        // At least 5 seconds, because :
+                        // If ASE update to new version but customer still use old version bot(SDK). Quick retry will make this connection never connect.
+                        var timeoutTask = Task.Delay(TimeSpan.FromSeconds((new Random(DateTime.Now.Millisecond).NextDouble() * _tryTimes) + 5), cancellationToken);
+                        var createTask = createNamedPipeFactory(source.Token);
+
+                        if (timeoutTask == await Task.WhenAny(timeoutTask, createTask).ConfigureAwait(false))
+                        {
+                            Log.NamedPipeCreateTimeout(Logger);
+                            source.Cancel();
+                            continue;
+                        }
+
+                        // Check createTask finish code. (Task.WhenAny can't catch exception in createTask)
+                        await createTask.ConfigureAwait(false);
+
+                        // Connect succeed
+                        return;
+                    }
+#pragma warning disable CA1031 // Catch all exceptions and retry
+                    catch (Exception e)
+#pragma warning restore CA1031
+                    {
+                        Log.NamedPipeCreateException(Logger, e);
+                        source.Cancel();
+                    }
+                }
+            }
+        }
+
+        private async Task CreateNamedPipeClientAsync(CancellationToken cancellationToken)
+        {
+            _sender?.Dispose();
+            _receiver?.Dispose();
+
+            _sender = new NamedPipeClientStream(
+                serverName: ".",
+                pipeName: _pipeName + ServerIncomingPath,
+                PipeDirection.Out,
+                options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
+            await ((NamedPipeClientStream)_sender).ConnectAsync(cancellationToken).ConfigureAwait(false);
+
+            _receiver = new NamedPipeClientStream(
+                serverName: ".",
+                pipeName: _pipeName + ServerOutgoingPath,
+                PipeDirection.In,
+                options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
+            await ((NamedPipeClientStream)_receiver).ConnectAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        private async Task CreateNamedPipeServerAsync(CancellationToken cancellationToken)
+        {
+            _sender?.Dispose();
+            _receiver?.Dispose();
+
+            _receiver = new NamedPipeServerStream(
+                pipeName: _pipeName + ServerIncomingPath,
+                PipeDirection.In,
+                NamedPipeServerStream.MaxAllowedServerInstances,
+                PipeTransmissionMode.Byte,
+                options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
+            await ((NamedPipeServerStream)_receiver).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
+
+            _sender = new NamedPipeServerStream(
+                pipeName: _pipeName + ServerOutgoingPath,
+                PipeDirection.Out,
+                NamedPipeServerStream.MaxAllowedServerInstances,
+                PipeTransmissionMode.Byte,
+                options: System.IO.Pipes.PipeOptions.WriteThrough | System.IO.Pipes.PipeOptions.Asynchronous);
+            await ((NamedPipeServerStream)_sender).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Log messages for <see cref="NamedPipeTransport"/>.
         /// </summary>
@@ -161,11 +230,21 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
         /// </remarks>
         private static class Log
         {
+            private static readonly Action<ILogger, Exception> _namedPipeCreateTimeout = LoggerMessage.Define(
+                LogLevel.Information, new EventId(1, nameof(NamedPipeOpened)), "Create NamedPipe Timeout.");
+
+            private static readonly Action<ILogger, Exception> _namedPipeCreateException = (_, e) => LoggerMessage.Define(
+                LogLevel.Information, new EventId(1, nameof(NamedPipeOpened)), $"Create NamedPipe with exception:{e}");
+
             private static readonly Action<ILogger, Exception> _namedPipeOpened = LoggerMessage.Define(
                 LogLevel.Information, new EventId(1, nameof(NamedPipeOpened)), "Named Pipe transport connection opened.");
 
             private static readonly Action<ILogger, Exception> _namedPipeClosed = LoggerMessage.Define(
                 LogLevel.Information, new EventId(2, nameof(NamedPipeClosed)), "Named Pipe transport connection closed.");
+
+            public static void NamedPipeCreateException(ILogger logger, Exception e) => _namedPipeCreateException(logger, e);
+
+            public static void NamedPipeCreateTimeout(ILogger logger) => _namedPipeCreateTimeout(logger, null);
 
             public static void NamedPipeOpened(ILogger logger) => _namedPipeOpened(logger, null);
 

@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
 
         private StreamingTransport _transport;
+        private TransportHandler _application;
         private StreamingSession _session;
 
         private bool _disposedValue;
@@ -77,6 +78,9 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default)
         {
+            _transport?.Dispose();
+            _application?.Dispose();
+
             if (requestHandler == null)
             {
                 throw new ArgumentNullException(nameof(requestHandler));
@@ -86,14 +90,14 @@ namespace Microsoft.Bot.Connector.Streaming.Application
 
             // Create transport and application
             _transport = CreateStreamingTransport(duplexPipePair.Application);
-            var application = new TransportHandler(duplexPipePair.Transport, Logger);
+            _application = new TransportHandler(duplexPipePair.Transport, Logger);
 
             // Create session
-            _session = new StreamingSession(requestHandler, application, Logger, cancellationToken);
+            _session = new StreamingSession(requestHandler, _application, Logger, cancellationToken);
 
             // Start transport and application
-            var transportTask = _transport.ConnectAsync(cancellationToken);
-            var applicationTask = application.ListenAsync(cancellationToken);
+            var transportTask = _transport.ConnectAsync(default, cancellationToken);
+            var applicationTask = _application.ListenAsync(cancellationToken);
 
             var tasks = new List<Task> { transportTask, applicationTask };
 
@@ -125,6 +129,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 if (disposing)
                 {
                     _transport?.Dispose();
+                    _application?.Dispose();
                 }
 
                 _disposedValue = true;
