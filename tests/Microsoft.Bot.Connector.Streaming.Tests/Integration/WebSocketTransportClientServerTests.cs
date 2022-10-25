@@ -28,10 +28,10 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var serverTransport = new WebSocketTransport(await webSocketFeature.AcceptAsync(), serverPipePair.Application, NullLogger.Instance);
 
                 // Accept server web socket, start receiving / sending at the transport level
-                var serverTask = serverTransport.ConnectAsync(CancellationToken.None);
+                var serverTask = serverTransport.ConnectAsync();
 
                 var clientTransport = new WebSocketTransport(webSocketFeature.Client, clientPipePair.Application, NullLogger.Instance);
-                var clientTask = clientTransport.ConnectAsync(CancellationToken.None);
+                var clientTask = clientTransport.ConnectAsync();
 
                 // Send a frame client -> server
                 await clientPipePair.Transport.Output.WriteAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("Hello")));

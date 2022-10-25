@@ -26,9 +26,9 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
         protected ILogger Logger { get; }
 
-        public abstract Task ConnectAsync(CancellationToken cancellationToken);
+        public abstract Task ConnectAsync(Action<bool> connectionStatusChanged = null, CancellationToken cancellationToken = default);
 
-        public abstract Task ConnectAsync(string url, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default);
+        public abstract Task ConnectAsync(string url, Action<bool> connectionStatusChanged = null, IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default);
 
         /// <inheritdoc />
         public void Dispose()

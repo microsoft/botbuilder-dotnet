@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var transport = new WebSocketTransport(await webSocketFeature.AcceptAsync(), pipePair.Application, NullLogger.Instance);
 
                 // Accept web socket, start receiving / sending at the transport level
-                var processTask = transport.ConnectAsync(CancellationToken.None);
+                var processTask = transport.ConnectAsync();
 
                 // Start a socket client that will capture traffic for posterior analysis
                 var clientTask = webSocketFeature.Client.ExecuteAndCaptureFramesAsync();
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     var transport = new WebSocketTransport(await feature.AcceptAsync(), pair.Application, NullLogger.Instance);
 
                     // Accept web socket, start receiving / sending at the transport level
-                    var processTask = transport.ConnectAsync(CancellationToken.None);
+                    var processTask = transport.ConnectAsync();
 
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     var transport = new WebSocketTransport(await feature.AcceptAsync(), pair.Application, NullLogger.Instance);
 
                     // Accept web socket, start receiving / sending at the transport level
-                    var processTask = transport.ConnectAsync(CancellationToken.None);
+                    var processTask = transport.ConnectAsync();
 
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     var transport = new WebSocketTransport(serverSocket, pair.Application, NullLogger.Instance);
 
                     // Accept web socket, start receiving / sending at the transport level
-                    var processTask = transport.ConnectAsync(CancellationToken.None);
+                    var processTask = transport.ConnectAsync();
 
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     var transport = new WebSocketTransport(serverSocket, pair.Application, NullLogger.Instance);
 
                     // Accept web socket, start receiving / sending at the transport level
-                    var processTask = transport.ConnectAsync(CancellationToken.None);
+                    var processTask = transport.ConnectAsync();
 
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     var transport = new WebSocketTransport(serverSocket, pair.Application, NullLogger.Instance);
 
                     // Accept web socket, start receiving / sending at the transport level
-                    var processTask = transport.ConnectAsync(CancellationToken.None);
+                    var processTask = transport.ConnectAsync();
 
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     var transport = new WebSocketTransport(serverSocket, pair.Application, NullLogger.Instance);
 
                     // Accept web socket, start receiving / sending at the transport level
-                    var processTask = transport.ConnectAsync(CancellationToken.None);
+                    var processTask = transport.ConnectAsync();
 
                     // Start a socket client that will capture traffic for posterior analysis
                     var clientTask = feature.Client.ExecuteAndCaptureFramesAsync();
@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var serverTransportRunning = sut.ConnectAsync(CancellationToken.None);
+                var serverTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo"), Encoding.UTF8.GetBytes("bar") };
                 SendBinaryAsync(client, messages).Wait();
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var serverTransportRunning = sut.ConnectAsync(CancellationToken.None);
+                var serverTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
                 WriteAsync(toTransport.Writer, messages).Wait();
@@ -399,7 +399,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var listenerRunning = ListenAsync(fromTransport.Reader);
 
                 var sut = new WebSocketTransport(client, new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var clientTransportRunning = sut.ConnectAsync(CancellationToken.None);
+                var clientTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
                 SendBinaryAsync(server, messages).Wait();
@@ -428,7 +428,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var toTransport = new Pipe(PipeOptions.Default);
 
                 var sut = new WebSocketTransport(client, new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var clientTransportRunning = sut.ConnectAsync(CancellationToken.None);
+                var clientTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
                 WriteAsync(toTransport.Writer, messages).Wait();
