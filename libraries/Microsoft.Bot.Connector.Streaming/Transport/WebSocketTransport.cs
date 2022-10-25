@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     await ProcessAsync(cancellationToken).ConfigureAwait(false);
                 }
                 else
-                {                    
+                {
                     throw new InvalidOperationException("Only client web socket can connect to server. Please instantiate the 'WebSocketTransport' with a 'ClientWebSocket' instance.");
                 }
             }
