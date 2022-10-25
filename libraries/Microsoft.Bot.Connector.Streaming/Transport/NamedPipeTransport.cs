@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             _tryTimes = 0;
 
             // TryTimes exhausted happens when customers use the app.UsedNamedPipe in their bot, but do not enable ase.
-            while (!cancellationToken.IsCancellationRequested && _tryTimes > 100)
+            while (!cancellationToken.IsCancellationRequested && _tryTimes < 100)
             {
                 _tryTimes++;
 
