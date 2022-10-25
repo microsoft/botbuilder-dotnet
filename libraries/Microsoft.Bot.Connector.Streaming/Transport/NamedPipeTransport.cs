@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 var result = await _receiver.ReadAsync(temp, offset: 0, count, cancellationToken).ConfigureAwait(false);
                 temp.CopyTo(buffer.Span);
 
-                // NamedPipe disconnection not aloway throw InvalidOperationException
+                // NamedPipe disconnection not always throw InvalidOperationException
                 return _receiver.IsConnected ? result : -1;
             }
             catch (InvalidOperationException)
@@ -137,26 +137,22 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
         private async Task RetryToSucceedAsync(Func<CancellationToken, Task> createNamedPipeFactory, CancellationToken cancellationToken)
         {
             _tryTimes = 0;
-            while (!cancellationToken.IsCancellationRequested)
+
+            // TryTimes exhausted happens when customers use the app.UsedNamedPipe in their bot, but do not enable ase.
+            while (!cancellationToken.IsCancellationRequested && _tryTimes > 100)
             {
                 _tryTimes++;
 
-                // happends when customers use app.UsedNamedPipe in their bot, but do not enable ase.
-                if (_tryTimes > 100)
-                {
-                    return;
-                }
-
-                // To avoid NamedPipeServer and NamedPipeClient dead lock, add timeout when create NamePipe
+                // To avoid NamedPipeServer and NamedPipeClient dead lock, use random backoff when create NamePipe
                 using (var source = new CancellationTokenSource())
                 {
                     try
                     {
                         // NamedPipeServer and NamedPipeClient dead lock can be break by time out
-                        // Add this random to avoid a special dead lock when machine run slow.
+                        // Add this random backoff to avoid a special dead lock when machine run slow.
                         // At least 5 seconds, because :
-                        // if ASE update to new version but customer still use old version bot(SDK). Quick retry will make this connection never connect.
-                        var timeoutTask = Task.Delay(TimeSpan.FromSeconds((new Random(DateTime.Now.Millisecond).NextDouble() * _tryTimes * 2) + 5), cancellationToken);
+                        // If ASE update to new version but customer still use old version bot(SDK). Quick retry will make this connection never connect.
+                        var timeoutTask = Task.Delay(TimeSpan.FromSeconds((new Random(DateTime.Now.Millisecond).NextDouble() * _tryTimes) + 5), cancellationToken);
                         var createTask = createNamedPipeFactory(source.Token);
 
                         if (timeoutTask == await Task.WhenAny(timeoutTask, createTask).ConfigureAwait(false))
@@ -166,10 +162,10 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                             continue;
                         }
 
-                        // check createTask finish code. (Task.WhenAny can't catch exception in createTask)
+                        // Check createTask finish code. (Task.WhenAny can't catch exception in createTask)
                         await createTask.ConfigureAwait(false);
 
-                        // connect succeed
+                        // Connect succeed
                         return;
                     }
 #pragma warning disable CA1031 // Catch all exceptions and retry
