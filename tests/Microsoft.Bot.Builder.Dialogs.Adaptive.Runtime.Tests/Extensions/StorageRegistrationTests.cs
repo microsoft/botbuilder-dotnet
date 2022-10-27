@@ -32,12 +32,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             };
             yield return new object[]
             {
-                new Dictionary<string, string>(),
-                new RuntimeSettings() { Storage = "someWeirdValue" },
-                typeof(MemoryStorage)
-            };
-            yield return new object[]
-            {
                 new Dictionary<string, string>
                 {
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:authKey", "authKey" },
@@ -65,6 +59,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // params: Dictionary<string, string> config, ResourcesSettings settings, Type exceptionType
             yield return new object[]
             {
+                new Dictionary<string, string>(),
+                new RuntimeSettings() { Storage = "someWeirdValue" },
+                typeof(ArgumentException)
+            };
+            yield return new object[]
+            {
                 new Dictionary<string, string>
                 {
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:authKey", string.Empty },
@@ -77,6 +77,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             };
             yield return new object[]
             {
+                new Dictionary<string, string>(), // no storage settings
+                new RuntimeSettings() { Storage = typeof(CosmosDbPartitionedStorage).Name },
+                typeof(ArgumentException)
+            };
+            yield return new object[]
+            {
                 new Dictionary<string, string>
                 {
                     { $"{typeof(BlobsStorage).Name}:connectionString", "badformat" },
@@ -84,6 +90,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 },
                 new RuntimeSettings() { Storage = typeof(BlobsStorage).Name },
                 typeof(FormatException)
+            };
+            yield return new object[]
+            {
+                new Dictionary<string, string>(), // no storage settings
+                new RuntimeSettings() { Storage = typeof(BlobsStorage).Name },
+                typeof(ArgumentException)
             };
             yield return new object[]
             {

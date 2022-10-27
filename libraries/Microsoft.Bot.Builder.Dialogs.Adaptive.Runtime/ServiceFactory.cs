@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
 
                 default:
                 {
-                    if (string.IsNullOrEmpty(runtimeSettings.Storage) 
+                    if (string.IsNullOrEmpty(runtimeSettings?.Storage) 
                         || runtimeSettings.Storage.Equals("Memory", StringComparison.Ordinal))
                     {
                         return new MemoryStorage();
