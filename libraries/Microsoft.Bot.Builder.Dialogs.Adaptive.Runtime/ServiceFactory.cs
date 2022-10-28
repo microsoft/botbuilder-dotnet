@@ -22,19 +22,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
                 case nameof(CosmosDbPartitionedStorage):
                 {
                     // Cosmosdb
-                    var cosmosDbOptions = configuration?.GetSection(nameof(CosmosDbPartitionedStorage)).Get<CosmosDbPartitionedStorageOptions>();
+                    var storageConfig = configuration.GetSection(nameof(CosmosDbPartitionedStorage));
+                    if (!storageConfig.Exists())
+                    {
+                        throw new ArgumentException($"Missing '{nameof(CosmosDbPartitionedStorage)}' configuration.");
+                    }
+
+                    var cosmosDbOptions = storageConfig.Get<CosmosDbPartitionedStorageOptions>();
                     return new CosmosDbPartitionedStorage(cosmosDbOptions);
                 }
 
                 case nameof(BlobsStorage):
                 {
                     // Blob
-                    var blobOptions = configuration?.GetSection(nameof(BlobsStorage)).Get<BlobsStorageSettings>();
-                    return new BlobsStorage(blobOptions?.ConnectionString, blobOptions?.ContainerName);
+                    var storageConfig = configuration.GetSection(nameof(BlobsStorage));
+                    if (!storageConfig.Exists())
+                    {
+                        throw new ArgumentException($"Missing '{nameof(BlobsStorage)}' configuration.");
+                    }
+
+                    var blobOptions = storageConfig.Get<BlobsStorageSettings>();
+                    return new BlobsStorage(blobOptions.ConnectionString, blobOptions.ContainerName);
                 }
 
                 default:
-                    return new MemoryStorage();
+                {
+                    if (string.IsNullOrEmpty(runtimeSettings?.Storage) 
+                        || runtimeSettings.Storage.Equals("Memory", StringComparison.Ordinal))
+                    {
+                        return new MemoryStorage();
+                    }
+
+                    throw new ArgumentException($"Invalid '{ConfigurationConstants.RuntimeSettingsKey}.storage' value.");
+                }
             }
         }
     }
