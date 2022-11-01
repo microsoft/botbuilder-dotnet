@@ -7,7 +7,7 @@
   "devDependencies": {
     "@microsoft.azure/autorest.csharp": "2.3.82",
     "autorest": "2.0.4283",
-    "replace": "^1.0.0"
+    "replace": "^1.2.1"
   },
   "dependencies": {}
 }
