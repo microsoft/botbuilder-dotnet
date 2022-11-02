@@ -282,42 +282,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 traceInfo.request.url = instanceUrl;
 
                 HttpResponseMessage response = null;
-                string contentType = ContentType?.GetValue(dc.State) ?? "application/json";
+                var contentType = ContentType?.GetValue(dc.State) ?? "application/json";
 
                 switch (Method)
                 {
                     case HttpMethod.POST:
-                        if (instanceBody == null)
-                        {
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            using var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                            traceInfo.request.content = instanceBody.ToString();
-                            request.Content = postContent;
-                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        }
-
-                        break;
-
                     case HttpMethod.PATCH:
-                        if (instanceBody == null)
-                        {
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            using var patchContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                            request.Content = patchContent;
-                            traceInfo.request.content = instanceBody.ToString();
-                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        }
-
-                        break;
-
                     case HttpMethod.PUT:
                         if (instanceBody == null)
                         {
@@ -325,19 +295,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         }
                         else
                         {
-                            using var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                            traceInfo.request.content = instanceBody.ToString();
-                            request.Content = putContent;
-                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                            if (instanceBody.GetType() == typeof(byte[]))
+                            {
+                                using var bodyContent = new ByteArrayContent((byte[])instanceBody);
+                                request.Content = bodyContent;
+                                traceInfo.request.content = JsonConvert.SerializeObject(instanceBody);
+                                traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                                response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                using var bodyContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
+                                request.Content = bodyContent;
+                                traceInfo.request.content = instanceBody.ToString();
+                                traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                                response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                            }
                         }
 
                         break;
 
                     case HttpMethod.DELETE:
-                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        break;
-
                     case HttpMethod.GET:
                         response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         break;

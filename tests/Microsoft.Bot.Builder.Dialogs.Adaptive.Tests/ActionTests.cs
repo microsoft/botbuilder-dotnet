@@ -579,6 +579,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Respond("plain/text", "array");
 
             handler
+                .When(HttpMethod.Post, "http://foo.com/upload")
+                .Respond("plain/text", "data received");
+
+            handler
                 .When(HttpMethod.Put, "http://foo.com/")
                 .WithContent("Joe is 52")
                 .Respond("plain/text", "put:string");
@@ -699,6 +703,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("${turn.lastresult.content}"),
                             new HttpRequest()
                             {
+                                Url = "http://foo.com/upload",
+                                Method = HttpRequest.HttpMethod.POST,
+                                Body = "=base64ToBinary(base64('Hello'))"
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
                                 Url = "http://foo.com/",
                                 Method = HttpRequest.HttpMethod.PUT,
                                 ContentType = "plain/text",
@@ -784,6 +795,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("string")
                     .AssertReply("object")
                     .AssertReply("array")
+                    .AssertReply("data received")
                     .AssertReply("put:string")
                     .AssertReply("put:object")
                     .AssertReply("put:array")
