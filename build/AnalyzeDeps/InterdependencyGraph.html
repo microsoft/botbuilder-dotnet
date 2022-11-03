@@ -343,7 +343,9 @@
   const params = new URLSearchParams(window.location.search);
   const src = params.get("data") || "data.js";
   const script = document.createElement("script");
-  script.src = src;
+  const url = window.location.href.split('?')[0];
+  const path = url.substr(0, url.lastIndexOf('/'));
+  script.src = path.concat('/', src);
   script.async = false;
   script.addEventListener("load", () => renderGraph(data));
   script.addEventListener("error", e => {
