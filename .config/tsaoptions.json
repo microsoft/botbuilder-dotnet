@@ -1,0 +1,6 @@
+{
+  "areaPath": "SDK_v4\\Code Analysis",
+  "notificationAliases": [ "dialogruntimeteam@microsoft.com" ],
+  "codeBaseName": "TFSMSAzure_DotNetSDK",
+  "ignoreBranchName": true
+}
