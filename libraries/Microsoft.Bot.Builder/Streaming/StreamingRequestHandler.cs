@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning restore CA1031 // Do not catch general exception types
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.SetBody(ex.ToString());
+                response.SetBody(ex.Message);
                 _logger.LogError(ex.ToString());
             }
 
