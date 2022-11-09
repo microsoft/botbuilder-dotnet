@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
         private static readonly JsonSerializer Serializer = new JsonSerializer
         {
             NullValueHandling = NullValueHandling.Include,
+            MaxDepth = null,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 

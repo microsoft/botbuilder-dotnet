@@ -78,6 +78,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                 {
                                                     TypeNameHandling = TypeNameHandling.All,
+                                                    MaxDepth = null,
                                                 });
 
             // Triggers a check for the existence of the container
@@ -102,6 +103,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+                MaxDepth = null,
             });
 
             // Triggers a check for the existence of the container
