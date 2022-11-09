@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder
     {
         private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer()
         {
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
             ReferenceLoopHandling = ReferenceLoopHandling.Error,
         };
 
