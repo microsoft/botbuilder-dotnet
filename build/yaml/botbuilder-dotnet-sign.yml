@@ -15,7 +15,7 @@ trigger: none # ci trigger is set in ADO
 pr: none # pr trigger is set in ADO
 
 variables:
-#  BuildConfiguration: Release-Windows
+  BuildConfiguration: Release-Windows
   TestConfiguration: Release
   BuildPlatform: any cpu
   MSBuildArguments: -p:PublishRepositoryUrl=true -p:GeneratePackages=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
