@@ -709,7 +709,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Auto,
                 Converters = converters,
                 Error = (sender, args) =>
                 {
