@@ -80,7 +80,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                                                 {            
                                                     NullValueHandling = NullValueHandling.Ignore,
                                                     Formatting = Formatting.Indented,
-                                                    TypeNameHandling = TypeNameHandling.None,
                                                 });
 
             // Triggers a check for the existance of the container
@@ -112,10 +111,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         {
             _containerClient = new Lazy<BlobContainerClient>(() => containerClient);
 
-            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All,
-            });
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create();
         }
 
         /// <summary>

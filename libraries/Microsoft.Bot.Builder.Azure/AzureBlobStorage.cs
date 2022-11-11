@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -33,8 +35,13 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
+            SerializationBinder = new AllowedTypesSerializationBinder(
+                new List<Type>
+                {
+                    typeof(IStoreItem),
+                    typeof(Dictionary<string, object>)
+                }),
         });
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
@@ -53,6 +60,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
         public AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, JsonSerializer jsonSerializer)
         {
@@ -210,8 +218,18 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
                     using (var streamWriter = new StreamWriter(memoryStream))
+                    using (var jsonWriter = new JsonTextWriter(streamWriter))
                     {
-                        _jsonSerializer.Serialize(streamWriter, newValue);
+                        var json = JToken.FromObject(newValue, _jsonSerializer);
+                        if (json.Type == JTokenType.Object || json.Type == JTokenType.Array)
+                        {
+                            (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.CleanupTypes((JContainer)json);
+                            await json.WriteToAsync(jsonWriter).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            _jsonSerializer.Serialize(streamWriter, newValue);
+                        }
 
                         await streamWriter.FlushAsync().ConfigureAwait(false);
 
