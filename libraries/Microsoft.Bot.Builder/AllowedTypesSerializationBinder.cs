@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            // Return Type when it have Interfaces.
+            // Return Type when it has Interfaces.
             var interfaces = serializedType.GetInterfaces();
             var interfaceFound = AllowedTypes.FirstOrDefault(t => interfaces.Any(e => e.AssemblyQualifiedName == t.AssemblyQualifiedName));
             if (interfaceFound != null)
