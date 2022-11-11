@@ -89,6 +89,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                                                 {
                                                     TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
                                                     SerializationBinder = _allowedTypesBinder,
+                                                    MaxDepth = null,
                                                 });
 
             // Triggers a check for the existence of the container
@@ -115,6 +116,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
                 SerializationBinder = _allowedTypesBinder,
+                MaxDepth = null,
             });
 
             // Triggers a check for the existence of the container

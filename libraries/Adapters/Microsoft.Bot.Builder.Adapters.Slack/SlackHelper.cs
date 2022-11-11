@@ -458,7 +458,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 blockKitContent.Add(actionsBlock);
             }
 
-            return JArray.FromObject(blockKitContent, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
+            return JArray.FromObject(blockKitContent, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, MaxDepth = null });
         }
     }
 }

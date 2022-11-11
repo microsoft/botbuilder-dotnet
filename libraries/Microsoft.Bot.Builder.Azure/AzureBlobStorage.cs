@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder.Azure
                     typeof(IStoreItem),
                     typeof(Dictionary<string, object>)
                 }),
+            MaxDepth = null,
         });
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.

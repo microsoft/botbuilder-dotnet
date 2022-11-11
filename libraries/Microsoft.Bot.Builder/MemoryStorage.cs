@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder
         {
             TypeNameHandling = TypeNameHandling.All,
             ReferenceLoopHandling = ReferenceLoopHandling.Error,
+            MaxDepth = null
         };
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
