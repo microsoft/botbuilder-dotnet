@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public abstract class TextEntityRecognizer : EntityRecognizer
     {
-        private static JsonSerializer serializer = new JsonSerializer() { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+        private static JsonSerializer serializer = new JsonSerializer() { ContractResolver = new CamelCasePropertyNamesContractResolver(), MaxDepth = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextEntityRecognizer"/> class.

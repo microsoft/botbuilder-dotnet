@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented,
+            MaxDepth = null,
         });
 
         private static HashSet<string> _checkedContainers = new HashSet<string>();

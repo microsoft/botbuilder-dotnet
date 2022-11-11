@@ -77,9 +77,10 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             _storageTransferOptions = storageTransferOptions;
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
-                                                {            
+                                                {
                                                     NullValueHandling = NullValueHandling.Ignore,
                                                     Formatting = Formatting.Indented,
+                                                    MaxDepth = null,
                                                 });
 
             // Triggers a check for the existance of the container
@@ -111,7 +112,10 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         {
             _containerClient = new Lazy<BlobContainerClient>(() => containerClient);
 
-            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create();
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                MaxDepth = null,
+            });
         }
 
         /// <summary>
