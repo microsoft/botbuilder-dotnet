@@ -204,7 +204,9 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
                     "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
                     },
-                    ValidateAudience = false, // Audience validation takes place manually in code.
+
+                    // Audience validation takes place manually in code.
+                    ValidateAudience = true, // lgtm[cs/web/missing-token-validation]
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true
@@ -406,7 +408,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidIssuers = new[] { _toBotFromChannelTokenIssuer },
 
                 // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false,
+                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,

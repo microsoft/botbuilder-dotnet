@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidIssuers = new[] { AuthenticationConstants.ToBotFromChannelTokenIssuer },
 
                 // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false,
+                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,

@@ -135,7 +135,9 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth for US Gov, 1.0 token
                     "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth for US Gov, 2.0 token
                 },
-                ValidateAudience = false, // Audience validation takes place manually in code.
+
+                // Audience validation takes place manually in code.
+                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true
