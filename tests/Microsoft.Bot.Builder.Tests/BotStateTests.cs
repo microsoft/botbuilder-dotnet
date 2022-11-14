@@ -38,6 +38,23 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task State_WriteAsyncStoreItem()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var memory = new MemoryStorage(dictionary);
+
+            var changes = new Dictionary<string, object>()
+            {
+                { "customState", new CustomState() },
+            };
+            await memory.WriteAsync(changes, CancellationToken.None);
+            var result = await memory.ReadAsync(new string[] { "customState" }, CancellationToken.None);
+
+            Assert.Equal("0", dictionary["customState"]["eTag"]);
+            Assert.Equal("0", (result["customState"] as CustomState).ETag);
+        }
+
+        [Fact]
         public async Task MakeSureStorageNotCalledNoChangesAsync()
         {
             // Mock a storage provider, which counts read/writes

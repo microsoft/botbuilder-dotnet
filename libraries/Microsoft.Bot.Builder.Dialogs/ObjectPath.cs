@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
-        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, MaxDepth = null };
-
         private static readonly JsonSerializerSettings _expressionCaseSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
@@ -347,7 +345,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The object as Json.</returns>
         public static T Clone<T>(T obj)
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, _cloneSettings), _cloneSettings);
+            var settings = new JsonSerializerSettings { MaxDepth = null };
+            var serialized = JsonConvert.SerializeObject(obj, settings);
+            var result = JsonConvert.DeserializeObject<T>(serialized, settings);
+            return result;
         }
 
         /// <summary>
