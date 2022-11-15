@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _container.Setup(e => e.UpsertItemAsync(It.IsAny<CosmosDbPartitionedStorage.DocumentStoreItem>(), It.IsAny<PartitionKey>(), It.IsAny<ItemRequestOptions>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new CosmosException("InternalServerError", HttpStatusCode.InternalServerError, 0, "0", 0));
 
-            var changes = new Dictionary<string, object> { { "key", new { } } };
+            var changes = new Dictionary<string, object> { { "key", new CosmosDbPartitionedStorage.DocumentStoreItem() } };
 
             await Assert.ThrowsAsync<CosmosException>(() => _storage.WriteAsync(changes));
             _container.Verify(e => e.UpsertItemAsync(It.IsAny<CosmosDbPartitionedStorage.DocumentStoreItem>(), It.IsAny<PartitionKey>(), It.IsAny<ItemRequestOptions>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -348,7 +348,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 DatabaseId = "DatabaseId",
                 ContainerId = "ContainerId",
             };
-            _storage = new CosmosDbPartitionedStorage(client.Object, options);
+            
+            var jsonSerializer = new JsonSerializer
+            {
+                TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+                SerializationBinder = new AllowedTypesSerializationBinder(
+                    new List<Type>
+                    {
+                        typeof(IStoreItem),
+                        typeof(Dictionary<string, object>),
+                        typeof(DialogState),
+                        typeof(DialogInstance)
+                    }),
+            };
+
+            _storage = new CosmosDbPartitionedStorage(client.Object, options, jsonSerializer);
         }
 
         private Dictionary<string, object> GenerateNestedDict()

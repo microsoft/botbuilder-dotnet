@@ -101,8 +101,14 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="storageAccount">Azure CloudStorageAccount instance.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         /// <param name="blobClient">Custom implementation of CloudBlobClient.</param>
-        internal AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient)
-            : this(storageAccount, containerName, JsonSerializer)
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
+        /// </param>
+        internal AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient, JsonSerializer jsonSerializer = default)
+            : this(storageAccount, containerName, jsonSerializer ?? JsonSerializer)
         {
             _blobClient = blobClient;
         }

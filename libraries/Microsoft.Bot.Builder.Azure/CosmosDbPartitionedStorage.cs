@@ -117,10 +117,20 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="client">The custom implementation of CosmosClient.</param>
         /// <param name="cosmosDbStorageOptions">Cosmos DB partitioned storage configuration options.</param>
-        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions)
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
+        /// </param>
+        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = default)
             : this(cosmosDbStorageOptions)
         {
             _client = client;
+            if (jsonSerializer != null)
+            {
+                _jsonSerializer = jsonSerializer;
+            }
         }
 
         /// <summary>
