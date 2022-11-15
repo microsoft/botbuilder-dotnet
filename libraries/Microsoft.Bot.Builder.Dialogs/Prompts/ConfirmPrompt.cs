@@ -189,7 +189,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 var culture = DetermineCulture(turnContext.Activity);
-                var results = ChoiceRecognizer.RecognizeBoolean(utterance, culture);
+                
+                var results = ChoiceRecognizer.RecognizeBoolean(utterance, options.RecognizeLanguage ?? culture);
                 if (results.Count > 0)
                 {
                     var first = results[0];

@@ -51,5 +51,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>Additional options for use with a prompt validator.</value>
         public object Validations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the locale used for recognizing the user's choice.
+        /// </summary>
+        /// <value>The locale to be use for recognizing the utterance.</value>
+        /// <remarks>
+        /// When using a translator middleware, the user's choice is translated and it doesn't match the prompt's options.
+        /// Setting this property with the translator's target language allows the prompt to recognize the utterance.
+        /// </remarks>
+        public string RecognizeLanguage { get; set; }
     }
 }
