@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -177,12 +178,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async Task WriteAsyncTwoChanges()
+        public async Task WriteAsyncMultipleChanges()
         {
             var changes = new Dictionary<string, object>
             {
                 { "key1", "value1" },
-                { "key2", "value2" }
+                { "key2", 0 },
+                { "key3", true },
+                { "key4", new StoreItem() },
+                { "key5", new List<StoreItem>() { new StoreItem() } },
+                { "key6", new Activity() }
             };
 
             InitStorage();
@@ -190,7 +195,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             await _blobStorage.WriteAsync(changes, CancellationToken.None);
 
             _mockBlobClient.Verify(x => x.GetContainerReference(It.IsAny<string>()), Times.Once);
-            _mockContainer.Verify(x => x.GetBlockBlobReference(It.IsAny<string>()), Times.Exactly(2));
+            _mockContainer.Verify(x => x.GetBlockBlobReference(It.IsAny<string>()), Times.Exactly(6));
             _mockBlockBlob.Verify(
                 x => x.UploadFromStreamAsync(
                     It.IsAny<MultiBufferMemoryStream>(),
@@ -198,7 +203,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     It.IsAny<BlobRequestOptions>(),
                     It.IsAny<OperationContext>(),
                     It.IsAny<CancellationToken>()),
-                Times.Exactly(2));
+                Times.Exactly(6));
         }
 
         [Fact]
@@ -252,7 +257,25 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             _mockAccount = new Mock<CloudStorageAccount>(new StorageCredentials("accountName", "S2V5VmFsdWU=", "key"), false);
 
-            _blobStorage = new AzureBlobStorage(_mockAccount.Object, ContainerName, _mockBlobClient.Object);
+            var jsonSerializer = new JsonSerializer
+            {
+                TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+                SerializationBinder = new AllowedTypesSerializationBinder(
+                    new List<Type>
+                    {
+                        typeof(IStoreItem),
+                        typeof(Dictionary<string, object>),
+                        typeof(Activity)
+                    }),
+            };
+
+            _blobStorage = new AzureBlobStorage(_mockAccount.Object, ContainerName, _mockBlobClient.Object, jsonSerializer);
+        }
+        
+        private class StoreItem : IStoreItem
+        {
+            public string ETag { get; set; }
         }
     }
 }
