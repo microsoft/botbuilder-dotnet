@@ -16,7 +16,6 @@ paragraph
     | errorDefinition
     | commentDefinition
     | NEWLINE
-    | EOF
     ;
 
 commentDefinition

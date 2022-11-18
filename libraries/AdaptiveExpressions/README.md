@@ -14,11 +14,11 @@ See [Here](https://docs.microsoft.com/en-us/azure/bot-service/adaptive-expressio
 If you changed the g4 file, please follow the instruction [here](https://github.com/antlr/antlr4/tree/master/runtime/CSharp#step-4-generate-the-c-code) to generate the new Lexer and Parser file.
 The specific command is: 
 ```
- java -jar antlr4-4.8.jar -Dlanguage=CSharp CommonmRegex.g4
- java -jar antlr4-4.8.jar -Dlanguage=CSharp ExpressionAntlrLexer.g4
- java -jar antlr4-4.8.jar -Dlanguage=CSharp ExpressionAntlrParser.g4 -visitor
+java -jar antlr-4.11.1.jar -o Generated -Dlanguage=CSharp CommonRegex.g4 -visitor
+java -jar antlr-4.11.1.jar -o Generated -Dlanguage=CSharp parser/ExpressionAntlrLexer.g4
+java -jar antlr-4.11.1.jar -o Generated -Dlanguage=CSharp  -visitor parser/ExpressionAntlrParser.g4
 ```
-`antlr4-4.8.jar` presents the path of antlr jar.
+`antlr-4.11.1.jar` presents the path of antlr jar.
 `xx.g4` presents the path of corresponding g4 file.
 
 By the way, You will need to have a modern version of Java (>= JRE 1.6) to use it.
