@@ -353,6 +353,63 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task ConfirmPromptDifferentRecognizeLanguage()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPromptDifferentRecognizeLanguage)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            var dialogs = new DialogSet(dialogState);
+            var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
+
+            dialogs.Add(prompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Please confirm.",
+                        },
+                        RetryPrompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Please confirm, say 'yes' or 'no' or something like that.",
+                        },
+                        RecognizeLanguage = "es-es"
+                    };
+                    await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    if ((bool)results.Result)
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
+                    }
+                }
+            })
+            .Send("hola")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
+            .Send("si")
+            .AssertReply("Confirmed.")
+            .StartTestAsync();
+        }
+
+        [Fact]
         public async Task ShouldUsePromptClassStyleProperty()
         {
             var convoState = new ConversationState(new MemoryStorage());
