@@ -826,6 +826,111 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
+        /// Invoked when an message update activity is received.
+        /// <see cref="ActivityTypes.MessageUpdate"/> activities, such as the conversational logic.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// In a derived class, override this method to add logic that applies to all message update activities.
+        /// </remarks>
+        protected override Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.ChannelId == Channels.Msteams)
+            {
+                var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
+
+                if (channelData != null)
+                {
+                    switch (channelData.EventType)
+                    {
+                        case "editMessage":
+                            return OnTeamsMessageEditAsync(turnContext, cancellationToken);
+
+                        case "undeleteMessage":
+                            return OnTeamsMessageUndeleteAsync(turnContext, cancellationToken);
+
+                        default:
+                            return base.OnMessageUpdateActivityAsync(turnContext, cancellationToken);
+                    }
+                }
+            }
+
+            return base.OnMessageUpdateActivityAsync(turnContext, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invoked when an message delete activity is received.
+        /// <see cref="ActivityTypes.MessageDelete"/> activities, such as the conversational logic.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// In a derived class, override this method to add logic that applies to all message update activities.
+        /// </remarks>
+        protected override Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.ChannelId == Channels.Msteams)
+            {
+                var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
+
+                if (channelData != null)
+                {
+                    switch (channelData.EventType)
+                    {
+                        case "softDeleteMessage":
+                            return OnTeamsMessageSoftDeleteAsync(turnContext, cancellationToken);
+
+                        default:
+                            return base.OnMessageDeleteActivityAsync(turnContext, cancellationToken);
+                    }
+                }
+            }
+
+            return base.OnMessageDeleteActivityAsync(turnContext, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invoked when a edit message event activity is received.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMessageEditAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a undo soft delete message event activity is received.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMessageUndeleteAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a soft delete message event activity is received.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMessageSoftDeleteAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Safely casts an object to an object of type <typeparamref name="T"/> .
         /// </summary>
         /// <param name="value">The object to be casted.</param>

@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder
         /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> method.
         /// </remarks>
         /// <seealso cref="OnMessageActivityAsync(ITurnContext{IMessageActivity}, CancellationToken)"/>
+        /// <seealso cref="OnMessageUpdateActivityAsync(ITurnContext{IMessageUpdateActivity}, CancellationToken)"/>
+        /// <seealso cref="OnMessageDeleteActivityAsync(ITurnContext{IMessageDeleteActivity}, CancellationToken)"/>
         /// <seealso cref="OnConversationUpdateActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
         /// <seealso cref="OnMessageReactionActivityAsync(ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
         /// <seealso cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
@@ -68,6 +70,14 @@ namespace Microsoft.Bot.Builder
             {
                 case ActivityTypes.Message:
                     await OnMessageActivityAsync(new DelegatingTurnContext<IMessageActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+                
+                case ActivityTypes.MessageUpdate:
+                    await OnMessageUpdateActivityAsync(new DelegatingTurnContext<IMessageUpdateActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ActivityTypes.MessageDelete:
+                    await OnMessageDeleteActivityAsync(new DelegatingTurnContext<IMessageDeleteActivity>(turnContext), cancellationToken).ConfigureAwait(false);
                     break;
 
                 case ActivityTypes.ConversationUpdate:
@@ -143,6 +153,42 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
         protected virtual Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic specific to
+        /// <see cref="ActivityTypes.MessageUpdate"/> activities, such as the conversational logic.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a message update activity, it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic specific to
+        /// <see cref="ActivityTypes.MessageDelete"/> activities, such as the conversational logic.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a message delete activity, it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
