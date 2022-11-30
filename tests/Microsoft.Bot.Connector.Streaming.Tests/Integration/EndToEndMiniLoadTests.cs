@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                     }
                     catch (Exception e)
                     {
-                        return Task.FromResult(StreamingResponse.InternalServerError(new StringContent(e.ToString())));
+                        return Task.FromResult(StreamingResponse.InternalServerError(new StringContent(e.Message)));
                     }
                 });
 
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                     }
                     catch (Exception e)
                     {
-                        return Task.FromResult(StreamingResponse.InternalServerError(new StringContent(e.ToString())));
+                        return Task.FromResult(StreamingResponse.InternalServerError(new StringContent(e.Message)));
                     }
                 });
 

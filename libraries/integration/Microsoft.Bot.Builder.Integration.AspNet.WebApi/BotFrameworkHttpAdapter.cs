@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             catch (Exception ex)
             {
                 httpResponse.StatusCode = HttpStatusCode.InternalServerError;
-                httpResponse.Content = new StringContent($"Unable to create transport server. Error: {ex}");
+                httpResponse.Content = new StringContent($"Unable to create transport server. Error: {ex.Message}");
                 throw;
             }
         }
