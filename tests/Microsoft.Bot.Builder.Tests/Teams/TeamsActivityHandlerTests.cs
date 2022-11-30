@@ -1204,6 +1204,152 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("10101010", activitiesToSend[0].Text);
         }
 
+        [Fact]
+        public async Task TestMessageUpdateActivityTeamsMessageEdit()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageUpdate,
+                ChannelData = new TeamsChannelData { EventType = "editMessage" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnMessageUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessageEditAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestMessageUpdateActivityTeamsMessageUndelete()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageUpdate,
+                ChannelData = new TeamsChannelData { EventType = "undeleteMessage" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnMessageUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessageUndeleteAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestMessageUpdateActivityTeamsMessageUndelete_NoMsteams()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageUpdate,
+                ChannelData = new TeamsChannelData { EventType = "undeleteMessage" },
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnMessageUpdateActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+        public async Task TestMessageUpdateActivityTeams_NoChannelData()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageUpdate,
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnMessageUpdateActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+        public async Task TestMessageDeleteActivityTeamsMessageSoftDelete()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageDelete,
+                ChannelData = new TeamsChannelData { EventType = "softDeleteMessage" },
+                ChannelId = Channels.Msteams
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnMessageDeleteActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessageSoftDeleteAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestMessageDeleteActivityTeamsMessageSoftDelete_NoMsteams()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageDelete,
+                ChannelData = new TeamsChannelData { EventType = "softMessage" }
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnMessageDeleteActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+        public async Task TestMessageDeleteActivityTeams_NoChannelData()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageDelete,
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnMessageDeleteActivityAsync", bot.Record[0]);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -1481,6 +1627,36 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 turnContext.SendActivityAsync(meeting.EndTime.ToString());
                 return Task.CompletedTask;
+            }
+
+            protected override Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnMessageUpdateActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMessageEditAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsMessageEditAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMessageUndeleteAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsMessageUndeleteAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnMessageDeleteActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMessageSoftDeleteAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsMessageSoftDeleteAsync(turnContext, cancellationToken);
             }
         }
 

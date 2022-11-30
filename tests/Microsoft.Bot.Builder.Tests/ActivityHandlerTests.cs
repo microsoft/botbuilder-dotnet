@@ -39,6 +39,38 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task TestMessageUpdateActivity()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.MessageUpdate };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnMessageUpdateActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+        public async Task TestMessageDeleteActivity()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.MessageDelete };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnMessageDeleteActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
         public async Task TestEndOfConversationActivity()
         {
             // Arrange
@@ -796,6 +828,18 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnMessageActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnMessageUpdateActivityAsync(ITurnContext<IMessageUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnMessageUpdateActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnMessageDeleteActivityAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnMessageDeleteActivityAsync(turnContext, cancellationToken);
             }
 
             protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
