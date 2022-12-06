@@ -17,7 +17,7 @@ steps:
     filePath: ./build/ExtractCompressNuGet.ps1
     arguments: '$(Build.ArtifactStagingDirectory)\Signing  -Extract'
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@2
   displayName: 'ESRP Signing - strong name (CP-233863-SN)'
   inputs:
     ConnectedServiceName: 'ESRP Code Signing Connection 2020a'
@@ -43,7 +43,7 @@ steps:
      
     SessionTimeout: 20
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@2
   displayName: 'ESRP Signing - authenticode (CP-230012)'
   inputs:
     ConnectedServiceName: 'ESRP Code Signing Connection 2020a'
@@ -101,7 +101,7 @@ steps:
     filePath: ./build/ExtractCompressNuGet.ps1
     arguments: '$(Build.ArtifactStagingDirectory)\Signing -Compress'
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@2
   displayName: 'ESRP Signing - *.nupkg,*.snupkg (CP-401405)'
   inputs:
     ConnectedServiceName: 'ESRP Code Signing Connection 2020a'
