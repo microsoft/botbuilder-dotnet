@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Teams
 {
     /// <summary>
-    /// The TeamsInfo
+    /// The TeamsInfo Test If Build Remote Successful
     /// provides utility methods for the events and interactions that occur within Microsoft Teams.
     /// </summary>
     public static class TeamsInfo
