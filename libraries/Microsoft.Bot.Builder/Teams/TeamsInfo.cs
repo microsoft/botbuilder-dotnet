@@ -317,6 +317,27 @@ namespace Microsoft.Bot.Builder.Teams
             return new Tuple<ConversationReference, string>(conversationReference, newActivityId);
         }
 
+        /// <summary>
+        /// Sends a notification to meeting participants. This functionality is available only in teams meeting scoped conversations. 
+        /// </summary>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="notification">The notification to send to Teams.</param>
+        /// <param name="meetingId">The id of the Teams meeting. TeamsChannelData.Meeting.Id will be used if none provided.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>InvalidOperationException will be thrown if meetingId or notification have not been
+        /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
+        /// <returns>List of <see cref="TeamsMeetingNotificationRecipientFailureInfo"/> for whom the notification failed.</returns>
+        public static async Task<TeamsMeetingNotificationRecipientFailureInfos> SendMeetingNotificationAsync(ITurnContext turnContext, TeamsMeetingNotification notification, string meetingId = null, CancellationToken cancellationToken = default)
+        {
+            meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
+            notification = notification ?? throw new InvalidOperationException($"{nameof(notification)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMeetingNotificationAsync(meetingId, notification, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)
