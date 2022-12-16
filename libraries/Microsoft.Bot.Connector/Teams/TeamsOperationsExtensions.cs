@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Connector.Teams
             }
             else
             {
-                throw new InvalidOperationException("TeamsOperations with GetParticipantWithHttpMessagesAsync is required for FetchParticipantAsync.");
+                throw new InvalidOperationException("TeamsOperations with SendMeetingNotificationWithHttpMessagesAsync is required for SendMeetingNotificationAsync.");
             }
         }
     }

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="participantId">The id of the Teams meeting participant. From.AadObjectId will be used if none provided.</param>
         /// <param name="tenantId">The id of the Teams meeting Tenant. TeamsChannelData.Tenant.Id will be used if none provided.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <remarks>InvalidOperationException will be thrown if meetingId, participantId or tenantId have not been
+        /// <remarks> <see cref="InvalidOperationException"/> will be thrown if meetingId, participantId or tenantId have not been
         /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
         /// <returns>Team participant channel account.</returns>
         public static async Task<TeamsMeetingParticipant> GetMeetingParticipantAsync(ITurnContext turnContext, string meetingId = null, string participantId = null, string tenantId = null, CancellationToken cancellationToken = default)

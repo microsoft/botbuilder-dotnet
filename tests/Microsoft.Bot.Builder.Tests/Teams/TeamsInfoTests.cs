@@ -546,7 +546,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     Surfaces = new[] { surface }
                 };
 
-                var obo = new OnBehalfOf
+                var obo = new TeamsMeetingNotificationOnBehalfOf
                 {
                     DisplayName = from.Name, 
                     Mri = from.Id
