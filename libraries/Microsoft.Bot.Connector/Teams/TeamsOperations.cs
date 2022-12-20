@@ -408,11 +408,10 @@ namespace Microsoft.Bot.Connector.Teams
 
                 if ((int)statusCode == 207)
                 {
-                    /* 207: if the notifications are sent only to parital number of recipients because 
-                            the validation on some recipients’ ids failed or some recipients were not found in the roster. 
-                        • In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot 
-                            (ex: if a bot sent encrypted user MRIs, return encrypted one).
-                     */
+                    // 207: if the notifications are sent only to parital number of recipients because
+                    //    the validation on some recipients’ ids failed or some recipients were not found in the roster.
+                    // In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot
+                    // (ex: if a bot sent encrypted user MRIs, return encrypted one).
 
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     try
@@ -431,20 +430,18 @@ namespace Microsoft.Bot.Connector.Teams
                 }
                 else if ((int)statusCode != 202)
                 {
-                    /* 
-                        400: when Meeting Notification request payload validation fails. For instance, 
-                            • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
-                            • Surface: 
-                                o Surface list is empty or null 
-                                o Surface type is invalid 
-                                o Duplicative surface type exists in one payload
-                        401: if the bot token is invalid 
-                        403: if the bot is not allowed to send the notification.
-                            In this case, the payload should contain more detail error message.
-                            There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
-                            the bot does not have a correct RSC permission for a specific surface type, etc
-                        404: if a meeting chat is not found || None of the receipients were found in the roster. 
-                     */
+                    // 400: when Meeting Notification request payload validation fails. For instance, 
+                    //    • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
+                    //    • Surface: 
+                    //        o Surface list is empty or null 
+                    //        o Surface type is invalid 
+                    //        o Duplicative surface type exists in one payload
+                    // 401: if the bot token is invalid 
+                    // 403: if the bot is not allowed to send the notification.
+                    //     In this case, the payload should contain more detail error message.
+                    //     There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
+                    //     the bot does not have a correct RSC permission for a specific surface type, etc
+                    // 404: if a meeting chat is not found || None of the receipients were found in the roster. 
 
                     // invalid/unexpected status code
                     var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");

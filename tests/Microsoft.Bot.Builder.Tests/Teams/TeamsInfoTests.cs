@@ -360,24 +360,22 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [InlineData("403")]
         public async Task TestSendMeetingNotificationAsync(string statusCode)
         {
-            /* 
-               202: accepted
-               207: if the notifications are sent only to parital number of recipients because 
-                            the validation on some recipients’ ids failed or some recipients were not found in the roster. 
-                        • In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot 
-                            (ex: if a bot sent encrypted user MRIs, return encrypted one).
-             
-                400: when Meeting Notification request payload validation fails. For instance, 
-                    • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
-                    • Surface: 
-                        o Surface list is empty or null 
-                        o Surface type is invalid 
-                        o Duplicative surface type exists in one payload
-                403: if the bot is not allowed to send the notification.
-                    In this case, the payload should contain more detail error message.
-                    There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
-                    the bot does not have a correct RSC permission for a specific surface type, etc
-             */
+            // 202: accepted
+            // 207: if the notifications are sent only to parital number of recipients because 
+            //             the validation on some recipients’ ids failed or some recipients were not found in the roster. 
+            //         • In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot 
+            //             (ex: if a bot sent encrypted user MRIs, return encrypted one).
+
+            // 400: when Meeting Notification request payload validation fails. For instance, 
+            //     • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
+            //     • Surface: 
+            //         o Surface list is empty or null 
+            //         o Surface type is invalid 
+            //         o Duplicative surface type exists in one payload
+            // 403: if the bot is not allowed to send the notification.
+            //     In this case, the payload should contain more detail error message.
+            //     There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
+            //     the bot does not have a correct RSC permission for a specific surface type, etc
 
             var baseUri = new Uri("https://test.coffee");
             var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
@@ -548,7 +546,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
                 var obo = new TeamsMeetingNotificationOnBehalfOf
                 {
-                    DisplayName = from.Name, 
+                    DisplayName = from.Name,
                     Mri = from.Id
                 };
 
