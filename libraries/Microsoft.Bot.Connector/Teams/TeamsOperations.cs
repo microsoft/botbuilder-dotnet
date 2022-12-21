@@ -287,6 +287,199 @@ namespace Microsoft.Bot.Connector.Teams
             return await GetResponseAsync<TeamsMeetingParticipant>(url, shouldTrace, invocationId, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Send a teams meeting notification.
+        /// </summary>
+        /// <remarks>
+        /// Send a notification to teams meeting particpants.
+        /// </remarks>
+        /// <param name='meetingId'>
+        /// Teams meeting id.
+        /// </param>
+        /// <param name='notification'>
+        /// Teams notification object.
+        /// </param>
+        /// <param name='customHeaders'>
+        /// Headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="SerializationException">
+        /// Thrown when unable to deserialize the response.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when an input value does not match the expected data type, range or pattern.
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null.
+        /// </exception>
+        /// <returns>
+        /// A response object containing the response body and response headers.
+        /// </returns>
+        public async Task<HttpOperationResponse<TeamsMeetingNotificationRecipientFailureInfos>> SendMeetingNotificationMessageAsync(string meetingId, TeamsMeetingNotification notification, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (meetingId == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(meetingId));
+            }
+
+            // Tracing
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("meetingId", meetingId);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, "SendMeetingNotification", tracingParameters);
+            }
+
+            // Construct URL
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}/notification").ToString();
+            url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
+            using var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
+
+            HttpResponseMessage httpResponse = null;
+
+            // Create HTTP transport objects
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var result = new HttpOperationResponse<TeamsMeetingNotificationRecipientFailureInfos>();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+            try
+            {
+                // Set Headers
+                if (customHeaders != null)
+                {
+                    foreach (var header in customHeaders)
+                    {
+                        if (httpRequest.Headers.Contains(header.Key))
+                        {
+                            httpRequest.Headers.Remove(header.Key);
+                        }
+
+                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+
+                // Serialize Request
+                string requestContent = null;
+                if (notification != null)
+                {
+                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(notification, Client.SerializationSettings);
+                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                }
+
+                // Set Credentials
+                if (Client.Credentials != null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                }
+
+                // Send Request
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
+                }
+
+                HttpStatusCode statusCode = httpResponse.StatusCode;
+                cancellationToken.ThrowIfCancellationRequested();
+                string responseContent = null;
+
+                // Create Result
+                result.Request = httpRequest;
+                result.Response = httpResponse;
+
+                if ((int)statusCode == 207)
+                {
+                    // 207: if the notifications are sent only to parital number of recipients because
+                    //    the validation on some recipients’ ids failed or some recipients were not found in the roster.
+                    // In this case, SMBA will return the user MRIs of those failed recipients in a format that was given to a bot
+                    // (ex: if a bot sent encrypted user MRIs, return encrypted one).
+
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    try
+                    {
+                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<TeamsMeetingNotificationRecipientFailureInfos>(responseContent, Client.DeserializationSettings);
+                    }
+                    catch (JsonException ex)
+                    {
+                        if (shouldTrace)
+                        {
+                            ServiceClientTracing.Error(invocationId, ex);
+                        }
+
+                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                    }
+                }
+                else if ((int)statusCode != 202)
+                {
+                    // 400: when Meeting Notification request payload validation fails. For instance, 
+                    //    • Recipients: # of recipients is greater than what the API allows || all of recipients’ user ids were invalid
+                    //    • Surface: 
+                    //        o Surface list is empty or null 
+                    //        o Surface type is invalid 
+                    //        o Duplicative surface type exists in one payload
+                    // 401: if the bot token is invalid 
+                    // 403: if the bot is not allowed to send the notification.
+                    //     In this case, the payload should contain more detail error message.
+                    //     There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
+                    //     the bot does not have a correct RSC permission for a specific surface type, etc
+                    // 404: if a meeting chat is not found || None of the receipients were found in the roster. 
+
+                    // invalid/unexpected status code
+                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
+                    if (httpResponse.Content != null)
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        responseContent = string.Empty;
+                    }
+
+                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                    if (shouldTrace)
+                    {
+                        ServiceClientTracing.Error(invocationId, ex);
+                    }
+
+                    throw ex;
+                }
+            }
+            finally
+            {
+                if (httpResponse != null)
+                {
+                    httpResponse.Dispose();
+                }
+            }
+
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
+        }
+
         private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string url, bool shouldTrace, string invocationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Create HTTP transport objects
