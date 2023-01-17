@@ -91,7 +91,26 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
         }
 
-        private static Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null)
+        [Fact]
+        [Trait("TestCategory", "WindowsOnly")]
+        public async Task JwtTokenExtractor_WithExpiredToken_ShouldThrowUnauthorizedAccessException()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var now = DateTimeOffset.UtcNow;
+                var cn = "test.cert.botframework.com";
+
+                // Create valid self-signed certificate
+                var cert = CreateSelfSignedCertificate(cn, from: now.AddDays(-10), to: now.AddDays(9));
+
+                // It will fail since the generated token is expired.
+                await Assert.ThrowsAnyAsync<UnauthorizedAccessException>(() => BuildExtractorAndValidateToken(cert, expires: now.Date.AddDays(-5), notBefore: now.Date.AddDays(-10)));
+
+                DeleteKeyContainer(cn);
+            }
+        }
+
+        private static Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null, DateTime? expires = null, DateTime? notBefore = null)
         {
             // Custom validation parameters that allow us to test the extractor logic
             var tokenValidationParams = validationParameters ?? CreateTokenValidationParameters(cert);
@@ -103,17 +122,18 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 "https://login.botframework.com/v1/.well-known/openidconfiguration",
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var token = CreateTokenForCertificate(cert);
+            var token = CreateTokenForCertificate(cert, expires, notBefore);
 
             return tokenExtractor.GetIdentityAsync($"Bearer {token}", "test");
         }
 
-        private static string CreateTokenForCertificate(X509Certificate2 cert)
+        private static string CreateTokenForCertificate(X509Certificate2 cert, DateTime? expires = null, DateTime? notBefore = null)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Expires = DateTime.UtcNow.AddMinutes(5),
+                Expires = expires ?? DateTime.UtcNow.AddMinutes(5),
+                NotBefore = notBefore,
                 SigningCredentials = new SigningCredentials(new X509SecurityKey(cert), SecurityAlgorithms.RsaSha256Signature)
             };
 
