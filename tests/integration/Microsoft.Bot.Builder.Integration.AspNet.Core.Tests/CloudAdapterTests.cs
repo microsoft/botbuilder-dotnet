@@ -805,6 +805,36 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Equal(expectedChannelId, actualChannelId);
         }
 
+        [Fact]
+        public async Task ExpiredTokenShouldThrowUnauthorizedAccessException()
+        {
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+
+            // Expired token with removed AppID
+            var token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiJodHRwczovL2FwaS5ib3RmcmFtZXdvcmsuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiLyIsImlhdCI6MTY3MDM1MDQxNSwibmJmIjoxNjcwMzUwNDE1LCJleHAiOjE2NzA0MzcxMTUsImFpbyI6IkUyWmdZTkJONEpWZmxlOTJUc2wxYjhtOHBjOWpBQT09IiwiYXBwaWQiOiI5ZGRmM2QwZS02ZDRlLTQ2MWEtYjM4Yi0zMTYzZWQ3Yjg1NmIiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIvIiwicmgiOiIwLkFXNEFJSlRVMXB2ejkwMmgzTldhazFoeDIwSXpMWTBwejFsSmxYY09EcS05RnJ4dUFBQS4iLCJ0aWQiOiJkNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIiLCJ1dGkiOiJIWDlncld2bU1rMlhESTRkS3BHSEFBIiwidmVyIjoiMS4wIn0.PBLuja5sCcDfFjweoy-VucvbfHEyEcs1GyqXjekzBqgvK-mSc1UrEfqr5834qY6dLNsXVIMJzMFuH6WyPbnAfIfRcabdiVSOAl8N8e9Tex6vHfPi4h4P2F96VkXU80EtZX4QMjsJMDJ5eXbJlIDEAxXoJbAdHqgy-lHcVBx8XK7toJ_W7vSsFhis3C4CPCHI1cf1WuHVwfFXBiNwsOzj9cnRUKpea6UELV89q4C0L6aeSNdWYXehZmgq-wlo2wIaGgQ7rOXx4MlIrc83LBzMMc6TWvBJecK6O8pJWLe6BTwOltBI8Tmo2hWnY1OnsbOhbSSlfwLaZqKI7QpA50_2GQ";
+           
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>((_) => token);
+
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
+            httpRequestMock.Setup(r => r.Body).Returns(CreateInvokeActivityStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+
+            var response = new MemoryStream();
+            var httpResponseMock = new Mock<HttpResponse>().SetupAllProperties();
+            httpResponseMock.Setup(r => r.Body).Returns(response);
+
+            var bot = new InvokeResponseBot();
+
+            // Act
+            var adapter = new CloudAdapter();
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
+
+            // Assert
+            Assert.Equal((int)HttpStatusCode.Unauthorized, httpResponseMock.Object.StatusCode);
+        }
+
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)
         {
             return CreateStream(new Activity
@@ -978,11 +1008,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             public IIdentity Identity { get; private set; }
 
             public IConnectorClient ConnectorClient { get; private set; }
-            
+
             public UserTokenClient UserTokenClient { get; private set; }
-            
+
             public BotCallbackHandler BotCallbackHandler { get; private set; }
-            
+
             public string OAuthScope { get; private set; }
 
             public AuthenticationHeaderValue Authorization { get; private set; }
@@ -1036,9 +1066,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             public Guid Id { get; set; }
 
             public string ContentType { get; set; }
-            
+
             public int? Length { get; set; }
-            
+
             public Stream Stream { get; set; }
         }
 
