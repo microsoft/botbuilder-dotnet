@@ -297,6 +297,11 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 return principal;
             }
+            catch (SecurityTokenExpiredException err)
+            {
+                Trace.TraceError(err.Message);
+                throw new UnauthorizedAccessException($"The token has expired");
+            }
             catch (SecurityTokenSignatureKeyNotFoundException)
             {
                 var keys = string.Join(", ", (config?.SigningKeys ?? Enumerable.Empty<SecurityKey>()).Select(t => t.KeyId));
