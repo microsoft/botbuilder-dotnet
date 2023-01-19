@@ -7,23 +7,23 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Schema.Teams
 {
     /// <summary>
-    /// Specifies the container for what is required to send a meeting notification to recipients.
+    /// Specifies the targeted meeting notification value, including recipients and surfaces.
     /// </summary>
-    public partial class TeamsMeetingNotificationInfo
+    public partial class TargetedMeetingNotificationValue
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TeamsMeetingNotificationInfo"/> class.
+        /// Initializes a new instance of the <see cref="TargetedMeetingNotificationValue"/> class.
         /// </summary>
-        public TeamsMeetingNotificationInfo()
+        public TargetedMeetingNotificationValue()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets the collection of recipients of the notification.
+        /// Gets or sets the collection of recipients of the targeted meeting notification.
         /// </summary>
         /// <value>
-        /// The collection of recipients of the notification.
+        /// The collection of recipients of the targeted meeting notification.
         /// </value>
         [JsonProperty(PropertyName = "recipients")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
@@ -31,17 +31,15 @@ namespace Microsoft.Bot.Schema.Teams
 
         /// <summary>
         /// Gets or sets the collection of surfaces on which to show the notification.
+        /// If a bot wants its content to be rendered in multiple surfaces areas, it can specific a list of UX areas. 
+        /// But please note that only one instance of surface type is allowed per request. 
         /// </summary>
         /// <value>
         /// The collection of surfaces on which to show the notification.
         /// </value>
         [JsonProperty(PropertyName = "surfaces")]
-        public IList<TeamsMeetingNotificationSurface> Surfaces { get; set; }
+        public IList<Surface> Surfaces { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

@@ -320,7 +320,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<TeamsMeetingNotificationRecipientFailureInfos>> SendMeetingNotificationMessageAsync(string meetingId, TeamsMeetingNotification notification, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<MeetingNotificationResponse>> SendMeetingNotificationMessageAsync(string meetingId, BotMeetingNotificationBase notification, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (meetingId == null)
             {
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Create HTTP transport objects
 #pragma warning disable CA2000 // Dispose objects before losing scope
-            var result = new HttpOperationResponse<TeamsMeetingNotificationRecipientFailureInfos>();
+            var result = new HttpOperationResponse<MeetingNotificationResponse>();
 #pragma warning restore CA2000 // Dispose objects before losing scope
             try
             {
@@ -416,7 +416,7 @@ namespace Microsoft.Bot.Connector.Teams
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     try
                     {
-                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<TeamsMeetingNotificationRecipientFailureInfos>(responseContent, Client.DeserializationSettings);
+                        result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<MeetingNotificationResponse>(responseContent, Client.DeserializationSettings);
                     }
                     catch (JsonException ex)
                     {
