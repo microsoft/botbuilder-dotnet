@@ -9,12 +9,12 @@ namespace Microsoft.Bot.Schema.Teams
     /// Specifies Bot meeting notification including meeting notification value.
     /// </summary>
     /// <typeparam name="T">The first generic type parameter.</typeparam>.
-    public class BotMeetingNotification<T> : BotMeetingNotificationBase
+    public class MeetingNotification<T> : MeetingNotificationBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotMeetingNotification{T}"/> class.
+        /// Initializes a new instance of the <see cref="MeetingNotification{T}"/> class.
         /// </summary>
-        protected BotMeetingNotification()
+        protected MeetingNotification()
         {
         }
 

@@ -326,8 +326,8 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <remarks>InvalidOperationException will be thrown if meetingId or notification have not been
         /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
-        /// <returns>List of <see cref="NotificationRecipientFailureInfo"/> for whom the notification failed.</returns>
-        public static async Task<MeetingNotificationResponse> SendMeetingNotificationAsync(ITurnContext turnContext, BotMeetingNotificationBase notification, string meetingId = null, CancellationToken cancellationToken = default)
+        /// <returns> <see cref="MeetingNotificationResponse"/>.</returns>
+        public static async Task<MeetingNotificationResponse> SendMeetingNotificationAsync(ITurnContext turnContext, MeetingNotificationBase notification, string meetingId = null, CancellationToken cancellationToken = default)
         {
             meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
             notification = notification ?? throw new InvalidOperationException($"{nameof(notification)} is required.");

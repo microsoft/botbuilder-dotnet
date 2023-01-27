@@ -320,7 +320,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<MeetingNotificationResponse>> SendMeetingNotificationMessageAsync(string meetingId, BotMeetingNotificationBase notification, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<MeetingNotificationResponse>> SendMeetingNotificationMessageAsync(string meetingId, MeetingNotificationBase notification, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (meetingId == null)
             {

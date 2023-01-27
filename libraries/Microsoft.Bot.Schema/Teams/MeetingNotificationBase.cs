@@ -8,12 +8,12 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specifies Bot meeting notification base including channel data and type.
     /// </summary>
-    public class BotMeetingNotificationBase
+    public class MeetingNotificationBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotMeetingNotificationBase"/> class.
+        /// Initializes a new instance of the <see cref="MeetingNotificationBase"/> class.
         /// </summary>
-        protected BotMeetingNotificationBase()
+        protected MeetingNotificationBase()
         {
         }
 
@@ -25,14 +25,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty("type")]
         public string Type { get; set; }
-
-        /// <summary>
-        /// Gets or sets Teams Bot meeting notification channel data.
-        /// </summary>
-        /// <value>
-        /// Teams Bot meeting notification channel data.
-        /// </value>
-        [JsonProperty("channelData")]
-        public BotMeetingNotificationChannelData ChannelData { get; set; }
     }
 }

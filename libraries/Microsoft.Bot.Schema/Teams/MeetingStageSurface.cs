@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Schema.Teams
     /// Specifies meeting stage surface.
     /// </summary>
     /// <typeparam name="T">The first generic type parameter.</typeparam>.
-    public partial class MeetingStageSurface<T> : Surface
+    public class MeetingStageSurface<T> : Surface
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingStageSurface{T}"/> class.
@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Schema.Teams
         public MeetingStageSurface()
             : base(SurfaceType.MeetingStage)
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty(PropertyName = "contentType")]
-        public ContentType ContentType { get; set; } 
+        public ContentType ContentType { get; set; } = ContentType.Task;
 
         /// <summary>
         /// Gets or sets the content for this <see cref="MeetingStageSurface{T}"/>.
@@ -39,10 +38,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "content")]
         public T Content { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

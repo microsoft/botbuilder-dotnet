@@ -9,14 +9,13 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specifies the targeted meeting notification value, including recipients and surfaces.
     /// </summary>
-    public partial class TargetedMeetingNotificationValue
+    public class TargetedMeetingNotificationValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetedMeetingNotificationValue"/> class.
         /// </summary>
         public TargetedMeetingNotificationValue()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
 
         /// <summary>
         /// Gets or sets the collection of surfaces on which to show the notification.
-        /// If a bot wants its content to be rendered in multiple surfaces areas, it can specific a list of UX areas. 
+        /// If a bot wants its content to be rendered in different surfaces areas, it can specific a list of UX areas. 
         /// But please note that only one instance of surface type is allowed per request. 
         /// </summary>
         /// <value>
@@ -40,10 +39,5 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "surfaces")]
         public IList<Surface> Surfaces { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

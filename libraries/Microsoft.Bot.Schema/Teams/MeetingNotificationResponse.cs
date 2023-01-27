@@ -8,30 +8,24 @@ namespace Microsoft.Bot.Schema.Teams
 {
     /// <summary>
     /// Specifies Bot meeting notification response.
-    /// Contains list of <see cref="NotificationRecipientFailureInfo"/>.
+    /// Contains list of <see cref="MeetingNotificationRecipientFailureInfo"/>.
     /// </summary>
-    public partial class MeetingNotificationResponse
+    public class MeetingNotificationResponse
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingNotificationResponse"/> class.
         /// </summary>
         public MeetingNotificationResponse()
         {
-            CustomInit();
         }
 
         /// <summary>
-        /// Gets or sets the list of <see cref="MeetingNotificationResponse"/>.
+        /// Gets or sets the list of <see cref="MeetingNotificationRecipientFailureInfo"/>.
         /// </summary>
-        /// <value>The list of recipients who did not receive a <see cref="BotMeetingNotificationBase"/> including error information.</value>
+        /// <value>The list of <see cref="MeetingNotificationRecipientFailureInfo"/>.</value>
         [JsonProperty(PropertyName = "recipientsFailureInfo")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)>
-        public IList<NotificationRecipientFailureInfo> RecipientsFailureInfo { get; set; }
+        public IList<MeetingNotificationRecipientFailureInfo> RecipientsFailureInfo { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

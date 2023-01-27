@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// The cancellation token.
         /// </param>
         /// <returns>Information regarding which participant notifications failed.</returns>
-        public static async Task<MeetingNotificationResponse> SendMeetingNotificationAsync(this ITeamsOperations operations, string meetingId, BotMeetingNotificationBase notification, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<MeetingNotificationResponse> SendMeetingNotificationAsync(this ITeamsOperations operations, string meetingId, MeetingNotificationBase notification, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {
