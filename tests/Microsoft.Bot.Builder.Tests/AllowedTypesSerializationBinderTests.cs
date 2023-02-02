@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -17,15 +15,15 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Empty AllowedTypes.
             Assert.NotNull(new AllowedTypesSerializationBinder().AllowedTypes);
-            Assert.Empty(new AllowedTypesSerializationBinder().AllowedTypes);
+            Assert.NotEmpty(new AllowedTypesSerializationBinder().AllowedTypes);
 
             // Null AllowedTypes.
-            Assert.Empty(new AllowedTypesSerializationBinder(null).AllowedTypes);
             Assert.NotNull(new AllowedTypesSerializationBinder(null).AllowedTypes);
+            Assert.NotEmpty(new AllowedTypesSerializationBinder(null).AllowedTypes);
 
             // With AllowedTypes.
             Assert.NotNull(new AllowedTypesSerializationBinder(new List<Type> { typeof(ExampleType) }).AllowedTypes);
-            Assert.Single(new AllowedTypesSerializationBinder(new List<Type> { typeof(ExampleType) }).AllowedTypes);
+            Assert.NotEmpty(new AllowedTypesSerializationBinder(new List<Type> { typeof(ExampleType) }).AllowedTypes);
         }
 
         [Fact]
@@ -47,10 +45,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.Null(assemblyName);
             Assert.NotNull(typeName);
+            Assert.Throws<InvalidOperationException>(() => binder.Verify());
         }
 
         [Fact]
-        public void BindToNameWithType()
+        public void BindToNameWithExplicitAllowedType()
         {
             var expectedType = typeof(ExampleType);
             var binder = new AllowedTypesSerializationBinder(new List<Type> { expectedType });
@@ -58,6 +57,19 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.Null(assemblyName);
             Assert.Equal(expectedType.AssemblyQualifiedName, typeName);
+        }
+
+        [Fact]
+        public void BindToNameWithImplicitAllowedType()
+        {
+            // Should dynamically load BotBuilder's Activity type.
+            var expectedType = typeof(Activity);
+            var binder = new AllowedTypesSerializationBinder();
+            binder.BindToName(expectedType, out var assemblyName, out var typeName);
+
+            Assert.Null(assemblyName);
+            Assert.Equal(expectedType.AssemblyQualifiedName, typeName);
+            binder.Verify();
         }
 
         [Fact]
@@ -85,13 +97,25 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        public void BindToTypeWithAllowedType()
+        public void BindToTypeWithExplicitAllowedType()
         {
             var expectedType = typeof(ExampleType);
             var binder = new AllowedTypesSerializationBinder(new List<Type> { expectedType });
             var resultType = binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName);
 
             Assert.Equal(expectedType, resultType);
+        }
+
+        [Fact]
+        public void BindToTypeWithImplicitAllowedType()
+        {
+            // Should dynamically load BotBuilder's Activity type.
+            var expectedType = typeof(Activity);
+            var binder = new AllowedTypesSerializationBinder();
+            var resultType = binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName);
+
+            Assert.Equal(expectedType, resultType);
+            binder.Verify();
         }
 
         [Fact]
@@ -102,6 +126,7 @@ namespace Microsoft.Bot.Builder.Tests
             var resultType = binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName);
 
             Assert.Equal(expectedType, resultType);
+            binder.Verify();
         }
 
         [Fact]
@@ -109,70 +134,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var expectedType = typeof(ExampleType);
             var binder = new AllowedTypesSerializationBinder(new List<Type> { typeof(string) });
-            Assert.Throws<InvalidOperationException>(() => binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName));
-        }
+            var resultType = binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName);
 
-        [Fact]
-        public void CleanupTypesWithAllowedTypes()
-        {
-            var expectedType = typeof(ExampleType);
-            var unknownType = typeof(string);
-            var binder = new AllowedTypesSerializationBinder(new List<Type> { expectedType });
-            var resolvedTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", expectedType.FullName, expectedType.Assembly.GetName().Name);
-            var unknownTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", unknownType.FullName, unknownType.Assembly.GetName().Name);
-            var obj = JObject.Parse(@$"{{'$type':'{resolvedTypeName}', 'inner': {{ '$type': '{unknownTypeName}' }} }}");
-            binder.CleanupTypes(obj);
-
-            Assert.Equal(resolvedTypeName, obj["$type"]);
-            Assert.Null(obj["inner"]["$type"]);
-        }
-        
-        [Fact]
-        public void CleanupTypesWithoutAllowedTypes()
-        {
-            var expectedType = typeof(ExampleType);
-            var stringType = typeof(string);
-            var activityType = typeof(Activity);
-            var binder = new AllowedTypesSerializationBinder(new List<Type> { expectedType });
-            var resolvedTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", expectedType.FullName, expectedType.Assembly.GetName().Name);
-            var stringTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", stringType.FullName, stringType.Assembly.GetName().Name);
-            var activityTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", activityType.FullName, activityType.Assembly.GetName().Name);
-            var obj = (JContainer)JToken.Parse(@$"[
-                {{'$type':'{resolvedTypeName}', 'inner': {{ '$type': '{stringTypeName}' }}, 'activity': {{ '$type': '{activityTypeName}' }} }},
-                {{'$type':'{stringTypeName}', 'inner': {{ '$type': '{resolvedTypeName}' }} }},
-                {{'$type':'{activityTypeName}', 'inner': {{ '$type': '{resolvedTypeName}' }} }}
-            ]");
-            Assert.Throws<InvalidOperationException>(() => binder.CleanupTypes(obj));
-        }
-        
-        [Fact]
-        public void CleanupTypesWithEmptyObject()
-        {
-            var expectedType = typeof(ExampleType);
-            var binder = new AllowedTypesSerializationBinder(new List<Type> { expectedType });
-            var obj = (JContainer)JToken.Parse("{}");
-            binder.CleanupTypes(obj);
-        }
-
-        [Fact]
-        public void CleanupTypesWithEmptyArray()
-        {
-            var expectedType = typeof(ExampleType);
-            var binder = new AllowedTypesSerializationBinder(new List<Type> { expectedType });
-            var obj = (JContainer)JToken.Parse("[]");
-            binder.CleanupTypes(obj);
-        }
-
-        [Fact]
-        public void CleanupTypesWithEmptyAllowedTypes()
-        {
-            var expectedType = typeof(ExampleType);
-            var binder = new AllowedTypesSerializationBinder();
-            var resolvedTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", expectedType.FullName, expectedType.Assembly.GetName().Name);
-            var obj = JObject.Parse(@$"{{'$type':'{resolvedTypeName}'}}");
-            binder.CleanupTypes(obj);
-
-            Assert.Equal(resolvedTypeName, obj["$type"]);
+            Assert.Equal(expectedType, resultType);
+            Assert.Throws<InvalidOperationException>(() => binder.Verify());
         }
 
         private class ExampleType : IDisposable
