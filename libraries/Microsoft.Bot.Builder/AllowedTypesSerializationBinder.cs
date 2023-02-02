@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder
@@ -15,15 +15,19 @@ namespace Microsoft.Bot.Builder
     /// An implementation of the <see cref="DefaultSerializationBinder"/>,
     /// capable of allowing only desired <see cref="Type"/>s to be serialized and deserialized.
     /// </summary>
+    /// <remarks>
+    /// Internally loads types dynamically, allowing all the exported types from BotBuilder and 
+    /// the project who is using it to be taken into account in the verification process.
+    /// </remarks>
     public class AllowedTypesSerializationBinder : DefaultSerializationBinder
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AllowedTypesSerializationBinder"/> class.
         /// </summary>
-        /// <param name="allowedTypes">A list of types to allow this binder to assign upon deserialization.</param>
+        /// <param name="allowedTypes">A list of types to allow when the binder assign them upon deserialization.</param>
         public AllowedTypesSerializationBinder(IList<Type> allowedTypes = default)
         {
-            AllowedTypes = allowedTypes ?? new List<Type>();
+            AllowedTypes = LoadTypes(allowedTypes);
         }
 
         /// <summary>
@@ -33,6 +37,8 @@ namespace Microsoft.Bot.Builder
         /// A <see cref="IList{T}"/> of allowed <see cref="Type"/> classes.
         /// </value>
         public IList<Type> AllowedTypes { get; }
+
+        private IList<Type> DeniedTypes { get; } = new List<Type>();
 
         /// <summary>
         /// <para>
@@ -58,98 +64,62 @@ namespace Microsoft.Bot.Builder
             {
                 return;
             }
-            
+
             if (IsTypeAllowed(serializedType))
             {
                 AllowType(serializedType);
+            }
+            else
+            {
+                DenyType(serializedType);
             }
         }
 
         /// <summary>
         /// Given the <paramref name="assemblyName"/> and <paramref name="typeName"/> parameters,
-        /// it validates if the resulted <see cref="Type"/> is found in the <see cref="AllowedTypes"/> collection.
+        /// it validates if the resulted <see cref="Type"/> is found in the <see cref="AllowedTypes"/> collection, and returns its value.
         /// <para>
-        /// When found, it will return the serialized <see cref="Type"/>.
-        /// </para>
-        /// <para>
-        /// When not found, it will throw an <see cref="InvalidOperationException"/>.
+        /// When found, it will add the <see cref="Type"/> to the <see cref="AllowedTypes"/> collection if it doesn't exist.
         /// </para>
         /// </summary>
         /// <param name="assemblyName">Specifies the System.Reflection.Assembly name of the serialized object.</param>
         /// <param name="typeName">Specifies the System.Type name of the serialized object.</param>
-        /// <returns>The <see cref="Type"/> found in the <see cref="AllowedTypes"/> collection.</returns>
-        /// <exception cref="InvalidOperationException">When the resulted <see cref="Type"/>
-        /// from the <paramref name="assemblyName"/> and <paramref name="typeName"/> parameters
-        /// is not found in the <see cref="AllowedTypes"/> collection.</exception>
+        /// <returns>The resulted <see cref="Type"/> from the provided <paramref name="assemblyName"/> and <paramref name="typeName"/> parameters.</returns>
         public override Type BindToType(string assemblyName, string typeName)
         {
             var resolvedTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", typeName, assemblyName);
             var type = Type.GetType(resolvedTypeName);
 
-            // Preload related type.
             if (IsTypeAllowed(type))
             {
                 AllowType(type);
             }
-
-            if (!AllowedTypes.Contains(type))
+            else
             {
-                ThrowDisallowedTypesError(new List<Type> { type });
+                DenyType(type);
             }
 
             return type;
         }
 
         /// <summary>
-        /// Finds and remove all the '$type' properties within the provided <paramref name="json"/> parameter,
-        /// that are not included in the <see cref="AllowedTypes"/> collection.
+        /// Verifies if there are types that are not allowed.
+        /// <para>
+        /// When not allowed, it will throw an <see cref="InvalidOperationException"/>.
+        /// </para>
         /// </summary>
-        /// <param name="json">A JSON object.</param>
-        public void CleanupTypes(JContainer json)
+        /// <exception cref="InvalidOperationException">Exception thrown when there are types that are not allowed.</exception>
+        public void Verify()
         {
-            if (AllowedTypes.Count == 0)
+            if (DeniedTypes.Any())
             {
-                return;
-            }
-
-            var disallowedTypes = new List<Type>();
-            var allowedTypes = AllowedTypes.ToDictionary(e => e.AssemblyQualifiedName);
-
-            // Remove AllowedTypes nested types from the object.
-            json.Descendants()
-                .OfType<JProperty>()
-                .Where(attr => attr.Name == "$type")
-                .Select(attr => new
-                {
-                    Property = attr,
-                    Type = Type.GetType(attr.Value.ToString())
-                })
-                .Where(attr =>
-                {
-                    if (AllowedTypes.Contains(attr.Type))
-                    {
-                        return false;
-                    }
-
-                    var shouldRemove = attr.Type == null || ShouldRemoveType(attr.Type, attr.Property.Parent, allowedTypes);
-                    if (shouldRemove)
-                    {
-                        return true;
-                    }
-
-                    disallowedTypes.Add(attr.Type);
-                    return false;
-                })
-                .ToList()
-                .ForEach(attr => attr.Property.Remove());
-
-            if (disallowedTypes.Count > 0)
-            {
-                ThrowDisallowedTypesError(disallowedTypes);
+                ThrowDeniedTypesError(DeniedTypes);
             }
         }
 
-        private void ThrowDisallowedTypesError(List<Type> types)
+        private Func<Type, bool> IsTypeEqualTo(Type second) => (Type first) => first.AssemblyQualifiedName == second.AssemblyQualifiedName;
+
+        private void ThrowDeniedTypesError(IList<Type> types)
         {
             var items = types.Select(type => $"  - {type.AssemblyQualifiedName}");
             var typeOfs = types.Select(type => $"typeof({type.Name}),");
@@ -170,34 +140,6 @@ namespace Microsoft.Bot.Builder
             throw new InvalidOperationException(message);
         }
 
-        private bool ShouldRemoveType(Type child, JContainer parent, IDictionary<string, Type> memory)
-        {
-            if (parent == null)
-            {
-                return false;
-            }
-
-            var parentTypeName = parent.Type == JTokenType.Object ? parent?.Value<string>("$type") : string.Empty;
-            var parentType = Type.GetType(parentTypeName);
-            if (parentType == null)
-            {
-                return ShouldRemoveType(child, parent.Parent, memory);
-            }
-
-            if (memory.ContainsKey(parentType.AssemblyQualifiedName))
-            {
-                var reference = $"{parentType.AssemblyQualifiedName} / {child.AssemblyQualifiedName}";
-                if (!memory.ContainsKey(reference))
-                {
-                    memory.Add(reference, child);
-                }
-
-                return true;
-            }
-
-            return ShouldRemoveType(parentType, parent.Parent, memory);
-        }
-
         private bool IsTypeAllowed(Type serializedType)
         {
             if (serializedType == null)
@@ -205,14 +147,14 @@ namespace Microsoft.Bot.Builder
                 return false;
             }
 
-            // Return Type when found.
-            var typeFound = AllowedTypes.FirstOrDefault(e => e.AssemblyQualifiedName == serializedType.AssemblyQualifiedName);
+            // Return when Type is found.
+            var typeFound = AllowedTypes.FirstOrDefault(IsTypeEqualTo(serializedType));
             if (typeFound != null)
             {
                 return true;
             }
 
-            // Return Type when it's inside another Type.
+            // Return when the Type is inside another Type.
             if (serializedType.IsNested)
             {
                 if (IsTypeAllowed(serializedType.ReflectedType))
@@ -221,9 +163,9 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            // Return Type when it has Interfaces.
+            // Return when the Type has Interfaces.
             var interfaces = serializedType.GetInterfaces();
-            var interfaceFound = AllowedTypes.FirstOrDefault(t => interfaces.Any(e => e.AssemblyQualifiedName == t.AssemblyQualifiedName));
+            var interfaceFound = AllowedTypes.FirstOrDefault(t => interfaces.Any(IsTypeEqualTo(t)));
             if (interfaceFound != null)
             {
                 return true;
@@ -239,10 +181,67 @@ namespace Microsoft.Bot.Builder
                 return;
             }
 
-            if (!AllowedTypes.Contains(type))
+            if (!AllowedTypes.Any(IsTypeEqualTo(type)))
             {
-                AllowedTypes.Add(type);
+                AllowedTypes.Insert(0, type);
             }
+        }
+
+        private void DenyType(Type type)
+        {
+            if (type == null)
+            {
+                return;
+            }
+
+            var typeToRemove = AllowedTypes.FirstOrDefault(IsTypeEqualTo(type));
+            AllowedTypes.Remove(typeToRemove);
+
+            if (!DeniedTypes.Any(IsTypeEqualTo(type)))
+            {
+                DeniedTypes.Insert(0, type);
+            }
+        }
+
+        private List<Type> LoadTypes(IList<Type> allowedTypes)
+        {
+            var types = new List<Type>();
+            var externalAssembly = Assembly.GetEntryAssembly();
+            var internalAssembly = Assembly.GetExecutingAssembly();
+            var internalNestedTypes = GetDeepReferencedTypes(internalAssembly);
+
+            if (allowedTypes?.Count > 0)
+            {
+                types.AddRange(allowedTypes);
+            }
+
+            types.AddRange(externalAssembly.ExportedTypes);
+            types.AddRange(internalAssembly.ExportedTypes);
+            types.AddRange(internalNestedTypes);
+
+            return types.Distinct().ToList();
+        }
+
+        private List<Type> GetDeepReferencedTypes(Assembly parent)
+        {
+            var result = new List<Type>();
+            var parentAttr = parent.GetCustomAttribute(typeof(AssemblyProductAttribute)) as AssemblyProductAttribute;
+            var children = parent.GetReferencedAssemblies();
+            foreach (var childName in children)
+            {
+                var child = Assembly.Load(childName);
+                var childAttr = child?.GetCustomAttribute(typeof(AssemblyProductAttribute)) as AssemblyProductAttribute;
+                if (childAttr == null || parentAttr.Product != childAttr.Product)
+                {
+                    continue;
+                }
+
+                var types = GetDeepReferencedTypes(child);
+                result.AddRange(types);
+                result.AddRange(child.ExportedTypes);
+            }
+
+            return result;
         }
     }
 }
