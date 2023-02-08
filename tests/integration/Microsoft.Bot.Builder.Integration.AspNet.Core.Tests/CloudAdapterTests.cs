@@ -848,7 +848,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             loggerMock.Verify(
                x => x.Log(
-                   LogLevel.Warning,
+                   LogLevel.Error,
                    It.IsAny<EventId>(),
                    It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("The token has expired")),
                    It.IsAny<Exception>(),

@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // handle unauthorized here as this layer creates the http response
                 httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
 
-                Logger.LogWarning(ex.ToString());
+                Logger.LogError(ex.ToString());
             }
         }
 
