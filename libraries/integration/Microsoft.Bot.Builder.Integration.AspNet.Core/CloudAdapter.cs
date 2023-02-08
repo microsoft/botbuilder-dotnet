@@ -112,10 +112,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     httpResponse.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                 }
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
                 // handle unauthorized here as this layer creates the http response
                 httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                Logger.LogWarning(ex.ToString());
             }
         }
 
