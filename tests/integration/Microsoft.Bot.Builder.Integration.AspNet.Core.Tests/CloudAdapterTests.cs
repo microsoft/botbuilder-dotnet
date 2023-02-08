@@ -845,6 +845,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             // Assert
             Assert.Equal((int)HttpStatusCode.Unauthorized, httpResponseMock.Object.StatusCode);
+
+            loggerMock.Verify(
+               x => x.Log(
+                   LogLevel.Warning,
+                   It.IsAny<EventId>(),
+                   It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("The token has expired")),
+                   It.IsAny<Exception>(),
+                   (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+               Times.Once);
         }
 
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)
