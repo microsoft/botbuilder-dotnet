@@ -826,21 +826,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             httpResponseMock.Setup(r => r.Body).Returns(response);
 
             var loggerMock = new Mock<ILogger<CloudAdapter>>();
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(CreateInternalHttpResponse()));
-
-            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             var bot = new InvokeResponseBot();
 
             // Act
-            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClientFactoryMock.Object, null);
-            var adapter = new CloudAdapter(cloudEnvironment, loggerMock.Object);
+            var adapter = new CloudAdapter(BotFrameworkAuthenticationFactory.Create(), loggerMock.Object);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
