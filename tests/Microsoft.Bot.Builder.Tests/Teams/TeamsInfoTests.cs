@@ -516,7 +516,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.Equal("meetingConversationId-1", meeting.Conversation.Id);
             }
 
-            private TeamsMeetingNotification GetTeamsMeetingNotification(ChannelAccount from)
+            private MeetingNotificationBase GetTargetedMeetingNotification(ChannelAccount from)
             {
                 var recipients = new List<string> { from.Id };
 
@@ -525,7 +525,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     recipients.Add("failingid");
                 }
 
-                var surface = new TeamsMeetingNotificationSurface
+                var surface = new MeetingStageSurface<TaskModuleContinueResponse>
                 {
                     Content = new TaskModuleContinueResponse
                     {
@@ -535,27 +535,28 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             Height = 3,
                             Width = 2,
                         }
-                    }
+                    },
+                    ContentType = ContentType.Task
                 };
 
-                var value = new TeamsMeetingNotificationInfo
+                var value = new TargetedMeetingNotificationValue
                 {
                     Recipients = recipients,
                     Surfaces = new[] { surface }
                 };
 
-                var obo = new TeamsMeetingNotificationOnBehalfOf
+                var obo = new OnBehalfOf
                 {
                     DisplayName = from.Name,
                     Mri = from.Id
                 };
 
-                var channelData = new TeamsMeetingNotificationChannelData
+                var channelData = new MeetingNotificationChannelData
                 {
-                    OnBehalfOf = new[] { obo }
+                    OnBehalfOfList = new[] { obo }
                 };
 
-                return new TeamsMeetingNotification
+                return new TargetedMeetingNotification
                 {
                     Value = value,
                     ChannelData = channelData
@@ -568,7 +569,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
                 try
                 {
-                    var failedParticipants = await TeamsInfo.SendMeetingNotificationAsync(turnContext, GetTeamsMeetingNotification(from), "meeting-id").ConfigureAwait(false);
+                    var failedParticipants = await TeamsInfo.SendMeetingNotificationAsync(turnContext, GetTargetedMeetingNotification(from), "meeting-id").ConfigureAwait(false);
 
                     switch (from.Name)
                     {
@@ -787,17 +788,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 else if (request.RequestUri.PathAndQuery.EndsWith("v1/meetings/meeting-id/notification"))
                 {
                     var responseBody = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var notification = JsonConvert.DeserializeObject<TeamsMeetingNotification>(responseBody);
-                    var obo = notification.ChannelData.OnBehalfOf.First();
+                    var notification = JsonConvert.DeserializeObject<TargetedMeetingNotification>(responseBody);
+                    var obo = notification.ChannelData.OnBehalfOfList.First();
 
                     // hack displayname as expected status code, for testing
                     switch (obo.DisplayName)
                     {
                         case "207":
-                            var failureInfo = new TeamsMeetingNotificationRecipientFailureInfo { RecipientMri = notification.Value.Recipients.First(r => !r.Equals(obo.Mri, StringComparison.OrdinalIgnoreCase)) };
-                            var infos = new TeamsMeetingNotificationRecipientFailureInfos
+                            var failureInfo = new MeetingNotificationRecipientFailureInfo { RecipientMri = notification.Value.Recipients.First(r => !r.Equals(obo.Mri, StringComparison.OrdinalIgnoreCase)) };
+                            var infos = new MeetingNotificationResponse
                             {
-                                RecipientsFailureInfo = new List<TeamsMeetingNotificationRecipientFailureInfo> { failureInfo }
+                                RecipientsFailureInfo = new List<MeetingNotificationRecipientFailureInfo> { failureInfo }
                             };
 
                             response.Content = new StringContent(JsonConvert.SerializeObject(infos));
