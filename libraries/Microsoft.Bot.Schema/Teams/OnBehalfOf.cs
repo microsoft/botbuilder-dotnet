@@ -8,21 +8,20 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specifies attribution for notifications.
     /// </summary>
-    public partial class OnBehalfOf
+    public class OnBehalfOf
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="OnBehalfOf"/> class.
         /// </summary>
         public OnBehalfOf()
         {
-            CustomInit();
         }
 
         /// <summary>
         /// Gets or sets the identification of the item. Default is 0.
         /// </summary>
         /// <value>The item id.</value>
-        [JsonProperty(PropertyName = "itemId")]
+        [JsonProperty(PropertyName = "itemid")]
         public int ItemId { get; set; } = 0;
 
         /// <summary>
@@ -46,10 +45,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value>The name of the person.</value>
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
