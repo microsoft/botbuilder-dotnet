@@ -825,14 +825,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var httpResponseMock = new Mock<HttpResponse>().SetupAllProperties();
             httpResponseMock.Setup(r => r.Body).Returns(response);
 
+            var loggerMock = new Mock<ILogger<CloudAdapter>>();
+
             var bot = new InvokeResponseBot();
 
             // Act
-            var adapter = new CloudAdapter();
+            var adapter = new CloudAdapter(BotFrameworkAuthenticationFactory.Create(), loggerMock.Object);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
             Assert.Equal((int)HttpStatusCode.Unauthorized, httpResponseMock.Object.StatusCode);
+
+            loggerMock.Verify(
+               x => x.Log(
+                   LogLevel.Error,
+                   It.IsAny<EventId>(),
+                   It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("The token has expired")),
+                   It.IsAny<Exception>(),
+                   (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+               Times.Once);
         }
 
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)
