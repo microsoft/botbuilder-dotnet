@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Builder.Azure
             SerializationBinder = new AllowedTypesSerializationBinder(
                 new List<Type>
                 {
+                    typeof(IStoreItem),
                     typeof(Dictionary<string, object>)
                 }),
             MaxDepth = null,
@@ -228,7 +229,7 @@ namespace Microsoft.Bot.Builder.Azure
                         var json = JToken.FromObject(newValue, _jsonSerializer);
                         if (json.Type == JTokenType.Object || json.Type == JTokenType.Array)
                         {
-                            (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
+                            (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.CleanupTypes((JContainer)json);
                             await json.WriteToAsync(jsonWriter).ConfigureAwait(false);
                         }
                         else
@@ -279,7 +280,6 @@ namespace Microsoft.Bot.Builder.Azure
                     using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)) { MaxDepth = null })
                     {
                         var obj = _jsonSerializer.Deserialize(jsonReader);
-                        (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
 
                         if (obj is IStoreItem storeItem)
                         {

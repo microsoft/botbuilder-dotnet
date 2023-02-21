@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Azure
             SerializationBinder = new AllowedTypesSerializationBinder(
                 new List<Type>
                 {
+                    typeof(IStoreItem),
                     typeof(Dictionary<string, object>)
                 }),
             MaxDepth = null
@@ -171,7 +172,6 @@ namespace Microsoft.Bot.Builder.Azure
 
                     var documentStoreItem = readItemResponse.Resource;
                     var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
-                    (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
 
                     if (item is IStoreItem storeItem)
                     {
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
-                (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
+                (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.CleanupTypes(json);
 
                 // Remove etag from JSON object that was copied from IStoreItem.
                 // The ETag information is updated as an _etag attribute in the document metadata.
