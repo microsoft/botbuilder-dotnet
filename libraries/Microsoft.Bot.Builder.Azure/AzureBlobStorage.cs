@@ -14,7 +14,6 @@ using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -34,13 +33,8 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-            SerializationBinder = new AllowedTypesSerializationBinder(
-                new List<Type>
-                {
-                    typeof(IStoreItem),
-                    typeof(Dictionary<string, object>)
-                }),
+            // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
+            TypeNameHandling = TypeNameHandling.All,
             MaxDepth = null,
         });
 
@@ -60,7 +54,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
         public AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, JsonSerializer jsonSerializer)
         {
@@ -101,14 +94,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="storageAccount">Azure CloudStorageAccount instance.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         /// <param name="blobClient">Custom implementation of CloudBlobClient.</param>
-        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
-        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
-        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
-        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
-        /// </param>
-        internal AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient, JsonSerializer jsonSerializer = default)
-            : this(storageAccount, containerName, jsonSerializer ?? JsonSerializer)
+        internal AzureBlobStorage(CloudStorageAccount storageAccount, string containerName, CloudBlobClient blobClient)
+            : this(storageAccount, containerName, JsonSerializer)
         {
             _blobClient = blobClient;
         }
@@ -224,18 +211,8 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
                     using (var streamWriter = new StreamWriter(memoryStream))
-                    using (var jsonWriter = new JsonTextWriter(streamWriter))
                     {
-                        var json = JToken.FromObject(newValue, _jsonSerializer);
-                        if (json.Type == JTokenType.Object || json.Type == JTokenType.Array)
-                        {
-                            (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.CleanupTypes((JContainer)json);
-                            await json.WriteToAsync(jsonWriter).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            _jsonSerializer.Serialize(streamWriter, newValue);
-                        }
+                        _jsonSerializer.Serialize(streamWriter, newValue);
 
                         await streamWriter.FlushAsync().ConfigureAwait(false);
 
