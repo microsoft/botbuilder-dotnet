@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All,
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
                 MaxDepth = null,
             });
         }
