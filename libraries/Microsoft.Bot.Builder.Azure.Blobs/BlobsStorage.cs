@@ -13,7 +13,6 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Azure.Blobs
 {
@@ -30,12 +29,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
     /// </remarks>
     public class BlobsStorage : IStorage
     {
-        private static readonly AllowedTypesSerializationBinder _allowedTypesBinder = new AllowedTypesSerializationBinder(
-            new List<Type>
-            {
-                typeof(Dictionary<string, object>)
-            });
-
         // If a JsonSerializer is not provided during construction, this will be the default JsonSerializer.
         private readonly JsonSerializer _jsonSerializer;
         private readonly BlobContainerClient _containerClient;
@@ -51,7 +44,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
         public BlobsStorage(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
             : this(dataConnectionString, containerName, default, jsonSerializer)
@@ -68,7 +60,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
         public BlobsStorage(string dataConnectionString, string containerName, StorageTransferOptions storageTransferOptions, JsonSerializer jsonSerializer = null)
         {
@@ -86,8 +77,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                 {
-                                                    TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-                                                    SerializationBinder = _allowedTypesBinder,
+                                                    TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
                                                     MaxDepth = null,
                                                 });
 
@@ -105,7 +95,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
         internal BlobsStorage(BlobContainerClient containerClient, JsonSerializer jsonSerializer = null)
         {
@@ -113,8 +102,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-                SerializationBinder = _allowedTypesBinder,
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
                 MaxDepth = null,
             });
 
@@ -226,19 +214,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 {
                     using var memoryStream = new MemoryStream();
                     using var streamWriter = new StreamWriter(memoryStream);
-                    using var jsonWriter = new JsonTextWriter(streamWriter);
-                    
-                    var json = JToken.FromObject(newValue, _jsonSerializer);
-                    if (json.Type == JTokenType.Object || json.Type == JTokenType.Array)
-                    {
-                        (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
-                        await json.WriteToAsync(jsonWriter).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        _jsonSerializer.Serialize(streamWriter, newValue);
-                    }
-
+                    _jsonSerializer.Serialize(streamWriter, newValue);
                     await streamWriter.FlushAsync().ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -277,7 +253,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)) { MaxDepth = null })
                         {
                             var obj = _jsonSerializer.Deserialize(jsonReader);
-                            (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
 
                             if (obj is IStoreItem storeItem)
                             {

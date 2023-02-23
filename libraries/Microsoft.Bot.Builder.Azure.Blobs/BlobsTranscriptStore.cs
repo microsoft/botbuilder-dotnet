@@ -80,6 +80,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                                                 {
                                                     NullValueHandling = NullValueHandling.Ignore,
                                                     Formatting = Formatting.Indented,
+                                                    TypeNameHandling = TypeNameHandling.None,
                                                     MaxDepth = null,
                                                 });
 
@@ -114,6 +115,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
             {
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
                 MaxDepth = null,
             });
         }

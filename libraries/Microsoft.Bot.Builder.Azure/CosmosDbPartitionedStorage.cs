@@ -21,15 +21,9 @@ namespace Microsoft.Bot.Builder.Azure
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private const int MaxDepthAllowed = 127;
-
         private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-            SerializationBinder = new AllowedTypesSerializationBinder(
-                new List<Type>
-                {
-                    typeof(Dictionary<string, object>)
-                }),
+            TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
             MaxDepth = null
         });
 
@@ -101,7 +95,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
         public CosmosDbPartitionedStorage(CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer)
             : this(cosmosDbStorageOptions)
@@ -116,20 +109,10 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="client">The custom implementation of CosmosClient.</param>
         /// <param name="cosmosDbStorageOptions">Cosmos DB partitioned storage configuration options.</param>
-        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
-        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
-        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
-        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
-        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
-        /// </param>
-        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = default)
+        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions)
             : this(cosmosDbStorageOptions)
         {
             _client = client;
-            if (jsonSerializer != null)
-            {
-                _jsonSerializer = jsonSerializer;
-            }
         }
 
         /// <summary>
@@ -171,7 +154,6 @@ namespace Microsoft.Bot.Builder.Azure
 
                     var documentStoreItem = readItemResponse.Resource;
                     var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
-                    (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
 
                     if (item is IStoreItem storeItem)
                     {
@@ -227,7 +209,6 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
-                (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
 
                 // Remove etag from JSON object that was copied from IStoreItem.
                 // The ETag information is updated as an _etag attribute in the document metadata.
@@ -404,7 +385,7 @@ namespace Microsoft.Bot.Builder.Azure
                         try
                         {
                             _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
-
+                            
                             // This will throw if the container does not exist. 
                             var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
 

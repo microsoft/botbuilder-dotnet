@@ -73,7 +73,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 { "key1", new StoreItem() },
                 { "key2", new StoreItem { ETag = "*" } },
                 { "key3", new StoreItem { ETag = "ETag" } },
-                { "key4", "value1" },
             };
 
             await _storage.WriteAsync(changes);
@@ -88,7 +87,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     It.IsAny<AccessTier?>(),
                     It.IsAny<StorageTransferOptions>(),
                     It.IsAny<CancellationToken>()),
-                Times.Exactly(4));
+                Times.Exactly(3));
         }
 
         [Fact]
