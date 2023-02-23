@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
 
@@ -18,8 +18,13 @@ namespace AdaptiveExpressions
     /// </summary>
     public static class TimeZoneConverter
     {
-        private static IDictionary<string, string> ianaToWindowsMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private static IDictionary<string, string> windowsToIanaMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static ConcurrentDictionary<string, string> ianaToWindowsMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static ConcurrentDictionary<string, string> windowsToIanaMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        static TimeZoneConverter()
+        {
+            LoadData();
+        }
 
         /// <summary>
         /// convert IANA timezone format to windows timezone format.
@@ -28,7 +33,6 @@ namespace AdaptiveExpressions
         /// <returns>windows timezone format.</returns>
         public static string IanaToWindows(string ianaTimeZoneId)
         {
-            LoadData();
             if (ianaToWindowsMap.ContainsKey(ianaTimeZoneId))
             {
                 return ianaToWindowsMap[ianaTimeZoneId];
@@ -44,7 +48,6 @@ namespace AdaptiveExpressions
         /// <returns>Iana timezone format.</returns>
         public static string WindowsToIana(string windowsTimeZoneId)
         {
-            LoadData();
             if (windowsToIanaMap.ContainsKey($"001|{windowsTimeZoneId}"))
             {
                 return windowsToIanaMap[$"001|{windowsTimeZoneId}"];
@@ -69,14 +72,14 @@ namespace AdaptiveExpressions
                     var ianaIdList = table[2].Split(' ');
                     if (!windowsToIanaMap.ContainsKey($"{territory}|{windowsId}"))
                     {
-                        windowsToIanaMap.Add($"{territory}|{windowsId}", ianaIdList[0]);
+                        windowsToIanaMap.TryAdd($"{territory}|{windowsId}", ianaIdList[0]);
                     }
 
                     foreach (var ianaId in ianaIdList)
                     {
                         if (!ianaToWindowsMap.ContainsKey(ianaId))
                         {
-                            ianaToWindowsMap.Add(ianaId, windowsId);
+                            ianaToWindowsMap.TryAdd(ianaId, windowsId);
                         }
                     }
                 }
