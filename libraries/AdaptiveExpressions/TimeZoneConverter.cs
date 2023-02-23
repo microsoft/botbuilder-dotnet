@@ -21,6 +21,11 @@ namespace AdaptiveExpressions
         private static ConcurrentDictionary<string, string> ianaToWindowsMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private static ConcurrentDictionary<string, string> windowsToIanaMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        static TimeZoneConverter()
+        {
+            LoadData();
+        }
+
         /// <summary>
         /// convert IANA timezone format to windows timezone format.
         /// </summary>
@@ -28,7 +33,6 @@ namespace AdaptiveExpressions
         /// <returns>windows timezone format.</returns>
         public static string IanaToWindows(string ianaTimeZoneId)
         {
-            LoadData();
             if (ianaToWindowsMap.ContainsKey(ianaTimeZoneId))
             {
                 return ianaToWindowsMap[ianaTimeZoneId];
@@ -44,7 +48,6 @@ namespace AdaptiveExpressions
         /// <returns>Iana timezone format.</returns>
         public static string WindowsToIana(string windowsTimeZoneId)
         {
-            LoadData();
             if (windowsToIanaMap.ContainsKey($"001|{windowsTimeZoneId}"))
             {
                 return windowsToIanaMap[$"001|{windowsTimeZoneId}"];
