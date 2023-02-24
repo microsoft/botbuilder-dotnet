@@ -73,7 +73,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 { "key1", new StoreItem() },
                 { "key2", new StoreItem { ETag = "*" } },
                 { "key3", new StoreItem { ETag = "ETag" } },
-                { "key4", "value1" },
+                { "key4", new List<StoreItem>() { new StoreItem() } },
+                { "key5", new Dictionary<string, StoreItem>() { { "key1", new StoreItem() } } },
+                { "key6", "value1" },
             };
 
             await _storage.WriteAsync(changes);
@@ -88,7 +90,109 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     It.IsAny<AccessTier?>(),
                     It.IsAny<StorageTransferOptions>(),
                     It.IsAny<CancellationToken>()),
-                Times.Exactly(4));
+                Times.Exactly(6));
+        }
+
+        [Fact]
+        public async void WriteAsyncWithAllowedTypesSerializationBinder()
+        {
+            var serializationBinder = new AllowedTypesSerializationBinder(
+                new List<Type>
+                {
+                    typeof(IStoreItem),
+                });
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+                SerializationBinder = serializationBinder,
+            };
+
+            InitStorage(jsonSerializerSettings);
+
+            _client.Setup(e => e.UploadAsync(
+                It.IsAny<Stream>(),
+                It.IsAny<BlobHttpHeaders>(),
+                It.IsAny<IDictionary<string, string>>(),
+                It.IsAny<BlobRequestConditions>(),
+                It.IsAny<IProgress<long>>(),
+                It.IsAny<AccessTier?>(),
+                It.IsAny<StorageTransferOptions>(),
+                It.IsAny<CancellationToken>()));
+
+            var changes = new Dictionary<string, object>
+            {
+                { "key1", new StoreItem() },
+                { "key2", new StoreItem { ETag = "*" } },
+                { "key3", new StoreItem { ETag = "ETag" } },
+                { "key4", new List<StoreItem>() { new StoreItem() } },
+                { "key5", new Dictionary<string, StoreItem>() { { "key1", new StoreItem() } } },
+                { "key6", "value1" },
+            };
+
+            await _storage.WriteAsync(changes);
+
+            _client.Verify(
+                e => e.UploadAsync(
+                    It.IsAny<Stream>(),
+                    It.IsAny<BlobHttpHeaders>(),
+                    It.IsAny<IDictionary<string, string>>(),
+                    It.IsAny<BlobRequestConditions>(),
+                    It.IsAny<IProgress<long>>(),
+                    It.IsAny<AccessTier?>(),
+                    It.IsAny<StorageTransferOptions>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(6));
+            Assert.Equal(4, serializationBinder.AllowedTypes.Count);
+        }
+        
+        [Fact]
+        public async void WriteAsyncWithEmptyAllowedTypesSerializationBinder()
+        {
+            var serializationBinder = new AllowedTypesSerializationBinder();
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+                SerializationBinder = serializationBinder,
+            };
+
+            InitStorage(jsonSerializerSettings);
+
+            _client.Setup(e => e.UploadAsync(
+                It.IsAny<Stream>(),
+                It.IsAny<BlobHttpHeaders>(),
+                It.IsAny<IDictionary<string, string>>(),
+                It.IsAny<BlobRequestConditions>(),
+                It.IsAny<IProgress<long>>(),
+                It.IsAny<AccessTier?>(),
+                It.IsAny<StorageTransferOptions>(),
+                It.IsAny<CancellationToken>()));
+
+            var changes = new Dictionary<string, object>
+            {
+                { "key1", new StoreItem() },
+                { "key2", new StoreItem { ETag = "*" } },
+                { "key3", new StoreItem { ETag = "ETag" } },
+                { "key4", new List<StoreItem>() { new StoreItem() } },
+                { "key5", new Dictionary<string, StoreItem>() { { "key1", new StoreItem() } } },
+                { "key6", "value1" },
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _storage.WriteAsync(changes));
+
+            _client.Verify(
+                e => e.UploadAsync(
+                    It.IsAny<Stream>(),
+                    It.IsAny<BlobHttpHeaders>(),
+                    It.IsAny<IDictionary<string, string>>(),
+                    It.IsAny<BlobRequestConditions>(),
+                    It.IsAny<IProgress<long>>(),
+                    It.IsAny<AccessTier?>(),
+                    It.IsAny<StorageTransferOptions>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(0));
+            Assert.Equal(0, serializationBinder.AllowedTypes.Count);
         }
 
         [Fact]
@@ -162,6 +266,79 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.Equal("*", JObject.FromObject(items).GetValue("key")?.Value<string>("ETag"));
             _client.Verify(e => e.DownloadAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+        
+        [Fact]
+        public async void ReadAsyncWithAllowedTypesSerializationBinder()
+        {            
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+                SerializationBinder = new AllowedTypesSerializationBinder(
+                    new List<Type>
+                    {
+                        typeof(IStoreItem),
+                    }),
+            };
+
+            InitStorage(jsonSerializerSettings);
+
+            var storeItem = new StoreItem
+            {
+                ETag = "*"
+            };
+            var data = JsonConvert.SerializeObject(storeItem, jsonSerializerSettings);
+            Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(data));
+            var blobDownloadInfo = BlobsModelFactory.BlobDownloadInfo(content: stream);
+            var response = new Mock<Response<BlobDownloadInfo>>();
+
+            response.SetupGet(e => e.Value).Returns(blobDownloadInfo);
+            
+            var blobProperties = BlobsModelFactory.BlobProperties(eTag: new ETag("ETag updated"));
+            var properties = new Mock<Response<BlobProperties>>();
+            properties.SetupGet(e => e.Value).Returns(blobProperties);
+            _client.Setup(e => e.GetPropertiesAsync(It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(properties.Object);
+            _client.Setup(e => e.DownloadAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response.Object);
+
+            var items = await _storage.ReadAsync(new string[] { "key" });
+
+            Assert.Single(items);
+            Assert.Equal("ETag updated", JObject.FromObject(items).GetValue("key")?.Value<string>("ETag"));
+            _client.Verify(e => e.DownloadAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+        
+        [Fact]
+        public async void ReadAsyncWithEmptyAllowedTypesSerializationBinder()
+        {            
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+                SerializationBinder = new AllowedTypesSerializationBinder(),
+            };
+
+            InitStorage(jsonSerializerSettings);
+
+            var storeItem = new StoreItem
+            {
+                ETag = "*"
+            };
+            var data = JsonConvert.SerializeObject(storeItem, jsonSerializerSettings);
+            Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(data));
+            var blobDownloadInfo = BlobsModelFactory.BlobDownloadInfo(content: stream);
+            var response = new Mock<Response<BlobDownloadInfo>>();
+
+            response.SetupGet(e => e.Value).Returns(blobDownloadInfo);
+            
+            _client.Setup(e => e.DownloadAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response.Object);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _storage.ReadAsync(new string[] { "key" }));
+
+            _client.Verify(e => e.DownloadAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
 
         [Fact]
         public async void ReadAsyncHttpPreconditionFailure()
@@ -221,19 +398,24 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             await Assert.ThrowsAsync<ArgumentNullException>(() => _storage.DeleteAsync(new string[] { string.Empty }));
         }
 
-        private void InitStorage()
+        private void InitStorage(JsonSerializerSettings jsonSerializerSettings = default)
         {
             var container = new Mock<BlobContainerClient>();
+            var jsonSerializer = jsonSerializerSettings != null ? JsonSerializer.Create(jsonSerializerSettings) : null;
 
             container.Setup(e => e.GetBlobClient(It.IsAny<string>()))
                 .Returns(_client.Object);
             container.Setup(e => e.CreateIfNotExistsAsync(It.IsAny<PublicAccessType>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<BlobContainerEncryptionScopeOptions>(), It.IsAny<CancellationToken>()));
 
-            _storage = new BlobsStorage(container.Object);
+            _storage = new BlobsStorage(container.Object, jsonSerializer);
         }
 
         private class StoreItem : IStoreItem
         {
+            public int Id { get; set; } = 0;
+
+            public string Topic { get; set; } = "car";
+
             public string ETag { get; set; }
         }
     }

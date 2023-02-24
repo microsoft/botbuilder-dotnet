@@ -257,20 +257,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             _mockAccount = new Mock<CloudStorageAccount>(new StorageCredentials("accountName", "S2V5VmFsdWU=", "key"), false);
 
-            var jsonSerializer = new JsonSerializer
-            {
-                TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-                MaxDepth = null,
-                SerializationBinder = new AllowedTypesSerializationBinder(
-                    new List<Type>
-                    {
-                        typeof(IStoreItem),
-                        typeof(Dictionary<string, object>),
-                        typeof(Activity)
-                    }),
-            };
-
-            _blobStorage = new AzureBlobStorage(_mockAccount.Object, ContainerName, _mockBlobClient.Object, jsonSerializer);
+            _blobStorage = new AzureBlobStorage(_mockAccount.Object, ContainerName, _mockBlobClient.Object);
         }
         
         private class StoreItem : IStoreItem
