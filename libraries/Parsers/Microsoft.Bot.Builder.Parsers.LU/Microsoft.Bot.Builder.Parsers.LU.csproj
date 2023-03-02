@@ -16,7 +16,7 @@
   <PropertyGroup>
     <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
     <!-- CS3021: Type or member does not need a CLSCompliant attribute because the assembly does not have a CLSCompliant attribute. Should ignore due to autogen code -->
-    <NoWarn>$(NoWarn);CS3021</NoWarn>
+    <NoWarn>$(NoWarn);CS3021;CA1507</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
