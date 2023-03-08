@@ -111,15 +111,15 @@ If your template needs specific entity values to be passed for resolution/ expan
 
 ## Generated folder
 
-If you changed the g4 file, please follow the instruction [here](https://github.com/antlr/antlr4/tree/master/runtime/CSharp#step-4-generate-the-c-code) to generate the new Lexer and Parser file.
+If you changed the g4 file, please follow the instruction [here](https://github.com/antlr/antlr4/tree/master/runtime/CSharp/src#step-4-generate-the-c-code) to generate the new Lexer and Parser file.
 The specific command is: 
 ```
- java -jar antlr4-4.8.jar -Dlanguage=CSharp LGFileLexer.g4
- java -jar antlr4-4.8.jar -Dlanguage=CSharp LGFileParser.g4 -visitor
- java -jar antlr4-4.8.jar -Dlanguage=CSharp LGTemplateLexer.g4
- java -jar antlr4-4.8.jar -Dlanguage=CSharp LGTemplateParser.g4 -visitor
+ java -jar antlr-4.11.1.jar  -o Generated -Dlanguage=CSharp LGFileLexer.g4
+ java -jar antlr-4.11.1.jar  -o Generated -Dlanguage=CSharp LGFileParser.g4 -visitor
+ java -jar antlr-4.11.1.jar  -o Generated -Dlanguage=CSharp LGTemplateLexer.g4
+ java -jar antlr-4.11.1.jar  -o Generated -Dlanguage=CSharp LGTemplateParser.g4 -visitor
 ```
-`antlr4-4.8.jar` presents the path of antlr jar.
+`antlr-4.11.1.jar` presents the path of antlr jar.
 `xx.g4` presents the path of corresponding g4 file.
 
 By the way, You will need to have a modern version of Java (>= JRE 1.6) to use it.
