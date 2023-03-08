@@ -30,12 +30,6 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
     /// </remarks>
     public class BlobsStorage : IStorage
     {
-        private static readonly AllowedTypesSerializationBinder _allowedTypesBinder = new AllowedTypesSerializationBinder(
-            new List<Type>
-            {
-                typeof(Dictionary<string, object>)
-            });
-
         // If a JsonSerializer is not provided during construction, this will be the default JsonSerializer.
         private readonly JsonSerializer _jsonSerializer;
         private readonly BlobContainerClient _containerClient;
@@ -86,8 +80,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                 {
-                                                    TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-                                                    SerializationBinder = _allowedTypesBinder,
+                                                    TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
                                                     MaxDepth = null,
                                                 });
 
@@ -113,8 +106,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-                SerializationBinder = _allowedTypesBinder,
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
                 MaxDepth = null,
             });
 
@@ -231,7 +223,11 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     var json = JToken.FromObject(newValue, _jsonSerializer);
                     if (json.Type == JTokenType.Object || json.Type == JTokenType.Array)
                     {
-                        (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
+                        if (_jsonSerializer.SerializationBinder is AllowedTypesSerializationBinder allowedTypesBinder)
+                        {
+                            allowedTypesBinder.Verify();
+                        }
+
                         await json.WriteToAsync(jsonWriter).ConfigureAwait(false);
                     }
                     else
@@ -277,7 +273,10 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)) { MaxDepth = null })
                         {
                             var obj = _jsonSerializer.Deserialize(jsonReader);
-                            (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
+                            if (_jsonSerializer.SerializationBinder is AllowedTypesSerializationBinder allowedTypesBinder)
+                            {
+                                allowedTypesBinder.Verify();
+                            }
 
                             if (obj is IStoreItem storeItem)
                             {

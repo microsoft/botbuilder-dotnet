@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -15,10 +14,6 @@ namespace Microsoft.Bot.Builder
     /// An implementation of the <see cref="DefaultSerializationBinder"/>,
     /// capable of allowing only desired <see cref="Type"/>s to be serialized and deserialized.
     /// </summary>
-    /// <remarks>
-    /// Internally loads types dynamically, allowing all the exported types from BotBuilder and 
-    /// the project who is using it to be taken into account in the verification process.
-    /// </remarks>
     public class AllowedTypesSerializationBinder : DefaultSerializationBinder
     {
         /// <summary>
@@ -27,7 +22,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="allowedTypes">A list of types to allow when the binder assign them upon deserialization.</param>
         public AllowedTypesSerializationBinder(IList<Type> allowedTypes = default)
         {
-            AllowedTypes = LoadTypes(allowedTypes);
+            AllowedTypes = allowedTypes ?? new List<Type>();
         }
 
         /// <summary>
@@ -60,7 +55,7 @@ namespace Microsoft.Bot.Builder
             assemblyName = null;
             typeName = serializedType?.AssemblyQualifiedName;
 
-            if (serializedType == null || AllowedTypes.Count == 0)
+            if (serializedType == null)
             {
                 return;
             }
@@ -162,6 +157,14 @@ namespace Microsoft.Bot.Builder
                     return true;
                 }
             }
+            
+            // Return when the Type is represented as a generic, e.g.: List<T>.
+            var arguments = serializedType.GetGenericArguments();
+            var argumentsFound = AllowedTypes.FirstOrDefault(t => arguments.Any(IsTypeEqualTo(t)));
+            if (argumentsFound != null)
+            {
+                return true;
+            }
 
             // Return when the Type has Interfaces.
             var interfaces = serializedType.GetInterfaces();
@@ -183,7 +186,7 @@ namespace Microsoft.Bot.Builder
 
             if (!AllowedTypes.Any(IsTypeEqualTo(type)))
             {
-                AllowedTypes.Insert(0, type);
+                AllowedTypes.Add(type);
             }
         }
 
@@ -199,49 +202,8 @@ namespace Microsoft.Bot.Builder
 
             if (!DeniedTypes.Any(IsTypeEqualTo(type)))
             {
-                DeniedTypes.Insert(0, type);
+                DeniedTypes.Add(type);
             }
-        }
-
-        private List<Type> LoadTypes(IList<Type> allowedTypes)
-        {
-            var types = new List<Type>();
-            var externalAssembly = Assembly.GetEntryAssembly();
-            var internalAssembly = Assembly.GetExecutingAssembly();
-            var internalNestedTypes = GetDeepReferencedTypes(internalAssembly);
-
-            if (allowedTypes?.Count > 0)
-            {
-                types.AddRange(allowedTypes);
-            }
-
-            types.AddRange(externalAssembly.ExportedTypes);
-            types.AddRange(internalAssembly.ExportedTypes);
-            types.AddRange(internalNestedTypes);
-
-            return types.Distinct().ToList();
-        }
-
-        private List<Type> GetDeepReferencedTypes(Assembly parent)
-        {
-            var result = new List<Type>();
-            var parentAttr = parent.GetCustomAttribute(typeof(AssemblyProductAttribute)) as AssemblyProductAttribute;
-            var children = parent.GetReferencedAssemblies();
-            foreach (var childName in children)
-            {
-                var child = Assembly.Load(childName);
-                var childAttr = child?.GetCustomAttribute(typeof(AssemblyProductAttribute)) as AssemblyProductAttribute;
-                if (childAttr == null || parentAttr.Product != childAttr.Product)
-                {
-                    continue;
-                }
-
-                var types = GetDeepReferencedTypes(child);
-                result.AddRange(types);
-                result.AddRange(child.ExportedTypes);
-            }
-
-            return result;
         }
     }
 }

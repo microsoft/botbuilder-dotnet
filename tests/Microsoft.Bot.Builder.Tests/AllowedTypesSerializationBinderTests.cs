@@ -15,15 +15,15 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Empty AllowedTypes.
             Assert.NotNull(new AllowedTypesSerializationBinder().AllowedTypes);
-            Assert.NotEmpty(new AllowedTypesSerializationBinder().AllowedTypes);
+            Assert.Empty(new AllowedTypesSerializationBinder().AllowedTypes);
 
             // Null AllowedTypes.
             Assert.NotNull(new AllowedTypesSerializationBinder(null).AllowedTypes);
-            Assert.NotEmpty(new AllowedTypesSerializationBinder(null).AllowedTypes);
+            Assert.Empty(new AllowedTypesSerializationBinder(null).AllowedTypes);
 
             // With AllowedTypes.
             Assert.NotNull(new AllowedTypesSerializationBinder(new List<Type> { typeof(ExampleType) }).AllowedTypes);
-            Assert.NotEmpty(new AllowedTypesSerializationBinder(new List<Type> { typeof(ExampleType) }).AllowedTypes);
+            Assert.Single(new AllowedTypesSerializationBinder(new List<Type> { typeof(ExampleType) }).AllowedTypes);
         }
 
         [Fact]
@@ -60,19 +60,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        public void BindToNameWithImplicitAllowedType()
-        {
-            // Should dynamically load BotBuilder's Activity type.
-            var expectedType = typeof(Activity);
-            var binder = new AllowedTypesSerializationBinder();
-            binder.BindToName(expectedType, out var assemblyName, out var typeName);
-
-            Assert.Null(assemblyName);
-            Assert.Equal(expectedType.AssemblyQualifiedName, typeName);
-            binder.Verify();
-        }
-
-        [Fact]
         public void BindToNameWithNestedType()
         {
             var expectedType = typeof(ExampleType);
@@ -104,18 +91,6 @@ namespace Microsoft.Bot.Builder.Tests
             var resultType = binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName);
 
             Assert.Equal(expectedType, resultType);
-        }
-
-        [Fact]
-        public void BindToTypeWithImplicitAllowedType()
-        {
-            // Should dynamically load BotBuilder's Activity type.
-            var expectedType = typeof(Activity);
-            var binder = new AllowedTypesSerializationBinder();
-            var resultType = binder.BindToType(expectedType.Assembly.GetName().Name, expectedType.FullName);
-
-            Assert.Equal(expectedType, resultType);
-            binder.Verify();
         }
 
         [Fact]

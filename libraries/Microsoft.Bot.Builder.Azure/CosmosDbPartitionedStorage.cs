@@ -24,12 +24,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.Objects, // lgtm [cs/unsafe-type-name-handling]
-            SerializationBinder = new AllowedTypesSerializationBinder(
-                new List<Type>
-                {
-                    typeof(Dictionary<string, object>)
-                }),
+            TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
             MaxDepth = null
         });
 
@@ -171,7 +166,10 @@ namespace Microsoft.Bot.Builder.Azure
 
                     var documentStoreItem = readItemResponse.Resource;
                     var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
-                    (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
+                    if (_jsonSerializer.SerializationBinder is AllowedTypesSerializationBinder allowedTypesBinder)
+                    {
+                        allowedTypesBinder.Verify();
+                    }
 
                     if (item is IStoreItem storeItem)
                     {
@@ -227,7 +225,10 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
-                (_jsonSerializer.SerializationBinder as AllowedTypesSerializationBinder)?.Verify();
+                if (_jsonSerializer.SerializationBinder is AllowedTypesSerializationBinder allowedTypesBinder)
+                {
+                    allowedTypesBinder.Verify();
+                }
 
                 // Remove etag from JSON object that was copied from IStoreItem.
                 // The ETag information is updated as an _etag attribute in the document metadata.
