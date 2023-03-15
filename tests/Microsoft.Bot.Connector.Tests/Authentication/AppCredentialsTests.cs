@@ -65,6 +65,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 Request = request;
             }
 
+            [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
             protected override Lazy<AdalAuthenticator> BuildAuthenticator()
             {
                 return new Mock<Lazy<AdalAuthenticator>>().Object;

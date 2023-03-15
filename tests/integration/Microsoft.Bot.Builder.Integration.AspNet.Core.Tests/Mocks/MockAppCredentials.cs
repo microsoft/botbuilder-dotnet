@@ -14,7 +14,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Mocks
             : base(channelAuthTenant, customHttpClient, logger)
         {
         }
-
+        
+        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             return new Lazy<AdalAuthenticator>();
