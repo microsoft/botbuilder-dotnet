@@ -657,8 +657,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 dialogOptions.QnAMakerOptions.QnAId = 0;
             }
 
-
-
             // Resetting context;
             dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
 
