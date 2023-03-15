@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
+        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             throw new NotImplementedException();

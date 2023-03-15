@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} must not be set for MSI in configuration.");
                     }
 
-                    _inner = new ManagedIdentityServiceClientCredentialsFactory(appId, new JwtTokenProviderFactory(), httpClient, logger);
+                    _inner = new ManagedIdentityServiceClientCredentialsFactory(appId, httpClient, logger);
                     break;
 
                 case MicrosoftAppType.SingleTenant:

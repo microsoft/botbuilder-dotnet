@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
 using Microsoft.Azure.Services.AppAuthentication;
 
@@ -9,6 +10,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// A factory that can create OAuth token providers for generating JWT auth tokens.
     /// </summary>
+    [Obsolete("This class is deprecated.", false)]
     public interface IJwtTokenProviderFactory
     {
         /// <summary>

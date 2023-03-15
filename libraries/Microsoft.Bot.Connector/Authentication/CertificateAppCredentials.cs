@@ -15,7 +15,8 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class CertificateAppCredentials : AppCredentials
     {
-        private readonly ClientAssertionCertificate clientCertificate;
+        private readonly ClientAssertionCertificate adalClientCertificate;
+        private readonly X509Certificate2 clientCertificate;
         private readonly bool sendX5c;
 
         /// <summary>
@@ -35,9 +36,9 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(options), "AppId is required.");
             }
 
-            this.sendX5c = options.SendX5c;
-            this.clientCertificate = new ClientAssertionCertificate(options.AppId, options.ClientCertificate);
-            MicrosoftAppId = this.clientCertificate.ClientId;
+            sendX5c = options.SendX5c;
+            clientCertificate = options.ClientCertificate;
+            MicrosoftAppId = options.AppId;
         }
 
         /// <summary>
@@ -76,8 +77,8 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             this.sendX5c = sendX5c;
-            this.clientCertificate = new ClientAssertionCertificate(appId, clientCertificate);
-            MicrosoftAppId = this.clientCertificate.ClientId;
+            this.clientCertificate = clientCertificate;
+            MicrosoftAppId = appId;
         }
 
         /// <summary>
@@ -103,26 +104,64 @@ namespace Microsoft.Bot.Connector.Authentication
         public CertificateAppCredentials(ClientAssertionCertificate clientCertificate, bool sendX5c, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
             : base(channelAuthTenant, customHttpClient, logger)
         {
+            if (clientCertificate == null)
+            {
+                throw new ArgumentNullException(nameof(clientCertificate));
+            }
+
             this.sendX5c = sendX5c;
-            this.clientCertificate = clientCertificate ?? throw new ArgumentNullException(nameof(clientCertificate));
+            this.clientCertificate = clientCertificate.Certificate;
             MicrosoftAppId = clientCertificate.ClientId;
+            adalClientCertificate = clientCertificate;
         }
 
         /// <summary>
         /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
         /// </summary>
         /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
+        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             return new Lazy<AdalAuthenticator>(
                 () =>
                 new AdalAuthenticator(
-                    this.clientCertificate,
-                    this.sendX5c,
+                    adalClientCertificate,
+                    sendX5c,
                     new OAuthConfiguration() { Authority = OAuthEndpoint, ValidateAuthority = ValidateAuthority, Scope = OAuthScope },
-                    this.CustomHttpClient,
-                    this.Logger),
+                    CustomHttpClient,
+                    Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        /// <inheritdoc/>
+        protected override Lazy<IAuthenticator> BuildIAuthenticator()
+        {
+            return new Lazy<IAuthenticator>(
+                () =>
+                {
+                    var clientApplication = CreateClientApplication(clientCertificate, MicrosoftAppId, CustomHttpClient);
+                    return new MsalAppCredentials(
+                        clientApplication,
+                        MicrosoftAppId,
+                        OAuthEndpoint,
+                        OAuthScope,
+                        ValidateAuthority,
+                        Logger);
+                },
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        private Identity.Client.IConfidentialClientApplication CreateClientApplication(X509Certificate2 clientCertificate, string appId, HttpClient customHttpClient = null)
+        {
+            var clientBuilder = Identity.Client.ConfidentialClientApplicationBuilder.Create(appId)
+               .WithCertificate(clientCertificate);
+
+            if (customHttpClient != null)
+            {
+                clientBuilder.WithHttpClientFactory(new ConstantHttpClientFactory(customHttpClient));
+            }
+
+            return clientBuilder.Build();
         }
     }
 }

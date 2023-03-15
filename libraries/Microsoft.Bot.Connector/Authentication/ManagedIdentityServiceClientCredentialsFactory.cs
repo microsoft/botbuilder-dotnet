@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Connector.Authentication
     public class ManagedIdentityServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly string _appId;
-        private readonly IJwtTokenProviderFactory _tokenProviderFactory;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
@@ -27,7 +26,19 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
         /// <param name="httpClient">A custom httpClient to use.</param>
         /// <param name="logger">A logger instance to use.</param>
+        [Obsolete("This method is deprecated, the IJwtTokenProviderFactory argument is now redundant. Use the overload without this argument.", false)]
         public ManagedIdentityServiceClientCredentialsFactory(string appId, IJwtTokenProviderFactory tokenProviderFactory, HttpClient httpClient = null, ILogger logger = null)
+            : this(appId, httpClient, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManagedIdentityServiceClientCredentialsFactory"/> class.
+        /// </summary>
+        /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
+        /// <param name="httpClient">A custom httpClient to use.</param>
+        /// <param name="logger">A logger instance to use.</param>
+        public ManagedIdentityServiceClientCredentialsFactory(string appId, HttpClient httpClient = null, ILogger logger = null)
         {
             if (string.IsNullOrWhiteSpace(appId))
             {
@@ -35,7 +46,6 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             _appId = appId;
-            _tokenProviderFactory = tokenProviderFactory ?? throw new ArgumentNullException(nameof(tokenProviderFactory));
             _httpClient = httpClient;
             _logger = logger;
         }
@@ -63,7 +73,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return Task.FromResult<ServiceClientCredentials>(
-                new ManagedIdentityAppCredentials(_appId, audience, _tokenProviderFactory, _httpClient, _logger));
+                new ManagedIdentityAppCredentials(_appId, audience, _httpClient, _logger));
         }
     }
 }

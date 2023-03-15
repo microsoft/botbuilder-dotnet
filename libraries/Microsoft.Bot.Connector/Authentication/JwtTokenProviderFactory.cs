@@ -8,6 +8,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <inheritdoc />
+    [Obsolete("This class is deprecated.", false)]
     public class JwtTokenProviderFactory : IJwtTokenProviderFactory
     {
         /// <inheritdoc />

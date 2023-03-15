@@ -2,17 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -87,7 +80,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         /// <param name="oAuthScope">The scope for the token.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger,  string oAuthScope)
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope)
             : this(appId, password, null, customHttpClient, logger, oAuthScope)
         {
         }
@@ -145,6 +138,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
         /// </summary>
         /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
+        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             return new Lazy<AdalAuthenticator>(
@@ -155,6 +149,37 @@ namespace Microsoft.Bot.Connector.Authentication
                     this.CustomHttpClient,
                     this.Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        /// <inheritdoc/>
+        protected override Lazy<IAuthenticator> BuildIAuthenticator()
+        {
+            return new Lazy<IAuthenticator>(
+                () =>
+                {
+                    var clientApplication = CreateClientApplication(MicrosoftAppId, MicrosoftAppPassword, CustomHttpClient);
+                    return new MsalAppCredentials(
+                        clientApplication,
+                        MicrosoftAppId,
+                        OAuthEndpoint,
+                        OAuthScope,
+                        ValidateAuthority,
+                        Logger);
+                },
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        private Identity.Client.IConfidentialClientApplication CreateClientApplication(string appId, string password, HttpClient customHttpClient = null)
+        {
+            var clientBuilder = Identity.Client.ConfidentialClientApplicationBuilder.Create(appId)
+               .WithClientSecret(password);
+
+            if (customHttpClient != null)
+            {
+                clientBuilder.WithHttpClientFactory(new ConstantHttpClientFactory(customHttpClient));
+            }
+
+            return clientBuilder.Build();
         }
     }
 }
