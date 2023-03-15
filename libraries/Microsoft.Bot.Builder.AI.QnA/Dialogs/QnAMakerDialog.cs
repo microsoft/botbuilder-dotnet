@@ -650,12 +650,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             if (qnaIdFromContext != null)
             {
-                dialogOptions.QnAMakerOptions.QnAId = (int)(long)qnaIdFromContext;
+                dialogOptions.QnAMakerOptions.QnAId = long.TryParse(qnaIdFromContext.ToString(), out long qnaId) ? (int)qnaId : 0;
             }
             else
             {
                 dialogOptions.QnAMakerOptions.QnAId = 0;
             }
+
+
 
             // Resetting context;
             dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
