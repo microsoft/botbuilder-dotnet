@@ -131,7 +131,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     // First check whether the prompt was sent to the user with numbers - if it was we should recognize numbers
                     var defaults = DefaultChoiceOptions[culture];
-                    var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? defaults.Item3;
+                    var opts = await GetChoiceOptionsAsync(dc, defaults).ConfigureAwait(false);
+                    var choiceOptions = opts ?? defaults.Item3;
 
                     // This logic reflects the fact that IncludeNumbers is nullable and True is the default set in Inline style
                     if (!choiceOptions.IncludeNumbers.HasValue || choiceOptions.IncludeNumbers.Value)
