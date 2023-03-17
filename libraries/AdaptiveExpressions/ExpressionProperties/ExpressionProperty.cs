@@ -120,9 +120,17 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="data">data to use for expression binding.</param>
         /// <returns>Value or default(T) if not found.</returns>
+        /// <remarks>An error will be thrown if data is an invalid expression.</remarks>
         public virtual T GetValue(object data)
         {
-            return this.TryGetValue(data).Value;
+            var (value, error) = TryGetValue(data);
+
+            if (error != null)
+            {
+                throw new ArgumentException(error);
+            }
+
+            return value;
         }
 
         /// <summary>
