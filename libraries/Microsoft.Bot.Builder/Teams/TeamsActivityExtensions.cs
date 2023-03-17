@@ -88,5 +88,16 @@ namespace Microsoft.Bot.Builder.Teams
         {
             activity.TeamsNotifyUser(false);
         }
+
+        /// <summary>
+        /// Gets the OnBehalfOf object from the current activity.
+        /// </summary>
+        /// <param name="activity">The current activity.</param>
+        /// <returns>The current activity's OnBehalfOf data, or empty string.</returns>
+        public static OnBehalfOf TeamsGetTeamOnBehalfOf(this IActivity activity)
+        {
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+            return channelData?.OnBehalfOf;
+        }
     }
 }

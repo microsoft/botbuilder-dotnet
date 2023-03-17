@@ -92,6 +92,13 @@ namespace Microsoft.Bot.Schema.Teams
         public TeamsChannelDataSettings Settings { get; set; }
 
         /// <summary>
+        /// Gets or sets information about the delegation of meetings.
+        /// </summary>
+        /// <value>The information about the attribution for notifications.</value>
+        [JsonProperty(PropertyName = "onBehalfOf")]
+        public OnBehalfOf OnBehalfOf { get; set; }
+
+        /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="TeamsChannelData"/> type but that
         /// might appear in the REST JSON object.
         /// </summary>
