@@ -271,11 +271,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="choices">The choices to append.</param>
         /// <param name="style">Indicates how the choices should be presented to the user.</param>
         /// <param name="options">The formatting options to use when presenting the choices.</param>
+        /// <param name="conversationType">The type of the conversation.</param>
+        /// <param name="toList">The list of recipients.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the updated activity.</remarks>
-        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default)
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, string conversationType = default, IList<string> toList = default, CancellationToken cancellationToken = default)
         {
             // Get base prompt text (if any)
             var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
@@ -306,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
 
                 default:
-                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options);
+                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options, conversationType, toList);
                     break;
             }
 

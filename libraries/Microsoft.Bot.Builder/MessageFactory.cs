@@ -84,6 +84,7 @@ namespace Microsoft.Bot.Builder
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
         /// Default is "acceptingInput".</param>
+        /// <param name="toList">Optional, the list of recipients.</param>
         /// <returns>A message activity containing the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="actions"/> is <c>null</c>.</exception>
@@ -92,8 +93,8 @@ namespace Microsoft.Bot.Builder
         /// <see cref="CardAction.Title"/> and sets the <see cref="CardAction.Type"/> to
         /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
         /// </remarks>
-        /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
+        /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string, IList{string})"/>
+        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null, IList<string> toList = default)
         {
             actions = actions ?? throw new ArgumentNullException(nameof(actions));
 
@@ -110,7 +111,7 @@ namespace Microsoft.Bot.Builder
                 cardActions.Add(ca);
             }
 
-            return SuggestedActions(cardActions, text, ssml, inputHint);
+            return SuggestedActions(cardActions, text, ssml, inputHint, toList);
         }
 
         /// <summary>
@@ -141,18 +142,18 @@ namespace Microsoft.Bot.Builder
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
         /// Default is "acceptingInput".</param>
+        /// <param name="toList">Optional, the list of recipients.</param>
         /// <returns>A message activity that contains the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="cardActions"/> is <c>null</c>.</exception>
-        /// <seealso cref="SuggestedActions(IEnumerable{string}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
+        public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null, IList<string> toList = default)
         {
             cardActions = cardActions ?? throw new ArgumentNullException(nameof(cardActions));
 
             var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
+            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList(), To = toList };
 
             return ma;
         }

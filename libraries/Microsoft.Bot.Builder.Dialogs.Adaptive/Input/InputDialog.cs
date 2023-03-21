@@ -376,9 +376,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="choices">choices to present.</param>
         /// <param name="style">listType.</param>
         /// <param name="options">options to control the choice rendering.</param>
+        /// <param name="conversationType">the type of the conversation.</param>
+        /// <param name="toList">the list of recipients.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>bound activity ready to send to the user.</returns>
-        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, string conversationType = default, IList<string> toList = default, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get base prompt text (if any)
             var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
@@ -409,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     break;
 
                 default:
-                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options);
+                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options, conversationType, toList);
                     break;
             }
 

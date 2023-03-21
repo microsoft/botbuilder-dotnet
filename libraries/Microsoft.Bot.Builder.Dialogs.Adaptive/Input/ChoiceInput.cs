@@ -230,8 +230,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var opts = await GetChoiceOptionsAsync(dc, locale).ConfigureAwait(false);
             var choiceOptions = opts ?? DefaultChoiceOptions[locale];
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
+            var conversationType = dc.Context.Activity.Conversation?.ConversationType;
+            var recipient = dc.Context.Activity.From?.Id;
+            var toList = string.IsNullOrEmpty(recipient) ? null : new List<string>() { recipient };
 
-            return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions);
+            return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions, conversationType, toList);
         }
 
         private async Task<ChoiceSet> GetChoiceSetAsync(DialogContext dc)
