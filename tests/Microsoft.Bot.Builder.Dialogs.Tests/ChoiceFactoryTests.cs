@@ -123,9 +123,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
-        public void ShouldChooseCorrectStylesForTeams()
+        public void ShouldChooseCorrectStylesForTeamsPersonalChat()
         {
-            var activity = ChoiceFactory.ForChannel(Channels.Msteams, colorChoices, "select from:");
+            var recipientsList = new List<string>() { "UserId" };
+            var activity = ChoiceFactory.ForChannel(Channels.Msteams, colorChoices, "select from:", conversationType: "personal", toList: recipientsList);
+
+            Assert.Equal("select from:", activity.Text);
+            Assert.NotNull(activity.SuggestedActions);
+            Assert.Equal(3, activity.SuggestedActions.Actions.Count);
+            Assert.Equal(ActionTypes.ImBack, activity.SuggestedActions.Actions[0].Type);
+            Assert.Equal("red", activity.SuggestedActions.Actions[0].Value);
+            Assert.Equal("red", activity.SuggestedActions.Actions[0].Title);
+            Assert.Equal(ActionTypes.ImBack, activity.SuggestedActions.Actions[1].Type);
+            Assert.Equal("green", activity.SuggestedActions.Actions[1].Value);
+            Assert.Equal("green", activity.SuggestedActions.Actions[1].Title);
+            Assert.Equal(ActionTypes.ImBack, activity.SuggestedActions.Actions[2].Type);
+            Assert.Equal("blue", activity.SuggestedActions.Actions[2].Value);
+            Assert.Equal("blue", activity.SuggestedActions.Actions[2].Title);
+            Assert.Equal("UserId", activity.SuggestedActions.To[0]);
+        }
+
+        [Fact]
+        public void ShouldChooseCorrectStylesForTeamsGroupChat()
+        {
+            var activity = ChoiceFactory.ForChannel(Channels.Msteams, colorChoices, "select from:", conversationType: "groupChat");
 
             Assert.NotNull(activity.Attachments);
 

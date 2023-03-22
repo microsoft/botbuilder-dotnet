@@ -76,6 +76,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public void ShouldReturnTrueForSupportsSuggestedActionsWithTeamsAndPersonalAnd3()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.Msteams, 3, "personal");
+            Assert.True(supports);
+        }
+
+        [Fact]
+        public void ShouldReturnFalseForSupportsSuggestedActionsWithTeamsAndPersonalAnd4()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.Msteams, 4, "personal");
+            Assert.False(supports);
+        }
+
+        [Fact]
+        public void ShouldReturnFalseForSupportsSuggestedActionsWithTeamsAndGroupChat()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.Msteams, 3, "groupChat");
+            Assert.False(supports);
+        }
+
+        [Fact]
         public void ShouldReturnTrueForSupportsCardActionsWithDirectLineSpeechAnd99()
         {
             var supports = Channel.SupportsCardActions(Channels.DirectlineSpeech, 99);
