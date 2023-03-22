@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -19,7 +21,17 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             var tenant = new TenantInfo("uniqueTenantId");
             var meeting = new TeamsMeetingInfo("BFSE Stand Up");
             var settings = new TeamsChannelDataSettings(channel);
-            var channelData = new TeamsChannelData(channel, eventType, team, notification, tenant)
+            var onBehalfOf = new List<OnBehalfOf>()
+            {
+                new () 
+                {
+                    DisplayName = "onBehalfOfTest",
+                    ItemId = new Random().Next(),
+                    MentionType = Guid.NewGuid().ToString(),
+                    Mri = Guid.NewGuid().ToString()
+                }
+            };
+            var channelData = new TeamsChannelData(channel, eventType, team, notification, tenant, onBehalfOf)
             {
                 Meeting = meeting,
                 Settings = settings
@@ -34,6 +46,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(tenant, channelData.Tenant);
             Assert.Equal(settings, channelData.Settings);
             Assert.Equal(channel, channelData.Settings.SelectedChannel);
+            Assert.Equal(onBehalfOf[0].DisplayName, channelData.OnBehalfOf[0].DisplayName);
         }
 
         [Fact]

@@ -28,13 +28,15 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="notification">Notification settings for the message.</param>
         /// <param name="tenant">Information about the tenant in which the
         /// message was sent.</param>
-        public TeamsChannelData(ChannelInfo channel = default, string eventType = default, TeamInfo team = default, NotificationInfo notification = default, TenantInfo tenant = default)
+        /// <param name="onBehalfOf">The OnBehalfOf information of the message.</param>
+        public TeamsChannelData(ChannelInfo channel = default, string eventType = default, TeamInfo team = default, NotificationInfo notification = default, TenantInfo tenant = default, IList<OnBehalfOf> onBehalfOf = default)
         {
             Channel = channel;
             EventType = eventType;
             Team = team;
             Notification = notification;
             Tenant = tenant;
+            OnBehalfOf = onBehalfOf ?? new List<OnBehalfOf>();
             CustomInit();
         }
 
@@ -92,11 +94,11 @@ namespace Microsoft.Bot.Schema.Teams
         public TeamsChannelDataSettings Settings { get; set; }
 
         /// <summary>
-        /// Gets or sets information about the delegation of meetings.
+        /// Gets the OnBehalfOf list for user attribution.
         /// </summary>
-        /// <value>The information about the attribution for notifications.</value>
+        /// <value>The Teams activity OnBehalfOf list.</value>
         [JsonProperty(PropertyName = "onBehalfOf")]
-        public OnBehalfOf OnBehalfOf { get; set; }
+        public IList<OnBehalfOf> OnBehalfOf { get; private set; }
 
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="TeamsChannelData"/> type but that

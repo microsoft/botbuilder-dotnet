@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Xunit;
@@ -21,7 +23,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.Equal("channel123", channelId);
         }
-        
+
         [Fact]
         public void TeamsGetSelectedChannelIdNullSettings()
         {
@@ -129,6 +131,28 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.Equal(true, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
             Assert.Equal("team123", ((TeamsChannelData)activity.ChannelData).Team.Id);
+        }
+
+        [Fact]
+        public void TeamsChannelDataExistingOnBehalfOf()
+        {
+            // Arrange
+            var onBehalfOf = new OnBehalfOf
+            {
+                DisplayName = "TestOnBehalfOf",
+                ItemId = new Random().Next(),
+                MentionType = Guid.NewGuid().ToString(),
+                Mri = Guid.NewGuid().ToString()
+            };
+
+            var activity = new Activity { ChannelData = new TeamsChannelData(onBehalfOf: new List<OnBehalfOf> { onBehalfOf }) };        
+
+            // Act
+            var onBehalfOfList = activity.TeamsGetTeamOnBehalfOf();
+
+            // Assert
+            Assert.Equal(1, onBehalfOfList.Count);
+            Assert.Equal("TestOnBehalfOf", onBehalfOfList[0].DisplayName);
         }
     }
 }
