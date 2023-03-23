@@ -140,8 +140,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var onBehalfOf = new OnBehalfOf
             {
                 DisplayName = "TestOnBehalfOf",
-                ItemId = new Random().Next(),
-                MentionType = Guid.NewGuid().ToString(),
+                ItemId = 0,
+                MentionType = "person",
                 Mri = Guid.NewGuid().ToString()
             };
 
