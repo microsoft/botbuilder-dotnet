@@ -23,11 +23,11 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             var settings = new TeamsChannelDataSettings(channel);
             var onBehalfOf = new List<OnBehalfOf>()
             {
-                new () 
+                new OnBehalfOf() 
                 {
                     DisplayName = "onBehalfOfTest",
-                    ItemId = new Random().Next(),
-                    MentionType = Guid.NewGuid().ToString(),
+                    ItemId = 0,
+                    MentionType = "person",
                     Mri = Guid.NewGuid().ToString()
                 }
             };
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(tenant, channelData.Tenant);
             Assert.Equal(settings, channelData.Settings);
             Assert.Equal(channel, channelData.Settings.SelectedChannel);
-            Assert.Equal(onBehalfOf[0].DisplayName, channelData.OnBehalfOf[0].DisplayName);
+            Assert.Equal(onBehalfOf, channelData.OnBehalfOf);
         }
 
         [Fact]
