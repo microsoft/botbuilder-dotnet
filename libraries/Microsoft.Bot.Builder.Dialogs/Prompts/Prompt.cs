@@ -271,6 +271,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="choices">The choices to append.</param>
         /// <param name="style">Indicates how the choices should be presented to the user.</param>
         /// <param name="options">The formatting options to use when presenting the choices.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the updated activity.</remarks>
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default)
+        {
+            return AppendChoices(prompt, channelId, choices, style, options, null, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// When overridden in a derived class, appends choices to the activity when the user is prompted for input.
+        /// </summary>
+        /// <param name="prompt">The activity to append the choices to.</param>
+        /// <param name="channelId">The ID of the user's channel.</param>
+        /// <param name="choices">The choices to append.</param>
+        /// <param name="style">Indicates how the choices should be presented to the user.</param>
+        /// <param name="options">The formatting options to use when presenting the choices.</param>
         /// <param name="conversationType">The type of the conversation.</param>
         /// <param name="toList">The list of recipients.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -295,7 +312,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
 
                 case ListStyle.SuggestedAction:
-                    msg = ChoiceFactory.SuggestedAction(choices, text);
+                    msg = ChoiceFactory.SuggestedAction(choices, text, null, toList);
                     break;
 
                 case ListStyle.HeroCard:

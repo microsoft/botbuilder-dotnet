@@ -223,13 +223,13 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public void SuggestedActionsCardActionCollectionNull()
         {
-            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<CardAction>)null));
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<CardAction>)null, null, null, null));
         }
 
         [Fact]
         public void SuggestedActionsStringCollectionNull()
         {
-            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<string>)null));
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<string>)null, null, null, null));
         }
 
         [Fact]
@@ -432,7 +432,9 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             new CardAction(type: "imBack", text: "red", title: "redTitle"),
                         },
-                        inputText);
+                        inputText,
+                        null,
+                        null);
 
                     await ctx.SendActivityAsync((Activity)activity);
                 }

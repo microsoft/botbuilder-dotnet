@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public void ShouldRenderChoicesAsSuggestedActions()
         {
-            var activity = ChoiceFactory.SuggestedAction(colorChoices, "select from:");
+            var activity = ChoiceFactory.SuggestedAction(colorChoices, "select from:", null, null);
             Assert.Equal("select from:", activity.Text);
             Assert.NotNull(activity.SuggestedActions);
             Assert.Equal(3, activity.SuggestedActions.Actions.Count);
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public void ShouldAutomaticallyChooseRenderStyleBasedOnChannelType()
         {
-            var activity = ChoiceFactory.ForChannel(Channels.Emulator, colorChoices, "select from:");
+            var activity = ChoiceFactory.ForChannel(Channels.Emulator, colorChoices, "select from:", null, null);
             Assert.Equal("select from:", activity.Text);
             Assert.NotNull(activity.SuggestedActions);
             Assert.Equal(3, activity.SuggestedActions.Actions.Count);
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public void ShouldChooseCorrectStylesForCortana()
         {
-            var activity = ChoiceFactory.ForChannel(Channels.Cortana, colorChoices, "select from:");
+            var activity = ChoiceFactory.ForChannel(Channels.Cortana, colorChoices, "select from:", null, null);
 
             Assert.NotNull(activity.Attachments);
 
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [Fact]
         public void ShouldIncludeChoiceActionsInSuggestedActions()
         {
-            var activity = ChoiceFactory.SuggestedAction(choicesWithActions, "select from:");
+            var activity = ChoiceFactory.SuggestedAction(choicesWithActions, "select from:", null, null);
             Assert.Equal("select from:", activity.Text);
             Assert.NotNull(activity.SuggestedActions);
             Assert.Equal(3, activity.SuggestedActions.Actions.Count);

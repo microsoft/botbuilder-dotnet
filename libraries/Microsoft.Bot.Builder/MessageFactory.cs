@@ -84,6 +84,44 @@ namespace Microsoft.Bot.Builder
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
         /// Default is "acceptingInput".</param>
+        /// <returns>A message activity containing the suggested actions.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="actions"/> is <c>null</c>.</exception>
+        /// <remarks>This method creates a suggested action for each string in <paramref name="actions"/>.
+        /// The created action uses the text for the <see cref="CardAction.Value"/> and
+        /// <see cref="CardAction.Title"/> and sets the <see cref="CardAction.Type"/> to
+        /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
+        /// </remarks>
+        /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string)"/>
+        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
+        {
+            return SuggestedActions(actions, text, ssml, inputHint, null);
+        }
+
+        /// <summary>
+        /// Returns a message that includes a set of suggested actions and optional text.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// // Create the activity and add suggested actions.
+        /// var activity = MessageFactory.SuggestedActions(
+        ///     new string[] { "red", "green", "blue" },
+        ///     text: "Choose a color");
+        ///
+        /// // Send the activity as a reply to the user.
+        /// await context.SendActivity(activity);
+        /// </code>
+        /// </example>
+        /// <param name="actions">
+        /// The text of the actions to create.
+        /// </param>
+        /// <param name="text">The text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is "acceptingInput".</param>
         /// <param name="toList">Optional, the list of recipients.</param>
         /// <returns>A message activity containing the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
@@ -112,6 +150,42 @@ namespace Microsoft.Bot.Builder
             }
 
             return SuggestedActions(cardActions, text, ssml, inputHint, toList);
+        }
+
+        /// <summary>
+        /// Returns a message that includes a set of suggested actions and optional text.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// // Create the activity and add suggested actions.
+        /// var activity = MessageFactory.SuggestedActions(
+        ///     new CardAction[]
+        ///     {
+        ///         new CardAction(title: "red", type: ActionTypes.ImBack, value: "red"),
+        ///         new CardAction( title: "green", type: ActionTypes.ImBack, value: "green"),
+        ///         new CardAction(title: "blue", type: ActionTypes.ImBack, value: "blue")
+        ///     }, text: "Choose a color");
+        ///
+        /// // Send the activity as a reply to the user.
+        /// await context.SendActivity(activity);
+        /// </code>
+        /// </example>
+        /// <param name="cardActions">
+        /// The card actions to include.
+        /// </param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is "acceptingInput".</param>
+        /// <returns>A message activity that contains the suggested actions.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="cardActions"/> is <c>null</c>.</exception>
+        public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
+        {
+            return SuggestedActions(cardActions, text, ssml, inputHint, null);
         }
 
         /// <summary>

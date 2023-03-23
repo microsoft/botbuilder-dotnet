@@ -17,6 +17,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// </summary>
         /// <param name="channelId">The Channel to check the if Suggested Actions are supported in.</param>
         /// <param name="buttonCnt">(Optional) The number of Suggested Actions to check for the Channel.</param>
+        /// <returns>True if the Channel supports the buttonCnt total Suggested Actions, False if the Channel does not support that number of Suggested Actions.</returns>
+        public static bool SupportsSuggestedActions(string channelId, int buttonCnt = 100)
+        {
+            return SupportsSuggestedActions(channelId, buttonCnt, null);
+        }
+
+        /// <summary>
+        /// Determine if a number of Suggested Actions are supported by a Channel.
+        /// </summary>
+        /// <param name="channelId">The Channel to check the if Suggested Actions are supported in.</param>
+        /// <param name="buttonCnt">(Optional) The number of Suggested Actions to check for the Channel.</param>
         /// <param name="conversationType">(Optional) The type of the conversation.</param>
         /// <returns>True if the Channel supports the buttonCnt total Suggested Actions, False if the Channel does not support that number of Suggested Actions.</returns>
         public static bool SupportsSuggestedActions(string channelId, int buttonCnt = 100, string conversationType = default)
