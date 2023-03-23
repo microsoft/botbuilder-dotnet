@@ -29,13 +29,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="tenant">Information about the tenant in which the
         /// message was sent.</param>
         public TeamsChannelData(ChannelInfo channel = default, string eventType = default, TeamInfo team = default, NotificationInfo notification = default, TenantInfo tenant = default)
+            : this(channel, eventType, team, notification, tenant, null)
         {
-            Channel = channel;
-            EventType = eventType;
-            Team = team;
-            Notification = notification;
-            Tenant = tenant;
-            CustomInit();
         }
 
         /// <summary>
