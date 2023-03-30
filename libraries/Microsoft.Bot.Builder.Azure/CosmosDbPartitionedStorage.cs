@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,9 +54,9 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException($"Service EndPoint for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
-            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey) && string.IsNullOrEmpty(cosmosDbStorageOptions.TokenCredential))
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions));
+                throw new ArgumentException("AuthKey or TokenCredential for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
@@ -117,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
-        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = default)
+        public CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = default)
             : this(cosmosDbStorageOptions)
         {
             _client = client;
