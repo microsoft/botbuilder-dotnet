@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException($"Service EndPoint for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
-            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey) && string.IsNullOrEmpty(cosmosDbStorageOptions.TokenCredential))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey) && cosmosDbStorageOptions.TokenCredential == null)
             {
                 throw new ArgumentException("AuthKey or TokenCredential for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
         /// </param>
-        public CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = default)
+        internal CosmosDbPartitionedStorage(CosmosClient client, CosmosDbPartitionedStorageOptions cosmosDbStorageOptions, JsonSerializer jsonSerializer = default)
             : this(cosmosDbStorageOptions)
         {
             _client = client;
@@ -389,10 +389,20 @@ namespace Microsoft.Bot.Builder.Azure
                     var assemblyName = this.GetType().Assembly.GetName();
                     cosmosClientOptions.ApplicationName = string.Concat(assemblyName.Name, " ", assemblyName.Version.ToString());
 
-                    _client = new CosmosClient(
+                    if (_cosmosDbStorageOptions.TokenCredential != null)
+                    {
+                        _client = new CosmosClient(
+                        _cosmosDbStorageOptions.CosmosDbEndpoint,
+                        _cosmosDbStorageOptions.TokenCredential,
+                        cosmosClientOptions);
+                    }
+                    else
+                    {
+                        _client = new CosmosClient(
                         _cosmosDbStorageOptions.CosmosDbEndpoint,
                         _cosmosDbStorageOptions.AuthKey,
                         cosmosClientOptions);
+                    }                  
                 }
 
                 if (_container == null)

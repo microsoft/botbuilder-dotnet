@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure.Core;
 using Microsoft.Azure.Cosmos;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -92,6 +93,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// <value>
         /// The token credential for Cosmos DB.
         /// </value>
-        public string TokenCredential { get; set; }
+        public TokenCredential TokenCredential { get; set; }
     }
 }
