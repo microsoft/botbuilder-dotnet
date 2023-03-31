@@ -44,11 +44,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDbEndpoint = null,
             }));
 
-            // No Auth Key. Should throw.
+            // No Auth Key or TokenCredential. Should throw.
             Assert.Throws<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
             {
                 CosmosDbEndpoint = "CosmosDbEndpoint",
                 AuthKey = null,
+                TokenCredential = null
             }));
 
             // No Database Id. Should throw.
