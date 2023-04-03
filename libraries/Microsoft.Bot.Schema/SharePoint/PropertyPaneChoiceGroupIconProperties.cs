@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the name of the icon to use from the Office Fabric icon set of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the office fabric icon font name of the choice group.</value>
         [JsonProperty(PropertyName = "officeFabricIconFontName")]
         public string OfficeFabricIconFontName { get; set; }
     }

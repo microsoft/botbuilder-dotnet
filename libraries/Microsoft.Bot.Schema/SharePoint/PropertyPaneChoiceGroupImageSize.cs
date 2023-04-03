@@ -27,12 +27,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the width of the image of type <see cref="int"/>.
         /// </summary>
+        /// <value>This value is the width of the choice group.</value>
         [JsonProperty(PropertyName = "width")]
         public int Width { get; set; }
 
         /// <summary>
         /// Gets or Sets the height of the image of type <see cref="int"/>.
         /// </summary>
+        /// <value>This value is the height of the choice group.</value>
         [JsonProperty(PropertyName = "height")]
         public int Height { get; set; }
     }

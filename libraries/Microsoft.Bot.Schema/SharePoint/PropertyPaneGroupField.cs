@@ -78,36 +78,35 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the type of field <see cref="FieldType"/> enum.
         /// </summary>
+        /// <value>This value is the type of the property pane field.</value>
         [JsonProperty(PropertyName = "type")]
         public FieldType Type { get; set; }
 
         /// <summary>
-        /// Gets or Sets the group fields of type <see cref="PropertyPaneGroupField"/>.
-        /// </summary>
-        [JsonProperty(PropertyName = "groupFields")]
-        public IEnumerable<PropertyPaneGroupField> GroupFields { get; set; }
-
-        /// <summary>
         /// Gets or Sets the properties property of type <see cref="IPropertyPaneFieldProperties"/>.
         /// </summary>
+        /// <value>This value is the properties of the property pane field.</value>
         [JsonProperty(PropertyName = "properties")]
         public IPropertyPaneFieldProperties Properties { get; set; }
 
         /// <summary>
         /// Gets or Sets a value indicating whether this control should be focused of type <see cref="bool"/>.
         /// </summary>
+        /// <value>This value indicates whether the property pane field should focus.</value>
         [JsonProperty(PropertyName = "shouldFocus")]
         public bool ShouldFocus { get; set; }
 
         /// <summary>
         /// Gets or Sets the target property of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the target property of the property pane field.</value>
         [JsonProperty(PropertyName = "targetProperty")]
         public string TargetProperty { get; set; }
 
         /// <summary>
         /// Gets or Sets a value indicating whether group name should be hidden of type <see cref="bool"/>.
         /// </summary>
+        /// <value>This value indicates whether the property pane field group name is hidden.</value>
         [JsonProperty(PropertyName = "isGroupNameHidden")]
         public bool IsGroupNameHidden { get; set; }
     }

@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the description of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the description of the property pane page header.</value>
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
     }

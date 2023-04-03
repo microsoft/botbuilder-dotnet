@@ -29,24 +29,28 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets data for the quick view of type <see cref="QuickViewData"/>.
         /// </summary>
+        /// <value>This value is the data of the quick view response.</value>
         [JsonProperty(PropertyName = "data")]
         public QuickViewData Data { get; set; }
 
         /// <summary>
-        /// Gets or Sets data for the quick view template of type <see cref="QuickViewTemplate"/>.
+        /// Gets or Sets data for the quick view template of type <see cref="AdaptiveCard"/>.
         /// </summary>
+        /// <value>This value is the template of the quick view response.</value>
         [JsonProperty(PropertyName = "template")]
         public AdaptiveCard Template { get; set; }
 
         /// <summary>
         /// Gets or Sets view Id of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the view Id of the quick view response.</value>
         [JsonProperty(PropertyName = "viewId")]
         public string ViewId { get; set; }
 
         /// <summary>
         /// Gets or Sets stackSize of type <see cref="int"/>.
         /// </summary>
+        /// <value>This value is the stack size of the quick view response.</value>
         [JsonProperty(PropertyName = "stackSize")]
         public int StackSize { get; set; }
     }

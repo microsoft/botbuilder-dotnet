@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the template type of the card view of type <see cref="CardViewTemplateType"/> enum.
         /// </summary>
+        /// <value>This value is the template type of the card view response.</value>
         [JsonProperty(PropertyName = "templateType")]
         [JsonConverter(typeof(StringEnumConverter))]
         public CardViewTemplateType TemplateType { get; set; }
@@ -52,12 +53,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets AceData for the card view of type <see cref="AceData"/>.
         /// </summary>
+        /// <value>This value is the ace data of the card view response.</value>
         [JsonProperty(PropertyName = "aceData")]
         public AceData AceData { get; set; }
 
         /// <summary>
         /// Gets or Sets CardViewData of type <see cref="CardViewData"/>.
         /// </summary>
+        /// <value>This value is the data of the card view response.</value>
         [JsonProperty(PropertyName = "data")]
         public CardViewData Data { get; set; }
     }

@@ -27,12 +27,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the title of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the title of the quick view data.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or Sets the description of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the description of the quick view data.</value>
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
     }

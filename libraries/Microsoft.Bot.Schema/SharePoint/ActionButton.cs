@@ -24,12 +24,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the title of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the title of the action button.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or Sets the action of type <see cref="Action"/>.
         /// </summary>
+        /// <value>This value is the action of the action button.</value>
         [JsonProperty(PropertyName = "action")]
         public Action Action { get; set; }
     }

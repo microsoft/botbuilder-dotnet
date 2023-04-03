@@ -27,12 +27,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the display text for the label of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the text of the property pane label.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or Sets a value indicating whether the associated form field is required or not. of type <see cref="bool"/>.
         /// </summary>
+        /// <value>This value indicates whether the property pane field is required.</value>
         [JsonProperty(PropertyName = "required")]
         public bool Required { get; set; }
     }

@@ -48,24 +48,28 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets index for this option of type <see cref="int"/>.
         /// </summary>
+        /// <value>This value is the index of the drop down.</value>
         [JsonProperty(PropertyName = "index")]
         public int Index { get; set; }
 
         /// <summary>
         /// Gets or Sets a key to uniquely identify this option of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the key of the drop down.</value>
         [JsonProperty(PropertyName = "key")]
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or Sets text to render for this option of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the text of the drop down.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or Sets the type of option. If omitted, the default is PropertyPaneDropdownMenuItemType.Normal of type <see cref="DropDownOptionType"/>.
         /// </summary>
+        /// <value>This value is the type of the drop down.</value>
         [JsonProperty(PropertyName = "type")]
         public DropDownOptionType Type { get; set; }
     }

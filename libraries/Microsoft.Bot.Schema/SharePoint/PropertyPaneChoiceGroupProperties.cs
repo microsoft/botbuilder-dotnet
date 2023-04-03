@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the collection of options for this choice group of type <see cref="PropertyPaneChoiceGroupOption"/>.
         /// </summary>
+        /// <value>This value is the icon properties of the choice group.</value>
         [JsonProperty(PropertyName = "options")]
         public IEnumerable<PropertyPaneChoiceGroupOption> Options { get; set; }
     }

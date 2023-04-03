@@ -27,18 +27,21 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the label to display next to the checkbox of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the text of the checkbox property.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or Sets a value indicating whether this control is enabled or not of type <see cref="bool"/>.
         /// </summary>
+        /// <value>This value indicates if the control is disabled.</value>
         [JsonProperty(PropertyName = "disabled")]
         public bool Disabled { get; set; }
 
         /// <summary>
         /// Gets or Sets a value indicating whether the property pane checkbox is checked or not of type <see cref="bool"/>.
         /// </summary>
+        /// <value>This value indicates if the control is checked.</value>
         [JsonProperty(PropertyName = "checked")]
         public bool Checked { get; set; }
     }

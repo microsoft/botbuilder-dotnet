@@ -59,24 +59,28 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the height of the pop up window of type <see cref="int"/>.
         /// </summary>
+        /// <value>This value is the height of the property pane popup.</value>
         [JsonProperty(PropertyName = "height")]
         public int Height { get; set; }
 
         /// <summary>
         /// Gets or Sets the position of pop up window <see cref="PopupWindowPosition"/> enum.
         /// </summary>
+        /// <value>This value is the window position of the property pane popup.</value>
         [JsonProperty(PropertyName = "positionWindowPosition")]
         public PopupWindowPosition PositionWindowPosition { get; set; }
 
         /// <summary>
         /// Gets or Sets the title of pop up window of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the title of the property pane popup.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or Sets the width of the pop up window of type <see cref="int"/>.
         /// </summary>
+        /// <value>This value is the width of the property pane popup.</value>
         [JsonProperty(PropertyName = "width")]
         public int Width { get; set; }
     }

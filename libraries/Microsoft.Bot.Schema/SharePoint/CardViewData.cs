@@ -25,12 +25,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the action buttons of type <see cref="ActionButton"/>.
         /// </summary>
+        /// <value>This value is the action buttons of the card view.</value>
         [JsonProperty(PropertyName = "actionButtons")]
         public IEnumerable<ActionButton> ActionButtons { get; set; }
 
         /// <summary>
         /// Gets or Sets the primary text of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the primary text of the card view.</value>
         [JsonProperty(PropertyName = "primaryText")]
         public string PrimaryText { get; set; }
     }
