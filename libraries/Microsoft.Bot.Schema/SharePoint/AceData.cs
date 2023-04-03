@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the card size of the adaptive card extension of type <see cref="AceCardSize"/> enum.
         /// </summary>
+        /// <value>This value is the size of the adaptive card extension.</value>
         [JsonProperty(PropertyName = "cardSize")]
         [JsonConverter(typeof(StringEnumConverter))]
         public AceCardSize CardSize { get; set; }
@@ -55,24 +56,28 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the version of the data of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the version of the adaptive card extension.</value>
         [JsonProperty(PropertyName = "dataVersion")]
         public string DataVersion { get; set; }
 
         /// <summary>
         /// Gets or Sets the id of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the ID of the adaptive card extension.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or Sets the title of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the title of the adaptive card extension.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or Sets the icon property of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the icon of the adaptive card extension.</value>
         [JsonProperty(PropertyName = "iconProperty")]
         public string IconProperty { get; set; }
     }
