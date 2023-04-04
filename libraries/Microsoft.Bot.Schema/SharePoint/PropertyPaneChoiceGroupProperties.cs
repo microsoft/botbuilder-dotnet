@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <summary>
         /// Gets or Sets the label of type <see cref="string"/>.
         /// </summary>
+        /// <value>This value is the label of the choice group.</value>
         [JsonProperty(PropertyName = "label")]
         public string Label { get; set; }
 
