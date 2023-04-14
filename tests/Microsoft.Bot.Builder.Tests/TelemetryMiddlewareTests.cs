@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(6, mockTelemetryClient.Invocations.Count);
             Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[0].Arguments[0]); // Check initial message
-            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count);
+            Assert.Equal(10, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("locale"));
@@ -74,28 +74,34 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["text"] == "foo");
 
             Assert.Equal("BotMessageSend", mockTelemetryClient.Invocations[1].Arguments[0]); // Check Typing message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count);
+            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("recipientName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
 
             Assert.Equal("BotMessageSend", mockTelemetryClient.Invocations[2].Arguments[0]); // Check message reply
-            Assert.Equal(7, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
+            Assert.Equal(9, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1])["text"] == "echo:foo");
 
             Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[3].Arguments[0]); // Check bar message
-            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
+            Assert.Equal(10, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("fromId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("locale"));
@@ -103,6 +109,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("recipientName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("fromName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["text"] == "bar");
         }
 
@@ -140,7 +148,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(6, mockTelemetryClient.Invocations.Count);
             Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[0].Arguments[0]); // Check initial message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count);
+            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("locale"));
@@ -148,26 +156,32 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
 
             Assert.Equal("BotMessageSend", mockTelemetryClient.Invocations[1].Arguments[0]); // Check Typing message
-            Assert.Equal(5, ((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count);
+            Assert.Equal(7, ((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("locale"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("recipientName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
 
             Assert.Equal("BotMessageSend", mockTelemetryClient.Invocations[2].Arguments[0]); // Check message reply
-            Assert.Equal(5, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
+            Assert.Equal(7, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("locale"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
 
             Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[3].Arguments[0]); // Check bar message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
+            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("fromId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("locale"));
@@ -175,6 +189,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("recipientName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("fromName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
         }
 
         [Fact]
@@ -215,12 +231,13 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(4, mockTelemetryClient.Invocations.Count);
             Assert.Equal("BotMessageUpdate", mockTelemetryClient.Invocations[3].Arguments[0]); // Check update message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
+            Assert.Equal(7, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["text"] == "new response");
         }
 
@@ -258,10 +275,11 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(4, mockTelemetryClient.Invocations.Count);
             Assert.Equal("BotMessageDelete", mockTelemetryClient.Invocations[3].Arguments[0]); // Check delete message
-            Assert.Equal(4, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
+            Assert.Equal(5, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("activityId"));
         }
 
         [Fact]
@@ -315,21 +333,25 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1])["text"] == "foo");
 
             Assert.Equal("BotMessageSend", mockTelemetryClient.Invocations[2].Arguments[0]); // Check Typing message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
+            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("activityId"));
 
             Assert.Equal("BotMessageSend", mockTelemetryClient.Invocations[3].Arguments[0]); // Check message reply
-            Assert.Equal(7, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
+            Assert.Equal(9, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("recipientName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["text"] == "echo:foo");
         }
 
@@ -366,7 +388,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.Equal(10, mockTelemetryClient.Invocations.Count);
             Assert.Equal(mockTelemetryClient.Invocations[0].Arguments[0], TelemetryLoggerConstants.BotMsgReceiveEvent); // Check initial message
-            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count);
+            Assert.Equal(10, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("locale"));
@@ -374,6 +396,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["text"] == "foo");
 
             Assert.Equal(mockTelemetryClient.Invocations[1].Arguments[0], TelemetryLoggerConstants.BotMsgSendEvent); // Check Typing message (1 of 2)
@@ -384,12 +408,14 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1])["ImportantProperty"] == "ImportantValue");
 
             Assert.Equal("MySend", mockTelemetryClient.Invocations[2].Arguments[0]); // Check custom message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
+            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("recipientName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).ContainsKey("activityId"));
         }
 
         [Fact]
@@ -486,7 +512,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["text"] == "foo");
 
             Assert.Equal(mockTelemetryClient.Invocations[1].Arguments[0], TelemetryLoggerConstants.BotMsgSendEvent); // Check Send message
-            Assert.Equal(9, ((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count);
+            Assert.Equal(11, ((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("replyActivityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("conversationName"));
@@ -494,26 +520,30 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("recipientName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("foo"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1])["text"] == "response");
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1])["foo"] == "bar");
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1])["ImportantProperty"] == "ImportantValue");
 
             Assert.Equal(mockTelemetryClient.Invocations[3].Arguments[0], TelemetryLoggerConstants.BotMsgUpdateEvent); // Check Update message
-            Assert.Equal(8, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
+            Assert.Equal(9, ((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("foo"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("text"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["text"] == "new response");
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["foo"] == "bar");
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1])["ImportantProperty"] == "ImportantValue");
 
             Assert.Equal(mockTelemetryClient.Invocations[4].Arguments[0], TelemetryLoggerConstants.BotMsgDeleteEvent); // Check Delete message
-            Assert.Equal(6, ((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).Count);
+            Assert.Equal(7, ((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).Count);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("conversationName"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).ContainsKey("activityId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1]).ContainsKey("foo"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["foo"] == "bar");
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[4].Arguments[1])["ImportantProperty"] == "ImportantValue");
@@ -524,24 +554,24 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
-            TestAdapter adapter = new TestAdapter(new ConversationReference() 
-            { 
+            TestAdapter adapter = new TestAdapter(new ConversationReference()
+            {
                 ChannelId = Channels.Test,
                 Bot = new ChannelAccount("bot", "Bot"),
                 Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") }
             })
                 .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: false));
-            
+
             // Act
             // Ensure LogPersonalInformation flag works
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 await adapter.CreateConversationAsync(
-                    context.Activity.ChannelId, 
+                    context.Activity.ChannelId,
                     async (context, cancellationToken) =>
                     {
                         await context.SendActivityAsync("proactive");
-                    }, 
+                    },
                     new CancellationToken());
             })
                 .Send("foo")
@@ -551,7 +581,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.Equal(1, mockTelemetryClient.Invocations.Count);
             Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[0].Arguments[0]); // Check initial message
-            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 6);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 8);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("type"));
             Assert.Equal(ActivityTypes.Message, ((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["type"]);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromId"));
@@ -560,6 +590,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("locale"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientId"));
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientName"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("conversationId"));
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("activityId"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
         }
@@ -597,7 +629,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Arrange
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
-            
+
             var middleware = new OverriddenOnTurnLogger(mockTelemetryClient.Object, true);
 
             await middleware.OnTurnAsync(null, null, CancellationToken.None);
