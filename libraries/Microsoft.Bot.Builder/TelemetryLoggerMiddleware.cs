@@ -207,7 +207,7 @@ namespace Microsoft.Bot.Builder
                 { TelemetryConstants.RecipientNameProperty, activity.Recipient?.Name },
                 { TelemetryConstants.ActivityTypeProperty, activity.Type },
                 { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
-                { TelemetryConstants.ActivityIdProperty, activity?.Id },
+                { TelemetryConstants.ActivityIdProperty, activity.Id },
             };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                     { TelemetryConstants.ActivityTypeProperty, activity.Type },
                     { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
-                    { TelemetryConstants.ActivityIdProperty, activity?.Id },
+                    { TelemetryConstants.ActivityIdProperty, activity.Id },
                 };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
@@ -324,8 +324,7 @@ namespace Microsoft.Bot.Builder
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                     { TelemetryConstants.ActivityTypeProperty, activity.Type },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
-                    { TelemetryConstants.ActivityIdProperty, activity?.Id },
+                    { TelemetryConstants.ActivityIdProperty, activity.Id },
                 };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text is a common example
@@ -366,8 +365,7 @@ namespace Microsoft.Bot.Builder
                     { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
                     { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.ActivityTypeProperty, activity.Type },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
-                    { TelemetryConstants.ActivityIdProperty, activity?.Id },
+                    { TelemetryConstants.ActivityIdProperty, activity.Id },
                 };
 
             // Additional Properties can override "stock" properties.
