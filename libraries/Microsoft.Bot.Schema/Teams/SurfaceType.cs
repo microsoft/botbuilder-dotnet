@@ -17,5 +17,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// TeamsSurfaceType is MeetingStage.
         /// </summary>
         MeetingStage,
+
+        /// <summary>
+        /// TeamsSurfaceType is MeetingTabIcon.
+        /// </summary>
+        MeetingTabIcon
     }
 }

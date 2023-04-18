@@ -57,6 +57,9 @@ namespace Microsoft.Bot.Schema.Converters
                     var contentType = jsonObject.GetValue("contentType", StringComparison.OrdinalIgnoreCase)?.ToObject<ContentType>();
                     parsedSurface = CreateMeetingStageSurfaceWithContentType(contentType);
                     break;
+                case SurfaceType.MeetingTabIcon:
+                    parsedSurface = new MeetingTabIconSurface();
+                    break;
                 default:
                     throw new ArgumentException($"Invalid surface type: {surfaceType}");
             }
