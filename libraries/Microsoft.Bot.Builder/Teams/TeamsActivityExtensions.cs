@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 
@@ -87,6 +88,17 @@ namespace Microsoft.Bot.Builder.Teams
         public static void TeamsNotifyUser(this IActivity activity)
         {
             activity.TeamsNotifyUser(false);
+        }
+
+        /// <summary>
+        /// Gets the Teams OnBehalfOf list from the current activity.
+        /// </summary>
+        /// <param name="activity">The current activity.</param>
+        /// <returns>The current activity's OnBehalfOf list, or null.</returns>
+        public static IList<OnBehalfOf> TeamsGetTeamOnBehalfOf(this IActivity activity)
+        {
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+            return channelData?.OnBehalfOf;
         }
     }
 }
