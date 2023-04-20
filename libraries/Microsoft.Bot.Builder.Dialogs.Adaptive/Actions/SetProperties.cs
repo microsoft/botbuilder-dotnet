@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -83,6 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var value = propValue.Value?.EvaluateExpression(dc.State);
                 dc.State.SetValue(propValue.Property.GetValue(dc.State), value);
             }
+
+            // save all state scopes to their respective botState locations.
+            await dc.Context.TurnState.Get<DialogStateManager>().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
