@@ -82,5 +82,10 @@ namespace Microsoft.Bot.Builder
         /// The telemetry property value for activity type.
         /// </summary>
         public static readonly string ActivityTypeProperty = "type";
+
+        /// <summary>
+        /// The telemetry property value for activity id.
+        /// </summary>
+        public static readonly string ActivityIdProperty = "activityId";
     }
 }
