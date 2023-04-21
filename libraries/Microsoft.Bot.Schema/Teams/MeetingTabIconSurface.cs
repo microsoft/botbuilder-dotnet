@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Schema.Teams
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Specifies meeting stage surface.
+    /// Specifies meeting tab icon surface.
     /// </summary>
     public class MeetingTabIconSurface : Surface
     {
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets the tab entity Id of this <see cref="MeetingTabIconSurface"/>.
+        /// Gets or sets optional field tab entity Id of this <see cref="MeetingTabIconSurface"/>.
         /// </summary>
         /// <value>
         /// The tab entity Id of this <see cref="MeetingTabIconSurface"/>.
