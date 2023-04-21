@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Azure.Core;
 using Microsoft.Azure.Cosmos;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -85,5 +86,13 @@ namespace Microsoft.Bot.Builder.Azure
         /// The default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
         /// </value>
         public bool CompatibilityMode { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the token credential for Cosmos DB.
+        /// </summary>
+        /// <value>
+        /// The token credential for Cosmos DB.
+        /// </value>
+        public TokenCredential TokenCredential { get; set; }
     }
 }

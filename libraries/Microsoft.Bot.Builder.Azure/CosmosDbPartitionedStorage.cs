@@ -53,9 +53,9 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException($"Service EndPoint for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
-            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey) && cosmosDbStorageOptions.TokenCredential == null)
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions));
+                throw new ArgumentException("AuthKey or TokenCredential for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
@@ -388,10 +388,20 @@ namespace Microsoft.Bot.Builder.Azure
                     var assemblyName = this.GetType().Assembly.GetName();
                     cosmosClientOptions.ApplicationName = string.Concat(assemblyName.Name, " ", assemblyName.Version.ToString());
 
-                    _client = new CosmosClient(
+                    if (_cosmosDbStorageOptions.TokenCredential != null)
+                    {
+                        _client = new CosmosClient(
+                        _cosmosDbStorageOptions.CosmosDbEndpoint,
+                        _cosmosDbStorageOptions.TokenCredential,
+                        cosmosClientOptions);
+                    }
+                    else
+                    {
+                        _client = new CosmosClient(
                         _cosmosDbStorageOptions.CosmosDbEndpoint,
                         _cosmosDbStorageOptions.AuthKey,
                         cosmosClientOptions);
+                    }                  
                 }
 
                 if (_container == null)
