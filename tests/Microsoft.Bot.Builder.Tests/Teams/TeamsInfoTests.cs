@@ -525,7 +525,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     recipients.Add("failingid");
                 }
 
-                var surface = new MeetingStageSurface<TaskModuleContinueResponse>
+                var meetingStageSurface = new MeetingStageSurface<TaskModuleContinueResponse>
                 {
                     Content = new TaskModuleContinueResponse
                     {
@@ -539,10 +539,15 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     ContentType = ContentType.Task
                 };
 
+                var meetingTabIconSurface = new MeetingTabIconSurface
+                {
+                    TabEntityId = "test tab entity id"
+                };
+
                 var value = new TargetedMeetingNotificationValue
                 {
                     Recipients = recipients,
-                    Surfaces = new[] { surface }
+                    Surfaces = new List<Surface> { meetingStageSurface, meetingTabIconSurface }
                 };
 
                 var obo = new OnBehalfOf
