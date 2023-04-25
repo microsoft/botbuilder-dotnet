@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// of the source file that contains the caller.</param>
         /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
         /// in the source file at which the method is called.</param>
-        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses </param>
+        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses.</param>
         public QnAMakerDialog(
             string dialogId,
             string knowledgeBaseId,
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// of the source file that contains the caller.</param>
         /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
         /// in the source file at which the method is called.</param>
-        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses </param>
+        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses.</param>
         public QnAMakerDialog(
             string knowledgeBaseId,
             string endpointKey,

@@ -94,8 +94,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="displayPreciseAnswerOnly">Choice to render precise answer.</param>
+        /// <param name="useTeamsAdaptiveCard">Choose whether to use a Teams-formatted Adaptive card.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnADefaultResponse(QueryResult result, BoolExpression displayPreciseAnswerOnly)
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, BoolExpression displayPreciseAnswerOnly, BoolExpression useTeamsAdaptiveCard = null)
         {
             if (result == null)
             {
@@ -126,7 +127,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
             }
 
-            string heroCardText = null;
+            string cardText = null;
             if (!string.IsNullOrWhiteSpace(result?.AnswerSpan?.Text))
             {
                 chatActivity.Text = result.AnswerSpan.Text;
@@ -134,31 +135,124 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 // For content choice Precise only
                 if (displayPreciseAnswerOnly.Value == false)
                 {
-                    heroCardText = result.Answer;
+                    cardText = result.Answer;
                 }
             }
 
-            if (buttonList != null || !string.IsNullOrWhiteSpace(heroCardText))
+            if (buttonList != null || !string.IsNullOrWhiteSpace(cardText))
             {
-                var plCard = new HeroCard();
+                bool useAdaptive = useTeamsAdaptiveCard == null ? false : useTeamsAdaptiveCard.Value;
+                var cardAttachment = useAdaptive ? GetAdaptiveCardAttachment(cardText, buttonList) : GetHeroCardAttachment(cardText, buttonList);
 
-                if (buttonList != null)
-                {
-                    plCard.Buttons = buttonList;
-                }
-
-                if (!string.IsNullOrWhiteSpace(heroCardText))
-                {
-                    plCard.Text = heroCardText;
-                }
-
-                // Create the attachment.
-                var attachment = plCard.ToAttachment();
-
-                chatActivity.Attachments.Add(attachment);
+                chatActivity.Attachments.Add(cardAttachment);
             }
 
             return chatActivity;
+        }
+
+        /// <summary>
+        /// Get a Teams-formatted Adaptive Card as Attachment to be returned in the QnA response.
+        /// </summary>
+        /// <param name="cardText">string of text to be added to the card.</param>
+        /// <param name="buttonList">List of CardAction representing buttons to be added to the card.</param>
+        /// <returns>Attachment.</returns>
+        private static Attachment GetAdaptiveCardAttachment(string cardText, List<CardAction> buttonList)
+        {
+            var cardButtons = new List<Dictionary<string, object>>();
+
+            if (buttonList != null)
+            {
+                foreach (var button in buttonList)
+                {
+                    var adaptiveAction = new Dictionary<string, object>
+                {
+                    { "type", "Action.Submit" },
+                    { "title", button.Title }
+                };
+
+                    // Create the "data" Dictionary, and add to it a Dictionary representing the "msteams" object
+                    var data = new Dictionary<string, object>
+                {
+                    {
+                        "msteams",
+                        new Dictionary<string, object>
+                        {
+                            { "type", "messageBack" },
+                            { "displayText", button.DisplayText },
+                            { "text", button.Text },
+                            { "value", button.Value },
+                            { "width", "full" }
+                        }
+                    }
+                };
+
+                    adaptiveAction.Add("data", data);
+
+                    cardButtons.Add(adaptiveAction);
+                }
+            }
+
+            var card = new Dictionary<string, object>
+            {
+                { "$schema", "http://adaptivecards.io/schemas/adaptive-card.json" },
+                { "type", "AdaptiveCard" },
+                { "version", "1.3" },
+                {
+                   "msteams",
+                   new Dictionary<string, string>
+                   {
+                       { "width", "full" },
+                       { "height", "full" }
+                   }
+                },
+                { 
+                    "body",
+                    new Dictionary<string, string>[]
+                    {
+                        new Dictionary<string, string>
+                        {
+                            { "type", "TextBlock" },
+                            { "text", cardText }
+                        }
+                    }
+                }
+            };
+
+            if (buttonList != null)
+            {
+                card.Add("actions", cardButtons.ToArray());
+            }
+
+            Attachment adaptiveCard = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = card
+            };
+
+            return adaptiveCard;
+        }
+
+        /// <summary>
+        /// Get a Hero Card as Attachment to be returned in the QnA response.
+        /// </summary>
+        /// <param name="cardText">string of text to be added to the card.</param>
+        /// <param name="buttonList">List of CardAction representing buttons to be added to the card.</param>
+        /// <returns>Attachment.</returns>
+        private static Attachment GetHeroCardAttachment(string cardText, List<CardAction> buttonList) 
+        {
+            var card = new HeroCard();
+
+            if (buttonList != null) 
+            {
+                card.Buttons = buttonList;
+            }
+
+            if (!string.IsNullOrWhiteSpace(cardText))
+            {
+                card.Text = cardText;
+            }
+
+            return card.ToAttachment();
         }
     }
 }
