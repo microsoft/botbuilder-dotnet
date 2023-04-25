@@ -197,7 +197,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
                     qnaId = options.QnAId,
                     rankerType = options.RankerType,
                     answerSpanRequest = new { enable = options.EnablePreciseAnswer },
-                    includeUnstructuredSources = options.IncludeUnstructuredSources
+                    includeUnstructuredSources = options.IncludeUnstructuredSources,
+                    userId = messageActivity.From?.Id
                 }, Formatting.None,
                 _settings);
             var httpRequestHelper = new HttpRequestUtils(_httpClient);
