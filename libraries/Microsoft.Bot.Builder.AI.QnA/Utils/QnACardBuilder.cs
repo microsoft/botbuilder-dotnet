@@ -158,40 +158,47 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Attachment.</returns>
         private static Attachment GetAdaptiveCardAttachment(string cardText, List<CardAction> buttonList)
         {
+            // Create a list of buttons. Each button is represented by a Dictionary containing the required adaptive card fields
             var cardButtons = new List<Dictionary<string, object>>();
 
             if (buttonList != null)
             {
                 foreach (var button in buttonList)
                 {
+                    // Create the initial dictionary
                     var adaptiveAction = new Dictionary<string, object>
-                {
-                    { "type", "Action.Submit" },
-                    { "title", button.Title }
-                };
+                    {
+                        { "type", "Action.Submit" },
+                        { "title", button.Title }
+                    };
 
                     // Create the "data" Dictionary, and add to it a Dictionary representing the "msteams" object
                     var data = new Dictionary<string, object>
-                {
                     {
-                        "msteams",
-                        new Dictionary<string, object>
                         {
-                            { "type", "messageBack" },
-                            { "displayText", button.DisplayText },
-                            { "text", button.Text },
-                            { "value", button.Value },
-                            { "width", "full" }
+                            "msteams",
+                            new Dictionary<string, object>
+                            {
+                                { "type", "messageBack" },
+                                { "displayText", button.DisplayText },
+                                { "text", button.Text },
+                                { "value", button.Value },
+                                { "width", "full" }
+                            }
                         }
-                    }
-                };
+                    };
 
+                    // Add the data dictionary to the cardAction
                     adaptiveAction.Add("data", data);
 
+                    // Add to the list of buttons
                     cardButtons.Add(adaptiveAction);
                 }
             }
 
+            // Create a dictionary to represent the completed Adaptive card
+            // msteams field is also a dictionary
+            // body field is an array containing a dictionary
             var card = new Dictionary<string, object>
             {
                 { "$schema", "http://adaptivecards.io/schemas/adaptive-card.json" },
@@ -212,17 +219,19 @@ namespace Microsoft.Bot.Builder.AI.QnA
                         new Dictionary<string, string>
                         {
                             { "type", "TextBlock" },
-                            { "text", cardText }
+                            { "text", (!string.IsNullOrWhiteSpace(cardText) ? cardText : string.Empty) }
                         }
                     }
                 }
             };
 
+            // If there are buttons, add the buttons to the card as an array
             if (buttonList != null)
             {
                 card.Add("actions", cardButtons.ToArray());
             }
 
+            // Create and return the card as an attachment
             Attachment adaptiveCard = new Attachment()
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
@@ -240,6 +249,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Attachment.</returns>
         private static Attachment GetHeroCardAttachment(string cardText, List<CardAction> buttonList) 
         {
+            // Create a new hero card, add the text and buttons if they exist
             var card = new HeroCard();
 
             if (buttonList != null) 
@@ -252,6 +262,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 card.Text = cardText;
             }
 
+            // Return the card as an attachment
             return card.ToAttachment();
         }
     }
