@@ -629,7 +629,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var response = (List<QueryResult>)stepContext.Result;
             if (response.Count > 0 && response[0].Id != -1)
             {
-                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, UseTeamsAdaptiveCard);
                 await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
             }
             else
@@ -644,7 +644,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     if (response.Count == 1 && response[0].Id == -1)
                     {
                         // Nomatch Response from service.
-                        var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                        var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, UseTeamsAdaptiveCard);
                         await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
                     }
                     else
@@ -854,7 +854,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, UseTeamsAdaptiveCard);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
