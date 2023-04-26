@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (buttonList != null || !string.IsNullOrWhiteSpace(cardText))
             {
                 bool useAdaptive = useTeamsAdaptiveCard == null ? false : useTeamsAdaptiveCard.Value;
-                var cardAttachment = useAdaptive ? GetAdaptiveCardAttachment(cardText, buttonList) : GetHeroCardAttachment(cardText, buttonList);
+                var cardAttachment = useAdaptive ? CreateAdaptiveCardAttachment(cardText, buttonList) : CreateHeroCardAttachment(cardText, buttonList);
 
                 chatActivity.Attachments.Add(cardAttachment);
             }
@@ -151,29 +151,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get a Teams-formatted Adaptive Card as Attachment to be returned in the QnA response.
+        /// Get a Teams-formatted Adaptive Card as Attachment to be returned in the QnA response. Max width and height of response are controlled by Teams.
         /// </summary>
         /// <param name="cardText">string of text to be added to the card.</param>
         /// <param name="buttonList">List of CardAction representing buttons to be added to the card.</param>
         /// <returns>Attachment.</returns>
-        private static Attachment GetAdaptiveCardAttachment(string cardText, List<CardAction> buttonList)
+        private static Attachment CreateAdaptiveCardAttachment(string cardText, List<CardAction> buttonList)
         {
-            // Create a list of buttons. Each button is represented by a Dictionary containing the required adaptive card fields
-            var cardButtons = new List<Dictionary<string, object>>();
-
-            if (buttonList != null)
+            // If there are buttons, create an array of buttons for the card.
+            // Each button is represented by a Dictionary containing the required fields for each button.
+            var cardButtons = buttonList != null ? buttonList.Select(button =>
+            new Dictionary<string, object> 
             {
-                foreach (var button in buttonList)
-                {
-                    // Create the initial dictionary
-                    var adaptiveAction = new Dictionary<string, object>
-                    {
-                        { "type", "Action.Submit" },
-                        { "title", button.Title }
-                    };
-
-                    // Create the "data" Dictionary, and add to it a Dictionary representing the "msteams" object
-                    var data = new Dictionary<string, object>
+                { "type", "Action.Submit" },
+                { "title", button.Title },
+                { 
+                    "data",
+                    new Dictionary<string, object>
                     {
                         {
                             "msteams",
@@ -182,19 +176,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
                                 { "type", "messageBack" },
                                 { "displayText", button.DisplayText },
                                 { "text", button.Text },
-                                { "value", button.Value },
-                                { "width", "full" }
+                                { "value", button.Value }
                             }
                         }
-                    };
-
-                    // Add the data dictionary to the cardAction
-                    adaptiveAction.Add("data", data);
-
-                    // Add to the list of buttons
-                    cardButtons.Add(adaptiveAction);
+                    } 
                 }
-            }
+            }).ToArray() : null;
 
             // Create a dictionary to represent the completed Adaptive card
             // msteams field is also a dictionary
@@ -225,10 +212,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
             };
 
-            // If there are buttons, add the buttons to the card as an array
-            if (buttonList != null)
+            // If there are buttons, add the buttons array to the card. "actions" must be formatted as an array.
+            if (cardButtons != null)
             {
-                card.Add("actions", cardButtons.ToArray());
+                card.Add("actions", cardButtons);
             }
 
             // Create and return the card as an attachment
@@ -247,7 +234,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="cardText">string of text to be added to the card.</param>
         /// <param name="buttonList">List of CardAction representing buttons to be added to the card.</param>
         /// <returns>Attachment.</returns>
-        private static Attachment GetHeroCardAttachment(string cardText, List<CardAction> buttonList) 
+        private static Attachment CreateHeroCardAttachment(string cardText, List<CardAction> buttonList) 
         {
             // Create a new hero card, add the text and buttons if they exist
             var card = new HeroCard();
