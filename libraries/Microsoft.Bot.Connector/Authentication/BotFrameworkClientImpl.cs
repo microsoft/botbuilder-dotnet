@@ -39,8 +39,8 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public async override Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            _ = fromBotId ?? throw new ArgumentNullException(nameof(fromBotId));
-            _ = toBotId ?? throw new ArgumentNullException(nameof(toBotId));
+            fromBotId = fromBotId ?? string.Empty;
+            toBotId = toBotId ?? string.Empty;
             _ = toUrl ?? throw new ArgumentNullException(nameof(toUrl));
             _ = serviceUrl ?? throw new ArgumentNullException(nameof(serviceUrl));
             _ = conversationId ?? throw new ArgumentNullException(nameof(conversationId));
