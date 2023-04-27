@@ -243,6 +243,9 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
 
         private void OnConnectionDisconnected(object sender, EventArgs e)
         {
+            // Rejects all pending requests on disconnect.
+            _requestManager.RejectAllResponses(new Exception("Disconnect was called."));
+
             if (!_isDisconnecting)
             {
                 _isDisconnecting = true;
