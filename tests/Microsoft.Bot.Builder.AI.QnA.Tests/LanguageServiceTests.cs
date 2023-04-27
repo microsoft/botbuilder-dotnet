@@ -1246,20 +1246,20 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
 
         /// <summary>
-        /// The LanguageService_ReturnsAnswer_WithoutUserId.
+        /// The LanguageService_ReturnsAnswer_WithNullUserId.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "LanguageService")]
-        public async Task LanguageService_ReturnsAnswer_WithoutUserId()
+        public async Task LanguageService_ReturnsAnswer_WithNullUserId()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .WithContent("{\"question\":\"how do I clean the stove?\",\"top\":1,\"filters\":{\"MetadataFilter\":{\"Metadata\":[],\"LogicalOperation\":\"AND\"},\"SourceFilter\":[],\"LogicalOperation\":null},\"confidenceScoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true},\"includeUnstructuredSources\":true,\"userId\":null}")
                 .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_ReturnsAnswer_WithoutUserId)));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(LanguageService_ReturnsAnswer_WithNullUserId)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
