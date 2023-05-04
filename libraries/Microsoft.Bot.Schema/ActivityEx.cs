@@ -509,13 +509,13 @@ namespace Microsoft.Bot.Schema
         /// activity to get a conversation reference that you can then use to update an
         /// outgoing activity with the correct delivery information.
         /// </remarks>
-        /// <returns>This activy, updated with the delivery information.</returns>
+        /// <returns>This activity, updated with the delivery information.</returns>
         public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
         {
             ChannelId = reference.ChannelId;
             ServiceUrl = reference.ServiceUrl;
             Conversation = reference.Conversation;
-            Locale = reference.Locale ?? Locale;
+            Locale ??= reference.Locale;
 
             if (isIncoming)
             {
