@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void ApplyConversationReference_isIncoming()
         {
-            var activity = CreateActivity("en-us");
+            var activity = CreateActivity("en-uS"); // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             var conversationReference = new ConversationReference
             {
                 ChannelId = "cr_123",
@@ -125,19 +125,19 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "cr_def",
                 },
                 ActivityId = "cr_12345",
-                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+                Locale = "en-us"
             };
 
-            activity.ApplyConversationReference(conversationReference, true);
+            var activityToSend = activity.ApplyConversationReference(conversationReference, true);
 
             Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
-            Assert.Equal(conversationReference.Locale, activity.Locale);
             Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
             Assert.Equal(conversationReference.Conversation.Id, activity.Conversation.Id);
 
             Assert.Equal(conversationReference.User.Id, activity.From.Id);
             Assert.Equal(conversationReference.Bot.Id, activity.Recipient.Id);
             Assert.Equal(conversationReference.ActivityId, activity.Id);
+            Assert.Equal(activity.Locale, activityToSend.Locale);
         }
 
         [Theory]
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Schema.Tests
         [InlineData(null)]
         public void ApplyConversationReference(string convoRefLocale)
         {
-            var activity = CreateActivity("en-us");
+            var activity = CreateActivity(convoRefLocale);
 
             var conversationReference = new ConversationReference
             {
@@ -164,10 +164,10 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "def",
                 },
                 ActivityId = "12345",
-                Locale = convoRefLocale
+                Locale = "en-us"
             };
 
-            activity.ApplyConversationReference(conversationReference, false);
+            var activityToSend = activity.ApplyConversationReference(conversationReference, false);
 
             Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
             Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
@@ -179,11 +179,11 @@ namespace Microsoft.Bot.Schema.Tests
 
             if (convoRefLocale == null)
             {
-                Assert.NotEqual(conversationReference.Locale, activity.Locale);
+                Assert.Equal(conversationReference.Locale, activityToSend.Locale);
             }
             else
             {
-                Assert.Equal(conversationReference.Locale, activity.Locale);
+                Assert.Equal(activity.Locale, activityToSend.Locale);
             }
         }
 
