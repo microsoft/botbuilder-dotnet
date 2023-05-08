@@ -210,5 +210,23 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 }
             });
         }
+
+        [Fact]
+        public void RequestManager_RejectAllResponses_RejectsAllRequests()
+        {
+            var exception = new Exception("Disconnected");
+            var task1 = new TaskCompletionSource<ReceiveResponse>();
+            var task2 = new TaskCompletionSource<ReceiveResponse>();
+            var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
+            d.TryAdd(Guid.NewGuid(), task1);
+            d.TryAdd(Guid.NewGuid(), task2);
+            var rm = new RequestManager(d);
+
+            rm.RejectAllResponses(exception);
+
+            Assert.Equal(exception, task1.Task.Exception.InnerException);
+            Assert.Equal(exception, task2.Task.Exception.InnerException);
+            Assert.Empty(d);
+        }
     }
 }

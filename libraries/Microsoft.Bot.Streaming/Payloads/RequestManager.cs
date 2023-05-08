@@ -77,5 +77,19 @@ namespace Microsoft.Bot.Streaming.Payloads
                 _responseTasks.TryRemove(requestId, out responseTask);
             }
         }
+
+        /// <summary>
+        /// Rejects all requests pending a response.
+        /// </summary>
+        /// <param name="reason">The reason for rejection.</param>
+        public void RejectAllResponses(Exception reason = null)
+        {
+            foreach (var responseTask in _responseTasks)
+            {
+                responseTask.Value.TrySetException(reason);
+            }
+
+            _responseTasks.Clear();
+        }
     }
 }
