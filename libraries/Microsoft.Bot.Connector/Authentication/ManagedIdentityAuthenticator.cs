@@ -5,9 +5,9 @@ using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Client;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -16,9 +16,10 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class ManagedIdentityAuthenticator : IAuthenticator
     {
-        private readonly AzureServiceTokenProvider _tokenProvider;
+        private readonly string _appId;
         private readonly string _resource;
         private readonly ILogger _logger;
+        private readonly IConfidentialClientApplication _clientApplication;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityAuthenticator"/> class.
@@ -28,7 +29,20 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
         /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
         /// <param name="logger">The type used to perform logging.</param>
+        [Obsolete("This method is deprecated, the IJwtTokenProviderFactory argument is now redundant. Use the overload without this argument.", false)]
         public ManagedIdentityAuthenticator(string appId, string resource, IJwtTokenProviderFactory tokenProviderFactory, HttpClient customHttpClient = null, ILogger logger = null)
+            : this(appId, resource, customHttpClient, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManagedIdentityAuthenticator"/> class.
+        /// </summary>
+        /// <param name="appId">Client id for the managed identity to be used for acquiring tokens.</param>
+        /// <param name="resource">Resource for which to acquire the token.</param>
+        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
+        /// <param name="logger">The type used to perform logging.</param>
+        public ManagedIdentityAuthenticator(string appId, string resource, HttpClient customHttpClient = null, ILogger logger = null)
         {
             if (string.IsNullOrWhiteSpace(appId))
             {
@@ -39,15 +53,11 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 throw new ArgumentNullException(nameof(resource));
             }
-
-            if (tokenProviderFactory == null)
-            {
-                throw new ArgumentNullException(nameof(tokenProviderFactory));
-            }
-
+            
+            _appId = appId;
             _resource = resource;
-            _tokenProvider = tokenProviderFactory.CreateAzureServiceTokenProvider(appId, customHttpClient);
             _logger = logger ?? NullLogger.Instance;
+            _clientApplication = CreateClientApplication(appId, customHttpClient);
         }
 
         /// <inheritdoc/>
@@ -67,7 +77,13 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh)
         {
-            var authResult = await _tokenProvider.GetAuthenticationResultAsync(_resource, forceRefresh).ConfigureAwait(false);
+            var scopes = new string[] { $"{_resource}/.default" };
+            var authResult = await _clientApplication
+                .AcquireTokenForClient(scopes)
+                .WithManagedIdentity(_appId)
+                .WithForceRefresh(forceRefresh)
+                .ExecuteAsync()
+                .ConfigureAwait(false);
             return new AuthenticatorResult
             {
                 AccessToken = authResult.AccessToken,
@@ -79,9 +95,22 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             _logger.LogError(e, "Exception when trying to acquire token using MSI!");
 
-            return e is AzureServiceTokenProviderException // BadRequest
+            return e is MsalServiceException // BadRequest
                 ? RetryParams.StopRetrying
                 : RetryParams.DefaultBackOff(retryCount);
+        }
+
+        private IConfidentialClientApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)
+        {
+            var clientBuilder = ConfidentialClientApplicationBuilder.Create(appId)
+               .WithExperimentalFeatures();
+
+            if (customHttpClient != null)
+            {
+                clientBuilder.WithHttpClientFactory(new ConstantHttpClientFactory(customHttpClient));
+            }
+
+            return clientBuilder.Build();
         }
     }
 }

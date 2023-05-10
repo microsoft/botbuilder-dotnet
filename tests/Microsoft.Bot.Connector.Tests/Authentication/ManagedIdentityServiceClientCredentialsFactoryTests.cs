@@ -48,12 +48,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void CannotCreateCredentialsFactoryWithoutTokenProviderFactory()
+        public void CanCreateCredentialsFactoryWithoutTokenProviderFactory()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                _ = new ManagedIdentityServiceClientCredentialsFactory(TestAppId, tokenProviderFactory: null);
-            });
+            _ = new ManagedIdentityServiceClientCredentialsFactory(TestAppId, tokenProviderFactory: null);
         }
 
         [Fact]

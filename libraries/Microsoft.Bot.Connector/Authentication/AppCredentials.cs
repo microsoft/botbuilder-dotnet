@@ -217,6 +217,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
         /// </summary>
         /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
+        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
         protected abstract Lazy<AdalAuthenticator> BuildAuthenticator();
 
         /// <summary>

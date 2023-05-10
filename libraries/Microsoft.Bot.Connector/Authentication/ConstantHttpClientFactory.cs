@@ -3,14 +3,14 @@
 
 using System;
 using System.Net.Http;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
     /// HttpClientFactory that always returns the same HttpClient instance for ADAL AcquireTokenAsync calls.
     /// </summary>
-    internal class ConstantHttpClientFactory : Microsoft.IdentityModel.Clients.ActiveDirectory.IHttpClientFactory
+    internal class ConstantHttpClientFactory : IdentityModel.Clients.ActiveDirectory.IHttpClientFactory, IMsalHttpClientFactory
     {
         private readonly HttpClient httpClient;
 
