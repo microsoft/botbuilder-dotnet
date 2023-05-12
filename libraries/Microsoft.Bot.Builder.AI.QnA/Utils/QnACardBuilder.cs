@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (buttonList != null || !string.IsNullOrWhiteSpace(cardText))
             {
-                bool useAdaptive = useTeamsAdaptiveCard == null ? false : useTeamsAdaptiveCard.Value;
+                var useAdaptive = useTeamsAdaptiveCard == null ? false : useTeamsAdaptiveCard.Value;
                 var cardAttachment = useAdaptive ? CreateAdaptiveCardAttachment(cardText, buttonList) : CreateHeroCardAttachment(cardText, buttonList);
 
                 chatActivity.Attachments.Add(cardAttachment);
@@ -153,35 +153,35 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Get a Teams-formatted Adaptive Card as Attachment to be returned in the QnA response. Max width and height of response are controlled by Teams.
         /// </summary>
-        /// <param name="cardText">string of text to be added to the card.</param>
+        /// <param name="cardText">String of text to be added to the card.</param>
         /// <param name="buttonList">List of CardAction representing buttons to be added to the card.</param>
         /// <returns>Attachment.</returns>
         private static Attachment CreateAdaptiveCardAttachment(string cardText, List<CardAction> buttonList)
         {
             // If there are buttons, create an array of buttons for the card.
             // Each button is represented by a Dictionary containing the required fields for each button.
-            var cardButtons = buttonList != null ? buttonList.Select(button =>
-            new Dictionary<string, object> 
-            {
-                { "type", "Action.Submit" },
-                { "title", button.Title },
-                { 
-                    "data",
-                    new Dictionary<string, object>
-                    {
+            var cardButtons = buttonList?.Select(button =>
+                new Dictionary<string, object> 
+                {
+                    { "type", "Action.Submit" },
+                    { "title", button.Title },
+                    { 
+                        "data",
+                        new Dictionary<string, object>
                         {
-                            "msteams",
-                            new Dictionary<string, object>
                             {
-                                { "type", "messageBack" },
-                                { "displayText", button.DisplayText },
-                                { "text", button.Text },
-                                { "value", button.Value }
+                                "msteams",
+                                new Dictionary<string, object>
+                                {
+                                    { "type", "messageBack" },
+                                    { "displayText", button.DisplayText },
+                                    { "text", button.Text },
+                                    { "value", button.Value }
+                                }
                             }
-                        }
-                    } 
-                }
-            }).ToArray() : null;
+                        } 
+                    }
+                }).ToArray();
 
             // Create a dictionary to represent the completed Adaptive card
             // msteams field is also a dictionary
@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Create and return the card as an attachment
-            Attachment adaptiveCard = new Attachment()
+            var adaptiveCard = new Attachment()
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
                 Content = card
