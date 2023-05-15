@@ -289,6 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     case HttpMethod.POST:
                     case HttpMethod.PATCH:
                     case HttpMethod.PUT:
+                    case HttpMethod.GET:
                         if (instanceBody == null)
                         {
                             response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -314,9 +315,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         }
 
                         break;
-
-                    case HttpMethod.DELETE:
-                    case HttpMethod.GET:
+                    case HttpMethod.DELETE:                 
                         response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         break;
                 }
