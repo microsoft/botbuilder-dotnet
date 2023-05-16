@@ -33,17 +33,12 @@ namespace Microsoft.Bot.Connector.Authentication
         public CertificateServiceClientCredentialsFactory(X509Certificate2 certificate, string appId, string tenantId = null, HttpClient httpClient = null, ILogger logger = null)
             : base()
         {
-            if (certificate == null)
-            {
-                throw new ArgumentNullException(nameof(certificate));
-            }
-
             if (string.IsNullOrWhiteSpace(appId))
             {
                 throw new ArgumentNullException(nameof(appId));
             }
 
-            _certificate = certificate;
+           _certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
             _appId = appId;
             _tenantId = tenantId;
             _httpClient = httpClient;
