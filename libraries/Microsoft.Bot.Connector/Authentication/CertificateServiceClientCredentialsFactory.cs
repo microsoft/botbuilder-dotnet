@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(appId));
             }
 
-           _certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
+            _certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
             _appId = appId;
             _tenantId = tenantId;
             _httpClient = httpClient;
