@@ -102,6 +102,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// of the source file that contains the caller.</param>
         /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
         /// in the source file at which the method is called.</param>
+        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses.</param>
         public QnAMakerDialog(
             string dialogId,
             string knowledgeBaseId,
@@ -118,7 +119,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             ServiceType qnAServiceType = ServiceType.QnAMaker,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+            [CallerLineNumber] int sourceLineNumber = 0,
+            bool useTeamsAdaptiveCard = false)
             : base(dialogId)
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
@@ -135,6 +137,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             Filters = filters;
             QnAServiceType = qnAServiceType;
             this.HttpClient = httpClient;
+            this.UseTeamsAdaptiveCard = useTeamsAdaptiveCard;
 
             // add waterfall steps
             this.AddStep(CallGenerateAnswerAsync);
@@ -169,6 +172,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// of the source file that contains the caller.</param>
         /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
         /// in the source file at which the method is called.</param>
+        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses.</param>
         public QnAMakerDialog(
             string knowledgeBaseId,
             string endpointKey,
@@ -184,7 +188,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             ServiceType qnAServiceType = ServiceType.QnAMaker,
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0)
+            [CallerLineNumber] int sourceLineNumber = 0,
+            bool useTeamsAdaptiveCard = false)
             : this(
                 nameof(QnAMakerDialog),
                 knowledgeBaseId,
@@ -201,7 +206,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 qnAServiceType,
                 httpClient,
                 sourceFilePath,
-                sourceLineNumber)
+                sourceLineNumber,
+                useTeamsAdaptiveCard)
         {
         }
 
@@ -394,6 +400,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// </value>
         [JsonProperty("displayPreciseAnswerOnly")]
         public BoolExpression DisplayPreciseAnswerOnly { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dialog response should use a MS Teams formatted Adaptive Card instead of a Hero Card.
+        /// </summary>
+        /// <value>
+        /// True/False, defaults to False.
+        /// </value>
+        [JsonProperty("useTeamsAdaptiveCard")]
+        public BoolExpression UseTeamsAdaptiveCard { get; set; } = false;
 
         /// <summary>
         /// Gets or sets QnA Service type to query either QnAMaker or Custom Question Answering Knowledge Base.
@@ -614,7 +629,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var response = (List<QueryResult>)stepContext.Result;
             if (response.Count > 0 && response[0].Id != -1)
             {
-                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, UseTeamsAdaptiveCard);
                 await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
             }
             else
@@ -629,7 +644,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     if (response.Count == 1 && response[0].Id == -1)
                     {
                         // Nomatch Response from service.
-                        var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                        var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, UseTeamsAdaptiveCard);
                         await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
                     }
                     else
@@ -839,7 +854,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, UseTeamsAdaptiveCard);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);

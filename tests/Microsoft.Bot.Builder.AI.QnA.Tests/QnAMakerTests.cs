@@ -190,6 +190,145 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialogBase_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
+        public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase_AdaptiveCard()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+               .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            return CreateQnAMakerActionDialog_AdaptiveCard(mockHttp);
+        }
+
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialog_WithProperResponse_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse_AdaptiveCard()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase_AdaptiveCard();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithProperResponse")
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q1")
+                .AssertReply("A1")
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialog_WithNoResponse_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse_AdaptiveCard()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase_AdaptiveCard();
+
+            const string noAnswerActivity = "No match found, please ask another question.";
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithNoResponse")
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q12")
+                .AssertReply(noAnswerActivity)
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery_AdaptiveCard()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase_AdaptiveCard();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery")
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The QnAMakerAction_MultiTurnDialogBase_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
+        public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase_AdaptiveCard()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":30.0,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
+
+            return CreateQnAMakerActionDialog_AdaptiveCard(mockHttp);
+        }
+
+        /// <summary>
+        /// The QnAMakerAction_MultiTurnDialogBase_WithAnswer_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithAnswer_AdaptiveCard()
+        {
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase_AdaptiveCard();
+
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0]);
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(QnAMakerAction_MultiTurnDialogBase_WithAnswer_AdaptiveCard))
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Accidently deleted KB")
+                .AssertReply("All deletes are permanent, including question and answer pairs, files, URLs, custom questions and answers, knowledge bases, or Azure resources. Make sure you export your knowledge base from the Settings**page before deleting any part of your knowledge base.")
+            .StartTestAsync();
+        }
+
+        /// <summary>
+        /// The QnAMakerAction_MultiTurnDialogBase_WithNoAnswer_AdaptiveCard. Tests QnAMakerDialog with Adaptive Cards.
+        /// </summary>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [Fact]
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer_AdaptiveCard()
+        {
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase_AdaptiveCard();
+
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0]);
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog, nameof(QnAMakerAction_MultiTurnDialogBase_WithNoAnswer_AdaptiveCard))
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
+
+        /// <summary>
         /// The QnaMaker_TraceActivity.
         /// </summary>
         /// <returns>The <see cref="Task"/>.</returns>
@@ -1940,6 +2079,72 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                 NoAnswer = noAnswerActivity,
                                 ActiveLearningCardTitle = activeLearningCardTitle,
                                 CardNoMatchText = "None of the above.",
+                            }
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>
+                {
+                    new OnBeginDialog
+                    {
+                        Actions = new List<Dialog>
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new OnDialogEvent
+                    {
+                        Event = "UnhandledUnknownIntent",
+                        Actions = new List<Dialog>
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.Dialogs.Add(outerDialog);
+            return rootDialog;
+        }
+
+        /// <summary>
+        /// The CreateQnAMakerActionDialog_AdaptiveCard. Tests Adaptive Cards in QnAMakerDialog. 
+        /// </summary>
+        /// <param name="mockHttp">The mockHttp<see cref="MockHttpMessageHandler"/>.</param>
+        /// <returns>The <see cref="AdaptiveDialog"/>.</returns>
+        private AdaptiveDialog CreateQnAMakerActionDialog_AdaptiveCard(MockHttpMessageHandler mockHttp)
+        {
+            var client = new HttpClient(mockHttp);
+
+            var noAnswerActivity = new ActivityTemplate("No match found, please ask another question.");
+            const string host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            const string knowledgeBaseId = "dummy-id";
+            const string endpointKey = "dummy-key";
+            const string activeLearningCardTitle = "QnAMaker Active Learning";
+
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>
+                {
+                    new OnBeginDialog
+                    {
+                        Actions = new List<Dialog>
+                        {
+                            new QnAMakerDialog
+                            {
+                                KnowledgeBaseId = knowledgeBaseId,
+                                HostName = host,
+                                EndpointKey = endpointKey,
+                                HttpClient = client,
+                                NoAnswer = noAnswerActivity,
+                                ActiveLearningCardTitle = activeLearningCardTitle,
+                                CardNoMatchText = "None of the above.",
+                                UseTeamsAdaptiveCard = true
                             }
                         }
                     }
