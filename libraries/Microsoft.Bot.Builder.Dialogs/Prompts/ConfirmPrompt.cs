@@ -143,13 +143,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
             var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
             var style = options.Style ?? Style;
+            var conversationType = turnContext.Activity.Conversation?.ConversationType;
+            var recipient = turnContext.Activity.From?.Id;
+            var toList = string.IsNullOrEmpty(recipient) ? null : new List<string>() { recipient };
             if (isRetry && options.RetryPrompt != null)
             {
-                prompt = AppendChoices(options.RetryPrompt, channelId, choices, style, choiceOptions);
+                prompt = AppendChoices(options.RetryPrompt, channelId, choices, style, choiceOptions, conversationType, toList);
             }
             else
             {
-                prompt = AppendChoices(options.Prompt, channelId, choices, style, choiceOptions);
+                prompt = AppendChoices(options.Prompt, channelId, choices, style, choiceOptions, conversationType, toList);
             }
 
             // Send prompt

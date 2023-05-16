@@ -380,6 +380,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <returns>bound activity ready to send to the user.</returns>
         protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            return AppendChoices(prompt, channelId, choices, style, options, null, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// AppendChoices is utility method to build up a message activity given all of the options.
+        /// </summary>
+        /// <param name="prompt">prompt.</param>
+        /// <param name="channelId">channelId.</param>
+        /// <param name="choices">choices to present.</param>
+        /// <param name="style">listType.</param>
+        /// <param name="options">options to control the choice rendering.</param>
+        /// <param name="conversationType">the type of the conversation.</param>
+        /// <param name="toList">the list of recipients.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>bound activity ready to send to the user.</returns>
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, string conversationType = default, IList<string> toList = default, CancellationToken cancellationToken = default(CancellationToken))
+        {
             // Get base prompt text (if any)
             var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
 
@@ -396,7 +413,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     break;
 
                 case ListStyle.SuggestedAction:
-                    msg = ChoiceFactory.SuggestedAction(choices, text);
+                    msg = ChoiceFactory.SuggestedAction(choices, text, null, toList);
                     break;
 
                 case ListStyle.HeroCard:
@@ -409,7 +426,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     break;
 
                 default:
-                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options);
+                    msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options, conversationType, toList);
                     break;
             }
 

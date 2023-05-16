@@ -20,6 +20,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <returns>True if the Channel supports the buttonCnt total Suggested Actions, False if the Channel does not support that number of Suggested Actions.</returns>
         public static bool SupportsSuggestedActions(string channelId, int buttonCnt = 100)
         {
+            return SupportsSuggestedActions(channelId, buttonCnt, null);
+        }
+
+        /// <summary>
+        /// Determine if a number of Suggested Actions are supported by a Channel.
+        /// </summary>
+        /// <param name="channelId">The Channel to check the if Suggested Actions are supported in.</param>
+        /// <param name="buttonCnt">(Optional) The number of Suggested Actions to check for the Channel.</param>
+        /// <param name="conversationType">(Optional) The type of the conversation.</param>
+        /// <returns>True if the Channel supports the buttonCnt total Suggested Actions, False if the Channel does not support that number of Suggested Actions.</returns>
+        public static bool SupportsSuggestedActions(string channelId, int buttonCnt = 100, string conversationType = default)
+        {
             switch (channelId)
             {
                 // https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies
@@ -41,6 +53,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
                     return buttonCnt <= 100;
+
+                // https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/conversation-messages?tabs=dotnet1%2Cdotnet2%2Cdotnet3%2Cdotnet4%2Cdotnet5%2Cdotnet#send-suggested-actions
+                case Connector.Channels.Msteams:
+                    if (conversationType == "personal")
+                    {
+                        return buttonCnt <= 3;
+                    }
+
+                    return false;
 
                 default:
                     return false;

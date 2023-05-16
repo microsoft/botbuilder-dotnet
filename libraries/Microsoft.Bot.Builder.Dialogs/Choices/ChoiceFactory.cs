@@ -31,6 +31,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// list; otherwise, a numbered list.</para></remarks>
         public static IMessageActivity ForChannel(string channelId, IList<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
+            return ForChannel(channelId, list, text, speak, options, null, null);
+        }
+
+        /// <summary>
+        /// Creates a message activity that includes a list of choices formatted based on the capabilities of a given channel.
+        /// </summary>
+        /// <param name="channelId">A channel ID. The <see cref="Connector.Channels"/> class contains known channel IDs.</param>
+        /// <param name="list">The list of choices to include.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="speak">Optional, the text to be spoken by your bot on a speech-enabled channel.</param>
+        /// <param name="options">Optional, the formatting options to use when rendering as a list.</param>
+        /// <param name="conversationType">Optional, the type of the conversation.</param>
+        /// <param name="toList">Optional, the list of recipients.</param>
+        /// <returns>The created message activity.</returns>
+        /// <remarks>The algorithm prefers to format the supplied list of choices as suggested actions but can decide
+        /// to use a text based list if suggested actions aren't natively supported by the channel, there are too many
+        /// choices for the channel to display, or the title of any choice is too long.
+        /// <para>If the algorithm decides to use a list, for 3 or fewer choices with short titles it will use an inline
+        /// list; otherwise, a numbered list.</para></remarks>
+        public static IMessageActivity ForChannel(string channelId, IList<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null, string conversationType = default, IList<string> toList = default)
+        {
             channelId ??= string.Empty;
             list ??= new List<Choice>();
 
@@ -46,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
 
             // Determine list style
-            var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
+            var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count, conversationType);
             var supportsCardActions = Channel.SupportsCardActions(channelId, list.Count);
             var maxActionTitleLength = Channel.MaxActionTitleLength(channelId);
             var hasMessageFeed = Channel.HasMessageFeed(channelId);
@@ -63,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             {
                 // We always prefer showing choices using suggested actions. If the titles are too long, however,
                 // we'll have to show them as a text list.
-                return SuggestedAction(list, text, speak);
+                return SuggestedAction(list, text, speak, toList);
             }
 
             if (!longTitles && list.Count <= 3)
@@ -198,7 +219,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <returns>An activity with choices as suggested actions.</returns>
         public static IMessageActivity SuggestedAction(IList<string> choices, string text = null, string speak = null)
         {
-            return SuggestedAction(ToChoices(choices), text, speak);
+            return SuggestedAction(ToChoices(choices), text, speak, null);
+        }
+
+        /// <summary>
+        /// Creates a message activity containing a list of choices that have been added as suggested actions.
+        /// </summary>
+        /// <param name="choices">List of strings representing the choices to add.</param>
+        /// <param name="text">Optional, text of the message.</param>
+        /// <param name="speak">Optional, SSML text to be spoken by the bot on a speech-enabled channel.</param>
+        /// <param name="toList">Optional, the list of recipients.</param>
+        /// <returns>An activity with choices as suggested actions.</returns>
+        public static IMessageActivity SuggestedAction(IList<string> choices, string text = null, string speak = null, IList<string> toList = default)
+        {
+            return SuggestedAction(ToChoices(choices), text, speak, toList);
         }
 
         /// <summary>
@@ -211,7 +245,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
             // Return activity with choices as suggested actions
-            return MessageFactory.SuggestedActions(ExtractActions(choices), text, speak, InputHints.ExpectingInput);
+            return SuggestedAction(choices, text, speak, null);
+        }
+
+        /// <summary>
+        /// Creates a message activity containing a list of choices that have been added as suggested actions.
+        /// </summary>
+        /// <param name="choices">The list of choices to add.</param>
+        /// <param name="text">Optional, text of the message.</param>
+        /// <param name="speak">Optional, SSML text to be spoken by the bot on a speech-enabled channel.</param>
+        /// <param name="toList">Optional, the list of recipients.</param>
+        /// <returns>An activity with choices as suggested actions.</returns>
+        public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null, IList<string> toList = default)
+        {
+            // Return activity with choices as suggested actions
+            return MessageFactory.SuggestedActions(ExtractActions(choices), text, speak, InputHints.ExpectingInput, toList);
         }
 
         /// <summary>

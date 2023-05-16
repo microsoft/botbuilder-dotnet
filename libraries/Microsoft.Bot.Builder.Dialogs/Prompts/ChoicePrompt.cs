@@ -138,13 +138,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             var channelId = turnContext.Activity.ChannelId;
             var choiceOptions = ChoiceOptions ?? _choiceDefaults[culture];
             var choiceStyle = options.Style ?? Style;
+            var conversationType = turnContext.Activity.Conversation?.ConversationType;
+            var recipient = turnContext.Activity.From?.Id;
+            var toList = string.IsNullOrEmpty(recipient) ? null : new List<string>() { recipient };
             if (isRetry && options.RetryPrompt != null)
             {
-                prompt = AppendChoices(options.RetryPrompt, channelId, choices, choiceStyle, choiceOptions);
+                prompt = AppendChoices(options.RetryPrompt, channelId, choices, choiceStyle, choiceOptions, conversationType, toList);
             }
             else
             {
-                prompt = AppendChoices(options.Prompt, channelId, choices, choiceStyle, choiceOptions);
+                prompt = AppendChoices(options.Prompt, channelId, choices, choiceStyle, choiceOptions, conversationType, toList);
             }
 
             // Send prompt

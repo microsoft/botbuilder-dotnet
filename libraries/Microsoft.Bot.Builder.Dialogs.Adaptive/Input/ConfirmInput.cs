@@ -175,7 +175,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var (style, _) = Style.TryGetValue(dc.State);
-            return AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
+            var conversationType = dc.Context.Activity.Conversation?.ConversationType;
+            var recipient = dc.Context.Activity.From?.Id;
+            var toList = string.IsNullOrEmpty(recipient) ? null : new List<string>() { recipient };
+            return AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions, conversationType, toList);
         }
 
         private string DetermineCulture(DialogContext dc)
