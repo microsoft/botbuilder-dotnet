@@ -1053,6 +1053,72 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public async Task TestConfigFetch()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "config/fetch",
+                Value = JObject.Parse(@"{""data"":{""key"":""value"",""type"":""config / fetch""},""context"":{""theme"":""default""}}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            //Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsConfigFetchAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [Fact]
+        public async Task TestConfigSubmit()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "config/submit",
+                Value = JObject.Parse(@"{""data"":{""key"":""value"",""type"":""config / submit""},""context"":{""theme"":""default""}}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            //Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsConfigSubmitAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [Fact]
         public async Task TestSigninVerifyState()
         {
             // Arrange
@@ -1607,6 +1673,20 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new TabResponse());
+            }
+
+            protected override Task<InvokeResponseBase> OnTeamsConfigFetchAsync(ITurnContext<IInvokeActivity> turnContext, JObject configRequest, CancellationToken cancellationToken)
+            {
+                InvokeResponseBase configResponse = new ConfigTaskResponse();
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(configResponse);
+            }
+
+            protected override Task<InvokeResponseBase> OnTeamsConfigSubmitAsync(ITurnContext<IInvokeActivity> turnContext, JObject configRequest, CancellationToken cancellationToken)
+            {
+                InvokeResponseBase configResponse = new ConfigTaskResponse();
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(configResponse);
             }
 
             protected override Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)

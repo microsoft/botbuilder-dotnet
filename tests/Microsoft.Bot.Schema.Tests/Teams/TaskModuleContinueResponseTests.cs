@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.NotNull(continueResponse);
             Assert.IsType<TaskModuleContinueResponse>(continueResponse);
             Assert.Equal(value, continueResponse.Value);
+            Assert.Equal("continue", continueResponse.Type);
         }
         
         [Fact]
@@ -27,6 +28,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
 
             Assert.NotNull(continueResponse);
             Assert.IsType<TaskModuleContinueResponse>(continueResponse);
+            Assert.Equal("continue", continueResponse.Type);
         }
     }
 }

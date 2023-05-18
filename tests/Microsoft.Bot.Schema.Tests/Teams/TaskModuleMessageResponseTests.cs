@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.NotNull(messageResponse);
             Assert.IsType<TaskModuleMessageResponse>(messageResponse);
             Assert.Equal(value, messageResponse.Value);
+            Assert.Equal("message", messageResponse.Type);
         }
         
         [Fact]
@@ -27,6 +28,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
 
             Assert.NotNull(messageResponse);
             Assert.IsType<TaskModuleMessageResponse>(messageResponse);
+            Assert.Equal("message", messageResponse.Type);
         }
     }
 }
