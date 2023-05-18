@@ -8,20 +8,20 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specifies Invoke response base including response type.
     /// </summary>
-    public partial class InvokeResponseBase
+    public partial class ConfigResponseBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeResponseBase"/> class.
+        /// Initializes a new instance of the <see cref="ConfigResponseBase"/> class.
         /// </summary>
-        protected InvokeResponseBase()
+        protected ConfigResponseBase()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeResponseBase"/> class.
+        /// Initializes a new instance of the <see cref="ConfigResponseBase"/> class.
         /// </summary>
         /// <param name="responseType"> response type for invoke.</param>
-        protected InvokeResponseBase(string responseType)
+        protected ConfigResponseBase(string responseType)
         {
             ResponseType = responseType;
         }
@@ -32,12 +32,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// <value> Invoke request response type.</value>
         [JsonProperty("responseType")]
         public string ResponseType { get; set; }
-
-        /// <summary>
-        /// Gets or sets response cache Info.
-        /// </summary>
-        /// <value> Value of cache info. </value>
-        [JsonProperty(PropertyName = "cacheInfo")]
-        public CacheInfo CacheInfo { get; set; }
     }
 }

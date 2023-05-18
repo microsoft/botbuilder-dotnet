@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Schema.Teams
     /// Envelope for Config Response Payload.
     /// </summary>
     /// <typeparam name="T">The first generic type parameter.</typeparam>.
-    public partial class ConfigResponse<T> : InvokeResponseBase
+    public partial class ConfigResponse<T> : ConfigResponseBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigResponse{T}"/> class.
@@ -29,6 +29,13 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "config")]
         public T Config { get; set; }
+
+        /// <summary>
+        /// Gets or sets response cache Info.
+        /// </summary>
+        /// <value> Value of cache info. </value>
+        [JsonProperty(PropertyName = "cacheInfo")]
+        public CacheInfo CacheInfo { get; set; }
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

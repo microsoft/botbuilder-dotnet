@@ -1076,7 +1076,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            //Assert.Equal(2, bot.Record.Count);
+            Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsConfigFetchAsync", bot.Record[1]);
             Assert.NotNull(activitiesToSend);
@@ -1109,7 +1109,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            //Assert.Equal(2, bot.Record.Count);
+            Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsConfigSubmitAsync", bot.Record[1]);
             Assert.NotNull(activitiesToSend);
@@ -1675,16 +1675,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return Task.FromResult(new TabResponse());
             }
 
-            protected override Task<InvokeResponseBase> OnTeamsConfigFetchAsync(ITurnContext<IInvokeActivity> turnContext, JObject configRequest, CancellationToken cancellationToken)
+            protected override Task<ConfigResponseBase> OnTeamsConfigFetchAsync(ITurnContext<IInvokeActivity> turnContext, JObject configRequest, CancellationToken cancellationToken)
             {
-                InvokeResponseBase configResponse = new ConfigTaskResponse();
+                ConfigResponseBase configResponse = new ConfigTaskResponse();
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(configResponse);
             }
 
-            protected override Task<InvokeResponseBase> OnTeamsConfigSubmitAsync(ITurnContext<IInvokeActivity> turnContext, JObject configRequest, CancellationToken cancellationToken)
+            protected override Task<ConfigResponseBase> OnTeamsConfigSubmitAsync(ITurnContext<IInvokeActivity> turnContext, JObject configRequest, CancellationToken cancellationToken)
             {
-                InvokeResponseBase configResponse = new ConfigTaskResponse();
+                ConfigResponseBase configResponse = new ConfigTaskResponse();
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(configResponse);
             }
