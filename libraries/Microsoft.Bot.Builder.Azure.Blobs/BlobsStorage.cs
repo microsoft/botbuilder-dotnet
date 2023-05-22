@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Azure;
+using Azure.Core;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -88,6 +89,45 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             _checkForContainerExistence = 1;
 
             _containerClient = new BlobContainerClient(dataConnectionString, containerName);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
+        /// </summary>
+        /// <param name="blobContainerUri">Azure blob storage container Uri.</param>
+        /// <param name="tokenCredential">The token credential to authenticate to the Azure storage.</param>
+        /// <param name="storageTransferOptions">Used for providing options for parallel transfers <see cref="StorageTransferOptions"/>.</param>
+        /// <param name="options">Client options that define the transport pipeline policies for authentication, retries, etc., that are applied to every request.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// <para>jsonSerializer.SerializationBinder = new AllowedTypesSerializationBinder().</para>
+        /// </param>
+        public BlobsStorage(Uri blobContainerUri, TokenCredential tokenCredential, StorageTransferOptions storageTransferOptions, BlobClientOptions options = default, JsonSerializer jsonSerializer = null)
+        {
+            if (blobContainerUri == null)
+            {
+                throw new ArgumentNullException(nameof(blobContainerUri));
+            }
+
+            if (tokenCredential == null)
+            {
+                throw new ArgumentNullException(nameof(tokenCredential));
+            }
+
+            _storageTransferOptions = storageTransferOptions;
+
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                MaxDepth = null,
+            });
+
+            // Triggers a check for the existence of the container
+            _checkForContainerExistence = 1;
+
+            _containerClient = new BlobContainerClient(blobContainerUri, tokenCredential, options);
         }
 
         /// <summary>
