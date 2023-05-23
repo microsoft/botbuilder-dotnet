@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using Azure;
+using Azure.Core;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -42,6 +43,28 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // No containerName. Should throw.
             Assert.Throws<ArgumentNullException>(() => new BlobsStorage(ConnectionString, null));
             Assert.Throws<ArgumentNullException>(() => new BlobsStorage(ConnectionString, string.Empty));
+        }
+
+        [Fact]
+        public void ConstructorWithTokenCredentialValidation()
+        {
+            var mockTokenCredential = new Moq.Mock<TokenCredential>();
+            var storageTransferOptions = new StorageTransferOptions();
+            var uri = new Uri("https://uritest.com");
+
+            // Should work.
+            _ = new BlobsStorage(
+                uri,
+                mockTokenCredential.Object,
+                storageTransferOptions,
+                new BlobClientOptions(),
+                JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));
+
+            // No blobContainerUri. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new BlobsStorage(null, mockTokenCredential.Object, storageTransferOptions));
+
+            // No tokenCredential. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new BlobsStorage(uri, null, storageTransferOptions));
         }
 
         [Fact]
