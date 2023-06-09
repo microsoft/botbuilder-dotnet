@@ -92,6 +92,12 @@ namespace Microsoft.Bot.Builder.Teams
                         case "tab/submit":
                             return CreateInvokeResponse(await OnTeamsTabSubmitAsync(turnContext, SafeCast<TabSubmit>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
+                        case "config/fetch":
+                            return CreateInvokeResponse(await OnTeamsConfigFetchAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
+
+                        case "config/submit":
+                            return CreateInvokeResponse(await OnTeamsConfigSubmitAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
+
                         default:
                             return await base.OnInvokeActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
                     }
@@ -427,6 +433,32 @@ namespace Microsoft.Bot.Builder.Teams
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A Tab Response for the request.</returns>
         protected virtual Task<TabResponse> OnTeamsTabSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TabSubmit tabSubmit, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic for when a config is fetched.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="configData">The config fetch invoke request value payload.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A Config Response for the request.</returns>
+        protected virtual Task<ConfigResponseBase> OnTeamsConfigFetchAsync(ITurnContext<IInvokeActivity> turnContext, JObject configData, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic for when a config is submitted.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="configData">The config fetch invoke request value payload.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A Config Response for the request.</returns>
+        protected virtual Task<ConfigResponseBase> OnTeamsConfigSubmitAsync(ITurnContext<IInvokeActivity> turnContext, JObject configData, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
