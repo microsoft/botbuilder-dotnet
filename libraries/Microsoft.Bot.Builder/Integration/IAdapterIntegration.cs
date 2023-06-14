@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.Integration
     /// <summary>
     /// An interface that defines the contract between web service integration pieces and the bot adapter.
     /// </summary>
-    [Obsolete("Use `CloudAdapter` instead to process incoming messages.", false)]
+    /// <remarks>
+    /// BotFrameworkAdapter is still supported but the recommended adapter is `CloudAdapter`.
+    /// </remarks>
     public interface IAdapterIntegration
     {
         /// <summary>
