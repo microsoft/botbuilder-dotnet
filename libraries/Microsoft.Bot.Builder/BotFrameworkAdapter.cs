@@ -28,7 +28,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// A bot adapter that can connect a bot to a service endpoint. 
+    /// A bot adapter that can connect a bot to a service endpoint.
     /// </summary>
     /// <remarks>BotFrameworkAdapter is still supported but the recommended adapter is `CloudAdapter`.
     /// The bot adapter encapsulates authentication processes and sends
