@@ -166,10 +166,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     {
                         // Start receiving activities on the named pipe
                         _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                        Log.WebSocketConnectionStarted(Logger);
+                        Log.NamedPipeConnectionStarted(Logger);
                         await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
                         _streamingConnections.TryRemove(connectionId, out _);
-                        Log.WebSocketConnectionCompleted(Logger);
+                        Log.NamedPipeConnectionCompleted(Logger);
                         Logger.LogWarning("Named pipe got disconnected. Reconnecting.");
                     }
                 }
@@ -365,11 +365,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private class Log
         {
+            private static readonly Action<ILogger, Exception> _namedPipeConnectionStarted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(NamedPipeConnectionStarted)), "NamedPipe connection started.");
+
+            private static readonly Action<ILogger, Exception> _namedConnectionCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(NamedPipeConnectionCompleted)), "NamedPipe connection completed.");
+
             private static readonly Action<ILogger, Exception> _webSocketConnectionStarted =
                 LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(WebSocketConnectionStarted)), "WebSocket connection started.");
 
             private static readonly Action<ILogger, Exception> _webSocketConnectionCompleted =
                 LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(WebSocketConnectionCompleted)), "WebSocket connection completed.");
+
+            public static void NamedPipeConnectionStarted(ILogger logger) => _namedPipeConnectionStarted(logger, null);
+
+            public static void NamedPipeConnectionCompleted(ILogger logger) => _namedConnectionCompleted(logger, null);
 
             public static void WebSocketConnectionStarted(ILogger logger) => _webSocketConnectionStarted(logger, null);
 
