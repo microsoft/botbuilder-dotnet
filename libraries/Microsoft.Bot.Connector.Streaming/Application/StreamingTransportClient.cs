@@ -304,16 +304,16 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 LogLevel.Information, new EventId(1, nameof(ClientStarted)), "Streaming transport client connected to {string}.");
 
             private static readonly Action<ILogger, string, Exception> _clientCompleted = LoggerMessage.Define<string>(
-                LogLevel.Information, new EventId(2, nameof(ClientKeepAliveSucceed)), "Streaming transport client connection to {string} closed.");
+                LogLevel.Information, new EventId(2, nameof(ClientCompleted)), "Streaming transport client connection to {string} closed.");
 
             private static readonly Action<ILogger, string, Exception> _clientKeepAliveSucceed = LoggerMessage.Define<string>(
-                LogLevel.Debug, new EventId(3, nameof(ClientStarted)), "Streaming transport client heartbeat to {string} succeeded.");
+                LogLevel.Debug, new EventId(3, nameof(ClientKeepAliveSucceed)), "Streaming transport client heartbeat to {string} succeeded.");
 
             private static readonly Action<ILogger, string, int, Exception> _clientKeepAliveFail = LoggerMessage.Define<string, int>(
                 LogLevel.Error, new EventId(4, nameof(ClientKeepAliveFail)), "Streaming transport client heartbeat to {string} failed with status code {int}.");
 
             private static readonly Action<ILogger, string, Exception> _clientTransportApplicationCompleted = LoggerMessage.Define<string>(
-                LogLevel.Debug, new EventId(5, nameof(ClientTransportApplicationCompleted)), "Streaming transport client heartbeat to {string} completed transport and application tasks.");
+                LogLevel.Debug, new EventId(5, nameof(ClientTransportApplicationCompleted)), "Streaming transport client to {string} completed transport and application tasks.");
 
             public static void ClientStarted(ILogger logger, string url) => _clientStarted(logger, url ?? string.Empty, null);
 
