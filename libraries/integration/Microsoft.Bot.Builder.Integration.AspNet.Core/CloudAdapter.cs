@@ -349,7 +349,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                             Path = httpRequestMessage.RequestUri.OriginalString.Substring(httpRequestMessage.RequestUri.OriginalString.IndexOf("/v3", StringComparison.Ordinal)),
                             Verb = httpRequestMessage.Method.ToString(),
                         };
-                        streamingRequest.SetBody(await httpRequestMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+
+                        if (httpRequestMessage.Content != null) 
+                        {
+                            streamingRequest.SetBody(await httpRequestMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                        }
+
                         return streamingRequest;
                     }
 
