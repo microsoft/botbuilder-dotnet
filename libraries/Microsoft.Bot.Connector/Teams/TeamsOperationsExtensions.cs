@@ -4,8 +4,10 @@
 namespace Microsoft.Bot.Connector.Teams
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
 
     /// <summary>
@@ -141,6 +143,40 @@ namespace Microsoft.Bot.Connector.Teams
             else
             {
                 throw new InvalidOperationException("TeamsOperations with SendMeetingNotificationWithHttpMessagesAsync is required for SendMeetingNotificationAsync.");
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to a list of Teams users.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='activity'>
+        /// The activity to send.
+        /// </param>
+        /// <param name='teamsMembers'>
+        /// The list of members recipients for the message.
+        /// </param>
+        /// <param name='tenantId'>
+        /// The tenant ID.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The operation Id.</returns>
+        public static async Task<string> SendMessageToListOfUsersAsync(this ITeamsOperations operations, IActivity activity, List<object> teamsMembers, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.SendMessageToListOfUsersAsync(activity, teamsMembers, tenantId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with SendMessageToListOfUsersAsync is required for SendMessageToListOfUsersAsync.");
             }
         }
     }

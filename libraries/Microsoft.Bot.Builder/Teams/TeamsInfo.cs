@@ -338,6 +338,27 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Sends a message to the provided list of Teams members.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="activity"> The activity to send. </param>
+        /// <param name="teamsMembers"> The list of members. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns>The operation Id.</returns>
+        public static async Task<string> SendMessageToListOfUsersAsync(ITurnContext turnContext, IActivity activity, List<object> teamsMembers, string tenantId, CancellationToken cancellationToken = default)
+        {
+            activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
+            teamsMembers = teamsMembers ?? throw new InvalidOperationException($"{nameof(teamsMembers)} is required.");
+            tenantId = tenantId ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMessageToListOfUsersAsync(activity, teamsMembers, tenantId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)

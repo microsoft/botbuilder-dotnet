@@ -9,6 +9,7 @@ namespace Microsoft.Bot.Connector.Teams
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Microsoft.Rest;
     using Newtonsoft.Json;
@@ -442,6 +443,193 @@ namespace Microsoft.Bot.Connector.Teams
                     //     There can be many reasons: bot disabled by tenant admin, blocked during live site mitigation,
                     //     the bot does not have a correct RSC permission for a specific surface type, etc
                     // 404: if a meeting chat is not found || None of the receipients were found in the roster. 
+
+                    // invalid/unexpected status code
+                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
+                    if (httpResponse.Content != null)
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        responseContent = string.Empty;
+                    }
+
+                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                    if (shouldTrace)
+                    {
+                        ServiceClientTracing.Error(invocationId, ex);
+                    }
+
+                    throw ex;
+                }
+            }
+            finally
+            {
+                if (httpResponse != null)
+                {
+                    httpResponse.Dispose();
+                }
+            }
+
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Send a message to a list of Teams members.
+        /// </summary>
+        /// <param name="activity"> The activity to send. </param>
+        /// <param name="teamsMembers"> The list of members. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="customHeaders"> Headers that will be added to request. </param>
+        /// <param name='cancellationToken'> The cancellation token.  </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when an input value does not match the expected data type, range or pattern.
+        /// </exception>
+        /// <returns>
+        /// A response object containing the operation id.
+        /// </returns>
+        public async Task<HttpOperationResponse<string>> SendMessageToListOfUsersAsync(IActivity activity, List<object> teamsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (activity == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(activity));
+            }
+
+            if (teamsMembers.Count == 0)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(teamsMembers));
+            }
+
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(tenantId));
+            }
+
+            // Tracing
+            var shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("activity", activity);
+                tracingParameters.Add("teamsMembers", teamsMembers);
+                tracingParameters.Add("tenantId", tenantId);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, "SendMessageToListOfUsers", tracingParameters);
+            }
+
+            // Construct URL
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/users/").ToString();
+            using var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
+
+            HttpResponseMessage httpResponse = null;
+
+            // Create HTTP transport objects
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var result = new HttpOperationResponse<string>();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+            try
+            {
+                // Set Headers
+                if (customHeaders != null)
+                {
+                    foreach (var header in customHeaders)
+                    {
+                        if (httpRequest.Headers.Contains(header.Key))
+                        {
+                            httpRequest.Headers.Remove(header.Key);
+                        }
+
+                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+
+                var content = new
+                {
+                    Members = teamsMembers,
+                    Activity = activity,
+                    TenantId = tenantId,
+                };
+
+                // Serialize Request
+                string requestContent = null;
+
+                if (activity != null)
+                {
+                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
+                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                }
+
+                // Set Credentials
+                if (Client.Credentials != null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                }
+
+                // Send Request
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
+                }
+
+                HttpStatusCode statusCode = httpResponse.StatusCode;
+                cancellationToken.ThrowIfCancellationRequested();
+                string responseContent = null;
+
+                // Create Result
+                result.Request = httpRequest;
+                result.Response = httpResponse;
+
+                if ((int)statusCode == 201)
+                {
+                    // 201: created
+                    try
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        result.Body = responseContent;
+                    }
+                    catch (JsonException ex)
+                    {
+                        if (shouldTrace)
+                        {
+                            ServiceClientTracing.Error(invocationId, ex);
+                        }
+
+                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                    }
+                }
+                else if ((int)statusCode == 429)
+                {
+                    //TODO: implement retry logic.
+                }
+                else
+                {
+                    // 400: when request payload validation fails. For instance, 
+                    // 401: if the bot token is invalid 
+                    // 403: if the bot is not allowed to send messages.
 
                     // invalid/unexpected status code
                     var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
