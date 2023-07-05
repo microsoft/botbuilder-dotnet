@@ -627,9 +627,9 @@ namespace Microsoft.Bot.Connector.Teams
                 }
                 else
                 {
-                    // 400: when request payload validation fails. For instance, 
+                    // 400: when request payload validation fails.
                     // 401: if the bot token is invalid 
-                    // 403: if the bot is not allowed to send messages.
+                    // 403: if bot does not have permission to post messages within Tenant.
 
                     // invalid/unexpected status code
                     var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
