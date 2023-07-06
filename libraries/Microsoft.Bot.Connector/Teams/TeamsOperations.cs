@@ -3,12 +3,14 @@
 
 namespace Microsoft.Bot.Connector.Teams
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Microsoft.Rest;
@@ -19,6 +21,8 @@ namespace Microsoft.Bot.Connector.Teams
     /// </summary>
     public partial class TeamsOperations : IServiceOperations<TeamsConnectorClient>, ITeamsOperations
     {
+        private static volatile RetryParams currentRetryPolicy;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsOperations"/> class.
         /// </summary>
@@ -515,13 +519,35 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new ValidationException(ValidationRules.CannotBeNull, nameof(tenantId));
             }
 
+            // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
+            var result = await RetryAction.RunAsync(
+                task: () => SendMessageToListOfUsersWithRetryAsync(activity, teamsMembers, tenantId, customHeaders, cancellationToken),
+                retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
+
+            return result;
+        }
+
+        private static RetryParams HandleThrottlingException(Exception ex, int currentRetryCount)
+        {
+            if (ex is ThrottleException throttlException)
+            {
+                return throttlException.RetryParams ?? RetryParams.DefaultBackOff(currentRetryCount);
+            }
+            else
+            {
+                return RetryParams.StopRetrying;
+            }
+        }
+
+        private async Task<HttpOperationResponse<string>> SendMessageToListOfUsersWithRetryAsync(IActivity activity, List<object> teamsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
             // Tracing
             var shouldTrace = ServiceClientTracing.IsEnabled;
             string invocationId = null;
             if (shouldTrace)
             {
                 invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                var tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("activity", activity);
                 tracingParameters.Add("teamsMembers", teamsMembers);
                 tracingParameters.Add("tenantId", tenantId);
@@ -531,10 +557,10 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/users/").ToString();
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/users/").ToString();
             using var httpRequest = new HttpRequestMessage();
             httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new System.Uri(url);
+            httpRequest.RequestUri = new Uri(url);
 
             HttpResponseMessage httpResponse = null;
 
@@ -595,7 +621,7 @@ namespace Microsoft.Bot.Connector.Teams
                     ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
                 }
 
-                HttpStatusCode statusCode = httpResponse.StatusCode;
+                var statusCode = httpResponse.StatusCode;
                 cancellationToken.ThrowIfCancellationRequested();
                 string responseContent = null;
 
@@ -620,15 +646,23 @@ namespace Microsoft.Bot.Connector.Teams
 
                         throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                     }
+                    finally
+                    {
+                        // This means the request was successfull. We can make our retry policy null.
+                        if (currentRetryPolicy != null)
+                        {
+                            currentRetryPolicy = null;
+                        }
+                    }
                 }
                 else if ((int)statusCode == 429)
                 {
-                    //TODO: implement retry logic.
+                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
                 }
                 else
                 {
                     // 400: when request payload validation fails.
-                    // 401: if the bot token is invalid 
+                    // 401: if the bot token is invalid. 
                     // 403: if bot does not have permission to post messages within Tenant.
 
                     // invalid/unexpected status code

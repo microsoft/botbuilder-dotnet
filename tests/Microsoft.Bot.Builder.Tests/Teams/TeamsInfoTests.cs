@@ -410,11 +410,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [InlineData("201")]
         [InlineData("400")]
         [InlineData("403")]
+        [InlineData("429")]
         public async Task TestSendMessageToListOfUsersAsync(string statusCode)
         {
             // 201: created
             // 400: when send message to list of users request payload validation fails.
             // 403: if the bot is not allowed to send messages.
+            // 429: too many requests for throttled requests.
 
             var baseUri = new Uri("https://test.coffee");
             var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
@@ -703,18 +705,28 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
                     }
                 }
-                catch (HttpOperationException ex)
+                catch (AggregateException ex)
                 {
-                    Assert.Equal(from.Name, ((int)ex.Response.StatusCode).ToString());
-                    var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(ex.Response.Content);
+                    var firstException = ex.InnerExceptions.First();
+                    var httpException = new HttpOperationException();
+                    var errorResponse = new ErrorResponse();
 
                     switch (from.Name)
                     {
                         case "400":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
                             Assert.Equal("BadSyntax", errorResponse.Error.Code);
                             break;
                         case "403":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
                             Assert.Equal("Forbidden", errorResponse.Error.Code);
+                            break;
+                        case "429":
+                            Assert.Equal(11, ex.InnerExceptions.Count);
                             break;
                         default:
                             throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
@@ -929,6 +941,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         case "403":
                             response.Content = new StringContent("{\"error\":{\"code\":\"Forbidden\"}}");
                             response.StatusCode = HttpStatusCode.Forbidden;
+                            break;
+                        case "429":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
+                            response.StatusCode = HttpStatusCode.TooManyRequests;
                             break;
                         default:
                             response.StatusCode = HttpStatusCode.Accepted;
