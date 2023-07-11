@@ -43,12 +43,43 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="configuration">An instance of <see cref="IConfiguration"/>.</param>
         /// <param name="httpClient">A httpClient to use.</param>
         /// <param name="logger">A logger to use.</param>
-        public ConfigurationServiceClientCredentialFactory(IConfiguration configuration, HttpClient httpClient = null, ILogger logger = null)
+        public ConfigurationServiceClientCredentialFactory(
+                IConfiguration configuration,
+                HttpClient httpClient = null,
+                ILogger logger = null)
+            : this(configuration,
+                  MicrosoftAppCredentials.MicrosoftAppTypeKey,
+                  MicrosoftAppCredentials.MicrosoftAppIdKey,
+                  MicrosoftAppCredentials.MicrosoftAppPasswordKey,
+                  MicrosoftAppCredentials.MicrosoftAppTenantIdKey,
+                  httpClient,
+                  logger)
         {
-            var appType = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTypeKey)?.Value;
-            var appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
-            var password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
-            var tenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationServiceClientCredentialFactory"/> class.
+        /// </summary>
+        /// <param name="configuration">An instance of <see cref="IConfiguration"/>.</param>
+        /// <param name="appTypeKey">The configuration key for the app type.</param>
+        /// <param name="appIdKey">The configuration key for the app id.</param>
+        /// <param name="appPasswordKey">The configuration key for the app password.</param>
+        /// <param name="appTenantIdKey">The configuration key for the app tenant id.</param>
+        /// <param name="httpClient">A httpClient to use.</param>
+        /// <param name="logger">A logger to use.</param>
+        public ConfigurationServiceClientCredentialFactory(
+            IConfiguration configuration,
+            string appTypeKey = MicrosoftAppCredentials.MicrosoftAppTypeKey,
+            string appIdKey = MicrosoftAppCredentials.MicrosoftAppIdKey,
+            string appPasswordKey = MicrosoftAppCredentials.MicrosoftAppPasswordKey,
+            string appTenantIdKey = MicrosoftAppCredentials.MicrosoftAppTenantIdKey,
+            HttpClient httpClient = null,
+            ILogger logger = null)
+        {
+            var appType = configuration.GetSection(appTypeKey)?.Value;
+            var appId = configuration.GetSection(appIdKey)?.Value;
+            var password = configuration.GetSection(appPasswordKey)?.Value;
+            var tenantId = configuration.GetSection(appTenantIdKey)?.Value;
 
             var parsedAppType = Enum.TryParse(appType, ignoreCase: true, out MicrosoftAppType parsed)
                 ? parsed
@@ -59,17 +90,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 case MicrosoftAppType.UserAssignedMsi:
                     if (string.IsNullOrWhiteSpace(appId))
                     {
-                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppIdKey} is required for MSI in configuration.");
+                        throw new ArgumentException($"{appIdKey} is required for MSI in configuration.");
                     }
 
                     if (string.IsNullOrWhiteSpace(tenantId))
                     {
-                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppTenantIdKey} is required for MSI in configuration.");
+                        throw new ArgumentException($"{appTenantIdKey} is required for MSI in configuration.");
                     }
 
                     if (!string.IsNullOrWhiteSpace(password))
                     {
-                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} must not be set for MSI in configuration.");
+                        throw new ArgumentException($"{appPasswordKey} must not be set for MSI in configuration.");
                     }
 
                     _inner = new ManagedIdentityServiceClientCredentialsFactory(appId, httpClient, logger);
@@ -78,17 +109,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 case MicrosoftAppType.SingleTenant:
                     if (string.IsNullOrWhiteSpace(appId))
                     {
-                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppIdKey} is required for SingleTenant in configuration.");
+                        throw new ArgumentException($"{appIdKey} is required for SingleTenant in configuration.");
                     }
 
                     if (string.IsNullOrWhiteSpace(tenantId))
                     {
-                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppTenantIdKey} is required for SingleTenant in configuration.");
+                        throw new ArgumentException($"{appTenantIdKey} is required for SingleTenant in configuration.");
                     }
 
                     if (string.IsNullOrWhiteSpace(password))
                     {
-                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} is required for SingleTenant in configuration.");
+                        throw new ArgumentException($"{appPasswordKey} is required for SingleTenant in configuration.");
                     }
 
                     _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger);
