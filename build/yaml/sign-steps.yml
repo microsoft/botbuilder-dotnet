@@ -1,10 +1,10 @@
 steps:
 - task: UseDotNet@2
-  displayName: "Install .NET Core 2.1.30"
+  displayName: "Install .NET Core 2.1.818"
   continueOnError: true
   inputs:
     packageType: "sdk"
-    version: 2.1.30
+    version: 2.1.818
 
 - task: CopyFiles@2
   displayName: 'Copy packages to Signing'
