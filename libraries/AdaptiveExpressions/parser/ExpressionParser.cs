@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -11,7 +10,6 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions
 {
@@ -20,7 +18,7 @@ namespace AdaptiveExpressions
     /// </summary>
     public class ExpressionParser : IExpressionParser
     {
-        private static ConcurrentDictionary<string, IParseTree> expressionDict = new ConcurrentDictionary<string, IParseTree>();
+        private static LRUCache<string, IParseTree> expressionDict = new LRUCache<string, IParseTree>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionParser"/> class.
@@ -64,7 +62,7 @@ namespace AdaptiveExpressions
         /// <returns>A ParseTree.</returns>
         protected static IParseTree AntlrParse(string expression)
         {
-            if (expressionDict.TryGetValue(expression, out var expressionParseTree))
+            if (expressionDict.TryGet(expression, out var expressionParseTree))
             {
                 return expressionParseTree;
             }
@@ -78,7 +76,7 @@ namespace AdaptiveExpressions
             parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
             var expressionContext = parser.file()?.expression();
-            expressionDict.TryAdd(expression, expressionContext);
+            expressionDict.Set(expression, expressionContext);
             return expressionContext;
         }
 
