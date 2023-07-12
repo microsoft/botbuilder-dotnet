@@ -154,6 +154,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private Identity.Client.IConfidentialClientApplication CreateClientApplication(X509Certificate2 clientCertificate, string appId, HttpClient customHttpClient = null)
         {
             var clientBuilder = Identity.Client.ConfidentialClientApplicationBuilder.Create(appId)
+               .WithAuthority(new Uri(OAuthEndpoint), ValidateAuthority)
                .WithCertificate(clientCertificate);
 
             if (customHttpClient != null)
