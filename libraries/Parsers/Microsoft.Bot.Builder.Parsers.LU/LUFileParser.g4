@@ -7,7 +7,7 @@ file
 	;
 
 paragraph
-    : newline
+    : NEWLINE
     | nestedIntentSection
     | simpleIntentSection
     | entitySection
