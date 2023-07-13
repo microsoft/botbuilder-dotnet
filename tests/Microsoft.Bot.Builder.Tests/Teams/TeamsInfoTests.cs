@@ -530,6 +530,47 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }
+        
+        [Theory]
+        [InlineData("201")]
+        [InlineData("400")]
+        [InlineData("403")]
+        [InlineData("429")]
+        public async Task TestSendMessageToListOfChannelsAsync(string statusCode)
+        {
+            // 201: created
+            // 400: when send message to list of channels request payload validation fails.
+            // 403: if the bot is not allowed to send messages.
+            // 429: too many requests for throttled requests.
+
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMessageToListOfChannelsAsync",
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount()
+                {
+                    Id = "id-1",
+
+                    // Hack for test. use the Name field to pass expected status code to test code
+                    Name = statusCode
+                },
+                Conversation = new ConversationAccount() { Id = "conversation-id" }
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
 
         private class TestTeamsActivityHandler : TeamsActivityHandler
         {
@@ -574,6 +615,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         break;
                     case "Test-SendMessageToAllUsersInTeamAsync":
                         await CallSendMessageToAllUsersInTeamAsync(turnContext);
+                        break;
+                    case "Test-SendMessageToListOfChannelsAsync":
+                        await CallSendMessageToListOfChannelsAsync(turnContext);
                         break;
                     default:
                         Assert.True(false);
@@ -924,6 +968,59 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     }
                 }
             }
+            
+            private async Task CallSendMessageToListOfChannelsAsync(ITurnContext turnContext)
+            {
+                var from = turnContext.Activity.From;
+                var members = new List<object>()
+                {
+                    new { Id = "channel-1" },
+                    new { Id = "channel-2" },
+                    new { Id = "channel-3" },
+                };
+                var tenantId = "tenant-id";
+
+                try
+                {
+                    var operationId = await TeamsInfo.SendMessageToListOfChannelsAsync(turnContext, turnContext.Activity, members, tenantId).ConfigureAwait(false);
+
+                    switch (from.Name)
+                    {
+                        case "201":
+                            Assert.Equal("operation-1", operationId);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+                catch (AggregateException ex)
+                {
+                    var firstException = ex.InnerExceptions.First();
+                    var httpException = new HttpOperationException();
+                    var errorResponse = new ErrorResponse();
+
+                    switch (from.Name)
+                    {
+                        case "400":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("BadSyntax", errorResponse.Error.Code);
+                            break;
+                        case "403":
+                            Assert.Single(ex.InnerExceptions);
+                            httpException = (HttpOperationException)firstException;
+                            errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(httpException.Response.Content.ToString());
+                            Assert.Equal("Forbidden", errorResponse.Error.Code);
+                            break;
+                        case "429":
+                            Assert.Equal(11, ex.InnerExceptions.Count);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Expected {nameof(HttpOperationException)} with response status code {from.Name}.");
+                    }
+                }
+            }
         }
 
         private class RosterHttpMessageHandler : HttpMessageHandler
@@ -1174,7 +1271,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             break;
                     }
                 }
-
                 // SendMessageToAllUsersInTeam
                 else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/team/"))
                 {
@@ -1200,6 +1296,37 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         case "404":
                             response.Content = new StringContent("{\"error\":{\"code\":\"NotFound\"}}");
                             response.StatusCode = HttpStatusCode.NotFound;
+                            break;
+                        case "429":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");
+                            response.StatusCode = HttpStatusCode.TooManyRequests;
+                            break;
+                        default:
+                            response.StatusCode = HttpStatusCode.Accepted;
+                            break;
+                    }
+                }
+                // SendMessageToListOfChannels
+                else if (request.RequestUri.PathAndQuery.EndsWith("v3/batch/conversation/channels/"))
+                {
+                    var requestBody = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var payload = JObject.Parse(requestBody);
+                    var requestActivity = payload.SelectToken("Activity").ToObject<Activity>();
+
+                    // hack From.Name as expected status code, for testing
+                    switch (requestActivity.From.Name)
+                    {
+                        case "201":
+                            response.Content = new StringContent("operation-1");
+                            response.StatusCode = HttpStatusCode.Created;
+                            break;
+                        case "400":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"BadSyntax\"}}");
+                            response.StatusCode = HttpStatusCode.BadRequest;
+                            break;
+                        case "403":
+                            response.Content = new StringContent("{\"error\":{\"code\":\"Forbidden\"}}");
+                            response.StatusCode = HttpStatusCode.Forbidden;
                             break;
                         case "429":
                             response.Content = new StringContent("{\"error\":{\"code\":\"TooManyRequests\"}}");

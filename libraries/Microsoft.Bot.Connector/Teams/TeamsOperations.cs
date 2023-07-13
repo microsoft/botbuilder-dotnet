@@ -605,6 +605,48 @@ namespace Microsoft.Bot.Connector.Teams
             return result;
         }
 
+        /// <summary>
+        /// Send a message to a list of Teams channels.
+        /// </summary>
+        /// <param name="activity"> The activity to send. </param>
+        /// <param name="channelsMembers"> The list of channels. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="customHeaders"> Headers that will be added to request. </param>
+        /// <param name='cancellationToken'> The cancellation token.  </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when an input value does not match the expected data type, range or pattern.
+        /// </exception>
+        /// <returns>
+        /// A response object containing the operation id.
+        /// </returns>
+        public async Task<HttpOperationResponse<string>> SendMessageToListOfChannelsAsync(IActivity activity, List<object> channelsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (activity == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(activity));
+            }
+
+            if (channelsMembers.Count == 0)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(channelsMembers));
+            }
+
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, nameof(tenantId));
+            }
+
+            // In case of throttling, it will retry the operation with default values (10 retries every 50 miliseconds).
+            var result = await RetryAction.RunAsync(
+                task: () => SendMessageToListOfChannelsWithRetryAsync(activity, channelsMembers, tenantId, customHeaders, cancellationToken),
+                retryExceptionHandler: (ex, ct) => HandleThrottlingException(ex, ct)).ConfigureAwait(false);
+
+            return result;
+        }
+
         private static RetryParams HandleThrottlingException(Exception ex, int currentRetryCount)
         {
             if (ex is ThrottleException throttlException)
@@ -724,7 +766,7 @@ namespace Microsoft.Bot.Connector.Teams
                     }
                     finally
                     {
-                        // This means the request was successfull. We can make our retry policy null.
+                        // This means the request was successful. We can make our retry policy null.
                         if (currentRetryPolicy != null)
                         {
                             currentRetryPolicy = null;
@@ -887,7 +929,170 @@ namespace Microsoft.Bot.Connector.Teams
                     }
                     finally
                     {
-                        // This means the request was successfull. We can make our retry policy null.
+                        // This means the request was successful. We can make our retry policy null.
+                        if (currentRetryPolicy != null)
+                        {
+                            currentRetryPolicy = null;
+                        }
+                    }
+                }
+                else if ((int)statusCode == 429)
+                {
+                    throw new ThrottleException() { RetryParams = currentRetryPolicy };
+                }
+                else
+                {
+                    // 400: when request payload validation fails.
+                    // 401: if the bot token is invalid. 
+                    // 403: if bot does not have permission to post messages within Tenant.
+
+                    // invalid/unexpected status code
+                    var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
+                    if (httpResponse.Content != null)
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        responseContent = string.Empty;
+                    }
+
+                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                    if (shouldTrace)
+                    {
+                        ServiceClientTracing.Error(invocationId, ex);
+                    }
+
+                    throw ex;
+                }
+            }
+            finally
+            {
+                if (httpResponse != null)
+                {
+                    httpResponse.Dispose();
+                }
+            }
+
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
+        }
+
+        private async Task<HttpOperationResponse<string>> SendMessageToListOfChannelsWithRetryAsync(IActivity activity, List<object> channelsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Tracing
+            var shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
+                var tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("activity", activity);
+                tracingParameters.Add("channelsMembers", channelsMembers);
+                tracingParameters.Add("tenantId", tenantId);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, "SendMessageToListOfChannels", tracingParameters);
+            }
+
+            // Construct URL
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/batch/conversation/channels/").ToString();
+            using var httpRequest = new HttpRequestMessage();
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new Uri(url);
+
+            HttpResponseMessage httpResponse = null;
+
+            // Create HTTP transport objects
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var result = new HttpOperationResponse<string>();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+            try
+            {
+                // Set Headers
+                if (customHeaders != null)
+                {
+                    foreach (var header in customHeaders)
+                    {
+                        if (httpRequest.Headers.Contains(header.Key))
+                        {
+                            httpRequest.Headers.Remove(header.Key);
+                        }
+
+                        httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+
+                var content = new
+                {
+                    Members = channelsMembers,
+                    Activity = activity,
+                    TenantId = tenantId,
+                };
+
+                // Serialize Request
+                string requestContent = null;
+
+                if (activity != null)
+                {
+                    requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(content);
+                    httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                    httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                }
+
+                // Set Credentials
+                if (Client.Credentials != null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                }
+
+                // Send Request
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                if (shouldTrace)
+                {
+                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
+                }
+
+                var statusCode = httpResponse.StatusCode;
+                cancellationToken.ThrowIfCancellationRequested();
+                string responseContent = null;
+
+                // Create Result
+                result.Request = httpRequest;
+                result.Response = httpResponse;
+
+                if ((int)statusCode == 201)
+                {
+                    // 201: created
+                    try
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        result.Body = responseContent;
+                    }
+                    catch (JsonException ex)
+                    {
+                        if (shouldTrace)
+                        {
+                            ServiceClientTracing.Error(invocationId, ex);
+                        }
+
+                        throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                    }
+                    finally
+                    {
+                        // This means the request was successful. We can make our retry policy null.
                         if (currentRetryPolicy != null)
                         {
                             currentRetryPolicy = null;
