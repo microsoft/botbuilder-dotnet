@@ -68,13 +68,17 @@ namespace Microsoft.Bot.Connector.Authentication
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
         public MsalAppCredentials(string appId, string appPassword, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
-                  clientApplication: ConfidentialClientApplicationBuilder.Create(appId).WithClientSecret(appPassword).Build(),
+                  clientApplication: null,
                   appId: appId,
                   authority: authority,
                   scope: scope,
                   validateAuthority: validateAuthority,
                   logger: logger)
         {
+            _clientApplication = ConfidentialClientApplicationBuilder.Create(appId)
+                .WithAuthority(authority ?? OAuthEndpoint, validateAuthority)
+                .WithClientSecret(appPassword)
+                .Build();
         }
 
         /// <summary>
@@ -89,13 +93,17 @@ namespace Microsoft.Bot.Connector.Authentication
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
         public MsalAppCredentials(string appId, X509Certificate2 certificate, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
-                  clientApplication: ConfidentialClientApplicationBuilder.Create(appId).WithCertificate(certificate).Build(),
+                  clientApplication: null,
                   appId: appId,
                   authority: authority,
                   scope: scope,
                   validateAuthority: validateAuthority,
                   logger: logger)
         {
+            _clientApplication = ConfidentialClientApplicationBuilder.Create(appId)
+                .WithAuthority(authority ?? OAuthEndpoint, validateAuthority)
+                .WithCertificate(certificate)
+                .Build();
         }
 
         async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
@@ -168,7 +176,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
                     return new AuthenticatorResult()
-                    { 
+                    {
                         AccessToken = msalResult.AccessToken,
                         ExpiresOn = msalResult.ExpiresOn
                     };
