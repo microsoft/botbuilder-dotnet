@@ -419,6 +419,23 @@ namespace Microsoft.Bot.Builder.Teams
                 return await teamsClient.Teams.SendMessageToListOfChannelsAsync(activity, channelsMembers, tenantId, cancellationToken).ConfigureAwait(false);
             }
         }
+        
+        /// <summary>
+        /// Gets the state of an operation.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="operationId"> The operationId to get the state of. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns>The state and responses of the operation.</returns>
+        public static async Task<BatchOperationState> GetOperationStateAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.GetOperationStateAsync(operationId, cancellationToken).ConfigureAwait(false);
+            }
+        }
 
 
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)

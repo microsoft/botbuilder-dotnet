@@ -278,5 +278,33 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new InvalidOperationException("TeamsOperations with SendMessageToListOfChannelsAsync is required for SendMessageToListOfChannelsAsync.");
             }
         }
+
+        /// <summary>
+        /// Gets the state of an operation.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='operationId'>
+        /// The operationId to get the state of.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The state and responses of the operation.</returns>
+        public static async Task<BatchOperationState> GetOperationStateAsync(this ITeamsOperations operations,  string operationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.GetOperationStateAsync(operationId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with GetOperationStateAsync is required for GetOperationStateAsync.");
+            }
+        }
     }
 }
