@@ -210,5 +210,39 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new InvalidOperationException("TeamsOperations with SendMessageToAllUsersInTenantAsync is required for SendMessageToAllUsersInTenantAsync.");
             }
         }
+
+        /// <summary>
+        /// Sends a message to all the users in a team.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='activity'>
+        /// The activity to send.
+        /// </param>
+        /// <param name='teamId'>
+        /// The team ID.
+        /// </param>
+        /// <param name='tenantId'>
+        /// The tenant ID.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The operation Id.</returns>
+        public static async Task<string> SendMessageToAllUsersInTeamAsync(this ITeamsOperations operations, IActivity activity, string teamId, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.SendMessageToAllUsersInTeamAsync(activity, teamId, tenantId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with SendMessageToAllUsersInTeamAsync is required for SendMessageToAllUsersInTeamAsync.");
+            }
+        }
     }
 }
