@@ -306,5 +306,27 @@ namespace Microsoft.Bot.Connector.Teams
                 throw new InvalidOperationException("TeamsOperations with GetOperationStateAsync is required for GetOperationStateAsync.");
             }
         }
+
+        /// <summary>
+        /// Gets the failed entries of a batch operation.
+        /// </summary>
+        /// <param name='operations'>The operations group for this extension method.</param>
+        /// <param name='operationId'>The operationId to get the failed entries of.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>The list of failed entries of the operation.</returns>
+        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(this ITeamsOperations operations, string operationId, CancellationToken cancellationToken = default)
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using (var result = await teamsOperations.GetPagedFailedEntriesAsync(operationId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return result.Body;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("TeamsOperations with GetPagedFailedEntriesAsync is required for GetPagedFailedEntriesAsync.");
+            }
+        }
     }
 }

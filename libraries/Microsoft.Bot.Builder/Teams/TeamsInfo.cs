@@ -437,6 +437,22 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Gets the failed entries of a batch operation.
+        /// </summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="operationId">The operationId to get the failed entries of.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The list of failed entries of the operation.</returns>
+        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.GetPagedFailedEntriesAsync(operationId, cancellationToken).ConfigureAwait(false);
+            }
+        }
 
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
         {
