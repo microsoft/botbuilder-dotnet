@@ -15,7 +15,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
     /// <summary>
     /// A handler to process incoming http requests via using an adapter.
     /// </summary>
-    [Obsolete("Use `CloudAdapter` instead to process incoming messages.", false)]
+    /// <remarks>
+    /// BotFrameworkAdapter is still supported but the recommended adapter is `CloudAdapter`.
+    /// </remarks>
     public class BotMessageHandler : BotMessageHandlerBase
     {
         /// <summary>

@@ -30,7 +30,8 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// A bot adapter that can connect a bot to a service endpoint.
     /// </summary>
-    /// <remarks>The bot adapter encapsulates authentication processes and sends
+    /// <remarks>BotFrameworkAdapter is still supported but the recommended adapter is `CloudAdapter`.
+    /// The bot adapter encapsulates authentication processes and sends
     /// activities to and receives activities from the Bot Connector Service. When your
     /// bot receives an activity, the adapter creates a context object, passes it to your
     /// bot's application logic, and sends responses back to the user's channel.
@@ -45,7 +46,6 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>h
-    [Obsolete("Use `CloudAdapter` instead.", false)]
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider, IConnectorClientBuilder
     {
         private static readonly HttpClient DefaultHttpClient = new HttpClient();

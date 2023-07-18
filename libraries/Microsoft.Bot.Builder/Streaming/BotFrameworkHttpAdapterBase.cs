@@ -23,7 +23,9 @@ namespace Microsoft.Bot.Builder.Streaming
     /// <summary>
     /// An HTTP adapter base class.
     /// </summary>
-    [Obsolete("Use `CloudAdapter` instead.", false)]
+    /// <remarks>
+    /// BotFrameworkAdapter is still supported but the recommended adapter is `CloudAdapter`.
+    /// </remarks>
     public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor, IDisposable
     {
         private bool _disposedValue;
