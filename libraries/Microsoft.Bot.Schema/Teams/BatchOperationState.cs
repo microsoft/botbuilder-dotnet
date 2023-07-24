@@ -23,13 +23,13 @@ namespace Microsoft.Bot.Schema.Teams
         public string State { get; set; }
 
         /// <summary>
-        /// Gets or sets the operation state response.
+        /// Gets the status map of the operation.
         /// </summary>
         /// <value>
-        /// The operation state response.
+        /// The status map for processed users.
         /// </value>
-        [JsonProperty(PropertyName = "response")]
-        public BatchOperationResponse Response { get; set; }
+        [JsonProperty(PropertyName = "statusMap")]
+        public IDictionary<string, int> StatusMap { get; } = new Dictionary<string, int>();
 
         /// <summary>
         /// Gets or sets the total number of entries.

@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets the list of failed entries result of a batch operation.
         /// </summary>
         /// <value>The list of failed entries result of a batch operation.</value>
-        [JsonProperty(PropertyName = "failedEntries")]
+        [JsonProperty(PropertyName = "failedEntryResponses")]
         public IList<BatchFailedEntry> FailedEntries { get; private set; } = new List<BatchFailedEntry>();
     }
 }

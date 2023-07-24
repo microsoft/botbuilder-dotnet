@@ -346,7 +346,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="teamsMembers"> The list of members. </param>
         /// <param name="tenantId"> The tenant ID. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
-        /// <returns>The operation Id.</returns>
+        /// <returns> The operation Id. </returns>
         public static async Task<string> SendMessageToListOfUsersAsync(ITurnContext turnContext, IActivity activity, List<object> teamsMembers, string tenantId, CancellationToken cancellationToken = default)
         {
             activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
@@ -362,11 +362,11 @@ namespace Microsoft.Bot.Builder.Teams
         /// <summary>
         /// Sends a message to all the users in a tenant.
         /// </summary>
-        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="turnContext"> The turn context. </param>
         /// <param name="activity"> The activity to send to the tenant. </param>
         /// <param name="tenantId"> The tenant ID. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
-        /// <returns>The operation Id.</returns>
+        /// <returns> The operation Id. </returns>
         public static async Task<string> SendMessageToAllUsersInTenantAsync(ITurnContext turnContext, IActivity activity, string tenantId, CancellationToken cancellationToken = default)
         {
             activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
@@ -381,7 +381,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <summary>
         /// Sends a message to all the users in a team.
         /// </summary>
-        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="turnContext"> The turn context. </param>
         /// <param name="activity"> The activity to send to the users in the team. </param>
         /// <param name="teamId"> The team ID. </param>
         /// <param name="tenantId"> The tenant ID. </param>
@@ -402,12 +402,12 @@ namespace Microsoft.Bot.Builder.Teams
         /// <summary>
         /// Sends a message to the provided list of Teams channels.
         /// </summary>
-        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="turnContext"> The turn context. </param>
         /// <param name="activity"> The activity to send. </param>
         /// <param name="channelsMembers"> The list of channels. </param>
         /// <param name="tenantId"> The tenant ID. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
-        /// <returns>The operation Id.</returns>
+        /// <returns> The operation Id. </returns>
         public static async Task<string> SendMessageToListOfChannelsAsync(ITurnContext turnContext, IActivity activity, List<object> channelsMembers, string tenantId, CancellationToken cancellationToken = default)
         {
             activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
@@ -426,7 +426,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="operationId"> The operationId to get the state of. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
-        /// <returns>The state and responses of the operation.</returns>
+        /// <returns> The state and responses of the operation. </returns>
         public static async Task<BatchOperationState> GetOperationStateAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
         {
             operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
@@ -440,17 +440,35 @@ namespace Microsoft.Bot.Builder.Teams
         /// <summary>
         /// Gets the failed entries of a batch operation.
         /// </summary>
-        /// <param name="turnContext">The turn context.</param>
-        /// <param name="operationId">The operationId to get the failed entries of.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The list of failed entries of the operation.</returns>
-        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="operationId"> The operationId to get the failed entries of. </param>
+        /// <param name="continuationToken"> The continuation token. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> The list of failed entries of the operation. </returns>
+        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(ITurnContext turnContext, string operationId, string continuationToken = null, CancellationToken cancellationToken = default)
         {
             operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
 
             using (var teamsClient = GetTeamsConnectorClient(turnContext))
             {
-                return await teamsClient.Teams.GetPagedFailedEntriesAsync(operationId, cancellationToken).ConfigureAwait(false);
+                return await teamsClient.Teams.GetPagedFailedEntriesAsync(operationId, continuationToken, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Cancels a batch operation by its id.
+        /// </summary>
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="operationId"> The id of the operation to cancel. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
+        public static async Task CancelOperationAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                await teamsClient.Teams.CancelOperationAsync(operationId, cancellationToken).ConfigureAwait(false);
             }
         }
 
