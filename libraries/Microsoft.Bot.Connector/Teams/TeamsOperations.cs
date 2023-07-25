@@ -699,14 +699,17 @@ namespace Microsoft.Bot.Connector.Teams
                     //201: created
                     try
                     {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                        if (typeof(T) == typeof(string))
+                        if (httpResponse.Content != null)
                         {
-                            responseContent = JsonConvert.SerializeObject(responseContent, Client.SerializationSettings);
-                        }
+                            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                        result.Body = JsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
+                            if (typeof(T) == typeof(string))
+                            {
+                                responseContent = JsonConvert.SerializeObject(responseContent, Client.SerializationSettings);
+                            }
+
+                            result.Body = JsonConvert.DeserializeObject<T>(responseContent, Client.DeserializationSettings);
+                        }
                     }
                     catch (JsonException ex)
                     {
