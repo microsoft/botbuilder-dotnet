@@ -1271,6 +1271,80 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public async Task TestMeetingParticipantsAddedEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingParticipantsAdded",
+                Value = JObject.Parse(@"{
+                    ParticipantsAdded: [
+                        {Id: 'id', Name: 'name'}
+                    ]
+                }"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingParticipantsAddedAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("id", activitiesToSend[0].Text);
+        }
+
+        [Fact]
+        public async Task TestMeetingParticipantsRemovedEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingParticipantsRemoved",
+                Value = JObject.Parse(@"{
+                    ParticipantsRemoved: [
+                        {Id: 'id', Name: 'name'}
+                    ]
+                }"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingParticipantsRemovedAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("id", activitiesToSend[0].Text);
+        }
+
+        [Fact]
         public async Task TestMessageUpdateActivityTeamsMessageEdit()
         {
             // Arrange
@@ -1534,6 +1608,20 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 turnContext.SendActivityAsync(readReceiptInfo.LastReadMessageId);
                 return Task.CompletedTask;
+            }
+
+            protected override Task OnTeamsMeetingParticipantsAddedAsync(MeetingParticipantsAddedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.ParticipantsAdded[0].Id);
+                return base.OnTeamsMeetingParticipantsAddedAsync(meeting, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMeetingParticipantsRemovedAsync(MeetingParticipantsRemovedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.ParticipantsRemoved[0].Id);
+                return base.OnTeamsMeetingParticipantsRemovedAsync(meeting, turnContext, cancellationToken);
             }
 
             // Invoke
