@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return new Lazy<IAuthenticator>(
                 () =>
                 {
-                    var clientApplication = CreateClientApplication(clientCertificate, MicrosoftAppId, CustomHttpClient);
+                    var clientApplication = CreateClientApplication(clientCertificate, MicrosoftAppId, sendX5c, CustomHttpClient);
                     return new MsalAppCredentials(
                         clientApplication,
                         MicrosoftAppId,
@@ -151,11 +151,11 @@ namespace Microsoft.Bot.Connector.Authentication
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        private Identity.Client.IConfidentialClientApplication CreateClientApplication(X509Certificate2 clientCertificate, string appId, HttpClient customHttpClient = null)
+        private Identity.Client.IConfidentialClientApplication CreateClientApplication(X509Certificate2 clientCertificate, string appId, bool sendX5c, HttpClient customHttpClient = null)
         {
             var clientBuilder = Identity.Client.ConfidentialClientApplicationBuilder.Create(appId)
                .WithAuthority(new Uri(OAuthEndpoint), ValidateAuthority)
-               .WithCertificate(clientCertificate);
+               .WithCertificate(clientCertificate, sendX5c);
 
             if (customHttpClient != null)
             {
