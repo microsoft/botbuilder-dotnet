@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema.Teams
@@ -30,6 +29,15 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "statusMap")]
         public IDictionary<string, int> StatusMap { get; } = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Gets or sets the datetime value to retry the operation.
+        /// </summary>
+        /// <value>
+        /// The datetime value to retry the operation.
+        /// </value>
+        [JsonProperty(PropertyName = "retryAfter")]
+        public DateTime? RetryAfter { get; set; }
 
         /// <summary>
         /// Gets or sets the total number of entries.
