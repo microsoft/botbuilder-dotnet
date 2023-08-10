@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
@@ -22,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly ResourceExplorer resourceExplorer;
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
-        private readonly Dictionary<string, T> cachedRefDialogs = new Dictionary<string, T>();
-        private readonly Dictionary<string, T> cachedTypes = new Dictionary<string, T>();
-        private readonly Dictionary<JToken, SourceRange> rangeReferences = new Dictionary<JToken, SourceRange>(JToken.EqualityComparer);
+        private readonly IDictionary<string, T> cachedRefDialogs = new ConcurrentDictionary<string, T>();
+        private readonly IDictionary<string, T> cachedTypes = new ConcurrentDictionary<string, T>();
+        private readonly IDictionary<JToken, SourceRange> rangeReferences = new ConcurrentDictionary<JToken, SourceRange>(JToken.EqualityComparer);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.
