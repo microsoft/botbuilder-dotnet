@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>The channel list for a given team.</returns>
         public static async Task<ConversationList> FetchChannelListAsync(this ITeamsOperations operations, string teamId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var result = await operations.FetchChannelListWithHttpMessagesAsync(teamId, null, cancellationToken).ConfigureAwait(false))
+            using (var result = await operations.FetchChannelListWithHttpMessagesAsync(teamId, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 return result.Body;
             }
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>The details related to a team.</returns>
         public static async Task<TeamDetails> FetchTeamDetailsAsync(this ITeamsOperations operations, string teamId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var result = await operations.FetchTeamDetailsWithHttpMessagesAsync(teamId, null, cancellationToken).ConfigureAwait(false))
+            using (var result = await operations.FetchTeamDetailsWithHttpMessagesAsync(teamId, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
                 return result.Body;
             }
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using var result = await teamsOperations.FetchMeetingInfoWithHttpMessagesAsync(meetingId, null, cancellationToken).ConfigureAwait(false);
+                using var result = await teamsOperations.FetchMeetingInfoWithHttpMessagesAsync(meetingId, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return result.Body;
             }
 
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.FetchParticipantWithHttpMessagesAsync(meetingId, participantId, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.FetchParticipantWithHttpMessagesAsync(meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.SendMeetingNotificationMessageAsync(meetingId, notification, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.SendMeetingNotificationMessageAsync(meetingId, notification, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -165,11 +165,11 @@ namespace Microsoft.Bot.Connector.Teams
         /// The cancellation token.
         /// </param>
         /// <returns>The operation Id.</returns>
-        public static async Task<string> SendMessageToListOfUsersAsync(this ITeamsOperations operations, IActivity activity, List<object> teamsMembers, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<string> SendMessageToListOfUsersAsync(this ITeamsOperations operations, IActivity activity, List<TeamMember> teamsMembers, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.SendMessageToListOfUsersAsync(activity, teamsMembers, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.SendMessageToListOfUsersAsync(activity, teamsMembers, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.SendMessageToAllUsersInTenantAsync(activity, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.SendMessageToAllUsersInTenantAsync(activity, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.SendMessageToAllUsersInTeamAsync(activity, teamId, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.SendMessageToAllUsersInTeamAsync(activity, teamId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -264,11 +264,11 @@ namespace Microsoft.Bot.Connector.Teams
         /// The cancellation token.
         /// </param>
         /// <returns>The operation Id.</returns>
-        public static async Task<string> SendMessageToListOfChannelsAsync(this ITeamsOperations operations, IActivity activity, List<object> channelsMembers, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<string> SendMessageToListOfChannelsAsync(this ITeamsOperations operations, IActivity activity, List<TeamMember> channelsMembers, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.SendMessageToListOfChannelsAsync(activity, channelsMembers, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.SendMessageToListOfChannelsAsync(activity, channelsMembers, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.GetOperationStateAsync(operationId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.GetOperationStateAsync(operationId, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using (var result = await teamsOperations.GetPagedFailedEntriesAsync(operationId, null, continuationToken, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.GetPagedFailedEntriesAsync(operationId, continuationToken: continuationToken, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     return result.Body;
                 }
@@ -347,7 +347,7 @@ namespace Microsoft.Bot.Connector.Teams
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                await teamsOperations.CancelOperationAsync(operationId, null, cancellationToken).ConfigureAwait(false);
+                await teamsOperations.CancelOperationAsync(operationId, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

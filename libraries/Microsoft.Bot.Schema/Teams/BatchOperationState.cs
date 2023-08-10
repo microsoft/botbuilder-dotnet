@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// The status map for processed users.
         /// </value>
         [JsonProperty(PropertyName = "statusMap")]
-        public IDictionary<string, int> StatusMap { get; } = new Dictionary<string, int>();
+        public IDictionary<int, int> StatusMap { get; } = new Dictionary<int, int>();
 
         /// <summary>
         /// Gets or sets the datetime value to retry the operation.

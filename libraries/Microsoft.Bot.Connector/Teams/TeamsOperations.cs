@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the operation id.
         /// </returns>
-        public async Task<HttpOperationResponse<string>> SendMessageToListOfUsersAsync(IActivity activity, List<object> teamsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<string>> SendMessageToListOfUsersAsync(IActivity activity, List<TeamMember> teamsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity == null)
             {
@@ -468,7 +468,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the operation id.
         /// </returns>
-        public async Task<HttpOperationResponse<string>> SendMessageToListOfChannelsAsync(IActivity activity, List<object> channelsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<string>> SendMessageToListOfChannelsAsync(IActivity activity, List<TeamMember> channelsMembers, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity == null)
             {

@@ -944,11 +944,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             private async Task CallSendMessageToListOfUsersAsync(ITurnContext turnContext)
             {
                 var from = turnContext.Activity.From;
-                var members = new List<object>()
+                var members = new List<TeamMember>()
                 {
-                    new { Id = "member-1" },
-                    new { Id = "member-2" },
-                    new { Id = "member-3" },
+                    new TeamMember("member-1"),
+                    new TeamMember("member-2"),
+                    new TeamMember("member-3"),
                 };
                 var tenantId = "tenant-id";
 
@@ -1098,11 +1098,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             private async Task CallSendMessageToListOfChannelsAsync(ITurnContext turnContext)
             {
                 var from = turnContext.Activity.From;
-                var members = new List<object>()
+                var members = new List<TeamMember>()
                 {
-                    new { Id = "channel-1" },
-                    new { Id = "channel-2" },
-                    new { Id = "channel-3" },
+                    new TeamMember("channel-1"),
+                    new TeamMember("channel-2"),
+                    new TeamMember("channel-3"),
                 };
                 var tenantId = "tenant-id";
 
@@ -1157,7 +1157,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     State = "state-1",
                     TotalEntriesCount = 1
                 };
-                response.StatusMap.Add("statusMap-1", 1);
+                response.StatusMap.Add(400, 1);
 
                 try
                 {
@@ -1206,7 +1206,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 response.FailedEntries.Add(
                     new BatchFailedEntry
                     {
-                        Id = "entry-1",
+                        EntryId = "entry-1",
                         Error = "400 User not found"
                     });
 

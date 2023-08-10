@@ -21,8 +21,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the id of the failed entry.
         /// </summary>
         /// <value>The id of the failed entry.</value>
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
+        [JsonProperty(PropertyName = "entryId")]
+        public string EntryId { get; set; }
 
         /// <summary>
         /// Gets or sets the error of the failed entry.

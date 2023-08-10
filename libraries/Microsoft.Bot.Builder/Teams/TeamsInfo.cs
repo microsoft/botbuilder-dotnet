@@ -347,7 +347,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="tenantId"> The tenant ID. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <returns> The operation Id. </returns>
-        public static async Task<string> SendMessageToListOfUsersAsync(ITurnContext turnContext, IActivity activity, List<object> teamsMembers, string tenantId, CancellationToken cancellationToken = default)
+        public static async Task<string> SendMessageToListOfUsersAsync(ITurnContext turnContext, IActivity activity, List<TeamMember> teamsMembers, string tenantId, CancellationToken cancellationToken = default)
         {
             activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
             teamsMembers = teamsMembers ?? throw new InvalidOperationException($"{nameof(teamsMembers)} is required.");
@@ -408,7 +408,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="tenantId"> The tenant ID. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <returns> The operation Id. </returns>
-        public static async Task<string> SendMessageToListOfChannelsAsync(ITurnContext turnContext, IActivity activity, List<object> channelsMembers, string tenantId, CancellationToken cancellationToken = default)
+        public static async Task<string> SendMessageToListOfChannelsAsync(ITurnContext turnContext, IActivity activity, List<TeamMember> channelsMembers, string tenantId, CancellationToken cancellationToken = default)
         {
             activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
             channelsMembers = channelsMembers ?? throw new InvalidOperationException($"{nameof(channelsMembers)} is required.");
