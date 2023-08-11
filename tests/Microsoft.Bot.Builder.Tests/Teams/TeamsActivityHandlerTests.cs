@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = ActivityTypes.ConversationUpdate,               
+                Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "channelRestored" },
                 ChannelId = Channels.Msteams,
             };
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [Fact]
         public async Task TestConversationUpdateTeamsTeamArchived()
         {
-          // Arrange
+            // Arrange
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsTeamArchivedAsync", bot.Record[1]);
         }
-        
+
         [Fact]
         public async Task TestConversationUpdateTeamsTeamDeleted()
         {
@@ -1139,7 +1139,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Act
             var bot = new TestActivityHandler();
             await ((IBot)bot).OnTurnAsync(turnContext);
-           
+
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
@@ -1271,17 +1271,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
-        public async Task TestMeetingParticipantsAddedEvent()
+        public async Task TestMeetingParticipantsJoinEvent()
         {
             // Arrange
             var activity = new Activity
             {
                 ChannelId = Channels.Msteams,
                 Type = ActivityTypes.Event,
-                Name = "application/vnd.microsoft.meetingParticipantsAdded",
+                Name = "application/vnd.microsoft.meetingParticipantJoin",
                 Value = JObject.Parse(@"{
-                    ParticipantsAdded: [
-                        {Id: 'id', Name: 'name'}
+                    Members: [
+                        {User: {Id: 'id', Name: 'name'}, 
+                        Meeting: {Role: 'role', InMeeting: true}}
                     ]
                 }"),
             };
@@ -1301,24 +1302,25 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnEventActivityAsync", bot.Record[0]);
-            Assert.Equal("OnTeamsMeetingParticipantsAddedAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsMeetingParticipantsJoinAsync", bot.Record[1]);
             Assert.NotNull(activitiesToSend);
             Assert.Single(activitiesToSend);
             Assert.Equal("id", activitiesToSend[0].Text);
         }
 
         [Fact]
-        public async Task TestMeetingParticipantsRemovedEvent()
+        public async Task TestMeetingParticipantsLeaveEvent()
         {
             // Arrange
             var activity = new Activity
             {
                 ChannelId = Channels.Msteams,
                 Type = ActivityTypes.Event,
-                Name = "application/vnd.microsoft.meetingParticipantsRemoved",
+                Name = "application/vnd.microsoft.meetingParticipantLeave",
                 Value = JObject.Parse(@"{
-                    ParticipantsRemoved: [
-                        {Id: 'id', Name: 'name'}
+                    Members: [
+                        {User: {Id: 'id', Name: 'name'}, 
+                        Meeting: {Role: 'role', InMeeting: false}}
                     ]
                 }"),
             };
@@ -1338,7 +1340,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnEventActivityAsync", bot.Record[0]);
-            Assert.Equal("OnTeamsMeetingParticipantsRemovedAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsMeetingParticipantsLeaveAsync", bot.Record[1]);
             Assert.NotNull(activitiesToSend);
             Assert.Single(activitiesToSend);
             Assert.Equal("id", activitiesToSend[0].Text);
@@ -1536,7 +1538,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsChannelRenamedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
-          
+
             protected override Task OnTeamsChannelRestoredAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
@@ -1559,7 +1561,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsTeamHardDeletedAsync(teamInfo, turnContext, cancellationToken);
-            }            
+            }
 
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
@@ -1610,18 +1612,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return Task.CompletedTask;
             }
 
-            protected override Task OnTeamsMeetingParticipantsAddedAsync(MeetingParticipantsAddedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMeetingParticipantsJoinAsync(MeetingParticipantsEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                turnContext.SendActivityAsync(meeting.ParticipantsAdded[0].Id);
-                return base.OnTeamsMeetingParticipantsAddedAsync(meeting, turnContext, cancellationToken);
+                turnContext.SendActivityAsync(meeting.Members[0].User.Id);
+                return base.OnTeamsMeetingParticipantsJoinAsync(meeting, turnContext, cancellationToken);
             }
 
-            protected override Task OnTeamsMeetingParticipantsRemovedAsync(MeetingParticipantsRemovedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMeetingParticipantsLeaveAsync(MeetingParticipantsEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                turnContext.SendActivityAsync(meeting.ParticipantsRemoved[0].Id);
-                return base.OnTeamsMeetingParticipantsRemovedAsync(meeting, turnContext, cancellationToken);
+                turnContext.SendActivityAsync(meeting.Members[0].User.Id);
+                return base.OnTeamsMeetingParticipantsLeaveAsync(meeting, turnContext, cancellationToken);
             }
 
             // Invoke
@@ -1833,7 +1835,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                
+
                 // GetMembers (Team)
                 if (request.RequestUri.PathAndQuery.EndsWith("team-id/members"))
                 {
