@@ -1281,8 +1281,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Name = "application/vnd.microsoft.meetingParticipantJoin",
                 Value = JObject.Parse(@"{
                     Members: [
-                        {User: {Id: 'id', Name: 'name'}, 
-                        Meeting: {Role: 'role', InMeeting: true}}
+                        {
+                            User: 
+                            {
+                                Id: 'id', 
+                                Name: 'name'
+                            }, 
+                            Meeting: 
+                            {
+                                Role: 'role', 
+                                InMeeting: true
+                            }
+                        }
                     ]
                 }"),
             };
@@ -1319,8 +1329,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Name = "application/vnd.microsoft.meetingParticipantLeave",
                 Value = JObject.Parse(@"{
                     Members: [
-                        {User: {Id: 'id', Name: 'name'}, 
-                        Meeting: {Role: 'role', InMeeting: false}}
+                        {
+                            User: 
+                            {
+                                Id: 'id', 
+                                Name: 'name'
+                            }, 
+                            Meeting: 
+                            {
+                                Role: 'role', 
+                                InMeeting: true
+                            }
+                        }
                     ]
                 }"),
             };
