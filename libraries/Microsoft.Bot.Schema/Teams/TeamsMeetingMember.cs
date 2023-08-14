@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Schema.Teams
 {
     /// <summary>
-    /// Data about the joined meeting participants.
+    /// Data about the meeting participants.
     /// </summary>
     public partial class TeamsMeetingMember
     {
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets the joined meeting participant.
+        /// Gets or sets the meeting participant.
         /// </summary>
         /// <value>
         /// The joined participant account.
@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Schema.Teams
         public TeamsChannelAccount User { get; set; }
 
         /// <summary>
-        /// Gets or sets the joined users meeting details.
+        /// Gets or sets the user meeting details.
         /// </summary>
         /// <value>
-        /// The joined users meeting details.
+        /// The users meeting details.
         /// </value>
         [JsonProperty(PropertyName = "Meeting")]
         public UserMeetingDetails Meeting { get; set; }
