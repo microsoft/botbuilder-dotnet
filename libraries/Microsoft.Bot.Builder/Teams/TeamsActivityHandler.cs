@@ -809,6 +809,10 @@ namespace Microsoft.Bot.Builder.Teams
                         return OnTeamsMeetingStartAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingStartEventDetails>(), turnContext, cancellationToken);
                     case "application/vnd.microsoft.meetingEnd":
                         return OnTeamsMeetingEndAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingEndEventDetails>(), turnContext, cancellationToken);
+                    case "application/vnd.microsoft.meetingParticipantJoin":
+                        return OnTeamsMeetingParticipantsJoinAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingParticipantsEventDetails>(), turnContext, cancellationToken);
+                    case "application/vnd.microsoft.meetingParticipantLeave":
+                        return OnTeamsMeetingParticipantsLeaveAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingParticipantsEventDetails>(), turnContext, cancellationToken);
                 }
             }
 
@@ -853,6 +857,34 @@ namespace Microsoft.Bot.Builder.Teams
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnTeamsReadReceiptAsync(ReadReceiptInfo readReceiptInfo, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Teams Participants Join event activity is received from the connector.
+        /// Override this in a derived class to provide logic for when meeting participants are added.
+        /// </summary>
+        /// <param name="meeting">The details of the meeting.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMeetingParticipantsJoinAsync(MeetingParticipantsEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Teams Participants Leave event activity is received from the connector.
+        /// Override this in a derived class to provide logic for when meeting participants are removed.
+        /// </summary>
+        /// <param name="meeting">The details of the meeting.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMeetingParticipantsLeaveAsync(MeetingParticipantsEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

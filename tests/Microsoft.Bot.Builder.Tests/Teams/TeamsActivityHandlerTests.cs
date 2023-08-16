@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = ActivityTypes.ConversationUpdate,               
+                Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "channelRestored" },
                 ChannelId = Channels.Msteams,
             };
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [Fact]
         public async Task TestConversationUpdateTeamsTeamArchived()
         {
-          // Arrange
+            // Arrange
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsTeamArchivedAsync", bot.Record[1]);
         }
-        
+
         [Fact]
         public async Task TestConversationUpdateTeamsTeamDeleted()
         {
@@ -1139,7 +1139,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Act
             var bot = new TestActivityHandler();
             await ((IBot)bot).OnTurnAsync(turnContext);
-           
+
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
@@ -1268,6 +1268,102 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.NotNull(activitiesToSend);
             Assert.Single(activitiesToSend);
             Assert.Equal("10101010", activitiesToSend[0].Text);
+        }
+
+        [Fact]
+        public async Task TestMeetingParticipantsJoinEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingParticipantJoin",
+                Value = JObject.Parse(@"{
+                    Members: [
+                        {
+                            User: 
+                            {
+                                Id: 'id', 
+                                Name: 'name'
+                            }, 
+                            Meeting: 
+                            {
+                                Role: 'role', 
+                                InMeeting: true
+                            }
+                        }
+                    ]
+                }"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingParticipantsJoinAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("id", activitiesToSend[0].Text);
+        }
+
+        [Fact]
+        public async Task TestMeetingParticipantsLeaveEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingParticipantLeave",
+                Value = JObject.Parse(@"{
+                    Members: [
+                        {
+                            User: 
+                            {
+                                Id: 'id', 
+                                Name: 'name'
+                            }, 
+                            Meeting: 
+                            {
+                                Role: 'role', 
+                                InMeeting: true
+                            }
+                        }
+                    ]
+                }"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingParticipantsLeaveAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("id", activitiesToSend[0].Text);
         }
 
         [Fact]
@@ -1462,7 +1558,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsChannelRenamedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
-          
+
             protected override Task OnTeamsChannelRestoredAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
@@ -1485,7 +1581,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsTeamHardDeletedAsync(teamInfo, turnContext, cancellationToken);
-            }            
+            }
 
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
@@ -1534,6 +1630,20 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 turnContext.SendActivityAsync(readReceiptInfo.LastReadMessageId);
                 return Task.CompletedTask;
+            }
+
+            protected override Task OnTeamsMeetingParticipantsJoinAsync(MeetingParticipantsEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.Members[0].User.Id);
+                return base.OnTeamsMeetingParticipantsJoinAsync(meeting, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMeetingParticipantsLeaveAsync(MeetingParticipantsEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.Members[0].User.Id);
+                return base.OnTeamsMeetingParticipantsLeaveAsync(meeting, turnContext, cancellationToken);
             }
 
             // Invoke
@@ -1745,7 +1855,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                
+
                 // GetMembers (Team)
                 if (request.RequestUri.PathAndQuery.EndsWith("team-id/members"))
                 {
