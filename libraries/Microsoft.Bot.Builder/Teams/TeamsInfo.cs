@@ -338,6 +338,140 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Sends a message to the provided list of Teams members.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="activity"> The activity to send. </param>
+        /// <param name="teamsMembers"> The list of members. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> The operation Id. </returns>
+        public static async Task<string> SendMessageToListOfUsersAsync(ITurnContext turnContext, IActivity activity, List<TeamMember> teamsMembers, string tenantId, CancellationToken cancellationToken = default)
+        {
+            activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
+            teamsMembers = teamsMembers ?? throw new InvalidOperationException($"{nameof(teamsMembers)} is required.");
+            tenantId = tenantId ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMessageToListOfUsersAsync(activity, teamsMembers, tenantId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to all the users in a tenant.
+        /// </summary>
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="activity"> The activity to send to the tenant. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> The operation Id. </returns>
+        public static async Task<string> SendMessageToAllUsersInTenantAsync(ITurnContext turnContext, IActivity activity, string tenantId, CancellationToken cancellationToken = default)
+        {
+            activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
+            tenantId = tenantId ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMessageToAllUsersInTenantAsync(activity, tenantId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to all the users in a team.
+        /// </summary>
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="activity"> The activity to send to the users in the team. </param>
+        /// <param name="teamId"> The team ID. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns>The operation Id.</returns>
+        public static async Task<string> SendMessageToAllUsersInTeamAsync(ITurnContext turnContext, IActivity activity, string teamId, string tenantId, CancellationToken cancellationToken = default)
+        {
+            activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
+            teamId = teamId ?? throw new InvalidOperationException($"{nameof(teamId)} is required.");
+            tenantId = tenantId ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMessageToAllUsersInTeamAsync(activity, teamId, tenantId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        
+        /// <summary>
+        /// Sends a message to the provided list of Teams channels.
+        /// </summary>
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="activity"> The activity to send. </param>
+        /// <param name="channelsMembers"> The list of channels. </param>
+        /// <param name="tenantId"> The tenant ID. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> The operation Id. </returns>
+        public static async Task<string> SendMessageToListOfChannelsAsync(ITurnContext turnContext, IActivity activity, List<TeamMember> channelsMembers, string tenantId, CancellationToken cancellationToken = default)
+        {
+            activity = activity ?? throw new InvalidOperationException($"{nameof(activity)} is required.");
+            channelsMembers = channelsMembers ?? throw new InvalidOperationException($"{nameof(channelsMembers)} is required.");
+            tenantId = tenantId ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.SendMessageToListOfChannelsAsync(activity, channelsMembers, tenantId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        
+        /// <summary>
+        /// Gets the state of an operation.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="operationId"> The operationId to get the state of. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> The state and responses of the operation. </returns>
+        public static async Task<BatchOperationState> GetOperationStateAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.GetOperationStateAsync(operationId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Gets the failed entries of a batch operation.
+        /// </summary>
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="operationId"> The operationId to get the failed entries of. </param>
+        /// <param name="continuationToken"> The continuation token. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> The list of failed entries of the operation. </returns>
+        public static async Task<BatchFailedEntriesResponse> GetPagedFailedEntriesAsync(ITurnContext turnContext, string operationId, string continuationToken = null, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.GetPagedFailedEntriesAsync(operationId, continuationToken, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Cancels a batch operation by its id.
+        /// </summary>
+        /// <param name="turnContext"> The turn context. </param>
+        /// <param name="operationId"> The id of the operation to cancel. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
+        public static async Task CancelOperationAsync(ITurnContext turnContext, string operationId, CancellationToken cancellationToken = default)
+        {
+            operationId = operationId ?? throw new InvalidOperationException($"{nameof(operationId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                await teamsClient.Teams.CancelOperationAsync(operationId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)
