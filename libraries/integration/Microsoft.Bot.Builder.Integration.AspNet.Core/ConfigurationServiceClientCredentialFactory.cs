@@ -45,8 +45,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="logger">A logger to use.</param>
         public ConfigurationServiceClientCredentialFactory(
                 IConfiguration configuration,
-                HttpClient httpClient = null,
-                ILogger logger = null)
+                HttpClient? httpClient = null,
+                ILogger? logger = null)
             : this(configuration,
                   MicrosoftAppCredentials.MicrosoftAppTypeKey,
                   MicrosoftAppCredentials.MicrosoftAppIdKey,
@@ -73,8 +73,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             string appIdKey = MicrosoftAppCredentials.MicrosoftAppIdKey,
             string appPasswordKey = MicrosoftAppCredentials.MicrosoftAppPasswordKey,
             string appTenantIdKey = MicrosoftAppCredentials.MicrosoftAppTenantIdKey,
-            HttpClient httpClient = null,
-            ILogger logger = null)
+            HttpClient? httpClient = null,
+            ILogger? logger = null)
         {
             var appType = configuration.GetSection(appTypeKey)?.Value;
             var appId = configuration.GetSection(appIdKey)?.Value;
