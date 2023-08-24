@@ -812,6 +812,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var headerDictionaryMock = new Mock<IHeaderDictionary>();
 
             // Expired token with removed AppID
+            // This token will be validated against real endpoint https://login.microsoftonline.com/common/discovery/v2.0/keys
+            // So when the signing key is removed in endpoint, it will not be Expired exception, we need to generate a new token
+            // - create a new app registration: https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/CreateApplicationBlade/quickStartType~/null/isMSAApp~/false
+            // - create an access token via powershell script (need to wait for one day so it is expired)
+            // $Form = @{
+            //     client_id = "YOUR_APP_ID"
+            //     scope = "https://api.botframework.com/.default"
+            //     client_secret = "YOUR_APP_SECRET"
+            //     grant_type = "client_credentials"
+            // }
+            // (Invoke-WebRequest -Uri 'https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token' -Method Post -Form $Form).Content
+            // - delete the app
             var token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiJodHRwczovL2FwaS5ib3RmcmFtZXdvcmsuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiLyIsImlhdCI6MTY3MDM1MDQxNSwibmJmIjoxNjcwMzUwNDE1LCJleHAiOjE2NzA0MzcxMTUsImFpbyI6IkUyWmdZTkJONEpWZmxlOTJUc2wxYjhtOHBjOWpBQT09IiwiYXBwaWQiOiI5ZGRmM2QwZS02ZDRlLTQ2MWEtYjM4Yi0zMTYzZWQ3Yjg1NmIiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIvIiwicmgiOiIwLkFXNEFJSlRVMXB2ejkwMmgzTldhazFoeDIwSXpMWTBwejFsSmxYY09EcS05RnJ4dUFBQS4iLCJ0aWQiOiJkNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIiLCJ1dGkiOiJIWDlncld2bU1rMlhESTRkS3BHSEFBIiwidmVyIjoiMS4wIn0.PBLuja5sCcDfFjweoy-VucvbfHEyEcs1GyqXjekzBqgvK-mSc1UrEfqr5834qY6dLNsXVIMJzMFuH6WyPbnAfIfRcabdiVSOAl8N8e9Tex6vHfPi4h4P2F96VkXU80EtZX4QMjsJMDJ5eXbJlIDEAxXoJbAdHqgy-lHcVBx8XK7toJ_W7vSsFhis3C4CPCHI1cf1WuHVwfFXBiNwsOzj9cnRUKpea6UELV89q4C0L6aeSNdWYXehZmgq-wlo2wIaGgQ7rOXx4MlIrc83LBzMMc6TWvBJecK6O8pJWLe6BTwOltBI8Tmo2hWnY1OnsbOhbSSlfwLaZqKI7QpA50_2GQ";
            
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>((_) => token);
