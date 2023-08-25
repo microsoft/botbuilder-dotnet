@@ -261,7 +261,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 // Validate Channel / Token Endorsements. For this, the channelID present on the Activity
                 // needs to be matched by an endorsement.
-                var keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
+                var keyId = parsedToken.SigningKey.KeyId;
                 var endorsements = await _endorsementsData.GetConfigurationAsync().ConfigureAwait(false);
 
                 // Note: On the Emulator Code Path, the endorsements collection is empty so the validation code
