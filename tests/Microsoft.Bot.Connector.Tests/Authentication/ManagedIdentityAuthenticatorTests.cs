@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(() =>
+                .ReturnsAsync(() => 
                 {
                     callsToAcquireToken++;
                     throw new Exception();
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(() =>
+                .ReturnsAsync(() => 
                 {
                     callsToAcquireToken++;
                     if (callsToAcquireToken == 1)
