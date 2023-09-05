@@ -2,3 +2,10 @@
 TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbCustomClientOptions' does not exist in the implementation but it does exist in the contract.
 TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbStorage' does not exist in the implementation but it does exist in the contract.
 TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbStorageOptions' does not exist in the implementation but it does exist in the contract.
+
+TypesMustExist : Type 'Microsoft.Bot.Connector.Authentication.AdalAuthenticator' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.AppCredentials.BuildAuthenticator()' does not exist in the implementation but it does exist in the contract.
+CannotAddAbstractMembers : Member 'Microsoft.Bot.Connector.Authentication.AppCredentials.BuildIAuthenticator()' is abstract in the implementation but is missing in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.CertificateAppCredentials..ctor(Microsoft.IdentityModel.Clients.ActiveDirectory.ClientAssertionCertificate, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.CertificateAppCredentials.BuildAuthenticator()' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials.BuildAuthenticator()' does not exist in the implementation but it does exist in the contract.
