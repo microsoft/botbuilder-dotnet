@@ -6,9 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
@@ -20,41 +18,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
     {
         private const string TestAppId = "foo";
         private const string TestAudience = "bar";
-        private const string TestConnectionString = "RunAs=App;AppId=foo";
-        private const string TestAzureAdInstance = "https://login.microsoftonline.com/";
-
-        [Fact]
-        public void ConstructorTests()
-        {
-            var callsToCreateTokenProvider = 0;
-
-            var tokenProvider = new Mock<AzureServiceTokenProvider>(TestConnectionString, TestAzureAdInstance);
-
-            var tokenProviderFactory = new Mock<IJwtTokenProviderFactory>();
-            tokenProviderFactory
-                .Setup(f => f.CreateAzureServiceTokenProvider(It.IsAny<string>(), It.IsAny<HttpClient>()))
-                .Returns<string, HttpClient>((appId, customHttpClient) =>
-                {
-                    callsToCreateTokenProvider++;
-                    Assert.Equal(TestAppId, appId);
-
-                    return tokenProvider.Object;
-                });
-
-            _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object);
-
-            using (var customHttpClient = new HttpClient())
-            {
-                _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object, customHttpClient);
-
-                var logger = new Mock<ILogger>();
-                _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object, null, logger.Object);
-
-                _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object, customHttpClient, logger.Object);
-            }
-
-            Assert.Equal(0, callsToCreateTokenProvider);
-        }
 
         [Fact]
         public void CanGetJwtToken()
