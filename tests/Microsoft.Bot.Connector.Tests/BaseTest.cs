@@ -11,7 +11,6 @@ using Microsoft.Azure.Test.HttpRecorder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
-using Microsoft.Rest.ClientRuntime.Azure.TestFramework;
 using Moq;
 
 namespace Microsoft.Bot.Connector.Tests

@@ -5,7 +5,6 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -133,23 +132,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The Microsoft app password for this credential.
         /// </value>
         public string MicrosoftAppPassword { get; set; }
-
-        /// <summary>
-        /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
-        /// </summary>
-        /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
-        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
-        protected override Lazy<AdalAuthenticator> BuildAuthenticator()
-        {
-            return new Lazy<AdalAuthenticator>(
-                () =>
-                new AdalAuthenticator(
-                    new ClientCredential(MicrosoftAppId, MicrosoftAppPassword),
-                    new OAuthConfiguration() { Authority = OAuthEndpoint, ValidateAuthority = ValidateAuthority, Scope = OAuthScope },
-                    this.CustomHttpClient,
-                    this.Logger),
-                LazyThreadSafetyMode.ExecutionAndPublication);
-        }
 
         /// <inheritdoc/>
         protected override Lazy<IAuthenticator> BuildIAuthenticator()

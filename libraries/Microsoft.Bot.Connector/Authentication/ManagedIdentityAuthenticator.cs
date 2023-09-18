@@ -26,20 +26,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">Client id for the managed identity to be used for acquiring tokens.</param>
         /// <param name="resource">Resource for which to acquire the token.</param>
-        /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
-        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
-        /// <param name="logger">The type used to perform logging.</param>
-        [Obsolete("This method is deprecated, the IJwtTokenProviderFactory argument is now redundant. Use the overload without this argument.", false)]
-        public ManagedIdentityAuthenticator(string appId, string resource, IJwtTokenProviderFactory tokenProviderFactory, HttpClient customHttpClient = null, ILogger logger = null)
-            : this(appId, resource, customHttpClient, logger)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManagedIdentityAuthenticator"/> class.
-        /// </summary>
-        /// <param name="appId">Client id for the managed identity to be used for acquiring tokens.</param>
-        /// <param name="resource">Resource for which to acquire the token.</param>
         /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
         /// <param name="logger">The type used to perform logging.</param>
         public ManagedIdentityAuthenticator(string appId, string resource, HttpClient customHttpClient = null, ILogger logger = null)
