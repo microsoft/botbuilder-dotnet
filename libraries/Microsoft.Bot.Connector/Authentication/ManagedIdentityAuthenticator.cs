@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.AppConfig;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -16,10 +17,9 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class ManagedIdentityAuthenticator : IAuthenticator
     {
-        private readonly string _appId;
         private readonly string _resource;
         private readonly ILogger _logger;
-        private readonly IConfidentialClientApplication _clientApplication;
+        private readonly IManagedIdentityApplication _clientApplication;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityAuthenticator"/> class.
@@ -40,7 +40,6 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(resource));
             }
             
-            _appId = appId;
             _resource = resource;
             _logger = logger ?? NullLogger.Instance;
             _clientApplication = CreateClientApplication(appId, customHttpClient);
@@ -63,10 +62,8 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh)
         {
-            var scopes = new string[] { $"{_resource}/.default" };
             var authResult = await _clientApplication
-                .AcquireTokenForClient(scopes)
-                .WithManagedIdentity(_appId)
+                .AcquireTokenForManagedIdentity(_resource)
                 .WithForceRefresh(forceRefresh)
                 .ExecuteAsync()
                 .ConfigureAwait(false);
@@ -86,10 +83,9 @@ namespace Microsoft.Bot.Connector.Authentication
                 : RetryParams.DefaultBackOff(retryCount);
         }
 
-        private IConfidentialClientApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)
+        private IManagedIdentityApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)
         {
-            var clientBuilder = ConfidentialClientApplicationBuilder.Create(appId)
-               .WithExperimentalFeatures();
+            var clientBuilder = ManagedIdentityApplicationBuilder.Create(ManagedIdentityId.WithUserAssignedClientId(appId));
 
             if (customHttpClient != null)
             {
