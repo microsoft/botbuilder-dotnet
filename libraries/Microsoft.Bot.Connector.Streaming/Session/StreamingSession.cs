@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
@@ -91,7 +92,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 }
             }
 
-            return await responseCompletionSource.Task.DefaultTimeOutAsync().ConfigureAwait(false);            
+            return await responseCompletionSource.Task.DefaultTimeOutAsync().ConfigureAwait(false);
         }
 
         public async Task SendResponseAsync(Header header, StreamingResponse response, CancellationToken cancellationToken)
@@ -358,6 +359,8 @@ namespace Microsoft.Bot.Connector.Streaming.Session
         {
             _ = Task.Run(async () =>
             {
+                // Send an HTTP 202 (Accepted) response right away, otherwise, while under high streaming load, the conversation times out due to not having a response in the request/response time frame.
+                await SendResponseAsync(new Header { Id = id, Type = PayloadTypes.Response }, new StreamingResponse { StatusCode = (int)HttpStatusCode.Accepted }, _connectionCancellationToken).ConfigureAwait(false);
                 var streamingResponse = await _receiver.ProcessRequestAsync(request, null).ConfigureAwait(false);
                 await SendResponseAsync(new Header() { Id = id, Type = PayloadTypes.Response }, streamingResponse, _connectionCancellationToken).ConfigureAwait(false);
 
