@@ -89,6 +89,11 @@ namespace Microsoft.Bot.Connector
         public const string Msteams = "msteams";
 
         /// <summary>
+        /// SharePoint channel.
+        /// </summary>
+        public const string SharePoint = "sharepoint";
+
+        /// <summary>
         /// Skype channel.
         /// </summary>
         public const string Skype = "skype";
