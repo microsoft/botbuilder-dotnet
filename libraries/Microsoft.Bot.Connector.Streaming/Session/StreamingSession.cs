@@ -195,6 +195,11 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
             Log.PayloadReceived(_logger, header);
 
+            if (response.StatusCode == (int)HttpStatusCode.Accepted)
+            {
+                return;
+            }
+
             lock (_receiveSync)
             {
                 if (!response.Streams.Any())

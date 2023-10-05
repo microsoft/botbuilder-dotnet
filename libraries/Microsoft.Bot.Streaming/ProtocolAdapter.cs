@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,6 +76,11 @@ namespace Microsoft.Bot.Streaming
 
         private async Task OnReceiveResponseAsync(Guid id, ReceiveResponse response)
         {
+            if (response.StatusCode == (int)HttpStatusCode.Accepted)
+            {
+                return;
+            }
+
             // we received the response to something, signal it
             await _requestManager.SignalResponseAsync(id, response).ConfigureAwait(false);
         }
