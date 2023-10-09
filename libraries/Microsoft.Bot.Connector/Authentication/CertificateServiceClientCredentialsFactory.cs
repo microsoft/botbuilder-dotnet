@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Connector.Authentication
     public class CertificateServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly X509Certificate2 _certificate;
+        private readonly bool _sendX5c = false;
         private readonly string _appId;
         private readonly string _tenantId;
         private readonly HttpClient _httpClient;
@@ -45,6 +46,22 @@ namespace Microsoft.Bot.Connector.Authentication
             _logger = logger;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
+        /// </summary>
+        /// <param name="certificate">The certificate to use for authentication.</param>
+        /// <param name="sendX5c">If true will send the public certificate to Azure AD along with the token request, so that
+        /// Azure AD can use it to validate the subject name based on a trusted issuer policy.</param>
+        /// <param name="appId">Microsoft application Id related to the certificate.</param>
+        /// <param name="tenantId">The oauth token tenant.</param>
+        /// <param name="httpClient">A custom httpClient to use.</param>
+        /// <param name="logger">A logger instance to use.</param>
+        public CertificateServiceClientCredentialsFactory(X509Certificate2 certificate, bool sendX5c, string appId, string tenantId = null, HttpClient httpClient = null, ILogger logger = null)
+            : this(certificate, appId, tenantId, httpClient, logger)
+        {
+            _sendX5c = sendX5c;
+        }
+
         /// <inheritdoc />
         public override Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken)
         {
@@ -68,7 +85,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return Task.FromResult<ServiceClientCredentials>(
-                new CertificateAppCredentials(_certificate, _appId, _tenantId, _httpClient, _logger));
+                new CertificateAppCredentials(_certificate, _sendX5c, _appId, _tenantId, _httpClient, _logger));
         }
     }
 }
