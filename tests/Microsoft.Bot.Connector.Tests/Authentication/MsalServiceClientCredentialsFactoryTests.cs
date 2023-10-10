@@ -24,8 +24,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         private readonly Mock<IConfiguration> configuration = new Mock<IConfiguration>();
         private readonly Mock<IConfidentialClientApplication> clientApplication = new Mock<IConfidentialClientApplication>();
         
-        // private readonly bool sendX5c = false;
-
         [Fact]
         public void ConstructorTests()
         {
