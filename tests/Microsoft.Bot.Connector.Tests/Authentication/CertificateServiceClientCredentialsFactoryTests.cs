@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async void CanCreateCredentials()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, false, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
             var credentials = await factory.CreateCredentialsAsync(
                 TestAppId, TestAudience, "https://login.microsoftonline.com", true, CancellationToken.None);
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void CannotCreateCredentialsWithInvalidAppId()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, false, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
             Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
                     "InvalidAppId", TestAudience, "https://login.microsoftonline.com", true, CancellationToken.None));
