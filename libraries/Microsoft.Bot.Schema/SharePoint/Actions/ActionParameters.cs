@@ -74,20 +74,22 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <remarks>Use this property if you are working with Submit or Execute action type.</remarks>
         /// <value>key-value pairs for Submit or Execute actions.</value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
-        public Dictionary<string, object> SubmitParameters { get; } = new Dictionary<string, object>();
+        public IDictionary<string, object> SubmitParameters { get; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets or sets the specific media type that should be selected.
         /// </summary>
         /// <remarks>Use this property if you are working with VivaAction.SelectMedia action type.</remarks>
         /// <value>The specific media type that should be selected.</value>
-        public MediaTypes? MediaType { get ; set; }
+        [JsonProperty(PropertyName = "mediaType")]
+        public MediaTypes? MediaType { get; set; }
 
         /// <summary>
         /// Gets or sets a flag to specify if multiple files can be selected.
         /// </summary>
         /// <remarks>Use this property if you are working with VivaAction.SelectMedia action type.</remarks>
         /// <value>Specifies if multiple files can be selected.</value>
+        [JsonProperty(PropertyName = "allowMultipleCapture")]
         public bool? AllowMultipleCapture { get; set; }
 
         /// <summary>
@@ -95,6 +97,15 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// </summary>
         /// <remarks>Use this property if you are working with VivaAction.SelectMedia action type.</remarks>
         /// <value>Max file size.</value>
+        [JsonProperty(PropertyName = "maxSizePerFile")]
         public int MaxSizePerFile { get; set; }
+
+        /// <summary>
+        /// Gets file formats supported for upload.
+        /// </summary>
+        /// <remarks>Use this property if you are working with VivaAction.SelectMedia action type.</remarks>
+        /// <value>File formats supported for upload.</value>
+        [JsonProperty(PropertyName = "supportedFileFormats")]
+        public IList<string> SupportedFileFormats { get; } = new List<string>(); 
     }
 }
