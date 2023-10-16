@@ -119,7 +119,8 @@ namespace Microsoft.Bot.Builder.SharePoint
         /// <param name="aceRequest">The ACE invoke request value payload.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>An empty response.</returns>
+        /// <returns>Card view or no-op action response.</returns>
+        /// <remarks>The handler will fail with 500 status code if the response is of type <see cref="QuickViewHandleActionResponse" />.</remarks>
         protected virtual Task<BaseHandleActionResponse> OnSharePointTaskSetPropertyPaneConfigurationAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
