@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema.SharePoint
 {
     /// <summary>
-    /// SharePoint Quick View Data object.
+    /// SharePoint property pane drop down properties object.
     /// </summary>
     public class PropertyPaneDropDownProperties : IPropertyPaneFieldProperties
     {

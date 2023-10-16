@@ -13,7 +13,7 @@ using static Microsoft.Bot.Schema.SharePoint.PropertyPaneGroupField;
 namespace Microsoft.Bot.Schema.SharePoint
 {
     /// <summary>
-    /// SharePoint Quick View Data object.
+    /// SharePoint property pane link pop up window properties object.
     /// </summary>
     public class PropertyPaneLinkPopupWindowProperties
     {

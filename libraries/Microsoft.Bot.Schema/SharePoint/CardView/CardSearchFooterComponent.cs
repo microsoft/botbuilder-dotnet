@@ -54,6 +54,6 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// </summary>
         /// <value>Selection action.</value>
         [JsonProperty(PropertyName = "onSelection")]
-        public Action OnSelection { get; set; }
+        public IAction OnSelection { get; set; }
     }
 }

@@ -13,7 +13,7 @@ using static Microsoft.Bot.Schema.SharePoint.PropertyPaneDropDownOption;
 namespace Microsoft.Bot.Schema.SharePoint
 {
     /// <summary>
-    /// SharePoint Quick View Data object.
+    /// SharePoint property pane choice group option object.
     /// </summary>
     public class PropertyPaneChoiceGroupOption
     {

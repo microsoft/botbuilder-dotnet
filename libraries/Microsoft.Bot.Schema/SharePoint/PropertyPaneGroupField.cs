@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema.SharePoint
 {
     /// <summary>
-    /// SharePoint Quick View Data object.
+    /// SharePoint property pane group field object.
     /// </summary>
     public class PropertyPaneGroupField
     {
@@ -102,12 +102,5 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <value>This value is the target property of the property pane field.</value>
         [JsonProperty(PropertyName = "targetProperty")]
         public string TargetProperty { get; set; }
-
-        /// <summary>
-        /// Gets or Sets a value indicating whether group name should be hidden of type <see cref="bool"/>.
-        /// </summary>
-        /// <value>This value indicates whether the property pane field group name is hidden.</value>
-        [JsonProperty(PropertyName = "isGroupNameHidden")]
-        public bool IsGroupNameHidden { get; set; }
     }
 }

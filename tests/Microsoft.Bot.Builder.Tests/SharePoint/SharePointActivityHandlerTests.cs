@@ -190,10 +190,10 @@ namespace Microsoft.Bot.Builder.SharePoint.Tests
             public List<string> Record { get; } = new List<string>();
 
             // Invoke
-            protected override Task<GetCardViewResponse> OnSharePointTaskGetCardViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
+            protected override Task<CardViewResponse> OnSharePointTaskGetCardViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new GetCardViewResponse(GetCardViewResponse.CardViewTemplateType.PrimaryTextCardView));
+                return Task.FromResult(new CardViewResponse());
             }
 
             protected override Task<GetPropertyPaneConfigurationResponse> OnSharePointTaskGetPropertyPaneConfigurationAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
@@ -202,16 +202,16 @@ namespace Microsoft.Bot.Builder.SharePoint.Tests
                 return Task.FromResult(new GetPropertyPaneConfigurationResponse());
             }
 
-            protected override Task<GetQuickViewResponse> OnSharePointTaskGetQuickViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
+            protected override Task<QuickViewResponse> OnSharePointTaskGetQuickViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new GetQuickViewResponse());
+                return Task.FromResult(new QuickViewResponse());
             }
 
-            protected override Task OnSharePointTaskSetPropertyPaneConfigurationAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
+            protected override Task<BaseHandleActionResponse> OnSharePointTaskSetPropertyPaneConfigurationAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.CompletedTask;
+                return Task.FromResult<BaseHandleActionResponse>(new NoOpHandleActionResponse());
             }
 
             protected override Task<BaseHandleActionResponse> OnSharePointTaskHandleActionAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)

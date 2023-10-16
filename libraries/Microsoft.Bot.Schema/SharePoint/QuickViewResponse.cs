@@ -16,22 +16,22 @@ namespace Microsoft.Bot.Schema.SharePoint
     /// <summary>
     /// SharePoint GetQuickView response object.
     /// </summary>
-    public class GetQuickViewResponse
+    public class QuickViewResponse
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetQuickViewResponse"/> class.
+        /// Initializes a new instance of the <see cref="QuickViewResponse"/> class.
         /// </summary>
-        public GetQuickViewResponse()
+        public QuickViewResponse()
         {
             // Do nothing
         }
 
         /// <summary>
-        /// Gets or Sets data for the quick view of type <see cref="QuickViewData"/>.
+        /// Gets or Sets data for the quick view.
         /// </summary>
         /// <value>This value is the data of the quick view response.</value>
         [JsonProperty(PropertyName = "data")]
-        public QuickViewData Data { get; set; }
+        public object Data { get; set; }
 
         /// <summary>
         /// Gets or Sets data for the quick view template of type <see cref="AdaptiveCard"/>.
@@ -48,10 +48,24 @@ namespace Microsoft.Bot.Schema.SharePoint
         public string ViewId { get; set; }
 
         /// <summary>
-        /// Gets or Sets stackSize of type <see cref="int"/>.
+        /// Gets or Sets title of type <see cref="string"/>.
         /// </summary>
-        /// <value>This value is the stack size of the quick view response.</value>
-        [JsonProperty(PropertyName = "stackSize")]
-        public int StackSize { get; set; }
+        /// <value>This value is the title of the quick view response.</value>
+        [JsonProperty(PropertyName = "title")]
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the external link parameters of type <see cref="ExternalLinkActionParameters"/>.
+        /// </summary>
+        /// <value>This value is the external link parameters of the quick view response.</value>
+        [JsonProperty(PropertyName = "externalLink")]
+        public ExternalLinkActionParameters ExternalLink { get; set; }
+
+        /// <summary>
+        /// Gets or Sets focus parameters of type <see cref="FocusParameters"/>.
+        /// </summary>
+        /// <value>This value is the focus parameters of the quick view response.</value>
+        [JsonProperty(PropertyName = "focusParameters")]
+        public FocusParameters FocusParameters { get; set; }
     }
 }

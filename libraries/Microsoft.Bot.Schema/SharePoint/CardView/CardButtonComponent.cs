@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// </summary>
         /// <value>Button's action.</value>
         [JsonProperty(PropertyName = "action")]
-        public Action Action { get; set; }
+        public IAction Action { get; set; }
 
         /// <summary>
         /// Gets or sets the text to display.

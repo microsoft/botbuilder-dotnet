@@ -25,6 +25,6 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// </summary>
         /// <value>Card view render arguments.</value>
         [JsonProperty(PropertyName = "renderArguments")]
-        public new GetCardViewResponse RenderArguments { get; set; }
+        public new CardViewResponse RenderArguments { get; set; }
     }
 }

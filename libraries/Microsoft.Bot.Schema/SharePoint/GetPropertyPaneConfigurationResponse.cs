@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema.SharePoint
 {
     /// <summary>
-    /// SharePoint GetQuickView response object.
+    /// SharePoint GetPropertyPaneConfiguration response object.
     /// </summary>
     public class GetPropertyPaneConfigurationResponse
     {

@@ -12,15 +12,22 @@ namespace Microsoft.Bot.Schema.SharePoint
     /// <summary>
     /// SharePoint Card View Data object.
     /// </summary>
-    public class CardViewData
+    public class CardViewResponse
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CardViewData"/> class.
+        /// Initializes a new instance of the <see cref="CardViewResponse"/> class.
         /// </summary>
-        public CardViewData()
+        public CardViewResponse()
         {
             // Do nothing
         }
+
+        /// <summary>
+        /// Gets or Sets AceData for the card view of type <see cref="AceData"/>.
+        /// </summary>
+        /// <value>This value is the ace data of the card view response.</value>
+        [JsonProperty(PropertyName = "aceData")]
+        public AceData AceData { get; set; }
 
         /// <summary>
         /// Gets or sets the card view configuration.
@@ -34,6 +41,13 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// </summary>
         /// <value>Action to invoke.</value>
         [JsonProperty(PropertyName = "onCardSelection")]
-        public Action OnCardSelection { get; set; }
+        public IOnCardSelectionAction OnCardSelection { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the view Id of type <see cref="string"/>.
+        /// </summary>
+        /// <value>This value is the view id of the card view.</value>
+        [JsonProperty(PropertyName = "viewId")]
+        public string ViewId { get; set; }
     }
 }

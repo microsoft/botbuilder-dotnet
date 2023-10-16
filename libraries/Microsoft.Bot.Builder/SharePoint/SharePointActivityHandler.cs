@@ -56,8 +56,9 @@ namespace Microsoft.Bot.Builder.SharePoint
                             return CreateInvokeResponse(await OnSharePointTaskGetPropertyPaneConfigurationAsync(turnContext, SafeCast<AceRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "cardExtension/setPropertyPaneConfiguration":
-                            await OnSharePointTaskSetPropertyPaneConfigurationAsync(turnContext, SafeCast<AceRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                            return CreateInvokeResponse();
+                            BaseHandleActionResponse setPropPaneConfigResponse = await OnSharePointTaskSetPropertyPaneConfigurationAsync(turnContext, SafeCast<AceRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                            ValidateSetPropertyPaneConfigurationResponse(setPropPaneConfigResponse);
+                            return CreateInvokeResponse(setPropPaneConfigResponse);
 
                         case "cardExtension/handleAction":
                             return CreateInvokeResponse(await OnSharePointTaskHandleActionAsync(turnContext, SafeCast<AceRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.SharePoint
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A Card View Response for the request.</returns>
-        protected virtual Task<GetCardViewResponse> OnSharePointTaskGetCardViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
+        protected virtual Task<CardViewResponse> OnSharePointTaskGetCardViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
@@ -93,7 +94,7 @@ namespace Microsoft.Bot.Builder.SharePoint
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A Quick View Response for the request.</returns>
-        protected virtual Task<GetQuickViewResponse> OnSharePointTaskGetQuickViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
+        protected virtual Task<QuickViewResponse> OnSharePointTaskGetQuickViewAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
@@ -119,7 +120,7 @@ namespace Microsoft.Bot.Builder.SharePoint
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>An empty response.</returns>
-        protected virtual Task OnSharePointTaskSetPropertyPaneConfigurationAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
+        protected virtual Task<BaseHandleActionResponse> OnSharePointTaskSetPropertyPaneConfigurationAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
@@ -151,6 +152,14 @@ namespace Microsoft.Bot.Builder.SharePoint
             }
 
             return obj.ToObject<T>();
+        }
+
+        private void ValidateSetPropertyPaneConfigurationResponse(BaseHandleActionResponse response)
+        {
+            if (response is QuickViewHandleActionResponse)
+            {
+                throw new InvokeResponseException(HttpStatusCode.InternalServerError, "Response for SetPropertyPaneConfiguration action can't be of QuickView type.");
+            }
         }
     }
 }
