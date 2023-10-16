@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         Default,
 
         /// <summary>
-        /// Positive (primary) style..
+        /// Positive (primary) style.
         /// </summary>
         Positive
     }

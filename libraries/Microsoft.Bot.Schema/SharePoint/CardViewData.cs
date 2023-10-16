@@ -23,17 +23,17 @@ namespace Microsoft.Bot.Schema.SharePoint
         }
 
         /// <summary>
-        /// Gets or Sets the action buttons of type <see cref="ActionButton"/>.
+        /// Gets or sets the card view configuration.
         /// </summary>
-        /// <value>This value is the action buttons of the card view.</value>
-        [JsonProperty(PropertyName = "actionButtons")]
-        public IEnumerable<ActionButton> ActionButtons { get; set; }
+        /// <value>Card view configuration.</value>
+        [JsonProperty(PropertyName = "cardViewParameters")]
+        public CardViewParameters CardViewParameters { get; set; }
 
         /// <summary>
-        /// Gets or Sets the primary text of type <see cref="string"/>.
+        /// Gets or sets action to invoke when the card is selected.
         /// </summary>
-        /// <value>This value is the primary text of the card view.</value>
-        [JsonProperty(PropertyName = "primaryText")]
-        public string PrimaryText { get; set; }
+        /// <value>Action to invoke.</value>
+        [JsonProperty(PropertyName = "onCardSelection")]
+        public Action OnCardSelection { get; set; }
     }
 }
