@@ -306,6 +306,52 @@ namespace Microsoft.Bot.Schema.SharePoint
             };
         }
 
+        /// <summary>
+        /// Helper method to create a Sign In Card View.
+        /// </summary>
+        /// <param name="cardBar">Card bar component.</param>
+        /// <param name="header">Text component to display as header.</param>
+        /// <param name="body">Text component to display as body.</param>
+        /// <param name="footer">Sign in button.</param>
+        /// <returns>Card view configuration.</returns>
+        /// <remarks>Only Title property of the Sign in button is used.</remarks>
+        public static CardViewParameters SignInCardViewParameters(
+            CardBarComponent cardBar,
+            CardTextComponent header,
+            CardTextComponent body,
+            CardButtonComponent footer)
+        {
+            // Validate parameters
+            if (cardBar == null)
+            {
+                throw new ArgumentNullException(nameof(cardBar));
+            }
+
+            if (header == null)
+            {
+                throw new ArgumentNullException(nameof(header));
+            }
+
+            if (body == null)
+            {
+                throw new ArgumentNullException(nameof(body));
+            }
+
+            if (footer == null)
+            {
+                throw new ArgumentNullException(nameof(footer));
+            }
+
+            return new CardViewParameters()
+            {
+                CardViewType = "signIn",
+                CardBar = new List<CardBarComponent> { cardBar },
+                Header = new List<CardTextComponent> { header },
+                Body = new List<CardTextComponent> { body },
+                Footer = new List<CardButtonComponent> { footer }
+            };
+        }
+
         private static void ValidateGenericCardViewFooterConfiguration(IList<BaseCardComponent> footer)
         {
             if (footer == null)

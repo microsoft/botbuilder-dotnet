@@ -24,11 +24,11 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Initializes a new instance of the <see cref="AceRequest"/> class.
         /// </summary>
         /// <param name="data">ACE request data.</param>
-        /// <param name="customProperties">ACE properties data.</param>
-        public AceRequest(object data = default, object customProperties = default)
+        /// <param name="properties">ACE properties data.</param>
+        public AceRequest(object data = default, object properties = default)
         { 
             Data = data;
-            CustomProperties = customProperties;
+            Properties = properties;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Gets or sets ACE properties data. Free payload with key-value pairs.
         /// </summary>
         /// <value>ACE Properties object.</value>
-        [JsonProperty(PropertyName = "customProperties")]
-        public object CustomProperties { get; set; }
+        [JsonProperty(PropertyName = "properties")]
+        public object Properties { get; set; }
     }
 }
