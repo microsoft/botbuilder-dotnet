@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// - One primary text field
         /// - Zero or one button in the Medium card size, up to two buttons in Large card size; or text input.
         /// </remarks>
-        public static CardViewParameters PrimaryTextCardViewParameters(
+        public static CardViewParameters BasicCardViewParameters(
             CardBarComponent cardBar,
             CardTextComponent header,
             IList<BaseCardComponent> footer)
@@ -312,9 +312,8 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <param name="cardBar">Card bar component.</param>
         /// <param name="header">Text component to display as header.</param>
         /// <param name="body">Text component to display as body.</param>
-        /// <param name="footer">Sign in button.</param>
+        /// <param name="footer">Complete Sign in button.</param>
         /// <returns>Card view configuration.</returns>
-        /// <remarks>Only Title property of the Sign in button is used.</remarks>
         public static CardViewParameters SignInCardViewParameters(
             CardBarComponent cardBar,
             CardTextComponent header,
