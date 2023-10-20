@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.SharePoint
         {
             try
             {
-                if (turnContext.Activity.Name == null && turnContext.Activity.ChannelId == Channels.SharePoint)
+                if (turnContext.Activity.Name == null)
                 {
                     throw new NotSupportedException();
                 }
