@@ -35,8 +35,8 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Initializes a new instance of the <see cref="CardButtonComponent"/> class.
         /// </summary>
         public CardButtonComponent()
+            : base(CardComponentName.CardButton)
         {
-            this.ComponentName = CardComponentName.CardButton;
         }
 
         /// <summary>

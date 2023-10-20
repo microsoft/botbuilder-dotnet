@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Gets or Sets a value indicating whether the location on the map can be chosen of type <see cref="bool"/>. 
         /// </summary>
         /// <value>This value indicates whether a location on the map can be chosen.</value>
-        [JsonProperty(PropertyName = "ChooseLocationOnMap")]
+        [JsonProperty(PropertyName = "chooseLocationOnMap")]
         public bool ChooseLocationOnMap { get; set; }
     }
 }

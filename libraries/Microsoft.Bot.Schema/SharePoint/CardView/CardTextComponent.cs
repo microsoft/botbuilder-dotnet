@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Schema.SharePoint
 {
@@ -17,8 +18,8 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Initializes a new instance of the <see cref="CardTextComponent"/> class.
         /// </summary>
         public CardTextComponent()
+            : base(CardComponentName.Text)
         {
-            this.ComponentName = CardComponentName.Text;
         }
 
         /// <summary>

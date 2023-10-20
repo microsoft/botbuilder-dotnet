@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Schema.SharePoint
 {
@@ -17,8 +18,8 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Initializes a new instance of the <see cref="CardTextInputComponent"/> class.
         /// </summary>
         public CardTextInputComponent()
+            : base(CardComponentName.TextInput)
         {
-            this.ComponentName = CardComponentName.TextInput;
         }
 
         /// <summary>
@@ -46,12 +47,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Gets or sets properties for an optional icon, displayed in the left end of the text input.
         /// </summary>
         /// <value>Properties for an optional icon.</value>
+        [JsonProperty(PropertyName = "iconBefore")]
         public CardImage IconBefore { get; set; }
 
         /// <summary>
         /// Gets or sets properties for an optional icon, displayed in the right end of the text input.
         /// </summary>
         /// <value>Properties for an optional icon.</value>
+        [JsonProperty(PropertyName = "iconAfter")]
         public CardImage IconAfter { get; set; }
     }
 }

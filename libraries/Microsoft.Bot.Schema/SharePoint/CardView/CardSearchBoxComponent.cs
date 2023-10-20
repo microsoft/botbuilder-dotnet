@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Schema.SharePoint
 {
@@ -17,8 +18,8 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Initializes a new instance of the <see cref="CardSearchBoxComponent"/> class.
         /// </summary>
         public CardSearchBoxComponent()
+            : base(CardComponentName.SearchBox)
         {
-            this.ComponentName = CardComponentName.SearchBox;
         }
 
         /// <summary>

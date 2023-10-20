@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Schema.SharePoint
             else
             {
                 // single component should be either a button or a text input
-                hasError = !(footer[0] is CardButtonComponent) || !(footer[0] is CardTextInputComponent);
+                hasError = !(footer[0] is CardButtonComponent) && !(footer[0] is CardTextInputComponent);
             }
 
             if (hasError)
