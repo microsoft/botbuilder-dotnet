@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Schema.SharePoint
         public string Value { get; set; }
 
         /// <summary>
-        /// Gets or Sets the aria label of type <see cref="string"/>.
+        /// Gets or Sets optional ariaLabel flag. Text for screen-reader to announce regardless of toggle state. Of type <see cref="string"/>.
         /// </summary>
         /// <value>This value is the aria label of the slider.</value>
         [JsonProperty(PropertyName = "ariaLabel")]

@@ -39,18 +39,11 @@ namespace Microsoft.Bot.Schema.SharePoint
         public string Value { get; set; }
 
         /// <summary>
-        /// Gets or Sets the aria label of type <see cref="string"/>.
+        /// Gets or Sets optional ariaLabel flag. Text for screen-reader to announce regardless of toggle state. Of type <see cref="string"/>.
         /// </summary>
         /// <value>This value is the aria label of the text field.</value>
         [JsonProperty(PropertyName = "ariaLabel")]
         public string AriaLabel { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the amount of time to wait before validating after the users stop typing in ms of type <see cref="int"/>.
-        /// </summary>
-        /// <value>This value is the deferred validation time of the text field.</value>
-        [JsonProperty(PropertyName = "deferredValidationTime")]
-        public int DeferredValidationTime { get; set; }
 
         /// <summary>
         /// Gets or Sets the description of type <see cref="string"/>.
@@ -121,19 +114,5 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <value>This value indicates whether the text field is underlined.</value>
         [JsonProperty(PropertyName = "underlined")]
         public bool Underlined { get; set; }
-
-        /// <summary>
-        /// Gets or Sets a value indicating whether to run validation when the PropertyPaneTextField is focused of type <see cref="bool"/>.
-        /// </summary>
-        /// <value>This value indicates whether the text field is validated when gaining focus.</value>
-        [JsonProperty(PropertyName = "validateOnFocusIn")]
-        public bool ValidateOnFocusIn { get; set; }
-
-        /// <summary>
-        /// Gets or Sets a value indicating whether to run validation when the PropertyPaneTextField is out of focus or on blur of type <see cref="bool"/>.
-        /// </summary>
-        /// <value>This value indicates whether the text field is validated when losing focus.</value>
-        [JsonProperty(PropertyName = "validateOnFocusOut")]
-        public bool ValidateOnFocusOut { get; set; }
     }
 }

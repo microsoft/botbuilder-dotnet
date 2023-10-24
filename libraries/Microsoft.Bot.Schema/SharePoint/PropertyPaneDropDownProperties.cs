@@ -25,14 +25,14 @@ namespace Microsoft.Bot.Schema.SharePoint
         }
 
         /// <summary>
-        /// Gets or Sets the aria label of type <see cref="string"/>.
+        /// Gets or Sets optional ariaLabel flag. Text for screen-reader to announce regardless of toggle state. Of type <see cref="string"/>.
         /// </summary>
         /// <value>This value is the aria label of the drop down.</value>
         [JsonProperty(PropertyName = "ariaLabel")]
         public string AriaLabel { get; set; }
 
         /// <summary>
-        /// Gets or Sets an element's number or position in the current set of controls. Maps to native aria-posinset attribute. It starts from 1 of type <see cref="int"/>.
+        /// Gets or Sets an element's number or position in the current set of controls. Maps to native aria-positionset attribute. It starts from 1 of type <see cref="int"/>.
         /// </summary>
         /// <value>This value is the aria position in set of the drop down.</value>
         [JsonProperty(PropertyName = "ariaPositionInSet")]
