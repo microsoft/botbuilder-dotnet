@@ -14,19 +14,13 @@ namespace Microsoft.Bot.Schema.SharePoint
     /// <summary>
     /// SharePoint get location action.
     /// </summary>
-    public class GetLocationAction : IAction, IOnCardSelectionAction
+    public class GetLocationAction : BaseAction, IAction, IOnCardSelectionAction
     {
-#pragma warning disable CA1823 // Avoid unused private fields
-#pragma warning disable CS0414 // The field 'GetLocationAction.type' is assigned but its value is never used
-        [JsonProperty(PropertyName = "type")]
-        private string type = "VivaAction.GetLocation";
-#pragma warning restore CS0414 // The field 'GetLocationAction.type' is assigned but its value is never used
-#pragma warning restore CA1823 // Avoid unused private fields
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GetLocationAction"/> class.
         /// </summary>
         public GetLocationAction()
+            : base("VivaAction.GetLocation")
         {
             // Do nothing
         }

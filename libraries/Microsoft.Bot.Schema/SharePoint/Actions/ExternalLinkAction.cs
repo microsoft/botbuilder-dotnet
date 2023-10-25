@@ -14,19 +14,13 @@ namespace Microsoft.Bot.Schema.SharePoint
     /// <summary>
     /// SharePoint external link action.
     /// </summary>
-    public class ExternalLinkAction : IAction, IOnCardSelectionAction
+    public class ExternalLinkAction : BaseAction, IAction, IOnCardSelectionAction
     {
-#pragma warning disable CA1823 // Avoid unused private fields
-#pragma warning disable CS0414 // The field 'ExternalLinkAction.type' is assigned but its value is never used
-        [JsonProperty(PropertyName = "type")]
-        private string type = "ExternalLink";
-#pragma warning restore CS0414 // The field 'ExternalLinkAction.type' is assigned but its value is never used
-#pragma warning restore CA1823 // Avoid unused private fields
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalLinkAction"/> class.
         /// </summary>
         public ExternalLinkAction()
+            : base("ExternalLink")
         {
             // Do nothing
         }
