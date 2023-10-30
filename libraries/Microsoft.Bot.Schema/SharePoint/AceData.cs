@@ -52,11 +52,12 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// Gets or Sets the version of the data of type <see cref="string"/>.
         /// </summary>
         /// <value>This value is the version of the adaptive card extension.</value>
+        /// <remarks>Although there is no restriction on the format of this property, it is recommended to use semantic versioning.</remarks>
         [JsonProperty(PropertyName = "dataVersion")]
         public string DataVersion { get; set; }
 
         /// <summary>
-        /// Gets or Sets the id of type <see cref="string"/>.
+        /// Gets or Sets the unique id (Guid) of type <see cref="string"/>.
         /// </summary>
         /// <value>This value is the ID of the adaptive card extension.</value>
         [JsonProperty(PropertyName = "id")]
