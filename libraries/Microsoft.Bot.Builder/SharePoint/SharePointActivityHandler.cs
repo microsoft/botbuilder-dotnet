@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.SharePoint
         /// <param name="aceRequest">The ACE invoke request value payload.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A view response.</returns>
+        /// <returns>A handle action response.</returns>
         protected virtual Task<BaseHandleActionResponse> OnSharePointTaskHandleActionAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
