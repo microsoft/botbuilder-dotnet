@@ -14,11 +14,13 @@ namespace Microsoft.Bot.Schema.SharePoint
     public class NoOpHandleActionResponse : BaseHandleActionResponse
     {
         /// <summary>
-        /// Gets the response type.
+        /// Initializes a new instance of the <see cref="NoOpHandleActionResponse"/> class.
         /// </summary>
-        /// <value>Card.</value>
-        [JsonProperty(PropertyName = "responseType")]
-        public override ViewResponseType ResponseType => ViewResponseType.NoOp;
+        public NoOpHandleActionResponse() 
+            : base(ViewResponseType.NoOp)
+        {
+            // Do nothing
+        }
 
         /// <summary>
         /// Gets or sets card view render arguments.

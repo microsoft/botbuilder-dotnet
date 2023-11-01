@@ -34,14 +34,23 @@ namespace Microsoft.Bot.Schema.SharePoint
     /// <summary>
     /// Response returned when handling a client-side action on an Adaptive Card Extension.
     /// </summary>
-    public abstract class BaseHandleActionResponse
+    public class BaseHandleActionResponse
     {
         /// <summary>
         /// Gets the response type.
         /// </summary>
         /// <value>Response type.</value>
         [JsonProperty(PropertyName = "responseType")]
-        public abstract ViewResponseType ResponseType { get; }
+        private readonly ViewResponseType responseType;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseHandleActionResponse"/> class.
+        /// </summary>
+        /// <param name="responseType">Response type.</param>
+        protected BaseHandleActionResponse(ViewResponseType responseType)
+        {
+            this.responseType = responseType;
+        }
 
         /// <summary>
         /// Gets or sets render arguments.
