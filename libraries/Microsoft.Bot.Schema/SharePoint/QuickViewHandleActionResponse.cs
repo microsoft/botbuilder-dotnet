@@ -14,11 +14,13 @@ namespace Microsoft.Bot.Schema.SharePoint
     public class QuickViewHandleActionResponse : BaseHandleActionResponse
     {
         /// <summary>
-        /// Gets the response type.
+        /// Initializes a new instance of the <see cref="QuickViewHandleActionResponse"/> class.
         /// </summary>
-        /// <value>Card.</value>
-        [JsonProperty(PropertyName = "responseType")]
-        public override ViewResponseType ResponseType => ViewResponseType.QuickView;
+        public QuickViewHandleActionResponse() 
+            : base(ViewResponseType.QuickView)
+        {
+            // Do nothing
+        }
 
         /// <summary>
         /// Gets or sets card view render arguments.
