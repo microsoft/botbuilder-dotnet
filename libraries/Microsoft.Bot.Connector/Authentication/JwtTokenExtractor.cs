@@ -285,10 +285,12 @@ namespace Microsoft.Bot.Connector.Authentication
                         throw new UnauthorizedAccessException($"Could not validate additional endorsement for key: {keyId} with endorsements: {string.Join(",", endorsementsForKey)}. Expected endorsements: {string.Join(",", requiredEndorsements)}");
                     }
                 }
-                else {
+                else 
+                {
                     // If we are to skip endorsement check, we want to double check we are in the emulator by explictly checking the token
                     // Instead of assuming that the token is from the emulator based on the empty endorsements collection
-                    if (!EmulatorValidation.IsTokenFromEmulator("Bearer " + jwtToken)) // The "Bearer " is required for the IsTokenFromEmulator method
+                    var originalAuthHeader = "Bearer " + jwtToken; // We have to add the Bearer scheme back in for the Emulator check
+                    if (!EmulatorValidation.IsTokenFromEmulator(originalAuthHeader)) 
                     {
                         throw new UnauthorizedAccessException("Could not validate endorsement key.");
                     }
