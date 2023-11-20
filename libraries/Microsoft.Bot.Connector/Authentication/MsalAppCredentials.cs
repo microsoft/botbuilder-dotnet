@@ -82,7 +82,6 @@ namespace Microsoft.Bot.Connector.Authentication
             _clientApplication = ConfidentialClientApplicationBuilder.Create(appId)
                 .WithAuthority(authority ?? OAuthEndpoint, validateAuthority)
                 .WithClientSecret(appPassword)
-                .WithCacheOptions(CacheOptions.EnableSharedCacheOptions)
                 .Build();
         }
 
@@ -107,7 +106,6 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             _clientApplication = ConfidentialClientApplicationBuilder.Create(appId)
                 .WithAuthority(authority ?? OAuthEndpoint, validateAuthority)
-                .WithCacheOptions(CacheOptions.EnableSharedCacheOptions)
                 .WithCertificate(certificate)
                 .Build();
         }
@@ -136,7 +134,6 @@ namespace Microsoft.Bot.Connector.Authentication
             _clientApplication = ConfidentialClientApplicationBuilder.Create(appId)
                 .WithAuthority(authority ?? OAuthEndpoint, validateAuthority)
                 .WithCertificate(certificate, sendX5c)
-                .WithCacheOptions(CacheOptions.EnableSharedCacheOptions)
                 .Build();
         }
 
