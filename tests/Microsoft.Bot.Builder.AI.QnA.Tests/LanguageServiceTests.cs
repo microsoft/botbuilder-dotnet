@@ -1119,17 +1119,26 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [Trait("TestCategory", "LanguageService")]
         public async void LanguageService_Test_NotSpecifiedQnAServiceType()
         {
+            AggregateException result = null;
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("LanguageService_ReturnsAnswer.json"));
 
             var rootDialog = CreateLanguageServiceActionDialog(mockHttp, true, ServiceType.QnAMaker);
 
-            await Assert.ThrowsAsync<HttpRequestException>(() => CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
-        .Send("What happens if I pass empty qnaServiceType with host of Language Service")
-        .StartTestAsync());
+            try
+            {
+                await CreateFlow(rootDialog, nameof(LanguageServiceAction_MultiTurnDialogBase_WithNoAnswer))
+                    .Send("What happens if I pass empty qnaServiceType with host of Language Service")
+                    .StartTestAsync();
+            }
+            catch (AggregateException ex)
+            {
+                result = ex;
+            }
 
-            //Assert.Throws<ArgumentOutOfRangeException>(() => new CustomQuestionAnswering(endpoint, qnaMakerOptions));
+            Assert.Equal(2, result.InnerExceptions.Count);
+            Assert.All(result.InnerExceptions, (e) => Assert.IsType<HttpRequestException>(e));
         }
 
         /// <summary>
