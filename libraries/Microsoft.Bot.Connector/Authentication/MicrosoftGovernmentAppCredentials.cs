@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 
@@ -67,6 +68,18 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
+        /// Gets or sets tenant to be used for channel authentication.
+        /// </summary>
+        /// <value>
+        /// Tenant to be used for channel authentication.
+        /// </value>
+        public override string ChannelAuthTenant 
+        {
+            get => string.IsNullOrEmpty(AuthTenant) ? GovernmentAuthenticationConstants.DefaultChannelAuthTenant : AuthTenant;
+            set => base.ChannelAuthTenant = value; 
+        }
+
+        /// <summary>
         /// Gets the OAuth endpoint to use.
         /// </summary>
         /// <value>
@@ -74,7 +87,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </value>
         public override string OAuthEndpoint
         {
-            get { return GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl; }
-        }
+            get => string.Format(CultureInfo.InvariantCulture, GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
+    }
     }
 }

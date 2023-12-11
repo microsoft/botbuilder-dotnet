@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// Tenant to be used for channel authentication.
         /// </value>
-        public string ChannelAuthTenant
+        public virtual string ChannelAuthTenant
         {
             get => string.IsNullOrEmpty(AuthTenant) ? AuthenticationConstants.DefaultChannelAuthTenant : AuthTenant;
             set

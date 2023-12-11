@@ -19,6 +19,18 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/MicrosoftServices.onmicrosoft.us";
 
         /// <summary>
+        /// TO CHANNEL FROM BOT: Login URL template string. Bot developer may specify
+        /// which tenant to obtain an access token from. By default, the channels only
+        /// accept tokens from "MicrosoftServices.onmicrosoft.us". For more details see https://aka.ms/bots/tenant-restriction.
+        /// </summary>
+        public const string ToChannelFromBotLoginUrlTemplate = "https://login.microsoftonline.us/{0}";
+
+        /// <summary>
+        /// The default tenant to acquire bot to channel token from.
+        /// </summary>
+        public const string DefaultChannelAuthTenant = "MicrosoftServices.onmicrosoft.us";
+
+        /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request.
         /// </summary>
         public const string ToChannelFromBotOAuthScope = "https://api.botframework.us";
@@ -42,5 +54,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO BOT FROM GOVERNMENT EMULATOR: OpenID metadata document for tokens coming from MSA.
         /// </summary>
         public const string ToBotFromEmulatorOpenIdMetadataUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0/.well-known/openid-configuration";
+
+        /// <summary>
+        /// TO BOT FROM GOVERNMENT AseChannel: OpenID metadata document for tokens coming from MSA.
+        /// </summary>
+        public const string ToBotFromAseChannelOpenIdMetadataUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0/.well-known/openid-configuration";
     }
 }
