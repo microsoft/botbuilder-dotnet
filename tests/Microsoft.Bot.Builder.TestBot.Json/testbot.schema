@@ -3607,7 +3607,8 @@
                         "POST",
                         "PATCH",
                         "PUT",
-                        "DELETE"
+                        "DELETE",
+                        "HEAD"
                     ],
                     "examples": [
                         "GET",
@@ -9216,7 +9217,8 @@
                         "POST",
                         "PATCH",
                         "PUT",
-                        "DELETE"
+                        "DELETE",
+                        "HEAD"
                     ],
                     "examples": [
                         "GET",
