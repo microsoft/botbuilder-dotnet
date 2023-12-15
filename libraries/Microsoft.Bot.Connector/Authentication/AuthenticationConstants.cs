@@ -71,6 +71,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ToBotFromEmulatorOpenIdMetadataUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
 
         /// <summary>
+        /// TO BOT FROM AseChannel: OpenID metadata document for tokens coming from MSA.
+        /// </summary>
+        public const string ToBotFromAseChannelOpenIdMetadataUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
+
+        /// <summary>
         /// TO BOT FROM ENTERPRISE CHANNEL: OpenID metadata document for tokens coming from MSA.
         /// </summary>
         public const string ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat = "https://{0}.enterprisechannel.botframework.com/v1/.well-known/openidconfiguration";
