@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
@@ -510,6 +512,59 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             // AuthenticationConfiguration with no ClaimsValidator and a none Skill Claim, should NOT throw UnauthorizedAccessException
             // None Skill do not need a ClaimsValidator.
             await JwtTokenValidation.ValidateClaimsAsync(new AuthenticationConfiguration(), claims);
+        }
+
+        [Fact]
+        public void ValidationMetadataUrlTest_AseChannel_USGov()
+        {
+            var configMock = new Mock<IConfiguration>();
+            var configSectionMockChannelService = new Mock<IConfigurationSection>();
+            configSectionMockChannelService.Setup(o => o.Value).Returns(GovernmentAuthenticationConstants.ChannelService);
+            configMock.Setup(c => c.GetSection("ChannelService")).Returns(configSectionMockChannelService.Object);
+            AseChannelValidation.Init(configMock.Object);
+
+            Assert.Equal(GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl, typeof(AseChannelValidation).GetField("_metadataUrl", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic).GetValue(default));
+        }
+
+        [Fact]
+        public void ValidationMetadataUrlTest_AseChannel_Public()
+        {
+            var configMock = new Mock<IConfiguration>();
+            var configSectionMock = new Mock<IConfigurationSection>();
+            configSectionMock.Setup(o => o.Value).Returns(string.Empty);
+            configMock.Setup(c => c.GetSection("ChannelService")).Returns(configSectionMock.Object);
+            AseChannelValidation.Init(configMock.Object);
+
+            Assert.Equal(AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl, typeof(AseChannelValidation).GetField("_metadataUrl", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic).GetValue(default));
+        }
+
+        [Fact]
+        public void ValidationIssueUrlTest_AseChannel()
+        {
+            var configMock = new Mock<IConfiguration>();
+            var configSectionMock = new Mock<IConfigurationSection>();
+            configSectionMock.Setup(o => o.Value).Returns("testTenantId");
+            configMock.Setup(c => c.GetSection("MicrosoftAppTenantId")).Returns(configSectionMock.Object);
+            AseChannelValidation.Init(configMock.Object);
+
+            var tenantIds = new string[]
+            {
+                "testTenantId",
+                "f8cdef31-a31e-4b4a-93e4-5f571e91255a", // US Gov MicrosoftServices.onmicrosoft.us
+                "d6d49420-f39b-4df7-a1dc-d59a935871db" // Public botframework.com
+            };
+            foreach (var tenantId in tenantIds)
+            {
+                Assert.Contains($"https://sts.windows.net/{tenantId}/", AseChannelValidation.BetweenBotAndAseChannelTokenValidationParameters.ValidIssuers);
+                Assert.Contains($"https://login.microsoftonline.com/{tenantId}/v2.0", AseChannelValidation.BetweenBotAndAseChannelTokenValidationParameters.ValidIssuers);
+                Assert.Contains($"https://login.microsoftonline.us/{tenantId}/v2.0", AseChannelValidation.BetweenBotAndAseChannelTokenValidationParameters.ValidIssuers);
+            }
+        }
+
+        [Fact]
+        public void ValidationChannelIdTest_AseChannel()
+        {
+            Assert.True(AseChannelValidation.IsAseChannel("AseChannel"));
         }
 
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)
