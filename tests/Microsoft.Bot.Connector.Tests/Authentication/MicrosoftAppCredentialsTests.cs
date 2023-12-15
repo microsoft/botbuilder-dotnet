@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Net.Http;
+using System.Globalization;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Connector.Tests.Authentication
@@ -15,30 +13,48 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         public void ConstructorTests()
         {
             var defaultScopeCase1 = new MicrosoftAppCredentials("someApp", "somePassword");
-            Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, defaultScopeCase1.OAuthScope);
+            AssertEqual(defaultScopeCase1, null, null);
 
-            using (var customHttpClient = new HttpClient())
+            var defaultScopeCase2 = new MicrosoftAppCredentials("someApp", "somePassword", oAuthScope: "customScope");
+            AssertEqual(defaultScopeCase2, null, "customScope");
+
+            var defaultScopeCase3 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant");
+            AssertEqual(defaultScopeCase3, "someTenant", null);
+
+            var defaultScopeCase4 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant", oAuthScope: "customScope");
+            AssertEqual(defaultScopeCase4, "someTenant", "customScope");
+        }
+
+        private void AssertEqual(MicrosoftAppCredentials credential, string tenantId, string oauthScope)
+        {
+            Assert.Equal(
+                string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, credential.ChannelAuthTenant),
+                credential.OAuthEndpoint);
+
+            if (string.IsNullOrEmpty(oauthScope))
             {
-                // Use with default scope
-                var defaultScopeCase2 = new MicrosoftAppCredentials("someApp", "somePassword", customHttpClient);
-                Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, defaultScopeCase2.OAuthScope);
+                Assert.Equal(
+                    AuthenticationConstants.ToChannelFromBotOAuthScope,
+                    credential.OAuthScope);
+            }
+            else
+            {
+                Assert.Equal(
+                    oauthScope,
+                    credential.OAuthScope);
+            }
 
-                var logger = new Mock<ILogger>().Object;
-                var defaultScopeCase3 = new MicrosoftAppCredentials("someApp", "somePassword", customHttpClient, logger);
-                Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, defaultScopeCase3.OAuthScope);
-
-                var defaultScopeCase4 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant", customHttpClient);
-                Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, defaultScopeCase4.OAuthScope);
-
-                var defaultScopeCase5 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant", customHttpClient, logger);
-                Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, defaultScopeCase5.OAuthScope);
-
-                // Use custom scope
-                var customScopeCase1 = new MicrosoftAppCredentials("someApp", "somePassword", customHttpClient, logger, "customScope");
-                Assert.Equal("customScope", customScopeCase1.OAuthScope);
-
-                var customScopeCase2 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant", customHttpClient, logger, "customScope");
-                Assert.Equal("customScope", customScopeCase2.OAuthScope);
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                Assert.Equal(
+                    AuthenticationConstants.DefaultChannelAuthTenant,
+                    credential.ChannelAuthTenant);
+            }
+            else
+            {
+                Assert.Equal(
+                tenantId,
+                credential.ChannelAuthTenant);
             }
         }
     }

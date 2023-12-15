@@ -59,22 +59,28 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             // Public cloud: default authority, optional scope when authenticating for skill communication.
-            if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.FromResult<ServiceClientCredentials>(
-                    new MsalAppCredentials(_clientApplication, appId, authority: null, scope: audience, validateAuthority: validateAuthority, logger: _logger));
-            }
-            
-            // Legacy gov: Set the authority (login url) to the legacy gov url, and allow for passed in scope for skill auth in
-            // gov, or otherwise leave the default channel scope for gov.
-            if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, StringComparison.OrdinalIgnoreCase))
+            if (loginEndpoint.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
                         _clientApplication, 
                         appId, 
-                        authority: GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, 
-                        scope: audience ?? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 
+                        authority: null,
+                        scope: audience,
+                        validateAuthority: validateAuthority, 
+                        logger: _logger));
+            }
+            
+            // Legacy gov: Set the authority (login url) to the legacy gov url, and allow for passed in scope for skill auth in
+            // gov, or otherwise leave the default channel scope for gov.
+            if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult<ServiceClientCredentials>(
+                    new MsalAppCredentials(
+                        _clientApplication, 
+                        appId, 
+                        authority: null, 
+                        scope: audience, 
                         validateAuthority: validateAuthority,
                         logger: _logger));
             }

@@ -14,7 +14,9 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ChannelService = "https://botframework.azure.us";
 
         /// <summary>
-        /// TO GOVERNMENT CHANNEL FROM BOT: Login URL.
+        /// TO CHANNEL FROM BOT: Login URL.
+        ///
+        /// DEPRECATED. For binary compat only.
         /// </summary>
         public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/MicrosoftServices.onmicrosoft.us";
 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using Microsoft.Bot.Connector.Authentication;
 using Xunit;
 
@@ -40,13 +41,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void GovernmentAuthenticationConstants_ToChannelFromBotLoginUrl_IsRight()
-        {
-            // This value should not change
-            Assert.Equal("https://login.microsoftonline.us/MicrosoftServices.onmicrosoft.us", GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl);
-        }
-
-        [Fact]
         public void GovernmentAuthenticationConstants_ToChannelFromBotOAuthScope_IsRight()
         {
             // This value should not change
@@ -72,6 +66,55 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         {
             // This value should not change
             Assert.Equal("https://login.botframework.azure.us/v1/.well-known/openidconfiguration", GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl);
+        }
+
+        [Fact]
+        public void ConstructorTests()
+        {
+            var defaultScopeCase1 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword");
+            AssertEqual(defaultScopeCase1, null, null);
+
+            var defaultScopeCase2 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword", oAuthScope: "customScope");
+            AssertEqual(defaultScopeCase2, null, "customScope");
+
+            var defaultScopeCase3 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword", "someTenant");
+            AssertEqual(defaultScopeCase3, "someTenant", null);
+
+            var defaultScopeCase4 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword", "someTenant", oAuthScope: "customScope");
+            AssertEqual(defaultScopeCase4, "someTenant", "customScope");           
+        }
+
+        private void AssertEqual(MicrosoftGovernmentAppCredentials credential, string tenantId, string oauthScope)
+        {
+            Assert.Equal(
+                string.Format(CultureInfo.InvariantCulture, GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, credential.ChannelAuthTenant), 
+                credential.OAuthEndpoint);
+
+            if (string.IsNullOrEmpty(oauthScope))
+            {
+                Assert.Equal(
+                    GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
+                    credential.OAuthScope);
+            }
+            else
+            {
+                Assert.Equal(
+                    oauthScope,
+                    credential.OAuthScope);
+            }
+
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                Assert.Equal(
+                    GovernmentAuthenticationConstants.DefaultChannelAuthTenant,
+                    credential.ChannelAuthTenant);
+            }
+            else
+            {
+                Assert.Equal(
+                tenantId,
+                credential.ChannelAuthTenant);
+            }
         }
     }
 }

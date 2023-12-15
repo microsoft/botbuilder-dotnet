@@ -44,43 +44,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
-        public MicrosoftAppCredentials(string appId, string password)
-            : this(appId, password, null, null, null, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
-        /// </summary>
-        /// <param name="appId">The Microsoft app ID.</param>
-        /// <param name="password">The Microsoft app password.</param>
-        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient)
-            : this(appId, password, null, customHttpClient)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
-        /// </summary>
-        /// <param name="appId">The Microsoft app ID.</param>
-        /// <param name="password">The Microsoft app password.</param>
-        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger)
-            : this(appId, password, null, customHttpClient, logger)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
-        /// </summary>
-        /// <param name="appId">The Microsoft app ID.</param>
-        /// <param name="password">The Microsoft app password.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         /// <param name="oAuthScope">The scope for the token.</param>
-        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope)
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
             : this(appId, password, null, customHttpClient, logger, oAuthScope)
         {
         }
@@ -92,34 +59,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="password">The Microsoft app password.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient)
-            : this(appId, password, channelAuthTenant, customHttpClient, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
-        /// </summary>
-        /// <param name="appId">The Microsoft app ID.</param>
-        /// <param name="password">The Microsoft app password.</param>
-        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
-        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient, ILogger logger = null)
-            : this(appId, password, channelAuthTenant, customHttpClient, logger, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
-        /// </summary>
-        /// <param name="appId">The Microsoft app ID.</param>
-        /// <param name="password">The Microsoft app password.</param>
-        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
-        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         /// <param name="oAuthScope">The scope for the token.</param>
-        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient, ILogger logger = null, string oAuthScope = null)
+        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
             : base(channelAuthTenant, customHttpClient, logger, oAuthScope)
         {
             MicrosoftAppId = appId;
