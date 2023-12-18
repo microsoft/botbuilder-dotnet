@@ -2,3 +2,11 @@
 TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbCustomClientOptions' does not exist in the implementation but it does exist in the contract.
 TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbStorage' does not exist in the implementation but it does exist in the contract.
 TypesMustExist : Type 'Microsoft.Bot.Builder.Azure.CosmosDbStorageOptions' does not exist in the implementation but it does exist in the contract.
+
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials..ctor(System.String, System.String)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials..ctor(System.String, System.String, System.Net.Http.HttpClient)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials..ctor(System.String, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials..ctor(System.String, System.String, System.String, System.Net.Http.HttpClient)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials..ctor(System.String, System.String, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftGovernmentAppCredentials..ctor(System.String, System.String, System.Net.Http.HttpClient)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftGovernmentAppCredentials..ctor(System.String, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
