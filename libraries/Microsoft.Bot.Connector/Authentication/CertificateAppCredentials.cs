@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -15,7 +14,6 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class CertificateAppCredentials : AppCredentials
     {
-        private readonly ClientAssertionCertificate adalClientCertificate;
         private readonly X509Certificate2 clientCertificate;
         private readonly bool sendX5c;
 
@@ -79,58 +77,6 @@ namespace Microsoft.Bot.Connector.Authentication
             this.sendX5c = sendX5c;
             this.clientCertificate = clientCertificate;
             MicrosoftAppId = appId;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
-        /// </summary>
-        /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
-        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
-        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public CertificateAppCredentials(ClientAssertionCertificate clientCertificate, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : this(clientCertificate, false, channelAuthTenant, customHttpClient, logger)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
-        /// </summary>
-        /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
-        /// <param name="sendX5c">This parameter, if true, enables application developers to achieve easy certificates roll-over in Azure AD: setting this parameter to true will send the public certificate to Azure AD along with the token request, so that Azure AD can use it to validate the subject name based on a trusted issuer policy. </param>
-        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
-        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public CertificateAppCredentials(ClientAssertionCertificate clientCertificate, bool sendX5c, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : base(channelAuthTenant, customHttpClient, logger)
-        {
-            if (clientCertificate == null)
-            {
-                throw new ArgumentNullException(nameof(clientCertificate));
-            }
-
-            this.sendX5c = sendX5c;
-            this.clientCertificate = clientCertificate.Certificate;
-            MicrosoftAppId = clientCertificate.ClientId;
-            adalClientCertificate = clientCertificate;
-        }
-
-        /// <summary>
-        /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
-        /// </summary>
-        /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
-        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
-        protected override Lazy<AdalAuthenticator> BuildAuthenticator()
-        {
-            return new Lazy<AdalAuthenticator>(
-                () =>
-                new AdalAuthenticator(
-                    adalClientCertificate,
-                    sendX5c,
-                    new OAuthConfiguration() { Authority = OAuthEndpoint, ValidateAuthority = ValidateAuthority, Scope = OAuthScope },
-                    CustomHttpClient,
-                    Logger),
-                LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         /// <inheritdoc/>

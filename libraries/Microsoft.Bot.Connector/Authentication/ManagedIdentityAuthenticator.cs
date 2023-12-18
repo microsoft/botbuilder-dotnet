@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.AppConfig;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -16,24 +17,9 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class ManagedIdentityAuthenticator : IAuthenticator
     {
-        private readonly string _appId;
         private readonly string _resource;
         private readonly ILogger _logger;
-        private readonly IConfidentialClientApplication _clientApplication;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManagedIdentityAuthenticator"/> class.
-        /// </summary>
-        /// <param name="appId">Client id for the managed identity to be used for acquiring tokens.</param>
-        /// <param name="resource">Resource for which to acquire the token.</param>
-        /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
-        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
-        /// <param name="logger">The type used to perform logging.</param>
-        [Obsolete("This method is deprecated, the IJwtTokenProviderFactory argument is now redundant. Use the overload without this argument.", false)]
-        public ManagedIdentityAuthenticator(string appId, string resource, IJwtTokenProviderFactory tokenProviderFactory, HttpClient customHttpClient = null, ILogger logger = null)
-            : this(appId, resource, customHttpClient, logger)
-        {
-        }
+        private readonly IManagedIdentityApplication _clientApplication;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityAuthenticator"/> class.
@@ -54,7 +40,6 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(resource));
             }
             
-            _appId = appId;
             _resource = resource;
             _logger = logger ?? NullLogger.Instance;
             _clientApplication = CreateClientApplication(appId, customHttpClient);
@@ -77,10 +62,8 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh)
         {
-            var scopes = new string[] { $"{_resource}/.default" };
             var authResult = await _clientApplication
-                .AcquireTokenForClient(scopes)
-                .WithManagedIdentity(_appId)
+                .AcquireTokenForManagedIdentity(_resource)
                 .WithForceRefresh(forceRefresh)
                 .ExecuteAsync()
                 .ConfigureAwait(false);
@@ -100,10 +83,9 @@ namespace Microsoft.Bot.Connector.Authentication
                 : RetryParams.DefaultBackOff(retryCount);
         }
 
-        private IConfidentialClientApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)
+        private IManagedIdentityApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)
         {
-            var clientBuilder = ConfidentialClientApplicationBuilder.Create(appId)
-               .WithExperimentalFeatures();
+            var clientBuilder = ManagedIdentityApplicationBuilder.Create(ManagedIdentityId.WithUserAssignedClientId(appId));
 
             if (customHttpClient != null)
             {

@@ -16,11 +16,8 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class CertificateServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
-        private readonly X509Certificate2 _certificate;
+        private readonly CertificateAppCredentials _certificateAppCredentials;
         private readonly string _appId;
-        private readonly string _tenantId;
-        private readonly HttpClient _httpClient;
-        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
@@ -30,7 +27,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tenantId">The oauth token tenant.</param>
         /// <param name="httpClient">A custom httpClient to use.</param>
         /// <param name="logger">A logger instance to use.</param>
-        public CertificateServiceClientCredentialsFactory(X509Certificate2 certificate, string appId, string tenantId = null, HttpClient httpClient = null, ILogger logger = null)
+        /// <param name="sendX5c">A flag if CertificateAppCredentials should send certificate chains in the request.
+        /// It enables authentication with AAD using certificate subject name (not CNAME) and issuer instead of a thumbprint.
+        /// </param>
+        public CertificateServiceClientCredentialsFactory(
+            X509Certificate2 certificate,
+            string appId,
+            string tenantId = null,
+            HttpClient httpClient = null,
+            ILogger logger = null,
+            bool sendX5c = false)
             : base()
         {
             if (string.IsNullOrWhiteSpace(appId))
@@ -38,11 +44,16 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(appId));
             }
 
-            _certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
             _appId = appId;
-            _tenantId = tenantId;
-            _httpClient = httpClient;
-            _logger = logger;
+
+            // Instance must be reused otherwise it will cause throttling on AAD.
+            _certificateAppCredentials = new CertificateAppCredentials(
+                certificate ?? throw new ArgumentNullException(nameof(certificate)),
+                sendX5c,
+                appId,
+                tenantId,
+                httpClient,
+                logger);
         }
 
         /// <inheritdoc />
@@ -67,8 +78,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException("Invalid Managed ID.");
             }
 
-            return Task.FromResult<ServiceClientCredentials>(
-                new CertificateAppCredentials(_certificate, _appId, _tenantId, _httpClient, _logger));
+            return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentials);
         }
     }
 }
