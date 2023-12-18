@@ -8,9 +8,9 @@ using Microsoft.Identity.Client;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// HttpClientFactory that always returns the same HttpClient instance for ADAL AcquireTokenAsync calls.
+    /// HttpClientFactory that always returns the same HttpClient instance for AcquireTokenAsync calls.
     /// </summary>
-    internal class ConstantHttpClientFactory : IdentityModel.Clients.ActiveDirectory.IHttpClientFactory, IMsalHttpClientFactory
+    internal class ConstantHttpClientFactory : IMsalHttpClientFactory
     {
         private readonly HttpClient httpClient;
 

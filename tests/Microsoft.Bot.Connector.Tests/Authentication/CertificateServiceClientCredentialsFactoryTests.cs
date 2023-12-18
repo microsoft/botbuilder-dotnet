@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, tenantId: TestTenantId);
             _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, logger: logger.Object);
             _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, httpClient: new HttpClient());
+            _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, httpClient: new HttpClient(), sendX5c: true);
         }
 
         [Fact]

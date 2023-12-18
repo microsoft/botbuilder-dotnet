@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -74,8 +75,25 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 catch (Exception err)
                 {
-                    // fire error event, bubbling from the leaf.
-                    var handled = await dialogContext.EmitEventAsync(DialogEvents.Error, err, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var handled = false;
+                    var innerExceptions = new List<Exception>();
+                    try
+                    {
+                        // fire error event, bubbling from the leaf.
+                        handled = await dialogContext.EmitEventAsync(DialogEvents.Error, err, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
+#pragma warning disable CA1031 // Do not catch general exception types (capture the error in case it's not handled properly)
+                    catch (Exception emitErr)
+#pragma warning restore CA1031 // Do not catch general exception types
+                    {
+                        innerExceptions.Add(emitErr);
+                    }
+
+                    if (innerExceptions.Any())
+                    {
+                        innerExceptions.Add(err);
+                        throw new AggregateException("Unable to emit the error as a DialogEvent.", innerExceptions);
+                    }
 
                     if (!handled)
                     {

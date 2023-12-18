@@ -3868,7 +3868,8 @@
             "POST",
             "PATCH",
             "PUT",
-            "DELETE"
+            "DELETE",
+            "HEAD"
           ],
           "examples": [
             "GET",

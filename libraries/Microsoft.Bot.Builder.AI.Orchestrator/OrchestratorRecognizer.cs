@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     /// <summary>
     /// Class that represents an adaptive Orchestrator recognizer.
     /// </summary>
+    [Obsolete("The Bot Framework Orchestrator will be deprecated in the next version of the Bot Framework SDK.")]
     public class OrchestratorRecognizer : AdaptiveRecognizer
     {
         /// <summary>

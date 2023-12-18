@@ -10,3 +10,11 @@ MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCr
 MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials..ctor(System.String, System.String, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
 MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftGovernmentAppCredentials..ctor(System.String, System.String, System.Net.Http.HttpClient)' does not exist in the implementation but it does exist in the contract.
 MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftGovernmentAppCredentials..ctor(System.String, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
+
+TypesMustExist : Type 'Microsoft.Bot.Connector.Authentication.AdalAuthenticator' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.AppCredentials.BuildAuthenticator()' does not exist in the implementation but it does exist in the contract.
+CannotAddAbstractMembers : Member 'Microsoft.Bot.Connector.Authentication.AppCredentials.BuildIAuthenticator()' is abstract in the implementation but is missing in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.CertificateAppCredentials..ctor(Microsoft.IdentityModel.Clients.ActiveDirectory.ClientAssertionCertificate, System.String, System.Net.Http.HttpClient, Microsoft.Extensions.Logging.ILogger)' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.CertificateAppCredentials.BuildAuthenticator()' does not exist in the implementation but it does exist in the contract.
+MembersMustExist : Member 'Microsoft.Bot.Connector.Authentication.MicrosoftAppCredentials.BuildAuthenticator()' does not exist in the implementation but it does exist in the contract.
+

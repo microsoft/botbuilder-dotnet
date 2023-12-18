@@ -6,9 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
@@ -18,43 +16,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class ManagedIdentityAuthenticatorTests
     {
-        private const string TestAppId = "foo";
-        private const string TestAudience = "bar";
-        private const string TestConnectionString = "RunAs=App;AppId=foo";
-        private const string TestAzureAdInstance = "https://login.microsoftonline.com/";
-
-        [Fact]
-        public void ConstructorTests()
-        {
-            var callsToCreateTokenProvider = 0;
-
-            var tokenProvider = new Mock<AzureServiceTokenProvider>(TestConnectionString, TestAzureAdInstance);
-
-            var tokenProviderFactory = new Mock<IJwtTokenProviderFactory>();
-            tokenProviderFactory
-                .Setup(f => f.CreateAzureServiceTokenProvider(It.IsAny<string>(), It.IsAny<HttpClient>()))
-                .Returns<string, HttpClient>((appId, customHttpClient) =>
-                {
-                    callsToCreateTokenProvider++;
-                    Assert.Equal(TestAppId, appId);
-
-                    return tokenProvider.Object;
-                });
-
-            _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object);
-
-            using (var customHttpClient = new HttpClient())
-            {
-                _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object, customHttpClient);
-
-                var logger = new Mock<ILogger>();
-                _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object, null, logger.Object);
-
-                _ = new ManagedIdentityAuthenticator(TestAppId, TestAudience, tokenProviderFactory.Object, customHttpClient, logger.Object);
-            }
-
-            Assert.Equal(0, callsToCreateTokenProvider);
-        }
+        private readonly Func<string, string> appId = (id) => $"id {id} ";
+        private readonly Func<string, string> audience = (id) => $"audience {id} ";
 
         [Fact]
         public void CanGetJwtToken()
@@ -74,7 +37,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 .ReturnsAsync(response);
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var sut = new ManagedIdentityAuthenticator(TestAppId, TestAudience, httpClient);
+            var sut = new ManagedIdentityAuthenticator(appId(nameof(CanGetJwtToken)), audience(nameof(CanGetJwtToken)), httpClient);
             var token = sut.GetTokenAsync().GetAwaiter().GetResult();
 
             Assert.Equal("at_secret", token.AccessToken);
@@ -82,9 +45,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void CanGetJwtTokenWithForceRefresh(bool forceRefreshInput)
+        [InlineData(false, 1)]
+        [InlineData(true, 2)]
+        public void CanGetJwtTokenWithForceRefresh(bool forceRefreshInput, int index)
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             var expiresOn = DateTimeOffset.Now.ToUnixTimeSeconds() + 10000;
@@ -101,7 +64,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 .ReturnsAsync(response);
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var sut = new ManagedIdentityAuthenticator(TestAppId, TestAudience, httpClient);
+            var sut = new ManagedIdentityAuthenticator(appId(nameof(CanGetJwtTokenWithForceRefresh)) + index, audience(nameof(CanGetJwtTokenWithForceRefresh)) + index, httpClient);
             var token = sut.GetTokenAsync(forceRefreshInput).GetAwaiter().GetResult();
 
             Assert.Equal("at_secret", token.AccessToken);
@@ -123,7 +86,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 });
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var sut = new ManagedIdentityAuthenticator(TestAppId, TestAudience, httpClient);
+            var sut = new ManagedIdentityAuthenticator(appId(nameof(DefaultRetryOnException)), audience(nameof(DefaultRetryOnException)), httpClient);
 
             try
             {
@@ -167,7 +130,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 });
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var sut = new ManagedIdentityAuthenticator(TestAppId, TestAudience, httpClient);
+            var sut = new ManagedIdentityAuthenticator(appId(nameof(CanRetryAndAcquireToken)), audience(nameof(CanRetryAndAcquireToken)), httpClient);
             var token = sut.GetTokenAsync().GetAwaiter().GetResult();
 
             Assert.Equal("at_secret", token.AccessToken);

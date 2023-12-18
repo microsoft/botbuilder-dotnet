@@ -54,6 +54,10 @@ namespace Microsoft.Bot.Connector.Authentication
             _scope = scope;
             _authority = authority;
             _validateAuthority = validateAuthority;
+            if (_clientApplication?.AppTokenCache != null)
+            {
+                _clientApplication.AppTokenCache.SetCacheOptions(CacheOptions.EnableSharedCacheOptions);
+            }
         }
 
         /// <summary>
@@ -106,6 +110,33 @@ namespace Microsoft.Bot.Connector.Authentication
                 .Build();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MsalAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft application id.</param>
+        /// <param name="certificate">The certificate to use for authentication.</param>
+        /// <param name="sendX5c">If true will send the public certificate to Azure AD along with the token request, so that
+        /// Azure AD can use it to validate the subject name based on a trusted issuer policy.</param>
+        /// <param name="validateAuthority">Optional switch for whether to validate the authority.</param>
+        /// <param name="authority">Optional authority.</param>
+        /// <param name="scope">Optional custom scope.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/>.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
+        public MsalAppCredentials(string appId, X509Certificate2 certificate, bool sendX5c, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+            : this(
+                  clientApplication: null,
+                  appId: appId,
+                  authority: authority,
+                  scope: scope,
+                  validateAuthority: validateAuthority,
+                  logger: logger)
+        {
+            _clientApplication = ConfidentialClientApplicationBuilder.Create(appId)
+                .WithAuthority(authority ?? OAuthEndpoint, validateAuthority)
+                .WithCertificate(certificate, sendX5c)
+                .Build();
+        }
+
         async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
         {
             var watch = Stopwatch.StartNew();
@@ -118,13 +149,6 @@ namespace Microsoft.Bot.Connector.Authentication
             _logger?.LogInformation($"GetTokenAsync: Acquired token using MSAL in {watch.ElapsedMilliseconds}.");
 
             return result;
-        }
-
-        /// <inheritdoc/>
-        [Obsolete("This method is deprecated. Use BuildIAuthenticator instead.", false)]
-        protected override Lazy<AdalAuthenticator> BuildAuthenticator()
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>

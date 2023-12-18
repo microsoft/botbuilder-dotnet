@@ -2,11 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -143,6 +146,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(telemetryClientMock.Object, dialog.TelemetryClient);
         }
 
+        [Fact]
+        public async Task RunAsyncWithCircularReferenceExceptionShouldFail()
+        {
+            var conversationReference = TestAdapter.CreateConversation(nameof(RunAsyncWithCircularReferenceExceptionShouldFail));
+
+            var adapter = new TestAdapter(conversationReference)
+                   .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            try
+            {
+                var dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
+                {
+                    Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new CustomExceptionDialog()
+                        }
+                    }
+                }
+                });
+
+                await new TestFlow((TestAdapter)adapter, dm.OnTurnAsync)
+                    .Send("hi")
+                    .StartTestAsync();
+            }
+            catch (AggregateException ex)
+            {
+                Assert.Equal(2, ex.InnerExceptions.Count);
+            }
+        }
+
         /// <summary>
         /// Creates a TestFlow instance with state data to recreate and assert the different test case.
         /// </summary>
@@ -251,6 +288,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 await stepContext.Context.SendActivityAsync($"Hello {stepContext.Result}, nice to meet you!", cancellationToken: cancellationToken);
                 return await stepContext.EndDialogAsync(stepContext.Result, cancellationToken);
+            }
+        }
+
+        private class CustomExceptionDialog : Dialog
+        {
+            public CustomExceptionDialog()
+                : base("custom-exception")
+            {
+            }
+
+            public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                var e1 = new CustomException("Parent: Self referencing Exception");
+                var e2 = new CustomException("Child: Self referencing Exception", e1);
+                e1.Children.Add(e2);
+                throw e1;
+            }
+
+            private class CustomException : Exception
+            {
+#pragma warning disable SA1401 // Fields should be private
+                public List<CustomException> Children = new List<CustomException>();
+                public CustomException Parent;
+#pragma warning restore SA1401 // Fields should be private
+
+                public CustomException(string message, CustomException parent = null)
+                    : base("Error: " + message)
+                {
+                    Parent = parent;
+                }
             }
         }
     }
