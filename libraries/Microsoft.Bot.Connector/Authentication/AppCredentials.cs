@@ -36,8 +36,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private string _oAuthScope;
 
-        private string _channelAuthTenant;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
         /// </summary>
@@ -80,9 +78,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </value>
         public virtual string ChannelAuthTenant
         {
-            get => string.IsNullOrEmpty(_channelAuthTenant) 
+            get => string.IsNullOrEmpty(AuthTenant) 
                 ? DefaultChannelAuthTenant 
-                : _channelAuthTenant;
+                : AuthTenant;
             set
             {
                 // Advanced user only, see https://aka.ms/bots/tenant-restriction
@@ -90,7 +88,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out _))
                 {
-                    _channelAuthTenant = value;
+                    AuthTenant = value;
                 }
                 else
                 {
@@ -124,6 +122,14 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope) 
             ? ToChannelFromBotOAuthScope
             : _oAuthScope;
+
+        /// <summary>
+        /// Gets or sets the channel auth token tenant for this credential.
+        /// </summary>
+        /// <value>
+        /// The channel auth token tenant for this credential.
+        /// </value>
+        protected string AuthTenant { get; set; }
 
         /// <summary>
         /// Gets or sets the channel auth token tenant for this credential.
