@@ -174,6 +174,11 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, string channelId, string serviceUrl, CancellationToken cancellationToken)
         {
+            if (AseChannelValidation.IsAseChannel(channelId))
+            {
+                return await AseChannelValidation.AuthenticateAseTokenAsync(authHeader).ConfigureAwait(false);
+            }
+
             if (SkillValidation.IsSkillToken(authHeader))
             {
                 return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
