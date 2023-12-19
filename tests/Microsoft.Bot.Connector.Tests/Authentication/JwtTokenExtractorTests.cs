@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
         }
 
-        private static Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null, DateTime? expires = null, DateTime? notBefore = null)
+        private static async Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null, DateTime? expires = null, DateTime? notBefore = null)
         {
             // Custom validation parameters that allow us to test the extractor logic
             var tokenValidationParams = validationParameters ?? CreateTokenValidationParameters(cert);
@@ -123,8 +123,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
             var token = CreateTokenForCertificate(cert, expires, notBefore);
-
-            return tokenExtractor.GetIdentityAsync($"Bearer {token}", "test");
+            return await tokenExtractor.GetIdentityAsync($"Bearer {token}", "test");
         }
 
         private static string CreateTokenForCertificate(X509Certificate2 cert, DateTime? expires = null, DateTime? notBefore = null)
