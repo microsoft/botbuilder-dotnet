@@ -34,6 +34,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         private Lazy<IAuthenticator> _authenticator;
 
+        private string _oAuthScope;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
         /// </summary>
@@ -54,7 +56,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="oAuthScope">The scope for the token.</param>
         public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
         {
-            OAuthScope = string.IsNullOrWhiteSpace(oAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : oAuthScope;
+            _oAuthScope = oAuthScope;
             ChannelAuthTenant = channelAuthTenant;
             CustomHttpClient = customHttpClient;
             Logger = logger ?? NullLogger.Instance;
@@ -74,13 +76,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// Tenant to be used for channel authentication.
         /// </value>
-        public string ChannelAuthTenant
+        public virtual string ChannelAuthTenant
         {
-            get => string.IsNullOrEmpty(AuthTenant) ? AuthenticationConstants.DefaultChannelAuthTenant : AuthTenant;
+            get => string.IsNullOrEmpty(AuthTenant) 
+                ? DefaultChannelAuthTenant 
+                : AuthTenant;
             set
             {
                 // Advanced user only, see https://aka.ms/bots/tenant-restriction
-                var endpointUrl = string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, value);
+                var endpointUrl = string.Format(CultureInfo.InvariantCulture, ToChannelFromBotLoginUrlTemplate, value);
 
                 if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out _))
                 {
@@ -99,7 +103,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth endpoint to use.
         /// </value>
-        public virtual string OAuthEndpoint => string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
+        public virtual string OAuthEndpoint => string.Format(CultureInfo.InvariantCulture, ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
 
         /// <summary>
         /// Gets a value indicating whether to validate the Authority.
@@ -115,7 +119,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth scope to use.
         /// </value>
-        public virtual string OAuthScope { get; }
+        public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope) 
+            ? ToChannelFromBotOAuthScope
+            : _oAuthScope;
 
         /// <summary>
         /// Gets or sets the channel auth token tenant for this credential.
@@ -140,6 +146,26 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The channel auth token tenant for this credential.
         /// </value>
         protected ILogger Logger { get; set; }
+
+        /// <summary>
+        /// Gets DefaultChannelAuthTenant.
+        /// </summary>
+        /// <value>DefaultChannelAuthTenant.</value>
+        protected virtual string DefaultChannelAuthTenant => AuthenticationConstants.DefaultChannelAuthTenant;
+
+        /// <summary>
+        /// Gets ToChannelFromBotOAuthScope.
+        /// </summary>
+        /// <value>ToChannelFromBotOAuthScope.</value>
+        protected virtual string ToChannelFromBotOAuthScope => AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+        /// <summary>
+        /// Gets ToChannelFromBotLoginUrlTemplate.
+        /// </summary>
+        /// <value>ToChannelFromBotLoginUrlTemplate.</value>
+#pragma warning disable CA1056 // Uri properties should not be strings
+        protected virtual string ToChannelFromBotLoginUrlTemplate => AuthenticationConstants.ToChannelFromBotLoginUrlTemplate;
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
