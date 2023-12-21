@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (!await _credentialProvider.IsValidAppIdAsync(appID).ConfigureAwait(false))
             {
-                await Console.Out.WriteLineAsync(appID).ConfigureAwait(false);
+                throw new UnauthorizedAccessException($"AseChannelValidation Invalid AppId passed on token: {appID}");
             }
 
             return identity;
