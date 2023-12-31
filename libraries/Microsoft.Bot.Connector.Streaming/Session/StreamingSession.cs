@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Connector.Streaming.Session
 {
@@ -42,6 +43,13 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
         private readonly object _receiveSync = new object();
 
+        static StreamingSession()
+        {
+            var tmpSetting = SerializationSettings.DefaultSerializationSettings;
+            tmpSetting.NullValueHandling = NullValueHandling.Ignore;
+            Serializer = JsonSerializer.Create(tmpSetting);            
+        }
+
         public StreamingSession(RequestHandler receiver, TransportHandler sender, ILogger logger, CancellationToken connectionCancellationToken = default)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
@@ -52,7 +60,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             _connectionCancellationToken = connectionCancellationToken;
         }
 
-        private static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
+        private static JsonSerializer Serializer { get; }
 
         public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
         {
