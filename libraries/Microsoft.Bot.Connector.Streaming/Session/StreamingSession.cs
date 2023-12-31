@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Streaming.Payloads;
@@ -19,6 +18,7 @@ using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Streaming.Session
 {
@@ -51,6 +51,8 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             _logger = logger ?? NullLogger.Instance;
             _connectionCancellationToken = connectionCancellationToken;
         }
+
+        protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
 
         public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
         {
@@ -461,10 +463,16 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                     mainPayload = payload.Slice(_utf8Bom.Length);
                 }
 
-                var reader = new Utf8JsonReader(mainPayload);
-                return System.Text.Json.JsonSerializer.Deserialize<T>(
-                    ref reader,
-                    new JsonSerializerOptions() { IgnoreNullValues = true, PropertyNameCaseInsensitive = true });
+                using (var ms = new MemoryStream(mainPayload.ToArray()))
+                {
+                    using (var sr = new StreamReader(ms))
+                    {
+                        using (var jsonReader = new JsonTextReader(sr))
+                        {
+                            return Serializer.Deserialize<T>(jsonReader);
+                        }                        
+                    }                    
+                }
             }
 
             private static void CreatePlaceholderStreams(Header header, List<IContentStream> placeholders, List<StreamDescription> streamInfo)
