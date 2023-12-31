@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             _connectionCancellationToken = connectionCancellationToken;
         }
 
-        protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
+        private static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
 
         public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
         {
