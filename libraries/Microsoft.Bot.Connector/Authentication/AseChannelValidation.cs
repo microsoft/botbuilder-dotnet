@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (string.IsNullOrEmpty(appID))
             {
-                throw new UnauthorizedAccessException("appid or azp claim is required on Emulator Token");
+                throw new UnauthorizedAccessException("appid or azp claim is required in Token");
             }
 
             if (!await _credentialProvider.IsValidAppIdAsync(appID).ConfigureAwait(false))
