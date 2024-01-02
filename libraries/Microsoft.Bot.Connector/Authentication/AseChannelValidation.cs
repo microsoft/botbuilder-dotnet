@@ -140,52 +140,13 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // The token is in some way invalid. Not Authorized.
                 throw new UnauthorizedAccessException("Token Not Authenticated");
-            }
+            }  
 
-            // Now check that the AppID in the claimset matches
-            // what we're looking for. Note that in a multi-tenant bot, this value
-            // comes from developer code that may be reaching out to a service, hence the
-            // Async validation.
-            Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
-            if (versionClaim == null)
+            var appID = JwtTokenValidation.GetAppIdFromClaims(identity.Claims);
+
+            if (string.IsNullOrEmpty(appID))
             {
-                throw new UnauthorizedAccessException("'ver' claim is required on AseChannel Tokens.");
-            }
-
-            string tokenVersion = versionClaim.Value;
-            string appID = string.Empty;
-
-            // The AseChannel, depending on Version, sends the AppId via either the
-            // appid claim (Version 1) or the Authorized Party claim (Version 2).
-            if (string.IsNullOrWhiteSpace(tokenVersion) || tokenVersion == "1.0")
-            {
-                // either no Version or a version of "1.0" means we should look for
-                // the claim in the "appid" claim.
-                Claim appIdClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
-                if (appIdClaim == null)
-                {
-                    // No claim around AppID. Not Authorized.
-                    throw new UnauthorizedAccessException("'appid' claim is required on AseChannel Token version '1.0'.");
-                }
-
-                appID = appIdClaim.Value;
-            }
-            else if (tokenVersion == "2.0")
-            {
-                // AseChannel, "2.0" puts the AppId in the "azp" claim.
-                Claim appZClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
-                if (appZClaim == null)
-                {
-                    // No claim around AppID. Not Authorized.
-                    throw new UnauthorizedAccessException("'azp' claim is required on AseChannel Token version '2.0'.");
-                }
-
-                appID = appZClaim.Value;
-            }
-            else
-            {
-                // Unknown Version. Not Authorized.
-                throw new UnauthorizedAccessException($"Unknown AseChannel Token version '{tokenVersion}'.");
+                throw new UnauthorizedAccessException("appid or azp claim is required on Emulator Token");
             }
 
             if (!await _credentialProvider.IsValidAppIdAsync(appID).ConfigureAwait(false))

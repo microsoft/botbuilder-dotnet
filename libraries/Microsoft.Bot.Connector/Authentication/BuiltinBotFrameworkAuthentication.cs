@@ -50,16 +50,17 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public static string GetAppId(ClaimsIdentity claimsIdentity)
         {
-            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
-            // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
-            // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
-            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
-            if (botAppIdClaim == null)
+            var appId = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+
+            if (string.IsNullOrEmpty(appId))
             {
-                botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
+                // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
+                // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
+                // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
+                appId = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
             }
 
-            return botAppIdClaim?.Value;
+            return appId;
         }
 
         public override string GetOriginatingAudience()
