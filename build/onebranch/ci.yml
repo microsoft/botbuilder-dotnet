@@ -1,0 +1,61 @@
+#
+# Replaces the classic BotBuilder-DotNet-master-Signed-daily.
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+#name: $(Date:yyyyMMdd).$(Build.BuildId)
+
+#pool:
+#  vmImage: $[ coalesce( variables['VMImage'], 'windows-2022' ) ] # or 'windows-latest'
+#  demands:
+#  - msbuild
+#  - visualstudio
+
+#trigger: none # ci trigger is set in ADO
+#pr: none # pr trigger is set in ADO
+
+variables:
+  BuildConfiguration: Release-Windows
+  TestConfiguration: Release
+  BuildPlatform: any cpu
+  MSBuildArguments: -p:PublishRepositoryUrl=true -p:GeneratePackages=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+  Packaging.EnableSBOMSigning: true
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+#  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
+#  SDK_Dotnet_V4_org_Url: define this in Azure
+
+jobs:
+- job: Build_and_Sign
+  steps:
+  - powershell: |
+     # Replace {DateStamp} and {CommitHash} tokens with the actual values in vars ReleasePackageVersion and PreviewPackageVersion
+     $dateStamp = (Get-Date -format "yyyyMMdd");
+     $commitHash = "$(Build.SourceVersion)".SubString(0,7);
+
+     "Raw ReleasePackageVersion = $(ReleasePackageVersion)";
+     $v = "$(ReleasePackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     Write-Host "##vso[task.setvariable variable=ReleasePackageVersion;]$v";
+     "Resolved ReleasePackageVersion = $v";
+
+     "Raw PreviewPackageVersion = $(PreviewPackageVersion)";
+     $ppv = "$(PreviewPackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     Write-Host "##vso[task.setvariable variable=PreviewPackageVersion;]$ppv";
+     "Resolved PreviewPackageVersion = $ppv";
+    displayName: 'Resolve package version variables'
+
+  - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
+    displayName: 'Tag build with release and preview versions'
+    inputs:
+      tags: |
+       Release: $(ReleasePackageVersion)
+       Preview: $(PreviewPackageVersion)
+    continueOnError: true
+
+  - template: ci-build-steps.yml
+  - template: sign-steps.yml
+
+  #- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  #  displayName: 'Component Detection'
+  #  inputs:
+  #    failOnAlert: false
