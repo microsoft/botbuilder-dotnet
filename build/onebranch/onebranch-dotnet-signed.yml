@@ -1,0 +1,64 @@
+#################################################################################
+#                               OneBranch Pipelines                             #
+# This pipeline was created by EasyStart from a sample located at:              #
+#   https://aka.ms/obpipelines/easystart/samples                                #
+# Documentation:  https://aka.ms/obpipelines                                    #
+# Yaml Schema:    https://aka.ms/obpipelines/yaml/schema                        #
+# Retail Tasks:   https://aka.ms/obpipelines/tasks                              #
+# Support:        https://aka.ms/onebranchsup                                   #
+#################################################################################
+# https://aka.ms/obpipelines/triggers
+trigger: none # ci trigger is set in ADO
+
+variables:
+  Codeql.TSAEnabled: true # Needed for Security Development Lifecycle (SDL) requirements http://aka.ms/codeql
+  WindowsContainerImage: onebranch.azurecr.io/windows/ltsc2019/vse2022:latest # for Windows jobs
+  LinuxContainerImage: cdpxlinux.azurecr.io/user/lsg-linux/lsg-yocto-project:latest # for Linux jobs
+  IsOfficialBuild: True
+
+name: $(Date:yyyyMMdd).$(Build.BuildId)
+
+resources:
+  repositories: 
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+
+extends:
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
+  parameters:
+    globalSdl: # https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled: true # SDL results of official builds ar uploaded to TSA by default.
+      codeql:
+        tsaEnabled: true
+        compiled:
+          enabled: true
+      policheck:
+        break: false # always break the build on policheck issues. You can disable it by setting to 'false'
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
+        suppressionSet: default
+    git:
+      persistCredentials: true
+    stages:
+    - stage: build
+      jobs:
+      - job: main
+        pool:
+          type: windows  # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs        
+        variables:
+          ob_outputDirectory: '$(Build.SourcesDirectory)\out'
+          ob_symbolsPublishing_enabled: true                                       # Default is false
+          ob_symbolsPublishing_symbolsFolder: '$(Build.SourcesDirectory)/libraries'      # Default is ob_outputDirectory
+          ob_symbolsPublishing_searchPattern: '**/bin/Debug/netstandard2.0/*.pdb'  # Default is **/*.pdb
+          ob_symbolsPublishing_indexSources: true                                  # Default is true
+          ob_sdl_tsa_configFile: '$(Build.SourcesDirectory)\.config\tsaoptions.json'
+          ob_sdl_binskim_scanOutputDirectoryOnly: true
+          LGTM_INDEX_FILTERS: 'exclude: **/dotnet*.js,**/underscore*.js,**/doctools.js' # excluding javascript files that come from .net blazor framework and vcpkg(for installing Brotli) as we consider these framework and dependency safe
+          # ob_sdl_suppression_suppressionFile: $(Build.SourcesDirectory)\.gdn\job.gdnsuppress
+          # ob_sdl_suppression_suppressionSet: default
+        steps:
+          - template: build/onebranch/ci.yml@self
+              
