@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Used to get a faster VSTS build without depending on solution files. -->
+<Project Sdk="Microsoft.Build.Traversal">
+  <PropertyGroup>
+    <TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)'==''">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="libraries\**\*.csproj"/>
+  </ItemGroup>
+</Project>
