@@ -54,7 +54,7 @@ MODEL_INFO
   ;
 
 COMMENT
-  : WS* '>' ~('\r'|'\n')* -> skip
+  : WS* '>' ~('\r'|'\n')*
   ;
 
 QNA
