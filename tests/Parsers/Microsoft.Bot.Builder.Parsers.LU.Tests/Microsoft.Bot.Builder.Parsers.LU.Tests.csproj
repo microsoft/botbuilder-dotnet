@@ -20,6 +20,12 @@
     <Folder Include="Parser\" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Fixtures\AllComments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Fixtures\AllComments.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Fixtures\ImportAllLu.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
