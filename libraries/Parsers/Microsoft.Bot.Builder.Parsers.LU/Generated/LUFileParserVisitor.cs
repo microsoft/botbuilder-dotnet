@@ -50,12 +50,6 @@ public interface ILUFileParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitNewline([NotNull] LUFileParser.NewlineContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="LUFileParser.commentDefinition"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitCommentDefinition([NotNull] LUFileParser.CommentDefinitionContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="LUFileParser.errorString"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

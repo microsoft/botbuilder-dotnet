@@ -72,18 +72,6 @@ public partial class LUFileParserBaseListener : ILUFileParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitNewline([NotNull] LUFileParser.NewlineContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="LUFileParser.commentDefinition"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterCommentDefinition([NotNull] LUFileParser.CommentDefinitionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="LUFileParser.commentDefinition"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitCommentDefinition([NotNull] LUFileParser.CommentDefinitionContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="LUFileParser.errorString"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

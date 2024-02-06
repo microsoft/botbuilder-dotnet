@@ -16,7 +16,6 @@ paragraph
     | referenceSection
     | qnaSection
     | modelInfoSection
-    | commentDefinition
     ;
 
 // Treat EOF as newline to hanle file end gracefully
@@ -24,10 +23,6 @@ paragraph
 // but before the syntax is finalized, we still keep the NEWLINE in grammer 
 newline
     : WS* (NEWLINE | EOF)
-    ;
-
-commentDefinition
-    : COMMENT NEWLINE?
     ;
 
 errorString
@@ -79,7 +74,7 @@ intentBody
 	;
 
 normalIntentBody
-    : WS* ((normalIntentString newline) | errorString | commentDefinition)+
+    : WS* ((normalIntentString newline) | errorString)+
     ;
 
 normalIntentString
