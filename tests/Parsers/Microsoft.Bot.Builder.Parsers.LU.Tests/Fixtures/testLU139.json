@@ -52,7 +52,7 @@
       "Severity": "ERROR"
     },
     {
-      "Message": "syntax error: extraneous input 'regex' expecting {<EOF>, WS, NEWLINE, QNA_SOURCE_INFO, MODEL_INFO, QNA, HASH, '$', '@', IMPORT, REFERENCE, QNA_ID_MARK}",
+      "Message": "syntax error: extraneous input 'regex' expecting {<EOF>, WS, NEWLINE, QNA_SOURCE_INFO, MODEL_INFO, COMMENT, QNA, HASH, '$', '@', IMPORT, REFERENCE, QNA_ID_MARK}",
       "Range": {
         "Start": {
           "Line": 2,

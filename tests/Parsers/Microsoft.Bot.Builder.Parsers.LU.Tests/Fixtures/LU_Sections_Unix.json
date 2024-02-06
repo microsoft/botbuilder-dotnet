@@ -161,11 +161,11 @@
                     "errorMsgs": [
 
                     ],
-                    "contextText": "- Please set {deviceTemperature = thermostat to 72}",
+                    "contextText": "    - Please set {deviceTemperature = thermostat to 72}",
                     "range": {
                         "Start": {
                             "Line": 17,
-                            "Character": 4
+                            "Character": 0
                         },
                         "End": {
                             "Line": 17,
