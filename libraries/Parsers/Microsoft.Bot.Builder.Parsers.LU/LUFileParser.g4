@@ -3,7 +3,7 @@ parser grammar LUFileParser;
 options { tokenVocab=LUFileLexer; }
 
 file
-	: paragraph+? EOF
+	: (paragraph+? | commentDefinition?) EOF
 	;
 
 paragraph
@@ -16,7 +16,6 @@ paragraph
     | referenceSection
     | qnaSection
     | modelInfoSection
-    | commentDefinition
     ;
 
 // Treat EOF as newline to hanle file end gracefully
@@ -79,7 +78,7 @@ intentBody
 	;
 
 normalIntentBody
-    : WS* ((normalIntentString newline) | errorString | commentDefinition)+
+    : WS* ((normalIntentString newline) | errorString)+
     ;
 
 normalIntentString
