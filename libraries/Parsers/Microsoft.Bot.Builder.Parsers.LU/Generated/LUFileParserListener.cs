@@ -61,6 +61,16 @@ public interface ILUFileParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitNewline([NotNull] LUFileParser.NewlineContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="LUFileParser.commentDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCommentDefinition([NotNull] LUFileParser.CommentDefinitionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="LUFileParser.commentDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCommentDefinition([NotNull] LUFileParser.CommentDefinitionContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="LUFileParser.errorString"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

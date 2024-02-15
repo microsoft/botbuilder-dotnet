@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
         [InlineData("LU_Sections")]
         [InlineData("SectionsLU")]
         [InlineData("ImportAllLu")]
+        [InlineData("AllComments")]
         public void ParseLuContent(string fileName)
         {
             // var luContent = "# Help"+ Environment.NewLine + "- help" + Environment.NewLine + "- I need help" + Environment.NewLine + "- please help";

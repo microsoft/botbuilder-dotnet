@@ -1,0 +1,10 @@
+steps:
+- task: onebranch.pipeline.signing@1
+  displayName: "Sign output"
+  inputs:
+    command: "sign"
+    signing_profile: "external_distribution"
+    signing_environment: "azure-ado"
+    files_to_sign: "**/*.exe;**/*.dll;**/*.ps1;**/*.psm1"
+    search_root: "libraries"
+

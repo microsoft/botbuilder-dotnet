@@ -3,7 +3,7 @@ parser grammar LUFileParser;
 options { tokenVocab=LUFileLexer; }
 
 file
-	: paragraph+? EOF
+	: (paragraph+? | commentDefinition?) EOF
 	;
 
 paragraph
@@ -23,6 +23,10 @@ paragraph
 // but before the syntax is finalized, we still keep the NEWLINE in grammer 
 newline
     : WS* (NEWLINE | EOF)
+    ;
+
+commentDefinition
+    : COMMENT NEWLINE?
     ;
 
 errorString

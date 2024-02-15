@@ -277,8 +277,10 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
                     await streamWriter.FlushAsync().ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
+                    var blobHttpHeaders = new BlobHttpHeaders();
+                    blobHttpHeaders.ContentType = "application/json";
 
-                    await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _storageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _storageTransferOptions, cancellationToken: cancellationToken, httpHeaders: blobHttpHeaders).ConfigureAwait(false);
                 }
                 catch (RequestFailedException ex)
                 when (ex.Status == (int)HttpStatusCode.BadRequest

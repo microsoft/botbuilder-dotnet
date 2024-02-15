@@ -45,6 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     needs: encode
+    permissions:
+      issues: write
 
     strategy:
       matrix:
