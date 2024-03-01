@@ -47,8 +47,7 @@ namespace Microsoft.Bot.Builder.SharePoint
         {
             if (storage == null)
             {
-                // TODO: ADD THIS BACK IN
-                // throw new ArgumentNullException(nameof(storage));
+                throw new ArgumentNullException(nameof(storage));
             }
 
             if (string.IsNullOrEmpty(connectionName))
