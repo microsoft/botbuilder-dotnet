@@ -28,5 +28,10 @@ namespace Microsoft.Bot.Schema
         /// The EventActivity name when a token is sent to the bot.
         /// </summary>
         public const string TokenResponseEventName = "tokens/response";
+
+        /// <summary>
+        /// The invoke operation used to exchange a sharepoint token for SSO.
+        /// </summary>
+        public const string SharePointTokenExchange = "cardExtension/token";
     }
 }

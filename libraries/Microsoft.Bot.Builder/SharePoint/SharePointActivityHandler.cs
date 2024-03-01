@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.SharePoint;
 using Microsoft.Bot.Schema.Teams;
@@ -21,6 +22,23 @@ namespace Microsoft.Bot.Builder.SharePoint
     /// </summary>
     public class SharePointActivityHandler : ActivityHandler
     {
+        /// <summary>
+        /// Safely casts an object to an object of type <typeparamref name="T"/> .
+        /// </summary>
+        /// <param name="value">The object to be casted.</param>
+        /// <typeparam name="T">Template type.</typeparam>
+        /// <returns>The object casted in the new type.</returns>
+        internal static T SafeCast<T>(object value)
+        {
+            var obj = value as JObject;
+            if (obj == null)
+            {
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, $"expected type '{value.GetType().Name}'");
+            }
+
+            return obj.ToObject<T>();
+        }
+
         /// <summary>
         /// Invoked when an invoke activity is received from the connector.
         /// Invoke activities can be used to communicate many different things.
@@ -62,6 +80,10 @@ namespace Microsoft.Bot.Builder.SharePoint
 
                         case "cardExtension/handleAction":
                             return CreateInvokeResponse(await OnSharePointTaskHandleActionAsync(turnContext, SafeCast<AceRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                        case "cardExtension/token":
+                            await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse();
                     }
                 }
             }
@@ -137,22 +159,6 @@ namespace Microsoft.Bot.Builder.SharePoint
         protected virtual Task<BaseHandleActionResponse> OnSharePointTaskHandleActionAsync(ITurnContext<IInvokeActivity> turnContext, AceRequest aceRequest, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
-        }
-
-        /// <summary>
-        /// Safely casts an object to an object of type <typeparamref name="T"/> .
-        /// </summary>
-        /// <param name="value">The object to be casted.</param>
-        /// <returns>The object casted in the new type.</returns>
-        private static T SafeCast<T>(object value)
-        {
-            var obj = value as JObject;
-            if (obj == null)
-            {
-                throw new InvokeResponseException(HttpStatusCode.BadRequest, $"expected type '{value.GetType().Name}'");
-            }
-
-            return obj.ToObject<T>();
         }
 
         private void ValidateSetPropertyPaneConfigurationResponse(BaseHandleActionResponse response)
