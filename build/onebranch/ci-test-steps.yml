@@ -20,22 +20,12 @@ steps:
     customCommand: 'install -g @microsoft/botframework-cli@next'
 
 - task: UseDotNet@2
-  displayName: "Install .NET Core 3.1.415"
+  displayName: "Install .NET Core 6.0"
   continueOnError: true
   inputs:
     packageType: "sdk"
-    version: 3.1.415
-  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test (release) 3.1'
-  inputs:
-    command: test
-    projects: |
-     Tests/**/*Tests.csproj
-
-    arguments: '-v n  -f netcoreapp3.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
+    version: 6.x
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net6'))
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 6.0'
@@ -46,6 +36,16 @@ steps:
 
     arguments: '-v n  -f net6.0 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net6'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 8.0'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+
+    arguments: '-v n  -f net80 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net8'))
 
 - powershell: |
    # This task copies the code coverage file created by dotnet test into a well known location. In all
