@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
@@ -124,6 +125,12 @@ namespace Microsoft.Bot.Builder
 
                 switch (property.ToLowerInvariant())
                 {
+                    case "text":
+                        activity["text"] = value.Type == JTokenType.String ? value : value.ToString(Formatting.None);
+                        break;
+                    case "speak":
+                        activity["speak"] = value.Type == JTokenType.String ? value : value.ToString(Formatting.None);
+                        break;
                     case "attachments":
                         activity["attachments"] = JArray.FromObject(GetAttachments(value));
                         break;
