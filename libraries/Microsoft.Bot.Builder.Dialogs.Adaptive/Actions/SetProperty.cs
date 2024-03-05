@@ -89,9 +89,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
-            // save all state scopes to their respective botState locations.
-            await dc.Context.TurnState.Get<DialogStateManager>().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
-
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
