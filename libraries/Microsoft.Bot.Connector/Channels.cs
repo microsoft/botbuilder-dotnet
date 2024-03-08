@@ -144,5 +144,10 @@ namespace Microsoft.Bot.Connector
         /// Outlook channel.
         /// </summary>
         public const string Outlook = "outlook";
+
+        /// <summary>
+        /// M365 channel.
+        /// </summary>
+        public const string M365 = "m365extensions";
     }
 }
