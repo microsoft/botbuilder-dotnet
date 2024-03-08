@@ -19,14 +19,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <!-- Explicitly set to 5.0.1 for those built against 2.0-->
     <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />

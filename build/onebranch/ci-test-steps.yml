@@ -44,7 +44,7 @@ steps:
     projects: |
      Tests/**/*Tests.csproj
 
-    arguments: '-v n  -f net80 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+    arguments: '-v n  -f net8.0 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net8'))
 
 - powershell: |

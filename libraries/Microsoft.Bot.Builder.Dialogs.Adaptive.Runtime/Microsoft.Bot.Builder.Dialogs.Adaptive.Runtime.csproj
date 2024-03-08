@@ -22,11 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
