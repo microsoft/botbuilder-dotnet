@@ -255,7 +255,7 @@ The `nuget pack` command will build a package using a filename convention that i
 Given the example above with `.nuspec` `version` of 4.22.0, running `nuget pack Microsoft.BotFramework.CSharp.EchoBot` will create a NuGet package named `Microsoft.Bot.Framework.CSharp.EchoBot.4.22.0.nupkg`. We'll use this NuGet package name in subsequent steps.
 
 ```bash
-# install the locally built .nupkg (EchoBot template, assuming 4.9.0 version tag)
+# install the locally built .nupkg (EchoBot template, assuming 4.22.0 version tag)
 dotnet new install ./Microsoft.Bot.Framework.CSharp.EchoBot.4.22.0.nupkg
 ```
 
