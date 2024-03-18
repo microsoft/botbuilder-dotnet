@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0;net8.0</TargetFrameworks>
     <Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET Core. It offers idiomatic configuration APIs in addition to providing all the plumbing to direct incoming bot messages to a configured bot.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET Core.</Summary>
   </PropertyGroup>
@@ -19,14 +19,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <!-- Explicitly set to 5.0.1 for those built against 2.0-->
     <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
