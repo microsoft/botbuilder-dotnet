@@ -70,6 +70,18 @@ namespace Microsoft.Bot.Connector.Authentication
                 return false;
             }
 
+            var tid = token.Claims.FirstOrDefault(claim => claim.Type == "tid")?.Value != null ? '/' + token.Claims.FirstOrDefault(claim => claim.Type == "tid")?.Value + '/' : string.Empty;
+
+            //Validate if there is an existing issuer with the same tid value.
+            if (!string.IsNullOrEmpty(tid) && !ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Any((issuer) => issuer.Contains(tid)))
+            {
+                //If the issuer doesn't exist, this is added using the Emulator token issuer structure.
+                //This allows use of the SingleTenant authentication through Emulator.
+                var newIssuer = "https://sts.windows.net" + tid;
+                ToBotFromEmulatorTokenValidationParameters.ValidIssuers = 
+                    ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Concat(new string[] { newIssuer });
+            }
+
             // Is the token issues by a source we consider to be the emulator?
             if (!ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Contains(token.Issuer))
             {
