@@ -96,7 +96,7 @@ Select template of choice from Bot Builder v4 templates, then click **OK**.
 
 ### .NET Core CLI
 
-* Install the [.NET Core CLI tools](https://docs.microsoft.com/en-us/dotnet/core/tools/?tabs=netcore2x).
+* Install the [.NET Core CLI tools](https://docs.microsoft.com/en-us/dotnet/core/tools).
 * Using the command line, navigate to your project's root folder.
 * Type `dotnet run`.
 
