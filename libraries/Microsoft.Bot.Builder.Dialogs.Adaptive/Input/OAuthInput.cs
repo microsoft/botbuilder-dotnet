@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -312,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // Save state prior to sending OAuthCard: the invoke response for a token exchange from the root bot could come in
             // before this method ends or could land in another instance in scale-out scenarios, which means that if the state is not saved, 
             // the OAuthInput would not be at the top of the stack, and the token exchange invoke would get discarded.
-            await dc.Context.TurnState.Get<ConversationState>().SaveChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
+            await dc.Context.TurnState.Get<DialogStateManager>().SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // Prepare OAuthCard
             var title = Title == null ? null : await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
