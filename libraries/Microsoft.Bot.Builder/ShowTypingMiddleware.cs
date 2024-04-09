@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder
             if (typingTask != null && !typingTask.IsFaulted)
             {
                 await typingTask.ConfigureAwait(false);
-                typingTask.Dispose();              
+                typingTask.Dispose();
             }
 
             _tasks.TryRemove(turnContext.Activity.Conversation.Id, out _);
