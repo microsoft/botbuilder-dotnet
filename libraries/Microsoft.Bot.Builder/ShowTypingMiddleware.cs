@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder
             var (typingTask, cts) = item;
             cts?.Cancel();
             cts?.Dispose();
-            if (typingTask != null)
+            if (typingTask != null && !typingTask.IsFaulted)
             {
                 await typingTask.ConfigureAwait(false);
                 typingTask.Dispose();
