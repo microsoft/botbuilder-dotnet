@@ -6,14 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Streaming
-{ 
+{
     internal static class TaskExtensions
     {
-        private static readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
         public static async Task<T> DefaultTimeOutAsync<T>(this Task<T> task)
         {
-            return await task.TimeoutAfterAsync<T>(_defaultTimeout).ConfigureAwait(false);
+            return await task.TimeoutAfterAsync<T>(DefaultTimeout).ConfigureAwait(false);
         }
 
         public static async Task<T> TimeoutAfterAsync<T>(this Task<T> task, TimeSpan timeout)
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Connector.Streaming
 
         public static async Task DefaultTimeOutAsync(this Task task)
         {
-            await task.TimeoutAfterAsync(_defaultTimeout).ConfigureAwait(false);
+            await task.TimeoutAfterAsync(DefaultTimeout).ConfigureAwait(false);
         }
 
         public static async Task TimeoutAfterAsync(this Task task, TimeSpan timeout)

@@ -44,6 +44,14 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         protected ILogger Logger { get; }
 
         /// <summary>
+        /// Gets a value indicating whether this is currently connected.
+        /// </summary>
+        /// <value>
+        /// True if this is currently connected, otherwise false.
+        /// </value>
+        protected bool IsConnected { get; private set; } = false;
+
+        /// <summary>
         /// Sends a streaming request through the connection.
         /// </summary>
         /// <param name="request"><see cref="StreamingRequest"/> to be sent.</param>
@@ -65,7 +73,20 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 throw new InvalidOperationException("Cannot send streaming request since the session is not set up.");
             }
 
-            return await _session.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await _session.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
+            }
+            catch (TimeoutException ex)
+            {
+                var timeoutMessage = $"The connection to the client has been disconnected, and the request has timed out after waiting {TaskExtensions.DefaultTimeout.Seconds} seconds for a response.";
+                if (IsConnected)
+                {
+                    timeoutMessage = $"The request sent to the client has timed out after waiting {TaskExtensions.DefaultTimeout.Seconds} seconds for a response.";
+                }
+
+                throw new OperationCanceledException(timeoutMessage, ex, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -96,7 +117,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             _session = new StreamingSession(requestHandler, _application, Logger, cancellationToken);
 
             // Start transport and application
-            var transportTask = _transport.ConnectAsync(default, cancellationToken);
+            var transportTask = _transport.ConnectAsync((connected) => IsConnected = connected, cancellationToken);
             var applicationTask = _application.ListenAsync(cancellationToken);
 
             var tasks = new List<Task> { transportTask, applicationTask };
