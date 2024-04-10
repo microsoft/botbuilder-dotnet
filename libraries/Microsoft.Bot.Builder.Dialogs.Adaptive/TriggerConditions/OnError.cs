@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -29,6 +31,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public OnError(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(@event: AdaptiveEvents.Error, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
+        }
+
+        /// <summary>
+        /// Gets or sets the number of executions allowed. Used to avoid infinit loops in case of error.
+        /// </summary>
+        /// <value>.</value>
+        [JsonProperty("executionLimit")]
+        public NumberExpression ExecutionLimit { get; set; } = new NumberExpression();
+
+        /// <summary>
+        /// Method called to execute the rule's actions.
+        /// </summary>
+        /// <param name="actionContext">Context.</param>
+        /// <returns>A <see cref="Task"/> with plan change list.</returns>
+        public override Task<List<ActionChangeList>> ExecuteAsync(ActionContext actionContext)
+        {
+            // 10 is the default number of executions we'll allow before breaking the loop.
+            var limit = ExecutionLimit.Value > 0 ? ExecutionLimit.Value : 10;
+            actionContext.State.SetValue(TurnPath.ExecutionLimit, limit);
+            return base.ExecuteAsync(actionContext);
         }
 
         /// <summary>
