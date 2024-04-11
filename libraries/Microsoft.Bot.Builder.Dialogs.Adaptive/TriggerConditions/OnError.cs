@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Gets or sets the number of executions allowed. Used to avoid infinite loops in case of error.
         /// </summary>
-        /// <value>.</value>
+        /// <value>The number of executions allowed for this trigger.</value>
         [JsonProperty("executionLimit")]
         public NumberExpression ExecutionLimit { get; set; } = new NumberExpression();
 
