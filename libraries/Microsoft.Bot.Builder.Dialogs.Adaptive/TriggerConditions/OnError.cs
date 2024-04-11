@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Gets or sets the number of executions allowed. Used to avoid infinit loops in case of error.
+        /// Gets or sets the number of executions allowed. Used to avoid infinite loops in case of error.
         /// </summary>
         /// <value>.</value>
         [JsonProperty("executionLimit")]

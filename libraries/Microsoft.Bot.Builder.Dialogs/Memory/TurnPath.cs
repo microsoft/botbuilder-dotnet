@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string ActivityProcessed = "turn.activityProcessed";
 
         /// <summary>
-        /// Used to limit the execution of a trigger avoiding infinit loops in case of errors.
+        /// Used to limit the execution of a trigger avoiding infinite loops in case of errors.
         /// </summary>
         public const string ExecutionLimit = "turn.executionLimit";
 
