@@ -3,7 +3,8 @@
     "form": {
         "order": [
             "condition",
-            "*"
+            "*",
+            "executionLimit"
         ],
         "hidden": [
             "actions"
