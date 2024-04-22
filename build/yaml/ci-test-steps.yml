@@ -19,6 +19,7 @@ steps:
     verbose: false
     customCommand: 'install -g @microsoft/botframework-cli@next'
 
+- task: UseDotNet@2
   displayName: "Install .NET Core 3.1.415"
   continueOnError: true
   inputs:
