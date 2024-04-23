@@ -105,7 +105,20 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 throw new ArgumentNullException(nameof(message));
             }
 
-            return await _session.SendRequestAsync(message, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await _session.SendRequestAsync(message, cancellationToken).ConfigureAwait(false);
+            }
+            catch (TimeoutException ex)
+            {
+                var timeoutMessage = $"The underlying connection has been disconnected, and the request has timed out after waiting {TaskExtensions.DefaultTimeout.Seconds} seconds for a response.";
+                if (IsConnected)
+                {
+                    timeoutMessage = $"The request sent to the underlying connection has timed out after waiting {TaskExtensions.DefaultTimeout.Seconds} seconds for a response.";
+                }
+
+                throw new OperationCanceledException(timeoutMessage, ex, cancellationToken);
+            }
         }
 
         /// <inheritdoc />

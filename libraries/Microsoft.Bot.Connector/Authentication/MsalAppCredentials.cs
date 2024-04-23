@@ -54,6 +54,10 @@ namespace Microsoft.Bot.Connector.Authentication
             _scope = scope;
             _authority = authority;
             _validateAuthority = validateAuthority;
+            if (_clientApplication?.AppTokenCache != null)
+            {
+                _clientApplication.AppTokenCache.SetCacheOptions(CacheOptions.EnableSharedCacheOptions);
+            }
         }
 
         /// <summary>

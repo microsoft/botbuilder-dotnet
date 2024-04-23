@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-//
-// Generated with EchoBot .NET Template version __vX.X.X__
+﻿// Generated with EchoBot .NET Template version __vX.X.X__
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;

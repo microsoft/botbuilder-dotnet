@@ -126,7 +126,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             /// <summary>
             /// Http DELETE.
             /// </summary>
-            DELETE
+            DELETE,
+
+            /// <summary>
+            /// Http HEAD.
+            /// </summary>
+            HEAD
         }
 
         /// <summary>
@@ -315,7 +320,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         }
 
                         break;
-                    case HttpMethod.DELETE:                 
+                    case HttpMethod.DELETE:
+                    case HttpMethod.HEAD:
                         response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         break;
                 }

@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-//
-// Generated with EmptyBot .NET Template version __vX.X.X__
+﻿// Generated with EmptyBot .NET Template version __vX.X.X__
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;

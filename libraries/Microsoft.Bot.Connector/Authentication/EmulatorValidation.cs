@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -68,6 +69,18 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // No Issuer, means it's not from the Emulator.
                 return false;
+            }
+
+            var tenantId = token.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.TenantIdClaim)?.Value ?? string.Empty;
+
+            //Validate if there is an existing issuer with the same tid value.
+            if (!string.IsNullOrEmpty(tenantId) && !ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Any((issuer) => issuer.Contains(tenantId)))
+            {
+                //If the issuer doesn't exist, this is added using the Emulator token issuer structure.
+                //This allows use of the SingleTenant authentication through Emulator.
+                var newIssuer = AuthenticationConstants.ValidTokenIssuerUrlTemplateV1.Replace("{0}", tenantId);
+                ToBotFromEmulatorTokenValidationParameters.ValidIssuers = 
+                    ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Concat(new string[] { newIssuer });
             }
 
             // Is the token issues by a source we consider to be the emulator?

@@ -85,6 +85,13 @@ namespace Microsoft.Bot.Schema.SharePoint
         public string IconProperty { get; set; }
 
         /// <summary>
+        /// Gets or sets the visibility of the Adaptive Card Extension.
+        /// </summary>
+        /// <value>The value is the flag that indicates if the Adaptive Card Extension is visible. Default to true.</value>
+        [JsonProperty(PropertyName = "isVisible")]
+        public bool? IsVisible { get; set; }
+
+        /// <summary>
         /// Gets or Sets the property bag of type <see cref="JObject"/>.
         /// </summary>
         /// <value>This value is the property bag of the adaptive card extension.</value>

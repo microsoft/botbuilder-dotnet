@@ -1,0 +1,106 @@
+#variables:
+#  DotNetCoverallsToken: define this in Azure
+#  PublishCoverage: (optional) set to true in the calling template.
+steps:
+- powershell: |
+   Remove-Item CodeCoverage -Force -Recurse -ErrorAction Ignore
+   New-Item CodeCoverage -ItemType Directory -Force
+  displayName: 'Create Code Coverage directory'
+
+- task: NodeTool@0
+  displayName: 'install Node.js v14.x'
+  inputs:
+    versionSpec: '14.x' 
+
+- task: Npm@1
+  displayName: 'install botframework-cli to set up for Schema merge tests'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g @microsoft/botframework-cli@next'
+
+- task: UseDotNet@2
+  displayName: "Install .NET Core 3.1.415"
+  continueOnError: true
+  inputs:
+    packageType: "sdk"
+    version: 3.1.415
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 3.1'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+
+    arguments: '-v n  -f netcoreapp3.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 6.0'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+
+    arguments: '-v n  -f net6.0 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net6'))
+
+- powershell: |
+   # This task copies the code coverage file created by dotnet test into a well known location. In all
+   # checks I've done, dotnet test ALWAYS outputs the coverage file to the temp directory. 
+   # My attempts to override this and have it go directly to the CodeCoverage directory have
+   # all failed, so I'm just doing the copy here.  (cmullins)
+   
+   Get-ChildItem -Path "D:\a\_temp" -Include "*.coverage" -Recurse | Copy-Item -Destination CodeCoverage
+  displayName: 'Copy .coverage Files to CodeCoverage folder'
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
+- powershell: 'echo ''##vso[task.setvariable variable=CoverallsToken]$(DotNetCoverallsToken)'''
+  displayName: 'Set CoverallsToken for PublishToCoveralls.ps1 if token exists'
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
+- powershell: |
+   dotnet nuget remove source SDK_Dotnet_V4_org
+  displayName: Remove SDK_Dotnet_V4_org feed source reference from nuget.config
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'), ne(variables['System.PullRequest.IsFork'], 'True'))
+
+- task: PowerShell@2
+  displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/microsoft/botbuilder-dotnet'
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
+    arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "CI-PR build"'
+  continueOnError: true
+  # Skip for forks because it errors: "Couldn't find a repository matching this job."
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'), ne(variables['System.PullRequest.IsFork'], 'True'))
+
+- powershell: |
+   New-Item -ItemType directory -Path "outputLibraries\" -Force
+   
+   $buildTarget = $env:BuildConfiguration.Split("-")[0];
+   
+   $env:PackagesToValidate.Split(",") | ForEach {
+       $library = $_.Trim()
+       Write-Host $library
+   
+       Get-ChildItem -Path "*/$library/bin/$buildTarget/netstandard2.0/$library.dll" -Recurse | Copy-Item -Destination 'outputLibraries\' -Force
+       Get-ChildItem -Path "*/*/$library/bin/$buildTarget/netstandard2.0/$library.dll" -Recurse | Copy-Item -Destination 'outputLibraries\' -Force
+   }
+  displayName: 'Copy DLLs to outputLibraries folder'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Microsoft.Bot.Builder DLLs artifact'
+  inputs:
+    artifactName: 'BotBuilderDLLs-$(BuildConfiguration)-$(BuildTarget)'
+    targetPath: outputLibraries
+  continueOnError: true
+
+- script: |
+   dir .. /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

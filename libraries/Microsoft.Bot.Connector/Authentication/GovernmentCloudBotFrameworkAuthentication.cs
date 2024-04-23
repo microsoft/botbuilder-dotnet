@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger = null)
             : base(
                   GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
-                  GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
+                  GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate,
                   CallerIdConstants.USGovChannel,
                   GovernmentAuthenticationConstants.ChannelService,
                   GovernmentAuthenticationConstants.OAuthUrlGov,

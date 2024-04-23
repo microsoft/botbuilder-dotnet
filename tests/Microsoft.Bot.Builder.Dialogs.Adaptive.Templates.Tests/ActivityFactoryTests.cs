@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -59,6 +60,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var activity = ActivityFactory.FromObject(lgResult);
             Assert.Equal(0, activity.Attachments.Count);
             Assert.Equal("{\"lgType\":\"Acti\",\"key\":\"value\"}", activity.Text.Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty));
+        }
+
+        [Fact]
+        public void TestTextActivityArrayType()
+        {
+            var textArray = new JArray
+            {
+                new JObject(new JProperty("user", "userName"))
+            };
+
+            var text = textArray.ToString(Formatting.None);
+
+            dynamic data = new JObject();
+            data.text = textArray;
+
+            var lgResult = templates.Evaluate("messageActivity", data);
+            var activity = ActivityFactory.FromObject(lgResult);
+
+            Assert.Equal(ActivityTypes.Message, activity.Type);
+            Assert.Equal(text, activity.Text);
+            Assert.Equal(text, activity.Speak);
         }
 
         [Fact]

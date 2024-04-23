@@ -74,6 +74,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 policy.Add(language, fallback.ToArray());
             }
 
+            // Locales like zh-CN, zh-TW, etc... are deprecated locales returned by CultureInfo.
+            // However, many still supply the old value when setting up WebChat.  Since we
+            // really just need the progression to check for LG/LU files, we are manually adding
+            // them so that these files are found.  This is OS version specific.
+            if (!policy.ContainsKey("zh-cn"))
+            {
+                policy.Add("zh-cn", new string[] { "zh-cn", "zh" });
+            }
+
+            if (!policy.ContainsKey("zh-tw"))
+            {
+                policy.Add("zh-tw", new string[] { "zh-tw", "zh" });
+            }
+
             return policy;
         }
     }

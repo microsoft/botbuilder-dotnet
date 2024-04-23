@@ -66,19 +66,13 @@ namespace Microsoft.Bot.Builder
                 var containsMessage = activities.Any(e => e.Type == ActivityTypes.Message);
                 if (containsMessage)
                 {
-                    await FinishTypingTaskAsync(ctx).ConfigureAwait(false);
+                    await ProcessTypingAsync(ctx).ConfigureAwait(false);
                 }
 
                 return await nextSend().ConfigureAwait(false);
             });
 
-            // Start a timer to periodically send the typing activity (bots running as skills should not send typing activity)
-            if (!IsSkillBot(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
-            {
-                // Override the typing background task.
-                await FinishTypingTaskAsync(turnContext).ConfigureAwait(false);
-                StartTypingTask(turnContext);
-            }
+            await ProcessTypingAsync(turnContext).ConfigureAwait(false);
 
             await next(cancellationToken).ConfigureAwait(false);
 
@@ -169,13 +163,27 @@ namespace Microsoft.Bot.Builder
             var (typingTask, cts) = item;
             cts?.Cancel();
             cts?.Dispose();
-            if (typingTask != null)
+            if (typingTask != null && !typingTask.IsFaulted)
             {
                 await typingTask.ConfigureAwait(false);
                 typingTask.Dispose();
             }
 
             _tasks.TryRemove(turnContext.Activity.Conversation.Id, out _);
+        }
+
+        /// <summary>
+        /// Start a timer to periodically send the typing activity (bots running as skills should not send typing activity).
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        private async Task ProcessTypingAsync(ITurnContext turnContext)
+        {
+            if (!IsSkillBot(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
+            {
+                // Override the typing background task.
+                await FinishTypingTaskAsync(turnContext).ConfigureAwait(false);
+                StartTypingTask(turnContext);
+            }
         }
     }
 }
