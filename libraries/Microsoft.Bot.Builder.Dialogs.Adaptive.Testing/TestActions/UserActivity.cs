@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -14,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Send an activity to the bot.
     /// </summary>
-    [DebuggerDisplay("UserActivity")]
+    [System.Diagnostics.DebuggerDisplay("UserActivity")]
     public class UserActivity : TestAction
     {
         /// <summary>
@@ -74,13 +73,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 activity.From = ObjectPath.Clone(Activity.From);
             }
 
-            Stopwatch sw = new Stopwatch();
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
             await adapter.ProcessActivityAsync(activity, callback, default).ConfigureAwait(false);
 
             sw.Stop();
-            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserActivity: {Activity.Text} ]");
+            System.Diagnostics.Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserActivity: {Activity.Text} ]");
         }
     }
 }

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -55,7 +54,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var stopwatch = new Stopwatch();
+            var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
             context.TurnState[_stopWatchStateKey] = stopwatch;
             await LogIncomingActivityAsync(context, context.Activity, cancellationToken).ConfigureAwait(false);
@@ -100,7 +99,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <returns>A task that represents the work to execute.</returns>
         protected virtual Task LogOutgoingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var stopwatch = (Stopwatch)context.TurnState[_stopWatchStateKey];
+            var stopwatch = (System.Diagnostics.Stopwatch)context.TurnState[_stopWatchStateKey];
             var actor = "Bot:  ";
             if (activity.Type == ActivityTypes.Message)
             {

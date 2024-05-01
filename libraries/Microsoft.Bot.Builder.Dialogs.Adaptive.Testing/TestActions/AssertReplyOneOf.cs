@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -14,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Assertion that reply from the bot matches one of options.
     /// </summary>
-    [DebuggerDisplay("AssertReplyOneOf:{GetConditionDescription()}")]
+    [System.Diagnostics.DebuggerDisplay("AssertReplyOneOf:{GetConditionDescription()}")]
     public class AssertReplyOneOf : AssertReplyActivity
     {
         /// <summary>
