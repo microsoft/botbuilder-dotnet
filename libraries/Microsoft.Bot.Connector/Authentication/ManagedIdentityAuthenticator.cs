@@ -78,9 +78,16 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             _logger.LogError(e, "Exception when trying to acquire token using MSI!");
 
-            return e is MsalServiceException // BadRequest
-                ? RetryParams.StopRetrying
-                : RetryParams.DefaultBackOff(retryCount);
+            if (e is MsalServiceException exception)
+            {
+                // stop retrying for all except for throttling response
+                if (exception.StatusCode != 429)
+                {
+                    return RetryParams.StopRetrying;
+                }
+            }
+
+            return RetryParams.DefaultBackOff(retryCount);
         }
 
         private IManagedIdentityApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)

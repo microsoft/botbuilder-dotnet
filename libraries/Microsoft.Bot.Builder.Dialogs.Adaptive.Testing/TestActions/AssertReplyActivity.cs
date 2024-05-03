@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Basic assertion TestAction, which validates assertions against a reply activity.
     /// </summary>
-    [DebuggerDisplay("AssertReplyActivity:{GetConditionDescription()}")]
+    [System.Diagnostics.DebuggerDisplay("AssertReplyActivity:{GetConditionDescription()}")]
     public class AssertReplyActivity : TestAction
     {
         /// <summary>
@@ -89,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         {
             var timeout = (int)Timeout;
 
-            if (Debugger.IsAttached)
+            if (System.Diagnostics.Debugger.IsAttached)
             {
                 timeout = int.MaxValue;
             }

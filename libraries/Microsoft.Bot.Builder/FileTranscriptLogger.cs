@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -69,7 +68,7 @@ namespace Microsoft.Bot.Builder
 
             var transcriptFile = GetTranscriptFile(activity.ChannelId, activity.Conversation.Id);
 
-            if (Debugger.IsAttached && activity.Type == ActivityTypes.Message)
+            if (System.Diagnostics.Debugger.IsAttached && activity.Type == ActivityTypes.Message)
             {
                 System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}] {activity.AsMessageActivity()?.Text}");
             }
@@ -85,7 +84,7 @@ namespace Microsoft.Bot.Builder
                 {
                     if ((this._unitTestMode == true && !_started.Contains(transcriptFile)) || !File.Exists(transcriptFile))
                     {
-                        Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
+                        System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
                         _started.Add(transcriptFile);
 
                         using (var stream = File.OpenWrite(transcriptFile))
@@ -119,7 +118,7 @@ namespace Microsoft.Bot.Builder
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
                     // try again
-                    Trace.TraceError($"Try {i + 1} - Failed to log activity because: {e.GetType()} : {e.Message}");
+                    System.Diagnostics.Trace.TraceError($"Try {i + 1} - Failed to log activity because: {e.GetType()} : {e.Message}");
                 }
             }
         }
