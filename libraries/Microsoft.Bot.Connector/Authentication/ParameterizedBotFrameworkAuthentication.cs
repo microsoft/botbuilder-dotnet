@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (string.IsNullOrWhiteSpace(channelIdHeader) && !await _credentialsFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("No Channel ID header");
             }
 
             var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, channelIdHeader, null, cancellationToken).ConfigureAwait(false);
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (!isAuthDisabled)
                 {
                     // No Auth Header. Auth is required. Request is not authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("No Authorization header");
                 }
 
                 // Check if the activity is for a skill call and is coming from the Emulator.
@@ -244,13 +244,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
-                throw new UnauthorizedAccessException("Invalid Identity");
+                throw new UnauthorizedAccessException("No valid Identity");
             }
 
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized.
-                throw new UnauthorizedAccessException("Token Not Authenticated");
+                throw new UnauthorizedAccessException("Identity Not Authenticated");
             }
 
             var versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
@@ -428,13 +428,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("No valid identity");
             }
 
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Identity no authenticated");
             }
 
             // Now check that the AppID in the claimset matches
@@ -449,7 +449,7 @@ namespace Microsoft.Bot.Connector.Authentication
             if (audienceClaim == null)
             {
                 // The relevant audience Claim MUST be present. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Missing aud claim");
             }
 
             // The AppId from the claim in the token must match the AppId specified by the developer.
@@ -458,7 +458,7 @@ namespace Microsoft.Bot.Connector.Authentication
             if (string.IsNullOrWhiteSpace(appIdFromClaim))
             {
                 // Claim is present, but doesn't have a value. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Empty aud claim");
             }
 
             if (!await _credentialsFactory.IsValidAppIdAsync(appIdFromClaim, cancellationToken).ConfigureAwait(false))
@@ -473,13 +473,13 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (string.IsNullOrWhiteSpace(serviceUrlClaim))
                 {
                     // Claim must be present. Not Authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("Missing serviceurl claim");
                 }
 
                 if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     // Claim must match. Not Authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("serviceurl claim mismatch");
                 }
             }
         }
