@@ -88,13 +88,13 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             // Null identity
             var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await SkillValidation.ValidateIdentityAsync(null, mockCredentials.Object));
-            Assert.Equal("Invalid Identity", exception.Message);
+            Assert.Equal("No valid Identity", exception.Message);
 
             // not authenticated identity
             mockIdentity.Setup(x => x.IsAuthenticated).Returns(false);
             exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object));
-            Assert.Equal("Token Not Authenticated", exception.Message);
+            Assert.Equal("Identity Not Authenticated", exception.Message);
 
             // No version claims
             mockIdentity.Setup(x => x.IsAuthenticated).Returns(true);
