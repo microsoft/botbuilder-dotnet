@@ -157,13 +157,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
-                throw new UnauthorizedAccessException("Invalid Identity");
+                throw new UnauthorizedAccessException("No valid Identity");
             }
 
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized.
-                throw new UnauthorizedAccessException("Token Not Authenticated");
+                throw new UnauthorizedAccessException("Identity Not Authenticated");
             }
 
             // Now check that the AppID in the claimset matches
