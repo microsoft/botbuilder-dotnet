@@ -147,8 +147,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 ValidateIssuer = false,
                 ValidIssuers = new[] { AuthenticationConstants.ToBotFromChannelTokenIssuer },
 
-                // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation] Audience validation takes place in JwtTokenExtractor
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
