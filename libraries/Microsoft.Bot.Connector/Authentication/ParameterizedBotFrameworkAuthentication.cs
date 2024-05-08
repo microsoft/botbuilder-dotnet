@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     },
 
                     // Audience validation takes place manually in code.
-                    ValidateAudience = true, // lgtm[cs/web/missing-token-validation]
+                    ValidateAudience = true, // CODEQL [cs/web/missing-token-validation]
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true
@@ -301,7 +301,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     },
 
                     // Audience validation takes place manually in code.
-                    ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                    ValidateAudience = false, // CODEQL [cs/web/missing-token-validation]
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true,
@@ -415,7 +415,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidIssuers = new[] { _toBotFromChannelTokenIssuer },
 
                 // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation]
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,

@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 },
 
                 // Audience validation takes place manually in code.
-                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation]
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,

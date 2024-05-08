@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             var jsonSerializerSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                TypeNameHandling = TypeNameHandling.All, // CODEQL [cs/unsafe-type-name-handling] we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
                 MaxDepth = null,
                 SerializationBinder = new AllowedTypesSerializationBinder(
                     new List<Type>
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             var jsonSerializerSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                TypeNameHandling = TypeNameHandling.All, // CODEQL [cs/unsafe-type-name-handling] we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
                 MaxDepth = null,
                 SerializationBinder = new AllowedTypesSerializationBinder(),
             };
@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 });
             var jsonSerializerSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                TypeNameHandling = TypeNameHandling.All, // CODEQL [cs/unsafe-type-name-handling] we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
                 MaxDepth = null,
                 SerializationBinder = serializationBinder,
             };
@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var serializationBinder = new AllowedTypesSerializationBinder();
             var jsonSerializerSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+                TypeNameHandling = TypeNameHandling.All, // CODEQL [cs/unsafe-type-name-handling] we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
                 MaxDepth = null,
                 SerializationBinder = serializationBinder,
             };
