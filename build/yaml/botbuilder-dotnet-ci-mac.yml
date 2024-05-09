@@ -34,7 +34,7 @@ steps:
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
 
-- task: NuGetAuthenticate@0
+- task: NuGetAuthenticate@1
   displayName: 'NuGet Authenticate'
   inputs:
     nuGetServiceConnections: SDK_Dotnet_V4_org Connection

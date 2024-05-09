@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (!isAuthDisabled)
                 {
                     // No Auth Header and Auth is required. Request is not authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("No Authorization header");
                 }
 
                 // Check if the activity is for a skill call and is coming from the Emulator.
