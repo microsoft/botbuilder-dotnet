@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 	ProjectSection(SolutionItems) = preProject
@@ -111,8 +111,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		bot.png = bot.png
-		bot_icon.png = bot_icon.png
 		BotBuilder-DotNet.ruleset = BotBuilder-DotNet.ruleset
+		bot_icon.png = bot_icon.png
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 		libraries\copySchemas.cmd = libraries\copySchemas.cmd
 		Directory.Build.props = Directory.Build.props
@@ -233,7 +233,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Str
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Tests.Client", "tests\Microsoft.Bot.Connector.Streaming.Tests.Client\Microsoft.Bot.Connector.Streaming.Tests.Client.csproj", "{2E5AD07C-4F6E-4B6B-BEFE-9FBE9F789161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Connector.Streaming.Perf", "tests\Microsoft.Bot.Connector.Streaming.Perf\Microsoft.Bot.Connector.Streaming.Perf.csproj", "{B49A3201-5BEE-426C-A082-D92D52172E06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Streaming.Perf", "tests\Microsoft.Bot.Connector.Streaming.Perf\Microsoft.Bot.Connector.Streaming.Perf.csproj", "{B49A3201-5BEE-426C-A082-D92D52172E06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveExpressionsSTJ", "libraries\AdaptiveExpressionsSTJ\AdaptiveExpressionsSTJ.csproj", "{0D974CFD-0E69-448F-B375-BBDA457FD975}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveExpressionsSTJ.Tests", "tests\AdaptiveExpressionsSTJ.Tests\AdaptiveExpressionsSTJ.Tests.csproj", "{F90C5110-0FF5-4775-9750-CF4E73B8AB32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveExpressionsSTJ.AOT.Tests", "tests\AdaptiveExpressionsSTJ.AOT.Tests\AdaptiveExpressionsSTJ.AOT.Tests.csproj", "{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -923,6 +929,30 @@ Global
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{B49A3201-5BEE-426C-A082-D92D52172E06}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{0D974CFD-0E69-448F-B375-BBDA457FD975}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1026,6 +1056,9 @@ Global
 		{FB7ADCDF-C0A5-49EA-8ADC-CC77B6FB9D71} = {EBFEF03F-9ACE-4312-89D7-2C8A147CDF9C}
 		{2E5AD07C-4F6E-4B6B-BEFE-9FBE9F789161} = {EBFEF03F-9ACE-4312-89D7-2C8A147CDF9C}
 		{B49A3201-5BEE-426C-A082-D92D52172E06} = {EBFEF03F-9ACE-4312-89D7-2C8A147CDF9C}
+		{0D974CFD-0E69-448F-B375-BBDA457FD975} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{F90C5110-0FF5-4775-9750-CF4E73B8AB32} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{DD3C8FAE-CF52-4102-98C8-B2B88A4B0580} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
