@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework Condition="'$(BuildTarget)' == 'netcoreapp31'">netcoreapp3.1</TargetFramework>
     <TargetFramework Condition="'$(BuildTarget)' == 'net6'">net6.0</TargetFramework>
     <TargetFramework Condition="'$(BuildTarget)' == 'net8'">net8.0</TargetFramework>
-    <TargetFrameworks Condition="'$(BuildTarget)' == ''">net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1;net6.0;net8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
