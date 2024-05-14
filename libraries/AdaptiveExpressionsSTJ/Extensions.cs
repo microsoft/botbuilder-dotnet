@@ -103,5 +103,22 @@ namespace AdaptiveExpressions
                 return _random.Next(min, max);
             }
         }
+
+        // Polyfill string methods for netstandard that net8.0 warns about. The culture defaults are what the implementation
+        // used to use, so these are safe for these callers.
+#if NETSTANDARD
+#pragma warning disable CA1801 // Unused parameters (this is intentional)
+        internal static string Replace(this string str, string oldValue, string newValue, StringComparison comparisonType)
+        {
+            return str.Replace(oldValue, newValue);
+        }
+
+        internal static bool Contains(this string str, string value, StringComparison comparisonType)
+        {
+            return str.Contains(value);
+        }
+
+#pragma warning restore CA1801 
+#endif
     }
 }

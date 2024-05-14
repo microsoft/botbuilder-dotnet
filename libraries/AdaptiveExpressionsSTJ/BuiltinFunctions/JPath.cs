@@ -59,7 +59,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 try
                 {
                     string jpathFixed = jpath;
-                    if (!jpathFixed.StartsWith('$'))
+                    if (!jpathFixed.StartsWith("$", System.StringComparison.OrdinalIgnoreCase))
                     {
                         jpathFixed = "$." + jpathFixed;
                     }
