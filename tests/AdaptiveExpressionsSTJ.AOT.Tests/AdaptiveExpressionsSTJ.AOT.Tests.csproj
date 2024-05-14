@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(BuildTarget)' == ''">net8.0</TargetFrameworks>
+    <TargetFrameworks>net8</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
