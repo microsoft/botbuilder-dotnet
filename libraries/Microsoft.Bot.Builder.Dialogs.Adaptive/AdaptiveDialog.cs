@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Value = options,
                 Bubble = false
             };
-            
+
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 return null;
             }
-            
+
             dialog = resourceExplorer.LoadType<AdaptiveDialog>(resourceId);
             dialog.Id = dialogId;
             dc.Dialogs.Add(dialog);
@@ -562,17 +562,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     case AdaptiveEvents.ActivityReceived:
                         if (activity.Type == ActivityTypes.Message)
                         {
-                            // Recognize utterance (ignore handled)
-                            var recognizeUtteranceEvent = new DialogEvent
-                            {
-                                Name = AdaptiveEvents.RecognizeUtterance,
-                                Value = activity,
-                                Bubble = false
-                            };
-                            await ProcessEventAsync(actionContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                            // Emit leading RecognizedIntent event
+                            // Avoid reprocessing recognized activity.
                             var recognized = actionContext.State.GetValue<RecognizerResult>(TurnPath.Recognized);
+                            if (recognized == null)
+                            {
+                                // Recognize utterance (ignore handled)
+                                var recognizeUtteranceEvent = new DialogEvent
+                                {
+                                    Name = AdaptiveEvents.RecognizeUtterance,
+                                    Value = activity,
+                                    Bubble = false
+                                };
+                                await ProcessEventAsync(actionContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                                // Emit leading RecognizedIntent event
+                                recognized = actionContext.State.GetValue<RecognizerResult>(TurnPath.Recognized);
+                            }
+
                             var recognizedIntentEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.RecognizedIntent,
@@ -878,7 +884,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Gathers all the intents with the highest Score value.
                     var scoreSorted = result.Intents.OrderByDescending(e => e.Value.Score).ToList();
                     var topIntents = scoreSorted.TakeWhile(e => e.Value.Score == scoreSorted[0].Value.Score).ToList();
-                    
+
                     // Priority
                     // Gathers the Intent with the highest Priority (0 being the highest).
                     // Note: this functionality is based on the FirstSelector.SelectAsync method.
