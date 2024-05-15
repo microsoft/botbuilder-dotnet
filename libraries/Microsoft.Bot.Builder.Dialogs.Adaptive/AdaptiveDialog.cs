@@ -562,9 +562,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     case AdaptiveEvents.ActivityReceived:
                         if (activity.Type == ActivityTypes.Message)
                         {
-                            // Avoid reprocessing recognized activity.
                             var recognized = actionContext.State.GetValue<RecognizerResult>(TurnPath.Recognized);
-                            if (recognized == null)
+                            var activityProcessed = actionContext.State.GetValue<bool>(TurnPath.ActivityProcessed);
+
+                            // Avoid reprocessing recognized activity for OnQnAMatch.
+                            var isOnQnAMatchProcessed = activityProcessed && recognized?.Intents.TryGetValue(OnQnAMatch.QnAMatchIntent, out _) == true;
+                            if (!isOnQnAMatchProcessed)
                             {
                                 // Recognize utterance (ignore handled)
                                 var recognizeUtteranceEvent = new DialogEvent

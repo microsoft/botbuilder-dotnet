@@ -308,6 +308,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task AdaptiveDialog_OnQnAMatch()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task TestForEachElementReprompt()
         {
             var testFlow = new TestScript()
