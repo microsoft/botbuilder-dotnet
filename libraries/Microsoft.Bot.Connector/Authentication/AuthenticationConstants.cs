@@ -164,6 +164,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string AnonymousAuthType = "anonymous";
 
         /// <summary>
+        /// Tenant Id claim name. As used in Microsoft AAD tokens.
+        /// </summary>
+        public const string TenantIdClaim = "tid";
+
+        /// <summary>
         /// Allowed token signing algorithms. Tokens come from channels to the bot. The code
         /// that uses this also supports tokens coming from the emulator.
         /// </summary>

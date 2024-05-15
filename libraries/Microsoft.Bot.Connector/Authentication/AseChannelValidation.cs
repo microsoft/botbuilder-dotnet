@@ -31,8 +31,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 ValidateIssuer = true,
 
-                // Audience validation takes place manually in code.
-                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation] Audience validation takes place manually in code.
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
@@ -133,13 +132,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
-                throw new UnauthorizedAccessException("Invalid Identity");
+                throw new UnauthorizedAccessException("No valid Identity");
             }
 
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized.
-                throw new UnauthorizedAccessException("Token Not Authenticated");
+                throw new UnauthorizedAccessException("Identity Not Authenticated");
             }
 
             // Now check that the AppID in the claimset matches

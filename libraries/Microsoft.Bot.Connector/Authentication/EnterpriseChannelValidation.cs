@@ -26,8 +26,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidateIssuer = true,
                 ValidIssuers = new[] { AuthenticationConstants.ToBotFromChannelTokenIssuer },
 
-                // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation] Audience validation takes place in JwtTokenExtractor
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
@@ -104,13 +103,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("No valid identity");
             }
 
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Identity Not Authenticated");
             }
 
             // Now check that the AppID in the claimset matches
@@ -125,7 +124,7 @@ namespace Microsoft.Bot.Connector.Authentication
             if (audienceClaim == null)
             {
                 // The relevant audience Claim MUST be present. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Missing aud claim");
             }
 
             // The AppId from the claim in the token must match the AppId specified by the developer.
@@ -134,7 +133,7 @@ namespace Microsoft.Bot.Connector.Authentication
             if (string.IsNullOrWhiteSpace(appIdFromClaim))
             {
                 // Claim is present, but doesn't have a value. Not Authorized.
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Empty aud claim");
             }
 
             if (!await credentials.IsValidAppIdAsync(appIdFromClaim).ConfigureAwait(false))
@@ -149,13 +148,13 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (string.IsNullOrWhiteSpace(serviceUrlClaim))
                 {
                     // Claim must be present. Not Authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("Missing serviceurl claim");
                 }
 
                 if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     // Claim must match. Not Authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("serviceurl claim mismatch");
                 }
             }
         }

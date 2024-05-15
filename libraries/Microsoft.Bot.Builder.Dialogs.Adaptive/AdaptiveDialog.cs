@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -1047,7 +1046,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var condition = selection[0];
                 await actionContext.DebuggerStepAsync(condition, dialogEvent, cancellationToken).ConfigureAwait(false);
-                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{condition.Id}]: {condition.GetType().Name}: {condition.GetExpression()}");
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {Id} Rule[{condition.Id}]: {condition.GetType().Name}: {condition.GetExpression()}");
 
                 var properties = new Dictionary<string, string>()
                 {
