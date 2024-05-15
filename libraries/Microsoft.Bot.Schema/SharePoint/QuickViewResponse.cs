@@ -67,5 +67,23 @@ namespace Microsoft.Bot.Schema.SharePoint
         /// <value>This value is the focus parameters of the quick view response.</value>
         [JsonProperty(PropertyName = "focusParameters")]
         public FocusParameters FocusParameters { get; set; }
+
+        /// <summary>
+        /// Gets or Sets a value indicating whether the client to trigger a single sign on flow.
+        /// </summary>
+        /// <value>
+        /// True if single sign on flow should be started.
+        /// </value>
+        [JsonProperty(PropertyName = "requiresSso")]
+        public bool RequiresSso { get; set; }
+
+        /// <summary>
+        /// Gets or Sets a value which tells the client what view to load after SSO is complete.
+        /// </summary>
+        /// <value>
+        /// ViewId to load from client after the SSO flow completes.
+        /// </value>
+        [JsonProperty(PropertyName = "postSsoViewId")]
+        public string PostSsoViewId { get; set; }
     }
 }

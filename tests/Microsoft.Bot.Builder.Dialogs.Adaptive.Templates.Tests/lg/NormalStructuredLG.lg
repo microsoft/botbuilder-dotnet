@@ -129,6 +129,12 @@
     Type = handoff
 ]
 
+# messageActivity(text)
+[Activity
+    Text = ${text}
+    Speak = ${text}
+]
+
 # messageActivityAll(title, text)
 [Activity
     Text = ${text}

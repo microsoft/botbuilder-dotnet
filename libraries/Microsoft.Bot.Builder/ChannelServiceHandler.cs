@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder
                 if (!isAuthDisabled)
                 {
                     // No auth header. Auth is required. Request is not authorized.
-                    throw new UnauthorizedAccessException();
+                    throw new UnauthorizedAccessException("No Authorization header");
                 }
 
                 // In the scenario where auth is disabled, we still want to have the

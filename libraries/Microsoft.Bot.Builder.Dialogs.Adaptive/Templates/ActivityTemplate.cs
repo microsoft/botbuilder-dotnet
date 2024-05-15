@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     /// Defines an activity Template where the template expression is local aka "inline" 
     /// and processed through registered IActivityGenerator/ILanguageGenerator.
     /// </summary>
-    [DebuggerDisplay("{Template}")]
+    [System.Diagnostics.DebuggerDisplay("{Template}")]
     [JsonConverter(typeof(ActivityTemplateConverter))]
     public class ActivityTemplate : ITemplate<Activity>
     {

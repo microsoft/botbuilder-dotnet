@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -131,7 +130,7 @@ namespace Microsoft.Bot.Builder
             catch (Exception ex)
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
             {
-                Trace.TraceError($"Transcript logActivity failed with {ex}");
+                System.Diagnostics.Trace.TraceError($"Transcript logActivity failed with {ex}");
             }
         }
 

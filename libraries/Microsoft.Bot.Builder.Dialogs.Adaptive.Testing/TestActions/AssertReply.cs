@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -12,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Test Script action to assert that the bots' reply matches expectations.
     /// </summary>
-    [DebuggerDisplay("AssertReply{Exact ? \"[Exact]\" : string.Empty}:{GetConditionDescription()}")]
+    [System.Diagnostics.DebuggerDisplay("AssertReply{Exact ? \"[Exact]\" : string.Empty}:{GetConditionDescription()}")]
     public class AssertReply : AssertReplyActivity
     {
         /// <summary>

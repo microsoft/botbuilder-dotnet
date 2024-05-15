@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -36,8 +37,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",       // Auth for US Gov, 2.0 token
                 },
 
-                // Audience validation takes place manually in code.
-                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation] Audience validation takes place manually in code.
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
@@ -68,6 +68,18 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // No Issuer, means it's not from the Emulator.
                 return false;
+            }
+
+            var tenantId = token.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.TenantIdClaim)?.Value ?? string.Empty;
+
+            //Validate if there is an existing issuer with the same tid value.
+            if (!string.IsNullOrEmpty(tenantId) && !ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Any((issuer) => issuer.Contains(tenantId)))
+            {
+                //If the issuer doesn't exist, this is added using the Emulator token issuer structure.
+                //This allows use of the SingleTenant authentication through Emulator.
+                var newIssuer = AuthenticationConstants.ValidTokenIssuerUrlTemplateV1.Replace("{0}", tenantId);
+                ToBotFromEmulatorTokenValidationParameters.ValidIssuers = 
+                    ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Concat(new string[] { newIssuer });
             }
 
             // Is the token issues by a source we consider to be the emulator?
@@ -144,13 +156,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
-                throw new UnauthorizedAccessException("Invalid Identity");
+                throw new UnauthorizedAccessException("No valid Identity");
             }
 
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized.
-                throw new UnauthorizedAccessException("Token Not Authenticated");
+                throw new UnauthorizedAccessException("Identity Not Authenticated");
             }
 
             // Now check that the AppID in the claimset matches
