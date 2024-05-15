@@ -45,6 +45,10 @@
       "datatype": "choice",
       "choices": [
         {
+          "choice": "netcoreapp3.1",
+          "description": "Target netcoreapp3.1"
+        },
+        {
           "choice": "net6.0",
           "description": "Target net6.0"
         },
@@ -57,7 +61,7 @@
       "defaultValue": "net8.0"
     },
     "ReadmeNetCorePrereqVersion": {
-      "type":"generated",
+      "type": "generated",
       "generator": "switch",
       "dataType": "string",
       "replaces": "__NETCORE_VERSION__",
@@ -82,7 +86,12 @@
   "sources": [
     {
       "modifiers": [
-        {"exclude": [ "**/NuGet.Config", "**/.DS_Store" ]}
+        {
+          "exclude": [
+            "**/NuGet.Config",
+            "**/.DS_Store"
+          ]
+        }
       ]
     }
   ],
@@ -91,7 +100,9 @@
       "condition": "(!SkipRestore)",
       "description": "Restore NuGet packages required by this project.",
       "manualInstructions": [
-        { "text": "Run 'dotnet restore'" }
+        {
+          "text": "Run 'dotnet restore'"
+        }
       ],
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true
