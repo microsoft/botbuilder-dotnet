@@ -43,7 +43,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
 [Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
 
-- Install the Bot Framework Emulator version 4.22.0 or greater from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
+- Install the latest v4 Bot Framework Emulator [here](https://github.com/Microsoft/BotFramework-Emulator/releases/latest)
 
 ### Connect to the bot using Bot Framework Emulator
 

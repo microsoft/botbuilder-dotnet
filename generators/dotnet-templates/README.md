@@ -58,7 +58,7 @@ The Empty Bot template is the minimal skeleton code for a bot.  It provides a st
 
 
 ## Installation
-1.  Install [.NET Core SDK][4] version 8.0 or higher
+1.  Install [.NET Core SDK][60] version 8.0 or higher
 	```bash
 	# determine dotnet version
 	dotnet --version
