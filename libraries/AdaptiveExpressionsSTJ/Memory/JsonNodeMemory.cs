@@ -208,7 +208,16 @@ namespace AdaptiveExpressions.Memory
         [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "All valid json types are supported by the serializer context")]
         private JsonNode ConvertToJsonNode(object value)
         {
-            return value == null ? null : JsonSerializer.SerializeToNode(value, value.GetType(), SerializerContext.Default.Options);
+            if (value is null)
+            {
+                return null;
+            }
+            else if (value is JsonNode node)
+            {
+                return node.DeepClone();
+            }
+            
+            return JsonSerializer.SerializeToNode(value, value.GetType(), SerializerContext.Default.Options);
         }
 
         [JsonSerializable(typeof(JsonNode))]
