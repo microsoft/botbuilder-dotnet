@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <!-- The SlackAPI package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY SlackAPI. -->
     <NoWarn>$(NoWarn),CS8002</NoWarn>
     <UserSecretsId>3c783a33-e2a5-4acd-99dd-581d563d47e3</UserSecretsId>
