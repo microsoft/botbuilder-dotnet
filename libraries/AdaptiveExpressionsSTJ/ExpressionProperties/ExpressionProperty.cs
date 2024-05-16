@@ -58,6 +58,17 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionProperty{T}"/> class.
         /// </summary>
+        /// <param name="value">A string representing the expression.</param>
+        public ExpressionProperty(string value)
+        {
+#pragma warning disable CA2214 // Do not call overridable methods in constructors (fixing this would require further redesign of this class and derived types, excluding it for now).
+            SetValue(value);
+#pragma warning restore CA2214 // Do not call overridable methods in constructors
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionProperty{T}"/> class.
+        /// </summary>
         /// <param name="value">An object containing the value to be set.</param>
         /// <param name="typeInfo">JsonTypeInfo for serialization.</param>
         public ExpressionProperty(object value, JsonTypeInfo typeInfo)
@@ -236,7 +247,7 @@ namespace AdaptiveExpressions.Properties
         /// <param name="data">data to use for expression binding.</param>
         /// <param name="serializerContext">serializerContext to do type conversions to T.</param>
         /// <returns>value.</returns>
-        public (T Value, string Error) TryGetValue(JsonNode data, JsonSerializerContext serializerContext)
+        public (T Value, string Error) TryGetValue(JsonNode data, JsonSerializerContext serializerContext = null)
         {
             return TryGetValue(new JsonNodeMemory(data, serializerContext));
         }

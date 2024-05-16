@@ -52,6 +52,15 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="ValueExpression"/> class.
         /// </summary>
+        /// <param name="value">value to interpret as object or string expression.</param>
+        public ValueExpression(string value)
+            : base(value)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValueExpression"/> class.
+        /// </summary>
         /// <param name="lambda">function (data) which evaluates to value.</param>
         [RequiresDynamicCode("For AOT compatibility, use overloads that take a JsonTypeInfo")]
         [RequiresUnreferencedCode("For AOT compatibility, use overloads that take a JsonTypeInfo")]

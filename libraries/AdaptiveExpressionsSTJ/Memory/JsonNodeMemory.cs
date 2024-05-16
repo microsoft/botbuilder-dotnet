@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using AdaptiveExpressions.BuiltinFunctions;
 using Json.Path;
 
 namespace AdaptiveExpressions.Memory
@@ -184,7 +185,22 @@ namespace AdaptiveExpressions.Memory
                     {
                         if (!jobj.TryGetPropertyValue(part.Part, out current))
                         {
-                            return false;
+                            // SimpleObjectMemory did invariant key lookup for get (not set!), so fall back to that if needed.
+                            bool found = false;
+                            foreach (var kvp in jobj)
+                            {
+                                if (kvp.Key.Equals(part.Part, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    found = true;
+                                    current = kvp.Value;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                return false;
+                            }
                         }
                     }
                     else
