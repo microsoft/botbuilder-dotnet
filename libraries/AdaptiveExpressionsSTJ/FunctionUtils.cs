@@ -1111,6 +1111,7 @@ namespace AdaptiveExpressions
         /// <param name="property">Property to lookup.</param>
         /// <param name="value">Value of property.</param>
         /// <returns>True if property is present and binds value.</returns>
+        [UnconditionalSuppressMessage("Trimming", "IL2075:'this' argument does not satisfy 'DynamicallyAccessedMemberTypes.PublicProperties' in call to 'System.Type.GetProperties()'. The return value of method 'System.Object.GetType()' does not have matching annotations. The source value must declare at least the same requirements as those declared on the target location it is assigned to.", Justification = "AOT aware callers will not go through reflection path")]
         internal static bool TryAccessProperty(object instance, string property, out object value)
         {
             var isPresent = false;
@@ -1635,8 +1636,8 @@ namespace AdaptiveExpressions
 
         // collection functions
 
-        [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "AOT aware callers will not need us to call JsonSerializer")]
-        [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "AOT aware callers will not need us to call JsonSerializer")]
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "AOT aware callers will not need us to call JsonSerializer")]
+        [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "AOT aware callers will not need us to call JsonSerializer")]
         internal static EvaluateExpressionDelegate SortBy(bool isDescending)
            => (expression, state, options) =>
            {
@@ -1765,6 +1766,7 @@ namespace AdaptiveExpressions
             return result;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2075:'this' argument does not satisfy 'DynamicallyAccessedMemberTypes.PublicProperties' in call to 'System.Type.GetProperties()'. The return value of method 'System.Object.GetType()' does not have matching annotations. The source value must declare at least the same requirements as those declared on the target location it is assigned to.", Justification = "AOT aware callers will not go through reflection path")]
         private static int GetPropertyCount(object obj)
         {
             if (obj is IDictionary dictionary)
