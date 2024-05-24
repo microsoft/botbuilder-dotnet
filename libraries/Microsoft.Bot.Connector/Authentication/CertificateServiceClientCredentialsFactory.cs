@@ -81,10 +81,9 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             // Instance must be reused per audience, otherwise it will cause throttling on AAD.
-            _certificateAppCredentialsByAudience.TryGetValue(audience, out var certificateAppCredentials);
-            if (certificateAppCredentials == null)
+            var certificateAppCredentials = _certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
             {
-                certificateAppCredentials = new CertificateAppCredentials(
+                return new CertificateAppCredentials(
                     _certificate,
                     _appId,
                     _tenantId,
@@ -92,8 +91,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     _sendX5c,
                     _httpClient,
                     _logger);
-                _certificateAppCredentialsByAudience.TryAdd(audience, certificateAppCredentials);
-            }
+            });
 
             return Task.FromResult<ServiceClientCredentials>(certificateAppCredentials);
         }
