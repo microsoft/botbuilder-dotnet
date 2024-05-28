@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "outer",
+    "autoEndDialog": false,
+    "recognizer": {
+      "$kind": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "intent": "BeginIntent",
+          "pattern": "begin"
+        },
+        {
+          "intent": "QnAMatch",
+          "pattern": "qna"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "BeginIntent",
+        "actions": [
+          {
+            "$kind": "Microsoft.TextInput",
+            "maxTurnCount": 3,
+            "alwaysPrompt": true,
+            "allowInterruptions": false,
+            "prompt": "Which event should I emit?",
+            "validations": []
+          },
+          {
+            "$kind": "Microsoft.EmitEvent",
+            "eventName": "activityReceived",
+            "eventValue": "=turn.activity",
+            "handledProperty": "turn.eventHandled",
+            "bubbleEvent": true
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "QnAMatch",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "QnAMatch event triggered"
+          }
+        ]
+      }
+    ],
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "begin"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Which event should I emit?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "qna"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "QnAMatch event triggered"
+    }
+  ]
+}

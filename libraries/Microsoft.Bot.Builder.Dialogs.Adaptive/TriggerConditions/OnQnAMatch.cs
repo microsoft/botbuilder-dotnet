@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public new const string Kind = "Microsoft.OnQnAMatch";
 
         // this is a duplicate of QnAMakerRecognizer.QnAMatchIntent, but copying this here removes need to have dependency between QnA and Adaptive assemblies.
-        private const string QnAMatchIntent = "QnAMatch";
+        internal const string QnAMatchIntent = "QnAMatch";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OnQnAMatch"/> class.
