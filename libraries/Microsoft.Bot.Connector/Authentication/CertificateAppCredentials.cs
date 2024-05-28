@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         public CertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : this(clientCertificate, false, appId, channelAuthTenant, customHttpClient, logger)
+            : this(clientCertificate, appId, channelAuthTenant, string.Empty, false, customHttpClient, logger)
         {
         }
 
@@ -62,7 +62,22 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         public CertificateAppCredentials(X509Certificate2 clientCertificate, bool sendX5c, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : base(channelAuthTenant, customHttpClient, logger)
+            : this(clientCertificate, appId, channelAuthTenant, string.Empty, sendX5c, customHttpClient, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
+        /// </summary>
+        /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
+        /// <param name="appId">Microsoft application Id related to the certifiacte.</param>
+        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
+        /// <param name="oAuthScope">Optional. The scope for the token.</param>
+        /// <param name="sendX5c">Optional. This parameter, if true, enables application developers to achieve easy certificates roll-over in Azure AD: setting this parameter to true will send the public certificate to Azure AD along with the token request, so that Azure AD can use it to validate the subject name based on a trusted issuer policy. </param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        public CertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, string oAuthScope = null, bool sendX5c = false, HttpClient customHttpClient = null, ILogger logger = null)
+            : base(channelAuthTenant, customHttpClient, logger, oAuthScope: oAuthScope)
         {
             if (clientCertificate == null)
             {
