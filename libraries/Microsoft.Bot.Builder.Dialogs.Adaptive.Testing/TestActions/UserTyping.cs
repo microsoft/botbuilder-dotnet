@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -13,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Action to script sending typing activity to bot.
     /// </summary>
-    [DebuggerDisplay("UserTyping")]
+    [System.Diagnostics.DebuggerDisplay("UserTyping")]
     public class UserTyping : TestAction
     {
         /// <summary>
@@ -55,14 +54,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 typing.From.Name = User;
             }
 
-            Stopwatch sw = new Stopwatch();
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
             await adapter.ProcessActivityAsync((Activity)typing, callback, default).ConfigureAwait(false);
 
             sw.Stop();
 
-            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserConversationUpdate[]");
+            System.Diagnostics.Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserConversationUpdate[]");
         }
     }
 }

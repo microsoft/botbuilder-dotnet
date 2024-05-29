@@ -181,10 +181,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     // write the response, potentially serializing the InvokeResponse
                     await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException ex)
                 {
                     // handle unauthorized here as this layer creates the http response
                     httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                    Logger.LogError(ex.ToString());
                 }
             }
         }

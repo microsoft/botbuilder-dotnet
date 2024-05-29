@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -96,7 +95,7 @@ namespace Microsoft.Bot.Builder
                     PollingTimeout = pollingHelper.DefaultPollingTimeout,
                 };
 
-                var stopwatch = Stopwatch.StartNew();
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
                 while (stopwatch.Elapsed < pollingParams.PollingTimeout && !pollingParams.ShouldEndPolling)
                 {

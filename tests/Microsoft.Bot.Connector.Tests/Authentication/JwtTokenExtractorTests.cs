@@ -11,7 +11,6 @@ using System.Runtime.Versioning;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -85,7 +84,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 var cert = CreateSelfSignedCertificate(cn, from: now.AddDays(-10), to: now.AddDays(9));
 
                 // Build token extractor and use it to validate a token created from the cert
-                await BuildExtractorAndValidateToken(cert);
+                await Assert.ThrowsAnyAsync<UnauthorizedAccessException>(() => BuildExtractorAndValidateToken(cert));
 
                 DeleteKeyContainer(cn);
             }
@@ -147,8 +146,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 ValidateIssuer = false,
                 ValidIssuers = new[] { AuthenticationConstants.ToBotFromChannelTokenIssuer },
 
-                // Audience validation takes place in JwtTokenExtractor
-                ValidateAudience = false, // lgtm[cs/web/missing-token-validation]
+                ValidateAudience = false, // CODEQL [cs/web/missing-token-validation] Audience validation takes place in JwtTokenExtractor
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ClockSkew = TimeSpan.FromMinutes(5),

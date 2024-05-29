@@ -3,7 +3,7 @@
 using core AI capabilities.
 
 ## About
-.NET Core Templates will help you to quickly build new conversational AI bots using [Bot Framework v4][1].  As of May 2020, these templates and the code they generate **require** [.NET Core 3.1][60].
+.NET Core Templates will help you to quickly build new conversational AI bots using [Bot Framework v4][1]. As of March 2024, these templates and the code they generate **require** [.NET Core 8.0][60].
 
 ## Templates
 There are three different template options.  The table below can help guide which template is right for you.
@@ -58,7 +58,7 @@ The Empty Bot template is the minimal skeleton code for a bot.  It provides a st
 
 
 ## Installation
-1.  Install [.NET Core SDK][4] version 3.1 or higher
+1.  Install [.NET Core SDK][60] version 8.0 or higher
 	```bash
 	# determine dotnet version
 	dotnet --version
@@ -97,17 +97,17 @@ The above installation steps will install all three Bot Framework templates.  If
 
 ```bash
 # Install EchoBot template
-dotnet new -i Microsoft.Bot.Framework.CSharp.EchoBot
+dotnet new install Microsoft.Bot.Framework.CSharp.EchoBot
 ```
 
 ```bash
 # Install CoreBot template
-dotnet new -i Microsoft.Bot.Framework.CSharp.CoreBot
+dotnet new install Microsoft.Bot.Framework.CSharp.CoreBot
 ```
 
 ```bash
 # Install EmptyBot template
-dotnet new -i Microsoft.Bot.Framework.CSharp.EmptyBot
+dotnet new install Microsoft.Bot.Framework.CSharp.EmptyBot
 ```
 
 
@@ -204,7 +204,7 @@ You can get the latest development builds from the [BotBuilder MyGet][51] feed. 
 To install the latest development build:
 ```bash
 # install the development build of Echo Bot template
-dotnet new -i Microsoft.Bot.Framework.CSharp.EchoBot --nuget-source https://botbuilder.myget.org/F/aitemplates/api/v3/index.json
+dotnet new install Microsoft.Bot.Framework.CSharp.EchoBot --nuget-source https://botbuilder.myget.org/F/aitemplates/api/v3/index.json
 ```
 
 To see a list of currently installed templates:
@@ -216,7 +216,7 @@ dotnet new --list
 To uninstall the development build:
 ```bash
 # uninstall the development build of Echo Bot template
-dotnet new -u Microsoft.Bot.Framework.CSharp.EchoBot
+dotnet new uninstall Microsoft.Bot.Framework.CSharp.EchoBot
 ```
 
 ## Creating a Local Development Environment
@@ -255,8 +255,8 @@ The `nuget pack` command will build a package using a filename convention that i
 Given the example above with `.nuspec` `version` of 4.22.0, running `nuget pack Microsoft.BotFramework.CSharp.EchoBot` will create a NuGet package named `Microsoft.Bot.Framework.CSharp.EchoBot.4.22.0.nupkg`. We'll use this NuGet package name in subsequent steps.
 
 ```bash
-# install the locally built .nupkg (EchoBot template, assuming 4.9.0 version tag)
-dotnet new -i ./Microsoft.Bot.Framework.CSharp.EchoBot.4.22.0.nupkg
+# install the locally built .nupkg (EchoBot template, assuming 4.22.0 version tag)
+dotnet new install ./Microsoft.Bot.Framework.CSharp.EchoBot.4.22.0.nupkg
 ```
 
 To see a list of currently installed templates.  With this command you should now see the locally build and installed NuGet package.
@@ -274,7 +274,7 @@ Build and test the newly generated project.
 
 ```bash
 # uninstall the locally built .nupkg (EchoBot template)
-dotnet new -u Microsoft.Bot.Framework.CSharp.EchoBot
+dotnet new uninstall Microsoft.Bot.Framework.CSharp.EchoBot
 ```
 
 ## Logging Issues and Providing Feedback

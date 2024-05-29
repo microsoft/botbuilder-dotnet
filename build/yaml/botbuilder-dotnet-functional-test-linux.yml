@@ -87,7 +87,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
+    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --self-contained --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     zipAfterPublish: false
     modifyOutputPath: false
 

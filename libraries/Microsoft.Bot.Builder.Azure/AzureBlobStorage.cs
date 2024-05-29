@@ -33,8 +33,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All, // lgtm [cs/unsafe-type-name-handling]
+            TypeNameHandling = TypeNameHandling.All, // CODEQL [cs/unsafe-type-name-handling] we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             MaxDepth = null,
         });
 
