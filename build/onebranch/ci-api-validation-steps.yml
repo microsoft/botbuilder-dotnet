@@ -2,7 +2,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   displayName: 'Download BotBuilderDLLs from Artifacts'
   inputs:
-    artifactName: 'BotBuilderDLLs-Debug-Windows-netcoreapp31'
+    artifactName: 'BotBuilderDLLs-Debug-Windows-net8'
     targetPath: '$(System.ArtifactsDirectory)/OutputDlls'
 
 - task: DownloadPipelineArtifact@2

@@ -11,7 +11,6 @@ using System.Runtime.Versioning;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;

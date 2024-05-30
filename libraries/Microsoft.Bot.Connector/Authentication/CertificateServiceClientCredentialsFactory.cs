@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -16,8 +17,13 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class CertificateServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
-        private readonly CertificateAppCredentials _certificateAppCredentials;
+        private readonly X509Certificate2 _certificate;
         private readonly string _appId;
+        private readonly string _tenantId;
+        private readonly bool _sendX5c;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
+        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ConcurrentDictionary<string, CertificateAppCredentials>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
@@ -44,16 +50,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(appId));
             }
 
+            _certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
             _appId = appId;
-
-            // Instance must be reused otherwise it will cause throttling on AAD.
-            _certificateAppCredentials = new CertificateAppCredentials(
-                certificate ?? throw new ArgumentNullException(nameof(certificate)),
-                sendX5c,
-                appId,
-                tenantId,
-                httpClient,
-                logger);
+            _tenantId = tenantId;
+            _sendX5c = sendX5c;
+            _httpClient = httpClient;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -78,7 +80,20 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException("Invalid Managed ID.");
             }
 
-            return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentials);
+            // Instance must be reused per audience, otherwise it will cause throttling on AAD.
+            var certificateAppCredentials = _certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+            {
+                return new CertificateAppCredentials(
+                    _certificate,
+                    _appId,
+                    _tenantId,
+                    audience,
+                    _sendX5c,
+                    _httpClient,
+                    _logger);
+            });
+
+            return Task.FromResult<ServiceClientCredentials>(certificateAppCredentials);
         }
     }
 }
