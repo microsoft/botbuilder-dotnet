@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>AdaptiveExpressionsSTJ</PackageId>
+    <PackageId>Microsoft.AdaptiveExpressions.Core</PackageId>
     <Description>This library implements Microsoft Bot Builder Expression evaluator for .NET</Description>
     <Summary>This library implements Microsoft Bot Builder Expression evaluator for .NET</Summary>
   </PropertyGroup>
