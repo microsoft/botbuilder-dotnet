@@ -1196,9 +1196,11 @@ namespace AdaptiveExpressions.Tests
             #endregion
         };
 
+        public static CultureInfo EnUsCultureInfo => new ("en-US");
+
         public static IEnumerable<object[]> DataForThreadLocale => new[]
         {
-            Test("replace(addDays(timestamp, 1, '', 'en-US'), '20', '')", "3/16/18 1:00:00 PM"),
+            Test("replace(addDays(timestamp, 1, '', 'en-US'), '20', '')", new DateTime(2018, 3, 16, 13, 0, 0).ToString(string.Empty, EnUsCultureInfo).Replace("20", string.Empty)),
             Test("addDays(timestamp, 1, 'D')", "vendredi 16 mars 2018"),
             Test("addHours(timestamp, 2, 'D')", "jeudi 15 mars 2018"),
             Test("addMinutes(timestamp, 30, '')", "15/03/2018 13:30:00"),
@@ -1209,12 +1211,12 @@ namespace AdaptiveExpressions.Tests
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', 'D')", "lundi 1 janvier 2018"),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '')", "01/01/2018 18:00:00"),
             TestUtcNow("utcNow('D')", () => DateTime.UtcNow.ToString("D", new CultureInfo("fr-FR"))),
-            TestUtcNow("getPastTime(1,'Day', 'D')", () => DateTime.Now.AddDays(-1).ToString("D", new CultureInfo("fr-FR"))),
+            TestUtcNow("getPastTime(1,'Day', 'D')", () => DateTime.UtcNow.AddDays(-1).ToString("D", new CultureInfo("fr-FR"))),
             Test("subtractFromTime(timestamp, 1, 'Hour', '')", "15/03/2018 12:00:00"),
             Test("formatEpoch(unixTimestamp, '')", "15/03/2018 13:00:00"),
             Test("formatTicks(ticks, '')", "06/05/2020 11:47:00"),
             Test("formatDateTime('2018-03-15', 'D')", "jeudi 15 mars 2018"),
-            TestUtcNow("getFutureTime(1, 'Year', 'D')", () => DateTime.Now.AddYears(1).ToString("D", new CultureInfo("fr-FR"))),
+            TestUtcNow("getFutureTime(1, 'Year', 'D')", () => DateTime.UtcNow.AddYears(1).ToString("D", new CultureInfo("fr-FR"))),
             Test("addDays(timestamp, 1, '')", "16/03/2018 13:00:00"),
             Test("toUpper('lowercase')", "LOWERCASE"),
             Test("toLower('I AM WHAT I AM')", "i am what i am"),
