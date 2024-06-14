@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -64,6 +65,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // or we have had an exception AND there was an OnError action which captured the error.  We need to continue the 
             // turn based on the actions the OnError handler introduced.
             var endOfTurn = false;
+            var errorHandlerCalled = 0;
+
             while (!endOfTurn)
             {
                 try
@@ -79,8 +82,29 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var innerExceptions = new List<Exception>();
                     try
                     {
+                        errorHandlerCalled++;
+
                         // fire error event, bubbling from the leaf.
                         handled = await dialogContext.EmitEventAsync(DialogEvents.Error, err, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                        var turnObject = (JObject)turnContext.TurnState["turn"];
+                        
+                        var executionLimit = 0;
+
+                        foreach (var childToken in turnObject.Children<JProperty>())
+                        {
+                            if (childToken.Name == "executionLimit")
+                            {
+                                executionLimit = (int)childToken.Value;
+                            }
+                        }
+
+                        if (executionLimit > 0 && errorHandlerCalled > executionLimit)
+                        {
+                            // if the errorHandler has being called multiple times, there's an error inside the onError.
+                            // We should throw the exception and break the loop.
+                            handled = false;
+                        }
                     }
 #pragma warning disable CA1031 // Do not catch general exception types (capture the error in case it's not handled properly)
                     catch (Exception emitErr)

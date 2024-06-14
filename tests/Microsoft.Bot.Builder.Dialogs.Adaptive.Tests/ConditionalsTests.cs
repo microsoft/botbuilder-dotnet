@@ -86,6 +86,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task ConditionalsTests_OnErrorLoop()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task ConditionalsTests_OnErrorLoopDefaultLimit()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public void OnConditionWithCondition()
         {
             AssertExpression(
