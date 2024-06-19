@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public MsalServiceClientCredentialsFactory(IConfiguration configuration, IConfidentialClientApplication clientApplication, ILogger logger = null)
         {
             AppId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+            TenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
             _clientApplication = clientApplication;
             _logger = logger ?? NullLogger.Instance;
         }
@@ -42,6 +44,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The Microsoft App id.
         /// </value>
         public string AppId { get; }
+
+        /// <summary>
+        /// Gets the Microsoft Tenant id.
+        /// </summary>
+        /// <value>
+        /// The Microsoft Tenant id.
+        /// </value>
+        public string TenantId { get; }
 
         /// <inheritdoc/>
         public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
@@ -61,11 +71,13 @@ namespace Microsoft.Bot.Connector.Authentication
             // Public cloud: default authority, optional scope when authenticating for skill communication.
             if (loginEndpoint.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
+                var authority = string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, string.IsNullOrEmpty(TenantId) ? AuthenticationConstants.DefaultChannelAuthTenant : TenantId);
+                
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
                         _clientApplication, 
                         appId, 
-                        authority: null,
+                        authority: authority,
                         scope: audience,
                         validateAuthority: validateAuthority, 
                         logger: _logger));
@@ -75,11 +87,13 @@ namespace Microsoft.Bot.Connector.Authentication
             // gov, or otherwise leave the default channel scope for gov.
             if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
+                var authority = string.Format(CultureInfo.InvariantCulture, GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, string.IsNullOrEmpty(TenantId) ? GovernmentAuthenticationConstants.DefaultChannelAuthTenant : TenantId);
+
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
                         _clientApplication, 
                         appId, 
-                        authority: null, 
+                        authority: authority, 
                         scope: audience, 
                         validateAuthority: validateAuthority,
                         logger: _logger));
