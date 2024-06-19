@@ -20,8 +20,8 @@
     </PackageReference>
     <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.3.0-rc2" />
     <PackageReference Include="Microsoft.Bot.Connector.DirectLine" Version="3.0.2" />
-    <PackageReference Include="Microsoft.CodeCoverage" Version="16.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="Microsoft.CodeCoverage" Version="17.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
     <PackageReference Include="ReportGenerator" Version="4.3.1" />
