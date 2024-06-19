@@ -25,8 +25,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// A Bot Builder Adapter implementation used to handled bot Framework HTTP requests.
     /// </summary>
     /// <remarks>
-    /// BotFrameworkAdapter is still supported but the recommended adapter is `CloudAdapter`.
+    /// BotFrameworkHttpAdapter is still supported but the recommended adapter is `CloudAdapter`.
     /// </remarks>
+    [Obsolete("BotFrameworkHttpAdapter is still supported in v4 but the recommended adapter is `CloudAdapter`", false)]
     public class BotFrameworkHttpAdapter : BotFrameworkHttpAdapterBase, IBotFrameworkHttpAdapter
     {
         private const string AuthHeaderName = "authorization";
