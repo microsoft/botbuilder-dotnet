@@ -245,10 +245,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdaptiveExpressions", "Adap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdaptiveExpressions", "AdaptiveExpressions", "{064C57E9-24B8-4600-B72D-4C02CFBBEB95}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthSNIBot", "..\samples\samples\csharp_dotnetcore\85.bot-authentication-sni\AuthSNIBot.csproj", "{7863125E-0625-4294-B654-984A8A84EB48}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBot", "..\samples\samples\csharp_dotnetcore\18.bot-authentication\AuthenticationBot.csproj", "{BF15E7A7-8094-4DAD-A80D-57923BF1E6FF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
