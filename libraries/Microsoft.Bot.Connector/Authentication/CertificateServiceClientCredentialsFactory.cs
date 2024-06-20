@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly bool _sendX5c;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ConcurrentDictionary<string, CertificateAppCredentials>();
+        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
@@ -80,8 +80,22 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException("Invalid Managed ID.");
             }
 
-            // Instance must be reused per audience, otherwise it will cause throttling on AAD.
-            var certificateAppCredentials = _certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+            if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+                {
+                    return new CertificateGovernmentAppCredentials(
+                        _certificate,
+                        _appId,
+                        _tenantId,
+                        audience,
+                        _sendX5c,
+                        _httpClient,
+                        _logger);
+                }));
+            }
+
+            return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
             {
                 return new CertificateAppCredentials(
                     _certificate,
@@ -91,9 +105,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     _sendX5c,
                     _httpClient,
                     _logger);
-            });
-
-            return Task.FromResult<ServiceClientCredentials>(certificateAppCredentials);
+            }));
         }
     }
 }
