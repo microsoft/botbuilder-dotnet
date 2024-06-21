@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly bool _sendX5c;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new();
+        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
