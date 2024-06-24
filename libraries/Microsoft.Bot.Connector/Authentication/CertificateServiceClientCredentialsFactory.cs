@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly bool _sendX5c;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ConcurrentDictionary<string, CertificateAppCredentials>();
+        private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
@@ -80,20 +80,88 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException("Invalid Managed ID.");
             }
 
-            // Instance must be reused per audience, otherwise it will cause throttling on AAD.
-            var certificateAppCredentials = _certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+            if (loginEndpoint.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
-                return new CertificateAppCredentials(
-                    _certificate,
-                    _appId,
-                    _tenantId,
-                    audience,
-                    _sendX5c,
-                    _httpClient,
-                    _logger);
-            });
+                return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+                {
+                    return new CertificateAppCredentials(
+                        _certificate,
+                        _appId,
+                        _tenantId,
+                        audience,
+                        _sendX5c,
+                        _httpClient,
+                        _logger);
+                }));
+            }
+            else if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+                {
+                    return new CertificateGovernmentAppCredentials(
+                        _certificate,
+                        _appId,
+                        _tenantId,
+                        audience,
+                        _sendX5c,
+                        _httpClient,
+                        _logger);
+                }));
+            }
+            else
+            {
+                return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
+                {
+                    return new CertificatePrivateCloudAppCredentials(
+                        _certificate,
+                        _appId,
+                        _tenantId,
+                        audience,
+                        _sendX5c,
+                        loginEndpoint,
+                        validateAuthority,
+                        _httpClient,
+                        _logger);
+                }));
+            }
+        }
 
-            return Task.FromResult<ServiceClientCredentials>(certificateAppCredentials);
+        private class CertificatePrivateCloudAppCredentials : CertificateAppCredentials
+        {
+            private readonly string _oAuthEndpoint;
+            private readonly bool _validateAuthority;
+
+            public CertificatePrivateCloudAppCredentials(CertificateAppCredentialsOptions options)
+                : base(options)
+            {
+            }
+
+            public CertificatePrivateCloudAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+                : base(clientCertificate, appId, channelAuthTenant, customHttpClient, logger)
+            {
+            }
+
+            public CertificatePrivateCloudAppCredentials(X509Certificate2 clientCertificate, bool sendX5c, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+                : base(clientCertificate, sendX5c, appId, channelAuthTenant, customHttpClient, logger)
+            {
+            }
+
+            public CertificatePrivateCloudAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant, string oAuthScope, bool sendX5c, string oAuthEndpoint, bool validateAuthority, HttpClient customHttpClient = null, ILogger logger = null)
+                : base(clientCertificate, appId, channelAuthTenant, oAuthScope, sendX5c, customHttpClient, logger)
+            {
+                _oAuthEndpoint = oAuthEndpoint;
+                _validateAuthority = validateAuthority;
+            }
+
+            public override string OAuthEndpoint
+            {
+                get { return _oAuthEndpoint; }
+            }
+
+            public override bool ValidateAuthority
+            {
+                get { return _validateAuthority; }
+            }
         }
     }
 }
