@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
         /// </summary>
         /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
-        /// <param name="appId">Microsoft application Id related to the certifiacte.</param>
+        /// <param name="appId">Microsoft application Id related to the certificate.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
         /// <param name="sendX5c">This parameter, if true, enables application developers to achieve easy certificates roll-over in Azure AD: setting this parameter to true will send the public certificate to Azure AD along with the token request, so that Azure AD can use it to validate the subject name based on a trusted issuer policy. </param>
-        /// <param name="appId">Microsoft application Id related to the certifiacte.</param>
+        /// <param name="appId">Microsoft application Id related to the certificate.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
         /// </summary>
         /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
-        /// <param name="appId">Microsoft application Id related to the certifiacte.</param>
+        /// <param name="appId">Microsoft application Id related to the certificate.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="oAuthScope">Optional. The scope for the token.</param>
         /// <param name="sendX5c">Optional. This parameter, if true, enables application developers to achieve easy certificates roll-over in Azure AD: setting this parameter to true will send the public certificate to Azure AD along with the token request, so that Azure AD can use it to validate the subject name based on a trusted issuer policy. </param>

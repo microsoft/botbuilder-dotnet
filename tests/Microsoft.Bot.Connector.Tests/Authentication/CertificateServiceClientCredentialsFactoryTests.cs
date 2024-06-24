@@ -17,7 +17,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         private const string TestAppId = nameof(TestAppId);
         private const string TestTenantId = nameof(TestTenantId);
         private const string TestAudience = nameof(TestAudience);
-        private const string LoginEndpoint = "https://login.microsoftonline.com";
+        private const string LoginEndpoint = AuthenticationConstants.ToChannelFromBotLoginUrlTemplate;
+        private const string GovLoginEndpoint = GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate;
+        private const string PrivateLoginEndpoint = "https://login.privatecloud.com";
         private readonly Mock<ILogger> logger = new Mock<ILogger>();
         private readonly Mock<X509Certificate2> certificate = new Mock<X509Certificate2>();
 
@@ -64,7 +66,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void CanCreateCredentials()
+        public async void CanCreatePublicCredentials()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
@@ -73,6 +75,31 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
             Assert.NotNull(credentials);
             Assert.IsType<CertificateAppCredentials>(credentials);
+        }
+
+        [Fact]
+        public async void CanCreateGovCredentials()
+        {
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+
+            var credentials = await factory.CreateCredentialsAsync(
+                TestAppId, TestAudience, GovLoginEndpoint, true, CancellationToken.None);
+
+            Assert.NotNull(credentials);
+            Assert.IsType<CertificateGovernmentAppCredentials>(credentials);
+        }
+
+        [Fact]
+        public async void CanCreatePrivateCredentials()
+        {
+            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+
+            var credentials = await factory.CreateCredentialsAsync(
+                TestAppId, TestAudience, PrivateLoginEndpoint, true, CancellationToken.None);
+
+            Assert.NotNull(credentials);
+            Assert.IsAssignableFrom<CertificateAppCredentials>(credentials);
+            Assert.Equal(PrivateLoginEndpoint, ((CertificateAppCredentials)credentials).OAuthEndpoint);
         }
 
         [Fact]
