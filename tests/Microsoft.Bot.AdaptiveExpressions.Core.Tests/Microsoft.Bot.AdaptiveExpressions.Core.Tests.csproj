@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework Condition="'$(BuildTarget)' == 'netcoreapp31'">netcoreapp3.1</TargetFramework>
+    <TargetFramework Condition="'$(BuildTarget)' == 'net8'">net8.0</TargetFramework>
+    <TargetFramework Condition="'$(BuildTarget)' == 'net6'">net6.0</TargetFramework>
+    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp3.1;net6.0;net8.0</TargetFrameworks>
+
+    <IsPackable>false</IsPackable>
+
+    <Configurations>Debug;Release</Configurations>
+
+    <PolySharpIncludeRuntimeSupportedAttributes>true</PolySharpIncludeRuntimeSupportedAttributes>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="PolySharp" Version="1.14.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.AdaptiveExpressions.Core\Microsoft.Bot.AdaptiveExpressions.Core.csproj" />
+  </ItemGroup>
+
+</Project>
