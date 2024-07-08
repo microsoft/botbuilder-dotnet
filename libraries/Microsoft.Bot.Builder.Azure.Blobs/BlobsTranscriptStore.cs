@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Azure;
+using Azure.Core;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -54,6 +55,22 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
         /// </summary>
+        /// <param name="blobServiceUri">A Uri referencing the blob container that includes the name of the account and the name of the container.</param>
+        /// <param name="tokenCredential">The token credential to authenticate to the Azure storage.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        public BlobsTranscriptStore(Uri blobServiceUri, TokenCredential tokenCredential, string containerName, JsonSerializer jsonSerializer = null)
+            : this(blobServiceUri, tokenCredential, containerName, default, jsonSerializer)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
+        /// </summary>
         /// <param name="dataConnectionString">Azure Storage connection string.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         /// <param name="storageTransferOptions">Used for providing options for parallel transfers <see cref="StorageTransferOptions"/>.</param>
@@ -89,6 +106,59 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 {
                     containerName = containerName.ToLowerInvariant();
                     var containerClient = new BlobContainerClient(dataConnectionString, containerName);
+                    if (!_checkedContainers.Contains(containerName))
+                    {
+                        containerClient.CreateIfNotExistsAsync().Wait();
+                        _checkedContainers.Add(containerName);
+                    }
+
+                    return containerClient;
+                }, isThreadSafe: true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
+        /// </summary>
+        /// <param name="blobServiceUri">A Uri referencing the blob container that includes the name of the account and the name of the container.</param>
+        /// <param name="tokenCredential">The token credential to authenticate to the Azure storage.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
+        /// <param name="storageTransferOptions">Used for providing options for parallel transfers <see cref="StorageTransferOptions"/>.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        public BlobsTranscriptStore(Uri blobServiceUri, TokenCredential tokenCredential, string containerName, StorageTransferOptions storageTransferOptions, JsonSerializer jsonSerializer = null)
+        {
+            if (blobServiceUri == null)
+            {
+                throw new ArgumentNullException(nameof(blobServiceUri));
+            }
+
+            if (tokenCredential == null)
+            {
+                throw new ArgumentNullException(nameof(tokenCredential));
+            }
+
+            if (string.IsNullOrEmpty(containerName))
+            {
+                throw new ArgumentNullException(nameof(containerName));
+            }
+
+            _storageTransferOptions = storageTransferOptions;
+
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented,
+                MaxDepth = null,
+            });
+
+            // Triggers a check for the existance of the container
+            _containerClient = new Lazy<BlobContainerClient>(
+                () =>
+                {
+                    var containerClient = new BlobContainerClient(blobServiceUri, tokenCredential);
                     if (!_checkedContainers.Contains(containerName))
                     {
                         containerClient.CreateIfNotExistsAsync().Wait();
