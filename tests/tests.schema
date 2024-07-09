@@ -6498,6 +6498,15 @@
         }
       },
       "properties": {
+        "executionLimit": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Execution limit",
+          "description": "Number of executions allowed for this trigger. Used to break loops in case of errors inside the trigger.",
+          "examples": [
+            3,
+            "=f(x)"
+          ]
+        },
         "condition": {
           "$ref": "#/definitions/condition",
           "title": "Condition",
