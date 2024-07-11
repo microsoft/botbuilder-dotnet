@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// multi language lg resources. en -> [resourcelist].
         /// </summary>
-        private readonly Dictionary<string, IList<Resource>> _multilanguageResources;
+        private readonly ConcurrentDictionary<string, IList<Resource>> _multilanguageResources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
-            _multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
+            _multilanguageResources = new ConcurrentDictionary<string, IList<Resource>>(LGResourceLoader.GroupByLocale(resourceExplorer));
 
             PopulateLanguageGenerators();
 
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">Locale to identify language.</param>
         /// <param name="resourceMapping">Template resource loader delegate.</param>
         /// <returns>The delegate to resolve the resource.</returns>
-        public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<Resource>> resourceMapping)
+        public static ImportResolverDelegate ResourceExplorerResolver(string locale, IDictionary<string, IList<Resource>> resourceMapping)
         {
             return (LGResource lgResource, string id) =>
             {
