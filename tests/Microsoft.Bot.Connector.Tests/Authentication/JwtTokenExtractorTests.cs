@@ -156,9 +156,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             };
         }
 
-#if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
-#endif
         private static X509Certificate2 CreateSelfSignedCertificate(string cn, DateTimeOffset from, DateTimeOffset to)
         {
             var parameters = new CspParameters(24, "Microsoft Enhanced RSA and AES Cryptographic Provider")
@@ -184,9 +182,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             return cert;
         }
 
-#if NET5_0_OR_GREATER
         [SupportedOSPlatform("windows")]
-#endif
         private static void DeleteKeyContainer(string cn)
         {
             // %APPDATA%\Microsoft\Crypto\RSA

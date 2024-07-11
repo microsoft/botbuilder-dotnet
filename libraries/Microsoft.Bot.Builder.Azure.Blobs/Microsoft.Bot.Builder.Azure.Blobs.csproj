@@ -21,9 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Force System.Text.Encodings.Web to a safe version. -->
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
