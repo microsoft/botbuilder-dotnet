@@ -73,11 +73,14 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BotFrameworkHttpAdapterTests.cs" />
+    <Compile Include="CloudAdapterTests.cs" />
+    <Compile Include="DelayHelper.cs" />
     <Compile Include="HttpConfigurationExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -93,6 +96,10 @@
       <Project>{ada8ab8b-2066-4193-b8f7-985669b23e00}</Project>
       <Name>Microsoft.Bot.Builder</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Connector.Streaming\Microsoft.Bot.Connector.Streaming.csproj">
+      <Project>{80FA0E50-8F81-4C60-B265-1039391C1CEE}</Project>
+      <Name>Microsoft.Bot.Connector.Streaming</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj">
       <Project>{6462da5d-27dc-4cd5-9467-5efb998fd838}</Project>
       <Name>Microsoft.Bot.Connector</Name>
@@ -100,6 +107,10 @@
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
       <Project>{c1f54cdc-ad1d-45bb-8f7d-f49e411afaf1}</Project>
       <Name>Microsoft.Bot.Schema</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Streaming\Microsoft.Bot.Streaming.csproj">
+      <Project>{4C82FD14-418F-43E4-AC59-3D926B55CEA3}</Project>
+      <Name>Microsoft.Bot.Streaming</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -5,12 +5,11 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Connector.Authentication
 {
     internal enum MicrosoftAppType
     {
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     }
 
     /// <summary>
-    /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup app credentials.
+    /// Credential provider which uses <see cref="IConfiguration"/> to lookup app credentials.
     /// </summary>
     public class ConfigurationServiceClientCredentialFactory : ServiceClientCredentialsFactory
     {
@@ -95,7 +94,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     break;
 
                 default: // MultiTenant
-                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId: string.Empty,  httpClient, logger);
+                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId: string.Empty, httpClient, logger);
                     break;
             }
         }

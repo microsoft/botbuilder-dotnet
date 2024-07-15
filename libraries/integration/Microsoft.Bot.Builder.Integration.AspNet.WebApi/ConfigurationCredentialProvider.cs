@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 
@@ -15,6 +16,7 @@ namespace Microsoft.Bot.Builder.BotFramework
     ///
     /// NOTE: if the keys are not present, a <c>null</c> value will be used.
     /// </remarks>
+    [Obsolete("Use `ConfigurationBotFrameworkAuthentication` instead to configure credentials.", false)]
     public sealed class ConfigurationCredentialProvider : SimpleCredentialProvider
     {
         /// <summary>
