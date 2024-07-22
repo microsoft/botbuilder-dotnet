@@ -50,19 +50,19 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public void NullAddressParameterShouldThrow()
+            public async void NullAddressParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(null, _mockDocumentRetriever.Object, CancellationToken.None);
 
-                action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("address");
+                (await action.Should().ThrowAsync<ArgumentNullException>()).And.ParamName.Should().Be("address");
             }
 
             [Fact]
-            public void NullDocumentRetrieverParameterShouldThrow()
+            public async void NullDocumentRetrieverParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(FakeDocumentAddress, null, CancellationToken.None);
 
-                action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("retriever");
+                (await action.Should().ThrowAsync<ArgumentNullException>()).And.ParamName.Should().Be("retriever");
             }
 
             [Fact]
@@ -134,14 +134,14 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public void ThrowsIfDocumentRetrieverThrows()
+            public async void ThrowsIfDocumentRetrieverThrows()
             {
                 _mockDocumentRetriever.Setup(dr => dr.GetDocumentAsync(FakeDocumentAddress, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new Exception(nameof(ThrowsIfDocumentRetrieverThrows)));
 
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(FakeDocumentAddress, _mockDocumentRetriever.Object, CancellationToken.None);
 
-                action.Should().Throw<Exception>().And.Message.Should().Be(nameof(ThrowsIfDocumentRetrieverThrows));
+                (await action.Should().ThrowAsync<Exception>()).And.Message.Should().Be(nameof(ThrowsIfDocumentRetrieverThrows));
             }
         }
 
@@ -160,26 +160,26 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public void NullAddressParameterShouldThrow()
+            public async void NullAddressParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(null, CancellationToken.None);
 
-                action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("address");
+                (await action.Should().ThrowAsync<ArgumentNullException>()).And.ParamName.Should().Be("address");
             }
 
             [Fact]
-            public void NonSuccessHttpStatusResponseForEndorsementsDocumentShouldThrow()
+            public async void NonSuccessHttpStatusResponseForEndorsementsDocumentShouldThrow()
             {
                 _mockHttpMessageHandler.When(FakeDocumentAddress)
                     .Respond(HttpStatusCode.NotFound);
 
                 Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
 
-                action.Should().Throw<Exception>();
+                await action.Should().ThrowAsync<Exception>();
             }
 
             [Fact]
-            public void NonSuccessHttpStatusResponseForWebKeySetDocumentShouldThrow()
+            public async void NonSuccessHttpStatusResponseForWebKeySetDocumentShouldThrow()
             {
                 _mockHttpMessageHandler.When(FakeDocumentAddress)
                     .Respond(new StringContent($@"{{ ""{EndorsementsRetriever.JsonWebKeySetUri}"": ""{FakeKeysAddressUrl}"" }}"));
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
                 Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
 
-                action.Should().Throw<Exception>();
+                await action.Should().ThrowAsync<Exception>();
             }
 
             [Fact]
