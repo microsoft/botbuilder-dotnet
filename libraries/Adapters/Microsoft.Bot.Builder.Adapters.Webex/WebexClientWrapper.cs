@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="target">Target for the message.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created message id.</returns>
-        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string recipient, string text, IList<Attachment> attachments, MessageTextType messageType = MessageTextType.Text, MessageTarget target = MessageTarget.PersonId, CancellationToken cancellationToken = default)
+        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string recipient, string text, IList<Schema.Attachment> attachments, MessageTextType messageType = MessageTextType.Text, MessageTarget target = MessageTarget.PersonId, CancellationToken cancellationToken = default)
         {
             Message result;
 
