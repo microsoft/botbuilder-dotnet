@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 It.IsAny<OperationContext>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
-            Assert.Equal(1, items.Count);            
+            Assert.Single(items);            
             Assert.True(items.ContainsKey(keys[0]));
         }
 
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 It.IsAny<OperationContext>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
-            Assert.Equal(0, items.Count);
+            Assert.Empty(items);
         }
 
         [Fact]
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 It.IsAny<OperationContext>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
-            Assert.Equal(0, items.Count);
+            Assert.Empty(items);
         }
 
         [Fact]

@@ -77,14 +77,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
         }
 
         [Fact]
-        public void CanSendStreamingRequest()
+        public async Task CanSendStreamingRequestAsync()
         {
             var socket = new TestWebSocket();
             var requestHandler = new TestRequestHandler();
 
             using (var sut = new TestLegacyStreamingConnection(socket, NullLogger.Instance))
             {
-                sut.ListenAsync(requestHandler).Wait();
+                await sut.ListenAsync(requestHandler);
 
                 var request = new StreamingRequest
                 {
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
                     }
                 };
 
-                var response = sut.SendStreamingRequestAsync(request).Result;
+                var response = await sut.SendStreamingRequestAsync(request);
 
                 Assert.Equal(request.Streams.Count, response.Streams.Count);
                 Assert.Equal(request.Streams[0].Id, response.Streams[0].Id);

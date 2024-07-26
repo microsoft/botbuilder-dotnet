@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public void CanWriteAndRead()
+        public async Task CanWriteAndReadAsync()
         {
             var tasks = new List<Task>();
 
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                         _output.WriteLine("After Write");
                     }));
 
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks.ToArray());
             }
             finally
             {
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void ReceiveAsync_With_Null_Stream()
+        public async Task ReceiveAsync_With_Null_Stream()
         {
             var pipe = new NamedPipeTransport(null);
             var result = await pipe.ReceiveAsync(new byte[0], 0, 0);
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public void ActiveStream_IsConnected()
+        public async Task ActiveStream_IsConnectedAsync()
         {
             var pipeName = Guid.NewGuid().ToString();
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                         _output.WriteLine("After ConnectAsync");
                     }));
 
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks.ToArray());
 
                 Assert.True(reader.IsConnected);
                 Assert.True(writer.IsConnected);
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public void Dispose_DisconnectsStream()
+        public async Task Dispose_DisconnectsStreamAsync()
         {
             var pipeName = Guid.NewGuid().ToString();
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                         _output.WriteLine("After ConnectAsync");
                     }));
 
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks.ToArray());
 
                 Assert.True(reader.IsConnected);
 
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public void Close_DisconnectsStream()
+        public async Task Close_DisconnectsStreamAsync()
         {
             var pipeName = Guid.NewGuid().ToString();
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                         _output.WriteLine("After ConnectAsync");
                     }));
 
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks.ToArray());
 
                 Assert.True(reader.IsConnected);
 
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public void Read_ReturnsZeroLength_WhenClosedDuringRead()
+        public async Task Read_ReturnsZeroLength_WhenClosedDuringReadAsync()
         {
             var tasks = new List<Task>();
             var pipeName = Guid.NewGuid().ToString();
@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                         _output.WriteLine("After Close");
                     }));
 
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks.ToArray());
             }
             finally
             {
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public void Write_ReturnsZeroLength_WhenClosedDuringWrite()
+        public async Task Write_ReturnsZeroLength_WhenClosedDuringWriteAsync()
         {
             var tasks = new List<Task>();
 
@@ -329,7 +329,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                         Assert.Equal(0, length);
                     }));
 
-                Task.WaitAll(tasks.ToArray());
+                await Task.WhenAll(tasks.ToArray());
             }
             finally
             {

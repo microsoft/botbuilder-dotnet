@@ -42,7 +42,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
 
             // Assert
             var m = (IMessageActivity)reply;
-            Assert.Equal(1, m.Attachments.Count);
+            Assert.Single(m.Attachments);
             Assert.Equal("application/vnd.microsoft.card.adaptive", m.Attachments.FirstOrDefault()?.ContentType);
         }
     }

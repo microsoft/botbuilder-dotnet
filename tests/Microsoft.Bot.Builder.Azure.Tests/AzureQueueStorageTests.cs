@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
@@ -32,7 +33,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void QueueActivityAsync()
+        public async Task QueueActivityAsync()
         {
             var client = new Mock<QueueClient>();
             var response = new Mock<Response<SendReceipt>>();

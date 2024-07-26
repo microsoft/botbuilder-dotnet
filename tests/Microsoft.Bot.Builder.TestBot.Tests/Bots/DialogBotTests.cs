@@ -95,7 +95,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Bots
             await testFlow.Send("Hi").StartTestAsync();
 
             // Assert that SaveChangesAsyncWasCalled
-            Assert.True(false, "TODO");
+            Assert.Fail("TODO");
         }
     }
 }
