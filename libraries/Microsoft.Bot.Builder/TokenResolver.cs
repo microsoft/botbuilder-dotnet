@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder
 
                 if (!pollingParams.SentToken)
                 {
-                    pollingHelper.Logger.LogInformation("PollForTokenAsync completed without receiving a token", pollingHelper.Activity);
+                    pollingHelper.Logger.LogInformation("PollForTokenAsync completed without receiving a token");
                 }
 
                 stopwatch.Stop();
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder
             catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                pollingHelper.Logger.LogError(ex, "PollForTokenAsync threw an exception", connectionName);
+                pollingHelper.Logger.LogError(ex, "PollForTokenAsync threw an exception");
             }
         }
 
@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder
                             pollingParams.ShouldEndPolling = true;
                             pollingParams.SentToken = true;
 
-                            Logger.LogInformation("PollForTokenAsync completed with a token", Activity);
+                            Logger.LogInformation("PollForTokenAsync completed with a token");
                         }
                     }
                 };
