@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     // If the input message is empty after a .Trim() operation, character the comparison will fail because the reply message will be a
                     // Message Activity with null as Text, this is expected behavior
                     var messageIsBlank = e.Message.Equals(" :\nExpected: \nReceived:", StringComparison.OrdinalIgnoreCase) && naughtyString.Equals(" ", StringComparison.OrdinalIgnoreCase);
-                    var messageIsEmpty = e.Message.Equals(":\nExpected:\nReceived:", StringComparison.OrdinalIgnoreCase) && naughtyString.IsNullOrEmpty();
+                    var messageIsEmpty = e.Message.Equals(":\nExpected:\nReceived:", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(naughtyString);
                     if (!(messageIsBlank || messageIsEmpty))
                     {
                         throw;
