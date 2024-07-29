@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _scope = scope;
             _clientId = clientId;
             _logger = logger ?? NullLogger.Instance;
-            _clientApplication = CreateClientApplication(appId, authority, customHttpClient);
+            _clientApplication = CreateClientApplication(appId, customHttpClient);
             _managedIdentityClientAssertion = new ManagedIdentityClientAssertion(_clientId);
         }
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return RetryParams.DefaultBackOff(retryCount);
         }
 
-        private IConfidentialClientApplication CreateClientApplication(string appId, string authority, HttpClient customHttpClient = null)
+        private IConfidentialClientApplication CreateClientApplication(string appId, HttpClient customHttpClient = null)
         {
             _logger.LogDebug($"CreateClientApplication for appId={appId}");
 
