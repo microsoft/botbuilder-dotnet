@@ -351,24 +351,24 @@ namespace Microsoft.Bot.Builder
             // If there are no callbacks registered, bypass the overhead of invoking them and send directly to the adapter
             if (_onSendActivities.Count == 0)
             {
-                return SendActivitiesThroughAdapter();
+                return SendActivitiesThroughAdapterAsync();
             }
 
             // Send through the full callback pipeline
-            return SendActivitiesThroughCallbackPipeline();
+            return SendActivitiesThroughCallbackPipelineAsync();
 
-            Task<ResourceResponse[]> SendActivitiesThroughCallbackPipeline(int nextCallbackIndex = 0)
+            Task<ResourceResponse[]> SendActivitiesThroughCallbackPipelineAsync(int nextCallbackIndex = 0)
             {
                 // If we've executed the last callback, we now send straight to the adapter
                 if (nextCallbackIndex == _onSendActivities.Count)
                 {
-                    return SendActivitiesThroughAdapter();
+                    return SendActivitiesThroughAdapterAsync();
                 }
 
-                return _onSendActivities[nextCallbackIndex].Invoke(this, bufferedActivities, () => SendActivitiesThroughCallbackPipeline(nextCallbackIndex + 1));
+                return _onSendActivities[nextCallbackIndex].Invoke(this, bufferedActivities, () => SendActivitiesThroughCallbackPipelineAsync(nextCallbackIndex + 1));
             }
 
-            async Task<ResourceResponse[]> SendActivitiesThroughAdapter()
+            async Task<ResourceResponse[]> SendActivitiesThroughAdapterAsync()
             {
                 if (Activity.DeliveryMode == DeliveryModes.ExpectReplies)
                 {
@@ -453,12 +453,12 @@ namespace Microsoft.Bot.Builder
             var conversationReference = Activity.GetConversationReference();
             var a = activity.ApplyConversationReference(conversationReference);
 
-            async Task<ResourceResponse> ActuallyUpdateStuff()
+            async Task<ResourceResponse> ActuallyUpdateStuffAsync()
             {
                 return await Adapter.UpdateActivityAsync(this, a, cancellationToken).ConfigureAwait(false);
             }
 
-            return await UpdateActivityInternalAsync(a, _onUpdateActivity, ActuallyUpdateStuff, cancellationToken).ConfigureAwait(false);
+            return await UpdateActivityInternalAsync(a, _onUpdateActivity, ActuallyUpdateStuffAsync, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -484,12 +484,12 @@ namespace Microsoft.Bot.Builder
             var cr = Activity.GetConversationReference();
             cr.ActivityId = activityId;
 
-            async Task ActuallyDeleteStuff()
+            async Task ActuallyDeleteStuffAsync()
             {
                 await Adapter.DeleteActivityAsync(this, cr, cancellationToken).ConfigureAwait(false);
             }
 
-            await DeleteActivityInternalAsync(cr, _onDeleteActivity, ActuallyDeleteStuff, cancellationToken).ConfigureAwait(false);
+            await DeleteActivityInternalAsync(cr, _onDeleteActivity, ActuallyDeleteStuffAsync, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -514,12 +514,12 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(conversationReference));
             }
 
-            async Task ActuallyDeleteStuff()
+            async Task ActuallyDeleteStuffAsync()
             {
                 await Adapter.DeleteActivityAsync(this, conversationReference, cancellationToken).ConfigureAwait(false);
             }
 
-            await DeleteActivityInternalAsync(conversationReference, _onDeleteActivity, ActuallyDeleteStuff, cancellationToken).ConfigureAwait(false);
+            await DeleteActivityInternalAsync(conversationReference, _onDeleteActivity, ActuallyDeleteStuffAsync, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -574,7 +574,7 @@ namespace Microsoft.Bot.Builder
             }
 
             // Default to "No more Middleware after this".
-            async Task<ResourceResponse> Next()
+            async Task<ResourceResponse> NextAsync()
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about.
@@ -586,7 +586,7 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it
             UpdateActivityHandler toCall = updateHandlers.First();
-            return await toCall(this, activity, Next).ConfigureAwait(false);
+            return await toCall(this, activity, NextAsync).ConfigureAwait(false);
         }
 
         private async Task DeleteActivityInternalAsync(
@@ -614,7 +614,7 @@ namespace Microsoft.Bot.Builder
             }
 
             // Default to "No more Middleware after this".
-            async Task Next()
+            async Task NextAsync()
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about.
@@ -624,7 +624,7 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it.
             DeleteActivityHandler toCall = deleteHandlers.First();
-            await toCall(this, cr, Next).ConfigureAwait(false);
+            await toCall(this, cr, NextAsync).ConfigureAwait(false);
         }
     }
 }
