@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<string> FetchExternalTokenAsync()
         {
-            return await _managedIdentityClientAssertion.GetSignedAssertion(default).ConfigureAwait(false);
+            return await _managedIdentityClientAssertion.GetSignedAssertionAsync(default).ConfigureAwait(false);
         }
     }
 }
