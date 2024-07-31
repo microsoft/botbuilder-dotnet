@@ -51,13 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         });
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestAge()
-After:
-        public void TestAgeAsync()
-*/
         public async Task TestAgeAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestAgeAsync), "This is a test of one, 2, three years old");
@@ -74,13 +67,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestConfirmation()
-After:
-        public void TestConfirmationAsync()
-*/
         public async Task TestConfirmationAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestConfirmationAsync), "yes, please");
@@ -96,13 +82,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestCurrency()
-After:
-        public void TestCurrencyAsync()
-*/
         public async Task TestCurrencyAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestCurrencyAsync), "I would pay four dollars for that.");
@@ -118,13 +97,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestDateTime()
-After:
-        public void TestDateTimeAsync()
-*/
         public async Task TestDateTimeAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestDateTimeAsync), "Next thursday at 4pm.");
@@ -141,13 +113,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestDimension()
-After:
-        public void TestDimensionAsync()
-*/
         public async Task TestDimensionAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestDimensionAsync), "I think he's 5 foot ten");
@@ -163,13 +128,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestEmail()
-After:
-        public void TestEmailAsync()
-*/
         public async Task TestEmailAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestEmailAsync), "my email address is foo@att.uk.co");
@@ -184,13 +142,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestGuid()
-After:
-        public void TestGuidAsync()
-*/
         public async Task TestGuidAsync()
         {
             var guid = Guid.Empty;
@@ -206,13 +157,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestHashtag()
-After:
-        public void TestHashtagAsync()
-*/
         public async Task TestHashtagAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestHashtagAsync), $"I'm so cool #cool #groovy...");
@@ -227,13 +171,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestIp()
-After:
-        public void TestIpAsync()
-*/
         public async Task TestIpAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestIpAsync), $"My address is 1.2.3.4");
@@ -249,13 +186,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestMention()
-After:
-        public void TestMentionAsync()
-*/
         public async Task TestMentionAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestMentionAsync), $"Tell @joesmith I'm coming...");
@@ -347,13 +277,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestNumber()
-After:
-        public void TestNumberAsync()
-*/
         public async Task TestNumberAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestNumberAsync), "This is a test of one, 2, three");
@@ -368,13 +291,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestNumberRange()
-After:
-        public void TestNumberRangeAsync()
-*/
         public async Task TestNumberRangeAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestNumberRangeAsync), "there are 3 to 5 of them");
@@ -389,13 +305,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestOrdinal()
-After:
-        public void TestOrdinalAsync()
-*/
         public async Task TestOrdinalAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestOrdinalAsync), "First, second or third");
@@ -410,13 +319,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestPercentage()
-After:
-        public void TestPercentageAsync()
-*/
         public async Task TestPercentageAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestPercentageAsync), "The population hit 33.3%");
@@ -431,13 +333,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestPhoneNumber()
-After:
-        public void TestPhoneNumberAsync()
-*/
         public async Task TestPhoneNumberAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestPhoneNumberAsync), "Call 425-882-8080");
@@ -452,13 +347,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestTemperature()
-After:
-        public void TestTemperatureAsync()
-*/
         public async Task TestTemperatureAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestTemperatureAsync), "set the oven to 350 degrees");
@@ -473,13 +361,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestUrl()
-After:
-        public void TestUrlAsync()
-*/
         public async Task TestUrlAsync()
         {
             var dialogContext = GetDialogContext(nameof(TestUrlAsync), "go to http://about.me for more info");
@@ -494,13 +375,6 @@ After:
         }
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Builder.Dialogs.Adaptive.Tests (net8.0)'
-Before:
-        public void TestRegEx()
-After:
-        public void TestRegExAsync()
-*/
         public async Task TestRegExAsync()
         {
             // I would like {order} 

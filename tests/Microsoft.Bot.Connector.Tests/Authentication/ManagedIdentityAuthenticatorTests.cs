@@ -20,13 +20,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         private readonly Func<string, string> audience = (id) => $"audience {id} ";
 
         [Fact]
-
-/* Unmerged change from project 'Microsoft.Bot.Connector.Tests (net6.0)'
-Before:
-        public void CanGetJwtToken()
-After:
-        public void Task CanGetJwtTokenAsync()
-*/
         public async Task CanGetJwtTokenAsync()
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK);
