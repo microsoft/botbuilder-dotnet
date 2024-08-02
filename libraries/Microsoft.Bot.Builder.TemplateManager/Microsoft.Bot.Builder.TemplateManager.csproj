@@ -27,7 +27,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
