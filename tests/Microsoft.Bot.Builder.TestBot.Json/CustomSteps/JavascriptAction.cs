@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             var result = engine.Execute(this.script)
                 .GetValue("doAction")
-                .Invoke(Jint.Native.JsValue.FromObject(engine, boundOptions ?? new object()))
+                .Call(Jint.Native.JsValue.FromObject(engine, boundOptions ?? new object()))
                 .ToObject();
 
             if (this.ResultProperty != null)
