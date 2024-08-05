@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 userToken.Setup(adapter);
             }
 
-            async Task Inspect(DialogContextInspector inspector)
+            async Task InspectAsync(DialogContextInspector inspector)
             {
                 var di = new DialogInspector(Dialog, resourceExplorer);
                 var activity = new Activity();
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             foreach (var testAction in Script)
             {
-                await testAction.ExecuteAsync(adapter, callback, Inspect).ConfigureAwait(false);
+                await testAction.ExecuteAsync(adapter, callback, InspectAsync).ConfigureAwait(false);
             }
         }
 

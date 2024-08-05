@@ -747,7 +747,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     cancelReloadToken.Cancel();
                     cancelReloadToken = new CancellationTokenSource();
 
-                    Task.Delay(1000, cancelReloadToken.Token)
+                    _ = Task.Delay(1000, cancelReloadToken.Token)
                         .ContinueWith(
                             t =>
                             {
