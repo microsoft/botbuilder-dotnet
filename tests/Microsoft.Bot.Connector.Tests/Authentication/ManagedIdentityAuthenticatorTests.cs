@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
             finally
             {
-                Assert.Equal(maxRetries + 1, callsToAcquireToken);
+                Assert.Equal((maxRetries + 1) * 2, callsToAcquireToken);
             }
         }
 
