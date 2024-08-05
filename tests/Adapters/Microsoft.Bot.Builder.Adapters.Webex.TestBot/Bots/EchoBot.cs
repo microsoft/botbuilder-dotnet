@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
                 var activity = MessageFactory.Text($" I got {turnContext.Activity.Attachments.Count} attachments");
                 foreach (var attachment in turnContext.Activity.Attachments)
                 {
-                    var image = new Attachment(
+                    var image = new Schema.Attachment(
                         "image/png",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU");
 
@@ -79,10 +79,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
             }
         }
 
-        private static Attachment CreateAdaptiveCardAttachment(string filePath)
+        private static Schema.Attachment CreateAdaptiveCardAttachment(string filePath)
         {
             var adaptiveCardJson = File.ReadAllText(filePath);
-            var adaptiveCardAttachment = new Attachment()
+            var adaptiveCardAttachment = new Schema.Attachment()
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
                 Content = JsonConvert.DeserializeObject(adaptiveCardJson, new JsonSerializerSettings { MaxDepth = null }),
