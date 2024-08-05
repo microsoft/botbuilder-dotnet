@@ -36,6 +36,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
+    <!-- Force Microsoft.Bcl.AsyncInterfaces to a newer version. Since Microsoft.Azure.Cosmos has 1.1.1 version, which causes MSB3277 warnings. -->
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.41.0" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="9.4.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
