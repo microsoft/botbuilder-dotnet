@@ -285,9 +285,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             activity.Object.Type = "message";
             activity.Object.Recipient = new ChannelAccount(id: "MockId");
             activity.Object.Text = "Hello, Bot!";
-            activity.Object.Attachments = new List<Attachment>
+            activity.Object.Attachments = new List<Schema.Attachment>
             {
-                new Attachment("image/png", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU"),
+                new Schema.Attachment("image/png", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU"),
             };
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Schema.Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
@@ -311,9 +311,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             activity.Object.Type = "message";
             activity.Object.Recipient = new ChannelAccount(id: "MockId");
             activity.Object.Text = "Hello, Bot!";
-            activity.Object.Attachments = new List<Attachment>
+            activity.Object.Attachments = new List<Schema.Attachment>
             {
-                new Attachment("application/vnd.microsoft.card.adaptive"),
+                new Schema.Attachment("application/vnd.microsoft.card.adaptive"),
             };
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
-            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Schema.Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 

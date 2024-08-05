@@ -213,11 +213,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="message">The message with the files to process.</param>
         /// <returns>A list of attachments containing the message's files.</returns>
-        public static List<Attachment> HandleMessageAttachments(Message message)
+        public static List<Schema.Attachment> HandleMessageAttachments(Message message)
         {
-            var attachmentsList = new List<Attachment>();
+            var attachmentsList = new List<Schema.Attachment>();
 
-            var attachment = new Attachment
+            var attachment = new Schema.Attachment
             {
                 // Currently Webex API takes only one attachment
                 ContentUrl = message.FileUris[0].AbsoluteUri,
