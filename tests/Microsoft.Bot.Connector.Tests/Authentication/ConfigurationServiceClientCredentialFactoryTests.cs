@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class ConfigurationServiceClientCredentialFactoryTests
     {
