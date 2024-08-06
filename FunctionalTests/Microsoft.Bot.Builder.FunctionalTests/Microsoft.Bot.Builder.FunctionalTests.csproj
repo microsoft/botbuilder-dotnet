@@ -19,7 +19,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
     <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="Twilio" Version="5.37.2" />
+    <PackageReference Include="Twilio" Version="7.2.2" />
   </ItemGroup>
 
   <ItemGroup>

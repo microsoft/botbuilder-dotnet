@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 return values;
             }
 
-            var pairs = query.Replace("+", "%20").Split('&');
+            var pairs = query.Replace("+", "%20", StringComparison.InvariantCulture).Split('&');
 
             foreach (var p in pairs)
             {
