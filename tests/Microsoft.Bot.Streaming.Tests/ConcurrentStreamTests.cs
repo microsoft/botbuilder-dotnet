@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void DoneProducing_Data_WillCauseZeroRead_And_End()
+        public async Task DoneProducing_Data_WillCauseZeroRead_And_End()
         {
             const int expectedReadCount = 100;
             var producerBuffer = new byte[100];

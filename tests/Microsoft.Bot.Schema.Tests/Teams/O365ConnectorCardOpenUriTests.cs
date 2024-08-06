@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(name, openUri.Name);
             Assert.Equal(id, openUri.Id);
             Assert.Equal(targets, openUri.Targets);
-            Assert.Equal(1, openUri.Targets.Count);
+            Assert.Single(openUri.Targets);
         }
         
         [Fact]

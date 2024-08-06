@@ -26,17 +26,17 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         }
 
         [Theory]
-        [InlineData(false, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
-        [InlineData(true, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
-        [InlineData(false, 42, true, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
-        [InlineData(false, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", true, false)]
-        [InlineData(false, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, true)]
-        [InlineData(null, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
+        [InlineData(false, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
+        [InlineData(true, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
+        [InlineData(false, 42.0, true, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
+        [InlineData(false, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", true, false)]
+        [InlineData(false, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, true)]
+        [InlineData(null, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
         [InlineData(false, null, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
-        [InlineData(false, 42, null, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
-        [InlineData(false, 42, false, null, false, false)]
-        [InlineData(false, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", null, false)]
-        [InlineData(false, 42, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, null)]
+        [InlineData(false, 42.0, null, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, false)]
+        [InlineData(false, 42.0, false, null, false, false)]
+        [InlineData(false, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", null, false)]
+        [InlineData(false, 42.0, false, "Fake2806-EC0A-472D-95B7-A7132D159E03", false, null)]
         [InlineData(null, null, null, null, null, null)]
         public async Task LuisPredictionOptionsAreUsedInTheRequest(bool? includeAllIntents, double? timezoneOffset, bool? spellCheck, string bingSpellCheckSubscriptionKey, bool? log, bool? staging)
         {
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [Theory]
         [InlineData(false, null, null, null, null, null)]
-        [InlineData(null, 55, null, null, null, null)]
+        [InlineData(null, 55.0, null, null, null, null)]
         [InlineData(null, null, false, null, null, null)]
         [InlineData(null, null, null, "Override-EC0A-472D-95B7-A7132D159E03", null, null)]
         [InlineData(null, null, null, null, true, null)]
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [Theory]
         [InlineData(false, null, null, null, null, null)]
-        [InlineData(null, 55, null, null, null, null)]
+        [InlineData(null, 55.0, null, null, null, null)]
         [InlineData(null, null, false, null, null, null)]
         [InlineData(null, null, null, "Override-EC0A-472D-95B7-A7132D159E03", null, null)]
         [InlineData(null, null, null, null, true, null)]
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var constructorOptions = new LuisPredictionOptions()
             {
                 IncludeAllIntents = true,
-                TimezoneOffset = 42,
+                TimezoneOffset = 42.0,
                 SpellCheck = true,
                 BingSpellCheckSubscriptionKey = "Fake2806-EC0A-472D-95B7-A7132D159E03",
                 Log = false,

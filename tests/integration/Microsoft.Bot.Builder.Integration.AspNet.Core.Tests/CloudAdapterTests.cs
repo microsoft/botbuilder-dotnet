@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         }
 
         [Fact]
-        public void CanContinueConversationOverWebSocket()
+        public async Task CanContinueConversationOverWebSocketAsync()
         {
             // Arrange
             var continueConversationWaiter = new AutoResetEvent(false);
@@ -372,8 +372,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None);
 
             continueConversationWaiter.Set();
-            nullUrlProcessRequest.Wait();
-            processRequest.Wait();
+            await nullUrlProcessRequest;
+            await processRequest;
 
             // Assert
             Assert.True(processRequest.IsCompletedSuccessfully);

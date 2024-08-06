@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var sanitizedKey = CosmosDbKeyEscape.EscapeKey(key, suffix, false);
 
             // Verify the suffix was added to the end of the key
-            Assert.Equal(sanitizedKey, $"{key}{suffix}");
+            Assert.Equal($"{key}{suffix}", sanitizedKey);
         }
     }
 }

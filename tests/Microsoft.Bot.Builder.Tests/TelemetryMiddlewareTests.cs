@@ -56,10 +56,10 @@ namespace Microsoft.Bot.Builder.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
@@ -138,10 +138,10 @@ namespace Microsoft.Bot.Builder.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
@@ -306,10 +306,10 @@ namespace Microsoft.Bot.Builder.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
@@ -379,10 +379,10 @@ namespace Microsoft.Bot.Builder.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
@@ -579,7 +579,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
 
             // Assert
-            Assert.Equal(1, mockTelemetryClient.Invocations.Count);
+            Assert.Single(mockTelemetryClient.Invocations);
             Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[0].Arguments[0]); // Check initial message
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 8);
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("type"));

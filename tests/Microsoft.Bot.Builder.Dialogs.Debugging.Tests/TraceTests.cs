@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
                 await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
                 {
-                    await dialogManager.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                    await dialogManager.OnTurnAsync(turnContext, cancellationToken);
                 })
                 .Send("one")
                 .AssertReply("hello")
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             });
 
             var tokens = sorted.Select(JToken.FromObject).Select(TraceOracle.Normalize).ToArray();
-            await TraceOracle.ValidateAsync(pathJson, tokens, _output).ConfigureAwait(false);
+            await TraceOracle.ValidateAsync(pathJson, tokens, _output);
         }
 
         internal static DialogDebugAdapter MakeDebugger(IDebugTransport transport)
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
             async Task<JToken> IDebugTransport.ReadAsync(CancellationToken cancellationToken)
             {
-                await _count.WaitAsync(cancellationToken).ConfigureAwait(false);
+                await _count.WaitAsync(cancellationToken);
                 lock (_gate)
                 {
                     return _queue.Dequeue();

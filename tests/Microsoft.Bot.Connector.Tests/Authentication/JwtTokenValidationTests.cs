@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
+        //public async Task Connector_AuthHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
         //{
         //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider("", string.Empty);
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Connector_AuthHeader_BotAppIdDiffers_ShouldNotValidate()
+        //public async Task Connector_AuthHeader_BotAppIdDiffers_ShouldNotValidate()
         //{
         //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Connector_AuthHeader_BotWithNoCredentials_ShouldNotValidate()
+        //public async Task Connector_AuthHeader_BotWithNoCredentials_ShouldNotValidate()
         //{
         //    // token received and auth disabled
         //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //}
 
         [Fact]
-        public async void EmptyHeader_BotWithNoCredentials_ShouldThrow()
+        public async Task EmptyHeader_BotWithNoCredentials_ShouldThrow()
         {
             var header = string.Empty;
             var credentials = new SimpleCredentialProvider(string.Empty, string.Empty);
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Emulator_MsaHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
+        //public async Task Emulator_MsaHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
         //{
         //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider("", string.Empty);
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Emulator_MsaHeader_BotAppIdDiffers_ShouldNotValidate()
+        //public async Task Emulator_MsaHeader_BotAppIdDiffers_ShouldNotValidate()
         //{
         //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
@@ -100,8 +100,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         /// <summary>
         /// Tests with no authentication header and makes sure the service URL is not added to the trusted list.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async void Channel_AuthenticationDisabled_ShouldBeAnonymous()
+        public async Task Channel_AuthenticationDisabled_ShouldBeAnonymous()
         {
             var header = string.Empty;
             var credentials = new SimpleCredentialProvider();
@@ -119,8 +120,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         /// <summary>
         /// Test with emulator channel Id and and RelatesTo set so it can validate we get an anonymous skill claim back.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async void Channel_AuthenticationDisabledAndSkill_ShouldBeAnonymous()
+        public async Task Channel_AuthenticationDisabledAndSkill_ShouldBeAnonymous()
         {
             var header = string.Empty;
             var credentials = new SimpleCredentialProvider();
@@ -144,7 +146,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
+        //public async Task Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
         //{
         //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
         //        "",         // emulator creds
@@ -154,7 +156,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithPrivateChannelService_ShouldValidate()
+        //public async Task Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithPrivateChannelService_ShouldValidate()
         //{
         //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
         //        "",         // emulator creds
@@ -164,7 +166,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         // Disabled after appid was deleted. Issue created to move tests to functional tests
         //[Fact]
-        //public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
+        //public async Task Connector_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
         //{
         //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
         //        "",         // emulator creds
@@ -173,7 +175,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //}
 
         [Fact]
-        public async void GovernmentChannelValidation_Succeeds()
+        public async Task GovernmentChannelValidation_Succeeds()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -188,7 +190,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_NoAuthentication_Fails()
+        public async Task GovernmentChannelValidation_NoAuthentication_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -205,7 +207,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_NoAudienceClaim_Fails()
+        public async Task GovernmentChannelValidation_NoAudienceClaim_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -221,7 +223,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_WrongAudienceClaim_Fails()
+        public async Task GovernmentChannelValidation_WrongAudienceClaim_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -238,7 +240,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_WrongAudienceClaimIssuer_Fails()
+        public async Task GovernmentChannelValidation_WrongAudienceClaimIssuer_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -255,7 +257,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_NoAudienceClaimValue_Fails()
+        public async Task GovernmentChannelValidation_NoAudienceClaimValue_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -272,7 +274,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_NoServiceClaimValue_Fails()
+        public async Task GovernmentChannelValidation_NoServiceClaimValue_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -289,7 +291,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void GovernmentChannelValidation_WrongServiceClaimValue_Fails()
+        public async Task GovernmentChannelValidation_WrongServiceClaimValue_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -306,7 +308,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_Succeeds()
+        public async Task EnterpriseChannelValidation_Succeeds()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -321,7 +323,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_NoAuthentication_Fails()
+        public async Task EnterpriseChannelValidation_NoAuthentication_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -338,7 +340,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_NoAudienceClaim_Fails()
+        public async Task EnterpriseChannelValidation_NoAudienceClaim_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -354,7 +356,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_WrongAudienceClaim_Fails()
+        public async Task EnterpriseChannelValidation_WrongAudienceClaim_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -371,7 +373,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_WrongAudienceClaimIssuer_Fails()
+        public async Task EnterpriseChannelValidation_WrongAudienceClaimIssuer_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -388,7 +390,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_NoAudienceClaimValue_Fails()
+        public async Task EnterpriseChannelValidation_NoAudienceClaimValue_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -405,7 +407,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_NoServiceClaimValue_Fails()
+        public async Task EnterpriseChannelValidation_NoServiceClaimValue_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";
@@ -422,7 +424,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void EnterpriseChannelValidation_WrongServiceClaimValue_Fails()
+        public async Task EnterpriseChannelValidation_WrongServiceClaimValue_Fails()
         {
             var appId = "1234567890";
             var serviceUrl = "https://webchat.botframework.com/";

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendMessageAsyncShouldThrowAnExceptionWithWrongPath()
+        public async Task SendMessageAsyncShouldThrowAnExceptionWithWrongPath()
         {
             var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[5];
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendMessageAsyncShouldThrowAnExceptionWithNullPath()
+        public async Task SendMessageAsyncShouldThrowAnExceptionWithNullPath()
         {
             var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[5];
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendMessageAsyncShouldThrowAnExceptionWithNullPayload()
+        public async Task SendMessageAsyncShouldThrowAnExceptionWithNullPayload()
         {
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
 
@@ -101,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void VerifyWebhookAsyncShouldSendOkWhenVerified()
+        public async Task VerifyWebhookAsyncShouldSendOkWhenVerified()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
             var httpRequest = new Mock<HttpRequest>();
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void VerifyWebhookAsyncShouldSendUnauthorizedWhenNotVerified()
+        public async Task VerifyWebhookAsyncShouldSendUnauthorizedWhenNotVerified()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
             var httpRequest = new Mock<HttpRequest>();
@@ -147,7 +148,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void VerifyWebhookAsyncShouldThrowExceptionWithNullRequest()
+        public async Task VerifyWebhookAsyncShouldThrowExceptionWithNullRequest()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
             var httpResponse = new Mock<HttpResponse>();
@@ -156,7 +157,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void VerifyWebhookAsyncShouldThrowExceptionWithNullResponse()
+        public async Task VerifyWebhookAsyncShouldThrowExceptionWithNullResponse()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
             var httpRequest = new Mock<HttpRequest>();
@@ -165,7 +166,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void PassThreadControlAsyncShouldThrowExceptionWithNullTargetAppId()
+        public async Task PassThreadControlAsyncShouldThrowExceptionWithNullTargetAppId()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
@@ -173,7 +174,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void PassThreadControlAsyncShouldThrowExceptionWithNullUserId()
+        public async Task PassThreadControlAsyncShouldThrowExceptionWithNullUserId()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
@@ -181,7 +182,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void RequestThreadControlAsyncShouldThrowExceptionWithNullUserId()
+        public async Task RequestThreadControlAsyncShouldThrowExceptionWithNullUserId()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
@@ -189,7 +190,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void TakeThreadControlAsyncShouldThrowExceptionWithNullUserId()
+        public async Task TakeThreadControlAsyncShouldThrowExceptionWithNullUserId()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
@@ -197,7 +198,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void PostToFacebookApiAsyncShouldThrowExceptionWithNullPostType()
+        public async Task PostToFacebookApiAsyncShouldThrowExceptionWithNullPostType()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 
@@ -205,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void PostToFacebookApiAsyncShouldThrowExceptionWithNullContent()
+        public async Task PostToFacebookApiAsyncShouldThrowExceptionWithNullContent()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
 

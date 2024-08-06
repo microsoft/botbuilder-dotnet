@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         [Theory]
         [InlineData(3, 50, 4, false, false)] // new client, new server
         [InlineData(3, 100, 32, false, false)] // new client, new server
-        public void ConcurrencyTest(int connectionCount, int messageCount, int threadCount, bool useLegacyClient, bool useLegacyServer)
+        public async Task ConcurrencyTestAsync(int connectionCount, int messageCount, int threadCount, bool useLegacyClient, bool useLegacyServer)
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                         Assert.NotNull(response);
 
                         Assert.Equal($"Echo: {activities.FirstOrDefault(a => a.Id == response.ReplyToId)?.Text}", response.Text);
-                        Assert.Equal(1, response.Attachments.Count);
+                        Assert.Single(response.Attachments);
 
                         return Task.FromResult(StreamingResponse.OK());
                     }
@@ -384,7 +384,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                     RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient, messageCount, threadCount));
             }
 
-            Task.WhenAll(connections).Wait();
+            await Task.WhenAll(connections);
         }
 
         [Fact]

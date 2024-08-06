@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsyncShouldSucceed()
+        public async Task ContinueConversationAsyncShouldSucceed()
         {
             var callbackInvoked = false;
             var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsyncShouldFailWithNullConversationReference()
+        public async Task ContinueConversationAsyncShouldFailWithNullConversationReference()
         {
             var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsyncShouldFailWithNullLogic()
+        public async Task ContinueConversationAsyncShouldFailWithNullLogic()
         {
             var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
             var conversationReference = new ConversationReference();
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldSucceedWithCorrectData()
+        public async Task ProcessAsyncShouldSucceedWithCorrectData()
         {
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/Payload.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldSucceedWithStandbyMessages()
+        public async Task ProcessAsyncShouldSucceedWithStandbyMessages()
         {
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithStandby.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldSucceedWithReferralMessages()
+        public async Task ProcessAsyncShouldSucceedWithReferralMessages()
         {
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithReferral.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldVerifyWebhookOnHubModeSubscribe()
+        public async Task ProcessAsyncShouldVerifyWebhookOnHubModeSubscribe()
         {
             var testOptionsVerifyEnabled = new FacebookAdapterOptions()
             {
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldSucceedWithActivityTypeMessage()
+        public async Task SendActivitiesAsyncShouldSucceedWithActivityTypeMessage()
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldSucceedWithActivityTypeMessageAndAttachments()
+        public async Task SendActivitiesAsyncShouldSucceedWithActivityTypeMessageAndAttachments()
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
+        public async Task SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldPostToFacebookOnPassThreadControl()
+        public async Task SendActivitiesAsyncShouldPostToFacebookOnPassThreadControl()
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldPostToFacebookOnTakeThreadControl()
+        public async Task SendActivitiesAsyncShouldPostToFacebookOnTakeThreadControl()
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
@@ -347,7 +347,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldPostToFacebookOnRequestThreadControl()
+        public async Task SendActivitiesAsyncShouldPostToFacebookOnRequestThreadControl()
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);

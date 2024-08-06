@@ -253,7 +253,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             };
 
             var breakpoints = sourceMap.SetBreakpoints(breakpointList);
-            Assert.Equal(1, breakpoints.Count);
+            Assert.Single(breakpoints);
         }
     }
 }

@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.Single(r.Streams);
             Assert.Equal(typeof(StringContent), r.Streams[0].Content.GetType());
 
-            var s = await r.Streams[0].Content.ReadAsStringAsync().ConfigureAwait(false);
+            var s = await r.Streams[0].Content.ReadAsStringAsync();
             Assert.Equal("123", s);
         }
 
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.Single(r.Streams);
             Assert.Equal(typeof(StringContent), r.Streams[0].Content.GetType());
 
-            var s = JsonConvert.DeserializeObject<Activity>(await r.Streams[0].Content.ReadAsStringAsync().ConfigureAwait(false));
+            var s = JsonConvert.DeserializeObject<Activity>(await r.Streams[0].Content.ReadAsStringAsync());
             Assert.Equal(a.Text, s.Text);
             Assert.Equal(a.Type, s.Type);
         }

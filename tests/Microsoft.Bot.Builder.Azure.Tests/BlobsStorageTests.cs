@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.Storage;
@@ -68,7 +69,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsyncValidation()
+        public async Task WriteAsyncValidation()
         {
             InitStorage();
 
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsync()
+        public async Task WriteAsync()
         {
             InitStorage();
 
@@ -117,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsyncWithAllowedTypesSerializationBinder()
+        public async Task WriteAsyncWithAllowedTypesSerializationBinder()
         {
             var serializationBinder = new AllowedTypesSerializationBinder(
                 new List<Type>
@@ -170,7 +171,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         
         [Fact]
-        public async void WriteAsyncWithEmptyAllowedTypesSerializationBinder()
+        public async Task WriteAsyncWithEmptyAllowedTypesSerializationBinder()
         {
             var serializationBinder = new AllowedTypesSerializationBinder();
             var jsonSerializerSettings = new JsonSerializerSettings
@@ -215,11 +216,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     It.IsAny<StorageTransferOptions>(),
                     It.IsAny<CancellationToken>()),
                 Times.Exactly(0));
-            Assert.Equal(0, serializationBinder.AllowedTypes.Count);
+            Assert.Empty(serializationBinder.AllowedTypes);
         }
 
         [Fact]
-        public async void WriteAsyncHttpBadRequestFailure()
+        public async Task WriteAsyncHttpBadRequestFailure()
         {
             InitStorage();
 
@@ -240,7 +241,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteAsyncValidation()
+        public async Task DeleteAsyncValidation()
         {
             InitStorage();
 
@@ -249,7 +250,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteAsync()
+        public async Task DeleteAsync()
         {
             InitStorage();
 
@@ -261,7 +262,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncValidation()
+        public async Task ReadAsyncValidation()
         {
             InitStorage();
 
@@ -270,7 +271,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsync()
+        public async Task ReadAsync()
         {
             InitStorage();
 
@@ -291,7 +292,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         
         [Fact]
-        public async void ReadAsyncWithAllowedTypesSerializationBinder()
+        public async Task ReadAsyncWithAllowedTypesSerializationBinder()
         {            
             var jsonSerializerSettings = new JsonSerializerSettings
             {
@@ -333,7 +334,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         
         [Fact]
-        public async void ReadAsyncWithEmptyAllowedTypesSerializationBinder()
+        public async Task ReadAsyncWithEmptyAllowedTypesSerializationBinder()
         {            
             var jsonSerializerSettings = new JsonSerializerSettings
             {
@@ -364,7 +365,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncHttpPreconditionFailure()
+        public async Task ReadAsyncHttpPreconditionFailure()
         {
             InitStorage();
 
@@ -391,7 +392,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncHttpNotFoundFailure()
+        public async Task ReadAsyncHttpNotFoundFailure()
         {
             InitStorage();
 
@@ -413,7 +414,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void GetBlobNameValidation()
+        public async Task GetBlobNameValidation()
         {
             InitStorage();
 

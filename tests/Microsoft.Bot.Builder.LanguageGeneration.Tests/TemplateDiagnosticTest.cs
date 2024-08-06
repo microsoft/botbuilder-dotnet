@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("EmptyLGFile.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Warning, diagnostics[0].Severity);
             Assert.Contains(TemplateErrors.NoTemplate, diagnostics[0].Message);
         }
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("EmptyTemplate.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Warning, diagnostics[0].Severity);
             Assert.Contains(TemplateErrors.NoTemplateBody("template"), diagnostics[0].Message);
         }
@@ -123,17 +123,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("MultiLineExprError.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
 
             diagnostics = Templates.ParseResource(new LGResource(string.Empty, string.Empty, "#Demo2\r\n- ${createArray(1,\r\n, 2,3)")).Diagnostics;
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
 
             diagnostics = Templates.ParseResource(new LGResource(string.Empty, string.Empty, "#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n> this is a comment")).Diagnostics;
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
         }
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("InvalidLGFileImportPath.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Could not find file", diagnostics[0].Message);
         }
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("InvalidImportFormat.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Equal(TemplateErrors.ImportFormatError, diagnostics[0].Message);
         }
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("MultiLineVariation.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains(TemplateErrors.NoEndingInMultiline, diagnostics[0].Message);
         }
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("MultiLineTemplate.lg");
 
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains(TemplateErrors.NoEndingInMultiline, diagnostics[0].Message);
         }
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void AddTextWithWrongId()
         {
             var diagnostics = Templates.ParseResource(new LGResource("a.lg", "a.lg", "[import](xx.lg) \r\n # t \n - hi")).Diagnostics;
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Contains("Could not find file", diagnostics[0].Message);
         }
 
@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestExpressionFormatError()
         {
             var diagnostics = GetDiagnostics("ExpressionFormatError.lg");
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
         }
 
@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestLoopReference()
         {
             var diagnostics = GetDiagnostics("CycleRef1.lg");
-            Assert.Equal(1, diagnostics.Count);
+            Assert.Single(diagnostics);
             Assert.StartsWith(TemplateErrors.LoopDetected, diagnostics[0].Message);
         }
 

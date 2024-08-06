@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -49,24 +50,24 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void IsValidAppIdTest()
+        public async Task IsValidAppIdTest()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
-            Assert.True(factory.IsValidAppIdAsync(TestAppId, CancellationToken.None).GetAwaiter().GetResult());
-            Assert.False(factory.IsValidAppIdAsync("InvalidAppId", CancellationToken.None).GetAwaiter().GetResult());
+            Assert.True(await factory.IsValidAppIdAsync(TestAppId, CancellationToken.None));
+            Assert.False(await factory.IsValidAppIdAsync("InvalidAppId", CancellationToken.None));
         }
 
         [Fact]
-        public void IsAuthenticationDisabledTest()
+        public async Task IsAuthenticationDisabledTest()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
-            Assert.False(factory.IsAuthenticationDisabledAsync(CancellationToken.None).GetAwaiter().GetResult());
+            Assert.False(await factory.IsAuthenticationDisabledAsync(CancellationToken.None));
         }
 
         [Fact]
-        public async void CanCreatePublicCredentials()
+        public async Task CanCreatePublicCredentials()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
@@ -78,7 +79,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void CanCreateGovCredentials()
+        public async Task CanCreateGovCredentials()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void CanCreatePrivateCredentials()
+        public async Task CanCreatePrivateCredentials()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
@@ -103,7 +104,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public async void ShouldCreateUniqueCredentialsByAudience()
+        public async Task ShouldCreateUniqueCredentialsByAudience()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
@@ -122,11 +123,11 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void CannotCreateCredentialsWithInvalidAppId()
+        public async Task CannotCreateCredentialsWithInvalidAppId()
         {
             var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
 
-            Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
+            await Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
                     "InvalidAppId", TestAudience, LoginEndpoint, true, CancellationToken.None));
         }
     }

@@ -59,10 +59,10 @@ namespace Microsoft.Bot.AdaptiveExpressions.Core.Tests
             Assert.False(cache.TryGet(9998, out var result));
 
             Assert.True(cache.TryGet(maxIdx - 1, out result));
-            Assert.Equal(result, fib9999);
+            Assert.Equal(fib9999, result);
 
             Assert.True(cache.TryGet(maxIdx, out result));
-            Assert.Equal(result, fib100000);
+            Assert.Equal(fib100000, result);
         }
 
         [Fact]
@@ -87,10 +87,10 @@ namespace Microsoft.Bot.AdaptiveExpressions.Core.Tests
             Assert.False(cache.TryGet(1, out var result));
 
             Assert.True(cache.TryGet(maxIdx - 1, out result));
-            Assert.Equal(result, fib9999);
+            Assert.Equal(fib9999, result);
 
             Assert.True(cache.TryGet(maxIdx, out result));
-            Assert.Equal(result, fib100000);
+            Assert.Equal(fib100000, result);
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.AdaptiveExpressions.Core.Tests
                 tasks.Add(Task.Run(() => StoreElement(cache, numOfOps, i)));
             }
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await Task.WhenAll(tasks);
 
             for (var i = numOfOps - numOfThreads; i < numOfOps; i++)
             {

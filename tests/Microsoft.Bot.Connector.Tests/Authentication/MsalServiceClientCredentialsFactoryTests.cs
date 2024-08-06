@@ -45,54 +45,54 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void ShouldThrowIfAppIdDoesNotMatch()
+        public async Task ShouldThrowIfAppIdDoesNotMatch()
         {
             configuration.Setup(x => x.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey).Value).Returns(TestAppId);
             var factory = new MsalServiceClientCredentialsFactory(configuration.Object, clientApplication.Object, logger.Object);
-            
-            Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
                     "InvalidAppId", TestAudience, LoginEndpoint, true, CancellationToken.None));
         }
 
         [Fact]
-        public void ShouldCreateCredentials()
+        public async Task ShouldCreateCredentials()
         {
             configuration.Setup(x => x.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey).Value).Returns(TestAppId);
             var factory = new MsalServiceClientCredentialsFactory(configuration.Object, clientApplication.Object, logger.Object);
-            var credentials = factory.CreateCredentialsAsync(TestAppId, TestAudience, LoginEndpoint, true, CancellationToken.None).GetAwaiter().GetResult();
+            var credentials = await factory.CreateCredentialsAsync(TestAppId, TestAudience, LoginEndpoint, true, CancellationToken.None);
 
             Assert.NotNull(credentials);
             Assert.IsType<MsalAppCredentials>(credentials);
         }
 
         [Fact]
-        public void ShouldCreateCredentialsForGoverment()
+        public async Task ShouldCreateCredentialsForGoverment()
         {
             configuration.Setup(x => x.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey).Value).Returns(TestAppId);
             var factory = new MsalServiceClientCredentialsFactory(configuration.Object, clientApplication.Object, logger.Object);
-            var credentials = factory.CreateCredentialsAsync(TestAppId, TestAudience, LoginEndpointGov, true, CancellationToken.None).GetAwaiter().GetResult();
+            var credentials = await factory.CreateCredentialsAsync(TestAppId, TestAudience, LoginEndpointGov, true, CancellationToken.None);
 
             Assert.NotNull(credentials);
             Assert.IsType<MsalAppCredentials>(credentials);
         }
 
         [Fact]
-        public void IsValidAppIdTest()
+        public async Task IsValidAppIdTest()
         {
             configuration.Setup(x => x.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey).Value).Returns(TestAppId);
             var factory = new MsalServiceClientCredentialsFactory(configuration.Object, clientApplication.Object, logger.Object);
 
-            Assert.True(factory.IsValidAppIdAsync(TestAppId, CancellationToken.None).GetAwaiter().GetResult());
-            Assert.False(factory.IsValidAppIdAsync("InvalidAppId", CancellationToken.None).GetAwaiter().GetResult());
+            Assert.True(await factory.IsValidAppIdAsync(TestAppId, CancellationToken.None));
+            Assert.False(await factory.IsValidAppIdAsync("InvalidAppId", CancellationToken.None));
         }
 
         [Fact]
-        public void IsAuthenticationDisabledTest()
+        public async Task IsAuthenticationDisabledTest()
         {
             configuration.Setup(x => x.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey).Value).Returns(string.Empty);
             var factory = new MsalServiceClientCredentialsFactory(configuration.Object, clientApplication.Object, logger.Object);
 
-            Assert.True(factory.IsAuthenticationDisabledAsync(CancellationToken.None).GetAwaiter().GetResult());
+            Assert.True(await factory.IsAuthenticationDisabledAsync(CancellationToken.None));
         }
     }
 }

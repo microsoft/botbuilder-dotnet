@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsyncShouldSucceed()
+        public async Task ContinueConversationAsyncShouldSucceed()
         {
             var callbackInvoked = false;
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsyncShouldFailWithNullConversationReference()
+        public async Task ContinueConversationAsyncShouldFailWithNullConversationReference()
         {
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsyncShouldFailWithNullLogic()
+        public async Task ContinueConversationAsyncShouldFailWithNullLogic()
         {
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var conversationReference = new ConversationReference();
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncWithEvenTypeCreatedShouldSucceed()
+        public async Task ProcessAsyncWithEvenTypeCreatedShouldSucceed()
         {
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Message.json")));
             var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload.json"));
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncWithEvenTypeUpdatedShouldSucceed()
+        public async Task ProcessAsyncWithEvenTypeUpdatedShouldSucceed()
         {
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.SetupAllProperties();
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncWithAttachmentActionsShouldSucceed()
+        public async Task ProcessAsyncWithAttachmentActionsShouldSucceed()
         {
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/MessageWithInputs.json")));
             var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/PayloadAttachmentActions.json"));
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullHttpRequest()
+        public async Task ProcessAsyncShouldFailWithNullHttpRequest()
         {
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var httpResponse = new Mock<HttpResponse>();
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullHttpResponse()
+        public async Task ProcessAsyncShouldFailWithNullHttpResponse()
         {
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var httpRequest = new Mock<HttpRequest>();
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullBot()
+        public async Task ProcessAsyncShouldFailWithNullBot()
         {
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var httpRequest = new Mock<HttpRequest>();
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNonMatchingSignature()
+        public async Task ProcessAsyncShouldFailWithNonMatchingSignature()
         {
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.SetupAllProperties();
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void UpdateActivityAsyncShouldThrowNotSupportedException()
+        public async Task UpdateActivityAsyncShouldThrowNotSupportedException()
         {
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
 
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsyncNotNullToPersonEmailShouldSucceed()
+        public async Task SendActivitiesAsyncNotNullToPersonEmailShouldSucceed()
         {
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
@@ -264,14 +264,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
 
-            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default);
 
             // Assert the result
             Assert.True(resourceResponse[0].Id == expectedResponseId);
         }
 
         [Fact]
-        public async void SendActivitiesAsyncWithAttachmentShouldSucceed()
+        public async Task SendActivitiesAsyncWithAttachmentShouldSucceed()
         {
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
@@ -292,14 +292,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
 
-            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default);
 
             // Assert the result
             Assert.True(resourceResponse[0].Id == expectedResponseId);
         }
 
         [Fact]
-        public async void SendActivitiesAsyncWithAttachmentActionsShouldSucceed()
+        public async Task SendActivitiesAsyncWithAttachmentActionsShouldSucceed()
         {
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
@@ -318,13 +318,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
 
-            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default);
 
             Assert.True(resourceResponse[0].Id == expectedResponseId);
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
+        public async Task SendActivitiesAsyncShouldSucceedAndNoActivityReturnedWithActivityTypeNotMessage()
         {
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
@@ -339,13 +339,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
 
-            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default);
 
             Assert.True(resourceResponse.Length == 0);
         }
 
         [Fact]
-        public async void SendActivitiesAsyncShouldFailWithNullToPersonEmail()
+        public async Task SendActivitiesAsyncShouldFailWithNullToPersonEmail()
         {
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
@@ -367,7 +367,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void DeleteActivityAsyncWithActivityIdShouldSucceed()
+        public async Task DeleteActivityAsyncWithActivityIdShouldSucceed()
         {
             var deletedMessages = 0;
 

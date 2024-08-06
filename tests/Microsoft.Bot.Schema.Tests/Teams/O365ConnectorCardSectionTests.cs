@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(images, section.Images);
             Assert.Equal(2, section.Images.Count);
             Assert.Equal(potentialAction, section.PotentialAction);
-            Assert.Equal(1, section.PotentialAction.Count);
+            Assert.Single(section.PotentialAction);
         }
         
         [Fact]

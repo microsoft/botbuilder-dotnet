@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var socket = await webSocketFeature.AcceptAsync().ConfigureAwait(false);
+                var socket = await webSocketFeature.AcceptAsync();
                 var connection = new WebSocketStreamingConnection(socket, logger);
 
                 var serverTask = Task.Run(() => connection.ListenAsync(botRequestHandler.Object));
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 const string botToClientPayload = "Hello human, I'm Bender!";
                 var request = StreamingRequest.CreatePost(path, new StringContent(botToClientPayload));
 
-                var responseFromClient = await connection.SendStreamingRequestAsync(request).ConfigureAwait(false);
+                var responseFromClient = await connection.SendStreamingRequestAsync(request);
 
                 Assert.Equal(200, responseFromClient.StatusCode);
 
@@ -68,14 +68,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var clientRequest = StreamingRequest.CreatePost(path, new StringContent(clientToBotPayload));
 
                 // Send request bot channel (client) -> (server) 
-                var clientToBotResult = await client.SendAsync(clientRequest).ConfigureAwait(false);
+                var clientToBotResult = await client.SendAsync(clientRequest);
 
                 Assert.Equal(200, clientToBotResult.StatusCode);
 
-                await client.DisconnectAsync().ConfigureAwait(false);
+                await client.DisconnectAsync();
 
-                await clientTask.ConfigureAwait(false);
-                await serverTask.ConfigureAwait(false);
+                await clientTask;
+                await serverTask;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var socket = await webSocketFeature.AcceptAsync().ConfigureAwait(false);
+                var socket = await webSocketFeature.AcceptAsync();
                 var connection = new WebSocketStreamingConnection(socket, logger);
                 var serverTask = connection.ListenAsync(botRequestHandler.Object, cts.Token);
 
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 const string botToClientPayload = "Hello human, I'm Bender!";
                 var request = StreamingRequest.CreatePost(path, new StringContent(botToClientPayload));
 
-                var responseFromClient = await connection.SendStreamingRequestAsync(request).ConfigureAwait(false);
+                var responseFromClient = await connection.SendStreamingRequestAsync(request);
 
                 Assert.Equal(200, responseFromClient.StatusCode);
 
@@ -123,11 +123,11 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var clientRequest = StreamingRequest.CreatePost(path, new StringContent(clientToBotPayload));
 
                 // Send request bot channel (client) -> (server) 
-                var clientToBotResult = await client.SendAsync(clientRequest).ConfigureAwait(false);
+                var clientToBotResult = await client.SendAsync(clientRequest);
 
                 Assert.Equal(200, clientToBotResult.StatusCode);
 
-                await Task.Delay(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(3));
 
                 Assert.True(client.IsConnected);
             }

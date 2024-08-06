@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Text(null);
             
             Assert.Null(message.Text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Text(messageText);
 
             Assert.Equal(message.Text, messageText);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
         }
 
         [Fact]
@@ -57,8 +57,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.Equal(message.Text, messageText);
             Assert.Equal(message.Speak, ssml);
-            Assert.Equal(message.InputHint, InputHints.AcceptingInput);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(InputHints.AcceptingInput, message.InputHint);
+            Assert.Equal(ActivityTypes.Message, message.Type);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Attachment(attachment, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.True(message.Attachments.Count == 1, "Incorrect Attachment Count");
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
@@ -320,7 +320,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
@@ -352,7 +352,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.List);
@@ -386,7 +386,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.List);
@@ -407,7 +407,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);
 
             Assert.Equal(message.Text, text);
-            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(ActivityTypes.Message, message.Type);
             Assert.Equal(message.InputHint, inputHint);
             Assert.Equal(message.Speak, ssml);
             Assert.True(message.Attachments.Count == 1);

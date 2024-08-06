@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Dialogs;
 using Moq;
@@ -103,7 +104,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         
         [Fact]
-        public async void ReadAsyncValidation()
+        public async Task ReadAsyncValidation()
         {
             InitStorage();
 
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsync()
+        public async Task ReadAsync()
         {
             InitStorage();
 
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncWithAllowedTypesSerializationBinder()
+        public async Task ReadAsyncWithAllowedTypesSerializationBinder()
         {
             var jsonSerializerSettings = new JsonSerializerSettings
             {
@@ -176,7 +177,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncWithEmptyAllowedTypesSerializationBinder()
+        public async Task ReadAsyncWithEmptyAllowedTypesSerializationBinder()
         {
             var jsonSerializerSettings = new JsonSerializerSettings
             {
@@ -208,7 +209,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncPartitionKey()
+        public async Task ReadAsyncPartitionKey()
         {
             InitStorage("/_partitionKey");
 
@@ -230,7 +231,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncNotFound()
+        public async Task ReadAsyncNotFound()
         {
             InitStorage();
 
@@ -244,7 +245,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncFailure()
+        public async Task ReadAsyncFailure()
         {
             InitStorage();
 
@@ -256,7 +257,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ReadAsyncCustomPartitionKeyFailure()
+        public async Task ReadAsyncCustomPartitionKeyFailure()
         {
             InitStorage("/customKey");
 
@@ -264,7 +265,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsyncValidation()
+        public async Task WriteAsyncValidation()
         {
             InitStorage();
 
@@ -276,7 +277,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsync()
+        public async Task WriteAsync()
         {
             InitStorage();
 
@@ -295,7 +296,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         
         [Fact]
-        public async void WriteAsyncWithAllowedTypesSerializationBinder()
+        public async Task WriteAsyncWithAllowedTypesSerializationBinder()
         {            
             var serializationBinder = new AllowedTypesSerializationBinder(
                 new List<Type>
@@ -332,7 +333,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         
         [Fact]
-        public async void WriteAsyncWithEmptyAllowedTypesSerializationBinder()
+        public async Task WriteAsyncWithEmptyAllowedTypesSerializationBinder()
         {            
             var serializationBinder = new AllowedTypesSerializationBinder();
             var jsonSerializerSettings = new JsonSerializerSettings
@@ -360,11 +361,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             await Assert.ThrowsAsync<InvalidOperationException>(() => _storage.WriteAsync(changes));
 
             _container.Verify(e => e.UpsertItemAsync(It.IsAny<CosmosDbPartitionedStorage.DocumentStoreItem>(), It.IsAny<PartitionKey>(), It.IsAny<ItemRequestOptions>(), It.IsAny<CancellationToken>()), Times.Exactly(0));
-            Assert.Equal(0, serializationBinder.AllowedTypes.Count);
+            Assert.Empty(serializationBinder.AllowedTypes);
         }
 
         [Fact]
-        public async void WriteAsyncEmptyTagFailure()
+        public async Task WriteAsyncEmptyTagFailure()
         {
             InitStorage();
 
@@ -377,7 +378,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsyncFailure()
+        public async Task WriteAsyncFailure()
         {
             InitStorage();
 
@@ -391,7 +392,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsyncWithNestedFailure()
+        public async Task WriteAsyncWithNestedFailure()
         {
             InitStorage();
 
@@ -405,7 +406,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void WriteAsyncWithNestedDialogFailure()
+        public async Task WriteAsyncWithNestedDialogFailure()
         {
             InitStorage();
 
@@ -423,7 +424,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteAsyncValidation()
+        public async Task DeleteAsyncValidation()
         {
             InitStorage();
 
@@ -432,7 +433,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteAsync()
+        public async Task DeleteAsync()
         {
             InitStorage();
 
@@ -444,7 +445,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteAsyncNotFound()
+        public async Task DeleteAsyncNotFound()
         {
             InitStorage();
 
@@ -457,7 +458,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteAsyncFailure()
+        public async Task DeleteAsyncFailure()
         {
             InitStorage();
 

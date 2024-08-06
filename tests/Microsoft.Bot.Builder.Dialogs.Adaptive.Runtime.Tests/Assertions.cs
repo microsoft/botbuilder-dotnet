@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests
 
             IList<ServiceDescriptor> descriptors = searchOptions.Search(services).ToList();
 
-            Assert.Equal(expected: 1, actual: descriptors.Count);
+            Assert.Single(descriptors);
 
             ServiceDescriptor descriptor = descriptors[0];
             Assert.Equal(expected: lifetime, actual: descriptor.Lifetime);

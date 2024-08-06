@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void NamedPipeClient_SendAsync_With_No_Message()
+        public async Task NamedPipeClient_SendAsync_With_No_Message()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var pipe = new NamedPipeClient(pipeName);
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void NamedPipeClient_SendAsync_With_No_Connected_Client()
+        public async Task NamedPipeClient_SendAsync_With_No_Connected_Client()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var pipe = new NamedPipeClient(pipeName);
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void NamedPipeServer_SendAsync_With_No_Message()
+        public async Task NamedPipeServer_SendAsync_With_No_Message()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void NamedPipeServer_SendAsync_With_No_Connected_Client()
+        public async Task NamedPipeServer_SendAsync_With_No_Connected_Client()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
