@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             await rm.SignalResponseAsync(g, null);
 
-            Assert.Null(tcs.Task.Result);
+            Assert.Null(await tcs.Task);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var resp = new ReceiveResponse();
             await rm.SignalResponseAsync(g, resp);
 
-            Assert.True(resp.Equals(tcs.Task.Result));
+            Assert.True(resp.Equals(await tcs.Task));
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public void RequestManager_GetResponse_ReturnsResponse()
+        public async Task RequestManager_GetResponse_ReturnsResponseAsync()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var resp = new ReceiveResponse();
 
-            Task.WaitAll(
+            await Task.WhenAll(
                 Task.Run(async () =>
                 {
                     var r = await rm.GetResponseAsync(g, CancellationToken.None);
@@ -117,13 +117,13 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public void RequestManager_GetResponse_ReturnsNullResponse()
+        public async Task RequestManager_GetResponse_ReturnsNullResponseAsync()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
 
-            Task.WaitAll(
+            await Task.WhenAll(
                 Task.Run(async () =>
                 {
                     var r = await rm.GetResponseAsync(g, CancellationToken.None);
@@ -142,13 +142,13 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public void RequestManager_GetResponse_ThrowsOnCancelledTask()
+        public async Task RequestManager_GetResponse_ThrowsOnCancelledTaskAsync()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
 
-            Task.WaitAll(
+            await Task.WhenAll(
                 Task.Run(async () =>
                 {
                     await Assert.ThrowsAsync<TaskCanceledException>(async () =>
@@ -169,16 +169,16 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public void RequestManager_GetResponse_ThrowsOnErrorTask()
+        public async Task RequestManager_GetResponse_ThrowsOnErrorTaskAsync()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
 
-            Task.WaitAll(
-                Task.Run(() =>
+            await Task.WhenAll(
+                Task.Run(async () =>
                 {
-                    Assert.ThrowsAsync<AggregateException>(async () =>
+                    await Assert.ThrowsAsync<AggregateException>(async () =>
                     {
                         var r = await rm.GetResponseAsync(g, CancellationToken.None);
                     });
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                         // Wait for a value.;
                     }
 
-                    value.SetException(new InvalidOperationException());
+                    value.SetException(new AggregateException(new InvalidOperationException()));
                 }));
         }
 

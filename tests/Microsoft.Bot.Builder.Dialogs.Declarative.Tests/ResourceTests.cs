@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 // new file
                 File.WriteAllText(testDialogFile, "{}");
 
-                await Task.WhenAny(changeFired.Task, Task.Delay(5000)).ConfigureAwait(false);
+                await Task.WhenAny(changeFired.Task, Task.Delay(5000));
 
                 AssertResourceFound(explorer, testId);
             }
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 contents = "{'foo':123 }";
                 File.WriteAllText(testDialogFile, contents);
 
-                await Task.WhenAny(changeFired.Task, Task.Delay(5000)).ConfigureAwait(false);
+                await Task.WhenAny(changeFired.Task, Task.Delay(5000));
 
                 AssertResourceFound(explorer, testId);
 
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 // changed file
                 File.Delete(testDialogFile);
 
-                await Task.WhenAny(changeFired.Task, Task.Delay(5000)).ConfigureAwait(false);
+                await Task.WhenAny(changeFired.Task, Task.Delay(5000));
 
                 AssertResourceNull(explorer, testId);
             }
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var resource = explorer.GetResource(resourceId);
 
                 // Read token range using resource explorer
-                var (jToken, range) = await explorer.ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+                var (jToken, range) = await explorer.ReadTokenRangeAsync(resource, sourceContext);
 
                 // Verify correct range
                 var expectedRange = new SourceRange
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var resource = explorer.GetResource(resourceId);
 
                 // Read token range using resource explorer
-                var (jToken, range) = await explorer.ReadTokenRangeAsync(resource, sourceContext, true).ConfigureAwait(false);
+                var (jToken, range) = await explorer.ReadTokenRangeAsync(resource, sourceContext, true);
 
                 // Verify correct range
                 var expectedRange = new SourceRange
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // Load file using resource explorer
                 var resource = explorer.GetResource(resourceId);
-                var dialog = await explorer.LoadTypeAsync<Dialog>(resource).ConfigureAwait(false);
+                var dialog = await explorer.LoadTypeAsync<Dialog>(resource);
 
                 // Verify correct range
                 var expectedRange = new SourceRange
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // Load file using resource explorer
                 var resource = explorer.GetResource(resourceId);
-                var dialog = await explorer.LoadTypeAsync<Dialog>(resource).ConfigureAwait(false);
+                var dialog = await explorer.LoadTypeAsync<Dialog>(resource);
 
                 // Verify correct range
                 var expectedRange = new SourceRange
@@ -400,7 +400,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // Load file using resource explorer
                 var resource = explorer.GetResource(resourceId);
-                var dialog = await explorer.LoadTypeAsync<AdaptiveDialog>(resource).ConfigureAwait(false);
+                var dialog = await explorer.LoadTypeAsync<AdaptiveDialog>(resource);
 
                 // Verify that the correct id was assigned
                 Assert.Equal(resourceId, dialog.Id);

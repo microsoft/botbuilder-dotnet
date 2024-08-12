@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var tokenResult = await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
                     if (tokenResult.Result is TokenResponse)
                     {
-                        throw new XunitException();
+                        throw new XunitException("MagicCode detected in prompting.");
                     }
                 }
             };

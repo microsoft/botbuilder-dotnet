@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         private readonly Func<string, string> audience = (id) => $"audience {id} ";
 
         [Fact]
-        public void CanGetJwtToken()
+        public async Task CanGetJwtTokenAsync()
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             var expiresOn = DateTimeOffset.Now.ToUnixTimeSeconds() + 10000;
@@ -37,8 +37,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 .ReturnsAsync(response);
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var sut = new ManagedIdentityAuthenticator(appId(nameof(CanGetJwtToken)), audience(nameof(CanGetJwtToken)), httpClient);
-            var token = sut.GetTokenAsync().GetAwaiter().GetResult();
+            var sut = new ManagedIdentityAuthenticator(appId(nameof(CanGetJwtTokenAsync)), audience(nameof(CanGetJwtTokenAsync)), httpClient);
+            var token = await sut.GetTokenAsync();
 
             Assert.Equal("at_secret", token.AccessToken);
             Assert.Equal(expiresOn, token.ExpiresOn.ToUnixTimeSeconds());
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Theory]
         [InlineData(false, 1)]
         [InlineData(true, 2)]
-        public void CanGetJwtTokenWithForceRefresh(bool forceRefreshInput, int index)
+        public async Task CanGetJwtTokenWithForceRefresh(bool forceRefreshInput, int index)
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             var expiresOn = DateTimeOffset.Now.ToUnixTimeSeconds() + 10000;
@@ -65,14 +65,14 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
             var sut = new ManagedIdentityAuthenticator(appId(nameof(CanGetJwtTokenWithForceRefresh)) + index, audience(nameof(CanGetJwtTokenWithForceRefresh)) + index, httpClient);
-            var token = sut.GetTokenAsync(forceRefreshInput).GetAwaiter().GetResult();
+            var token = await sut.GetTokenAsync(forceRefreshInput);
 
             Assert.Equal("at_secret", token.AccessToken);
             Assert.Equal(expiresOn, token.ExpiresOn.ToUnixTimeSeconds());
         }
 
         [Fact]
-        public void DefaultRetryOnException()
+        public async Task DefaultRetryOnException()
         {
             var maxRetries = 10;
             var callsToAcquireToken = 0;
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
             try
             {
-                _ = sut.GetTokenAsync().GetAwaiter().GetResult();
+                _ = await sut.GetTokenAsync();
             }
             catch (AggregateException e)
             {
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        public void CanRetryAndAcquireToken()
+        public async Task CanRetryAndAcquireToken()
         {
             var callsToAcquireToken = 0;
             var response = new HttpResponseMessage(HttpStatusCode.OK);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
             var sut = new ManagedIdentityAuthenticator(appId(nameof(CanRetryAndAcquireToken)), audience(nameof(CanRetryAndAcquireToken)), httpClient);
-            var token = sut.GetTokenAsync().GetAwaiter().GetResult();
+            var token = await sut.GetTokenAsync();
 
             Assert.Equal("at_secret", token.AccessToken);
             Assert.Equal(expiresOn, token.ExpiresOn.ToUnixTimeSeconds());

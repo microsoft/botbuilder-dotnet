@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var context = new TurnContext(new TestAdapter(), _activity);
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
 
-            var choiceFactory = await choiceOptions.BindAsync(dc).ConfigureAwait(false);
+            var choiceFactory = await choiceOptions.BindAsync(dc);
 
             Assert.Equal(choiceOptions, choiceFactory);
         }
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var context = new TurnContext(new TestAdapter(), _activity);
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
 
-            await Assert.ThrowsAsync<MissingMemberException>(async () => await choiceOptions.BindAsync(dc).ConfigureAwait(false));
+            await Assert.ThrowsAsync<MissingMemberException>(async () => await choiceOptions.BindAsync(dc));
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             dc.Services.Add(mockLG.Object);
 
-            var choiceFactory = await choiceOptions.BindAsync(dc).ConfigureAwait(false);
+            var choiceFactory = await choiceOptions.BindAsync(dc);
 
             Assert.Equal(lgResult, choiceFactory);
         }
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             dc.Services.Add(mockLG.Object);
 
-            var choiceFactory = await choiceOptions.BindAsync(dc).ConfigureAwait(false);
+            var choiceFactory = await choiceOptions.BindAsync(dc);
 
             Assert.Equal(",", choiceFactory.InlineSeparator);
             Assert.Equal(", or", choiceFactory.InlineOrMore);
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             dc.Services.Add(mockLG.Object);
 
-            Assert.Null(await choiceOptions.BindAsync(dc).ConfigureAwait(false));
+            Assert.Null(await choiceOptions.BindAsync(dc));
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             dc.Services.Add(mockLG.Object);
 
-            Assert.Null(await choiceOptions.BindAsync(dc).ConfigureAwait(false));
+            Assert.Null(await choiceOptions.BindAsync(dc));
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             dc.Services.Add(mockLG.Object);
 
-            Assert.Null(await choiceOptions.BindAsync(dc).ConfigureAwait(false));
+            Assert.Null(await choiceOptions.BindAsync(dc));
         }
     }
 }

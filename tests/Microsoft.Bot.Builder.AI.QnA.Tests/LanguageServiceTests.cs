@@ -249,10 +249,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text, cancellationToken: ct);
             })
                 .Send("how do I clean the stove?")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:how do I clean the stove?")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
@@ -1114,10 +1114,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         /// <summary>
         /// The LanguageService_Test_ScoreThresholdTooLarge_OutOfRange.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "LanguageService")]
-        public async void LanguageService_Test_NotSpecifiedQnAServiceType()
+        public async Task LanguageService_Test_NotSpecifiedQnAServiceType()
         {
             AggregateException result = null;
             var mockHttp = new MockHttpMessageHandler();
@@ -1771,7 +1772,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Check Telemetry logged
-            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Single(telemetryClient.Invocations);
             Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
             Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
@@ -1826,7 +1827,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var results = await qna.GetAnswersAsync(GetContext("what is the answer to my nonsense question?"));
 
             // Assert - Check Telemetry logged
-            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Single(telemetryClient.Invocations);
             Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
             Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
@@ -1999,7 +2000,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
             // Assert - added properties were added.
-            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Single(telemetryClient.Invocations);
             Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
             Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.KnowledgeBaseIdProperty));
@@ -2069,7 +2070,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
             // Assert - added properties were added.
-            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Single(telemetryClient.Invocations);
             Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
             Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));

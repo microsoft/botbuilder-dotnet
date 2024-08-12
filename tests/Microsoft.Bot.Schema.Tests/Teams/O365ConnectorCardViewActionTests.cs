@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(name, viewAction.Name);
             Assert.Equal(id, viewAction.Id);
             Assert.Equal(target, viewAction.Target);
-            Assert.Equal(1, viewAction.Target.Count);
+            Assert.Single(viewAction.Target);
         }
         
         [Fact]

@@ -36,13 +36,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void GetDecryptedMessageAsyncShouldReturnNullWithNullPayload()
+        public async Task GetDecryptedMessageAsyncShouldReturnNullWithNullPayload()
         {
             Assert.Null(await WebexHelper.GetDecryptedMessageAsync(null, null, new CancellationToken()));
         }
 
         [Fact]
-        public async void GetDecryptedMessageAsyncShouldSucceed()
+        public async Task GetDecryptedMessageAsyncShouldSucceed()
         {
             var testOptions = new WebexClientWrapperOptions("Test", new Uri("http://contoso.com"), "Test");
             var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload.json")));
