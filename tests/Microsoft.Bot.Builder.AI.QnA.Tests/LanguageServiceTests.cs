@@ -1139,7 +1139,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             }
 
             Assert.Equal(2, result.InnerExceptions.Count);
-            Assert.All(result.InnerExceptions, (e) => Assert.IsType<HttpRequestException>(e));
+            Assert.All(result.InnerExceptions, (e) => Assert.IsType<MockHttpMatchException>(e));
         }
 
         /// <summary>

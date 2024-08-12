@@ -22,14 +22,14 @@
     <PackageReference Include="Microsoft.CodeCoverage" Version="17.10.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="NunitXml.TestLogger" Version="3.1.20" />
-    <PackageReference Include="ReportGenerator" Version="5.3.7" />
+    <PackageReference Include="NunitXml.TestLogger" Version="4.0.254" />
+    <PackageReference Include="ReportGenerator" Version="5.3.8" />
     <PackageReference Include="xunit" Version="2.9.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="XunitXml.TestLogger" Version="3.1.20" />    
+    <PackageReference Include="XunitXml.TestLogger" Version="4.0.254" />    
   </ItemGroup>
 
   <ItemGroup>        
