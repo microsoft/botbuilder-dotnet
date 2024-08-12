@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var script = resourceExplorer.LoadType<TestScript>(testScript);
             script.Locale = locale;
             script.Configuration = builder.Build();
-            await script.ExecuteAsync(resourceExplorer: resourceExplorer).ConfigureAwait(false);
+            await script.ExecuteAsync(resourceExplorer: resourceExplorer);
         }
     }
 }

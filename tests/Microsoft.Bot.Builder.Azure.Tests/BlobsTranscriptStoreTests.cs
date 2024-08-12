@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void LogActivityAsync()
+        public async Task LogActivityAsync()
         {
             InitStorage();
 
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void LogActivityAsyncMessageUpdate()
+        public async Task LogActivityAsyncMessageUpdate()
         {
             InitStorage();
 
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void LogActivityAsyncMessageUpdateNotFound()
+        public async Task LogActivityAsyncMessageUpdateNotFound()
         {
             InitStorage();
 
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void LogActivityAsyncMessageDelete()
+        public async Task LogActivityAsyncMessageDelete()
         {
             InitStorage();
 
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void LogActivityAsyncContinuationToken()
+        public async Task LogActivityAsyncContinuationToken()
         {
             InitStorage();
 
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void LogActivityAsyncHttpPreconditionFailure()
+        public async Task LogActivityAsyncHttpPreconditionFailure()
         {
             InitStorage();
             var precondition = true;
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void GetTranscriptActivitiesAsyncValidation()
+        public async Task GetTranscriptActivitiesAsyncValidation()
         {
             InitStorage();
 
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void GetTranscriptActivitiesAsync()
+        public async Task GetTranscriptActivitiesAsync()
         {
             InitStorage();
 
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void GetTranscriptActivitiesAsyncContinuationToken()
+        public async Task GetTranscriptActivitiesAsyncContinuationToken()
         {
             InitStorage();
 
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void GetTranscriptActivitiesAsyncFullPageSize()
+        public async Task GetTranscriptActivitiesAsyncFullPageSize()
         {
             const int pageSize = 20;
             InitStorage(20);
@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ListTranscriptsAsyncValidation()
+        public async Task ListTranscriptsAsyncValidation()
         {
             InitStorage();
 
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ListTranscriptsAsync()
+        public async Task ListTranscriptsAsync()
         {
             InitStorage();
 
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ListTranscriptsAsyncContinuationToken()
+        public async Task ListTranscriptsAsyncContinuationToken()
         {
             InitStorage();
 
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void ListTranscriptsAsyncFullPageSize()
+        public async Task ListTranscriptsAsyncFullPageSize()
         {
             const int pageSize = 20;
             InitStorage(pageSize);
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteTranscriptAsyncValidation()
+        public async Task DeleteTranscriptAsyncValidation()
         {
             InitStorage();
 
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
-        public async void DeleteTranscriptAsync()
+        public async Task DeleteTranscriptAsync()
         {
             InitStorage();
 

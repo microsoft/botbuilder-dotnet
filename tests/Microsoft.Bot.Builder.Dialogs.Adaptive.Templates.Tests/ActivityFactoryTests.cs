@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // fallback to text activity
             var lgResult = templates.Evaluate("notSupport");
             var activity = ActivityFactory.FromObject(lgResult);
-            Assert.Equal(0, activity.Attachments.Count);
+            Assert.Empty(activity.Attachments);
             Assert.Equal("{\"lgType\":\"Acti\",\"key\":\"value\"}", activity.Text.Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty));
         }
 
@@ -410,11 +410,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal("accepting", activity.InputHint);
             var semanticAction = activity.SemanticAction;
             Assert.Equal("actionId", semanticAction.Id);
-            Assert.Equal(1, semanticAction.Entities.Count);
+            Assert.Single(semanticAction.Entities);
             Assert.True(semanticAction.Entities.ContainsKey("key1"));
             Assert.Equal("entityType", semanticAction.Entities["key1"].Type);
 
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(AttachmentLayoutTypes.List, activity.AttachmentLayout);
             Assert.Equal(HeroCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
@@ -424,7 +424,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal("tapvalue", tap.Value);
             Assert.Equal("imBack", tap.Type);
             Assert.Equal("textContent", card.Text);
-            Assert.Equal(1, card.Buttons.Count);
+            Assert.Single(card.Buttons);
             Assert.Equal($"imBack", card.Buttons[0].Type);
             Assert.Equal($"titleContent", card.Buttons[0].Title);
             Assert.Equal($"textContent", card.Buttons[0].Value);
@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(HeroCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
             var tap = card.Tap;
@@ -482,7 +482,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.NotNull(card);
             Assert.Equal("titleContent", card.Title);
             Assert.Equal("textContent", card.Text);
-            Assert.Equal(1, card.Buttons.Count);
+            Assert.Single(card.Buttons);
             Assert.Equal($"imBack", card.Buttons[0].Type);
             Assert.Equal($"titleContent", card.Buttons[0].Title);
             Assert.Equal($"textContent", card.Buttons[0].Value);
@@ -513,7 +513,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal("application/vnd.microsoft.card.adaptive", activity.Attachments[0].ContentType);
             Assert.Equal("test", (string)((dynamic)activity.Attachments[0].Content).body[0].text);
         }
@@ -536,13 +536,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(HeroCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
             Assert.NotNull(card);
             Assert.Equal("titleContent", card.Title);
             Assert.Equal("textContent", card.Text);
-            Assert.Equal(1, card.Buttons.Count);
+            Assert.Single(card.Buttons);
             Assert.Equal($"imBack", card.Buttons[0].Type);
             Assert.Equal($"titleContent", card.Buttons[0].Title);
             Assert.Equal($"textContent", card.Buttons[0].Value);
@@ -553,7 +553,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(ThumbnailCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<ThumbnailCard>();
             Assert.NotNull(card);
@@ -574,7 +574,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(HeroCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
             Assert.NotNull(card);
@@ -595,7 +595,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal("cardaction", activity.Attachments[0].ContentType);
             var cardContent = (JObject)activity.Attachments[0].Content;
             Assert.NotNull(cardContent);
@@ -610,7 +610,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(AudioCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<AudioCard>();
             Assert.NotNull(card);
@@ -635,7 +635,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(VideoCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<VideoCard>();
             Assert.NotNull(card);
@@ -660,12 +660,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(SigninCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<SigninCard>();
             Assert.NotNull(card);
             Assert.Equal("This is some text describing the card, it's cool because it's cool", card.Text);
-            Assert.Equal(1, card.Buttons.Count);
+            Assert.Single(card.Buttons);
             Assert.Equal($"Sign in", card.Buttons[0].Title);
             Assert.Equal(ActionTypes.Signin, card.Buttons[0].Type);
             Assert.Equal($"https://login.microsoftonline.com/", card.Buttons[0].Value);
@@ -676,13 +676,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(OAuthCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<OAuthCard>();
             Assert.NotNull(card);
             Assert.Equal("This is some text describing the card, it's cool because it's cool", card.Text);
             Assert.Equal("MyConnection", card.ConnectionName);
-            Assert.Equal(1, card.Buttons.Count);
+            Assert.Single(card.Buttons);
             Assert.Equal($"Sign in", card.Buttons[0].Title);
             Assert.Equal(ActionTypes.Signin, card.Buttons[0].Type);
             Assert.Equal($"https://login.microsoftonline.com/", card.Buttons[0].Value);
@@ -693,7 +693,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActivityTypes.Message, activity.Type);
             Assert.True(string.IsNullOrEmpty(activity.Text));
             Assert.True(string.IsNullOrEmpty(activity.Speak));
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(AnimationCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<AnimationCard>();
             Assert.NotNull(card);
@@ -737,7 +737,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private void AssertReceiptCardActivity(Activity activity)
         {
             Assert.Equal(ActivityTypes.Message, activity.Type);
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
             Assert.Equal(ReceiptCard.ContentType, activity.Attachments[0].ContentType);
             var card = ((JObject)activity.Attachments[0].Content).ToObject<ReceiptCard>();
             Assert.NotNull(card);
@@ -746,7 +746,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal("$ 90.95", card.Total);
             var buttons = card.Buttons;
 
-            Assert.Equal(1, buttons.Count);
+            Assert.Single(buttons);
             Assert.Equal(ActionTypes.OpenUrl, buttons[0].Type);
             Assert.Equal("More information", buttons[0].Title);
             Assert.Equal("https://account.windowsazure.com/content/6.10.1.38-.8225.160809-1618/aux-pre/images/offer-icon-freetrial.png", buttons[0].Image);

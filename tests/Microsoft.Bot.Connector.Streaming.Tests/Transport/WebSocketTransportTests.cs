@@ -334,15 +334,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var httpContext = new Mock<HttpContext>();
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
-                var sut = new WebSocketTransport(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
+                var sut = new WebSocketTransport(await httpContext.Object.WebSockets.AcceptWebSocketAsync(), new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
                 var serverTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo"), Encoding.UTF8.GetBytes("bar") };
-                SendBinaryAsync(client, messages).Wait();
-                client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None).Wait();
+                await SendBinaryAsync(client, messages);
+                await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None);
 
-                serverTransportRunning.Wait();
-
+                await serverTransportRunning;
                 var output = await listenerRunning;
 
                 Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
@@ -351,13 +350,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         }
 
         [Fact]
-        public void ServerTransportCanSendMessages()
+        public async Task ServerTransportCanSendMessagesAsync()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
             using (var connection = new TestWebSocketConnectionFeature())
             {
-                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var server = await connection.AcceptAsync();
                 var client = connection.Client;
                 var receiverRunning = ReceiveAsync(client);
 
@@ -369,29 +368,29 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var httpContext = new Mock<HttpContext>();
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
-                var sut = new WebSocketTransport(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
+                var sut = new WebSocketTransport(await httpContext.Object.WebSockets.AcceptWebSocketAsync(), new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
                 var serverTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
-                WriteAsync(toTransport.Writer, messages).Wait();
-                toTransport.Writer.CompleteAsync().GetAwaiter().GetResult();
+                await WriteAsync(toTransport.Writer, messages);
+                await toTransport.Writer.CompleteAsync();
 
-                serverTransportRunning.Wait();
+                await serverTransportRunning;
 
-                var output = receiverRunning.GetAwaiter().GetResult();
+                var output = await receiverRunning;
 
                 Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
             }
         }
 
         [Fact]
-        public void ClientTransportCanReceiveMessages()
+        public async Task ClientTransportCanReceiveMessagesAsync()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
             using (var connection = new TestWebSocketConnectionFeature())
             {
-                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var server = await connection.AcceptAsync();
                 var client = connection.Client;
 
                 var fromTransport = new Pipe(PipeOptions.Default);
@@ -402,25 +401,25 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var clientTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
-                SendBinaryAsync(server, messages).Wait();
-                server.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None).Wait();
+                await SendBinaryAsync(server, messages);
+                await server.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None);
 
-                clientTransportRunning.Wait();
+                await clientTransportRunning;
 
-                var output = listenerRunning.GetAwaiter().GetResult();
+                var output = await listenerRunning;
 
                 Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
             }
         }
 
         [Fact]
-        public void ClientTransportCanSendMessages()
+        public async Task ClientTransportCanSendMessagesAsync()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
             using (var connection = new TestWebSocketConnectionFeature())
             {
-                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var server = await connection.AcceptAsync();
                 var client = connection.Client;
                 var receiverRunning = ReceiveAsync(server);
 
@@ -431,12 +430,12 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var clientTransportRunning = sut.ConnectAsync();
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
-                WriteAsync(toTransport.Writer, messages).Wait();
-                toTransport.Writer.CompleteAsync().GetAwaiter().GetResult();
+                await WriteAsync(toTransport.Writer, messages);
+                await toTransport.Writer.CompleteAsync();
 
-                clientTransportRunning.Wait();
+                await clientTransportRunning;
 
-                var output = receiverRunning.GetAwaiter().GetResult();
+                var output = await receiverRunning;
 
                 Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
             }

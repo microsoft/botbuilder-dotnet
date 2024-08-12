@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Bot.Streaming.PayloadTransport;
 using Moq;
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
     {
         [Fact]
 
-        public async void SendRequestAsync_With_No_StreamingRequest_Should_Fail()
+        public async Task SendRequestAsync_With_No_StreamingRequest_Should_Fail()
         {
             var requestHandler = new Mock<RequestHandler>();
             var requestManager = new Mock<RequestManager>();

@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                     Assert.NotNull(luisTraceInfo["luisModel"]);
 
                     var recognizerResult = luisTraceInfo["recognizerResult"].ToObject<RecognizerResult>();
-                    Assert.Equal(recognizerResult.Text, utterance);
+                    Assert.Equal(utterance, recognizerResult.Text);
                     Assert.NotNull(recognizerResult.Intents["SpecifyName"]);
                     Assert.Equal(luisTraceInfo["luisResult"]["query"], utterance);
                     Assert.Equal(luisTraceInfo["luisModel"]["ModelID"], AppId);
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         }
 
         [Fact]
-        public void UserAgentContainsProductVersion()
+        public async Task UserAgentContainsProductVersion()
         {
             var application = new LuisApplication
             {
@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 
             var turnContext = new TurnContext(adapter, activity);
 
-            var recognizerResult = recognizer.RecognizeAsync(turnContext, CancellationToken.None).Result;
+            var recognizerResult = await recognizer.RecognizeAsync(turnContext, CancellationToken.None);
             Assert.NotNull(recognizerResult);
 
             var userAgent = clientHandler.UserAgent;
@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 { "test", "testvalue" },
                 { "foo", "foovalue" },
             };
-            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties);
 
             // Assert
             Assert.NotNull(result);
@@ -405,7 +405,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
-            var result = await recognizer.RecognizeAsync(turnContext).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext);
 
             // Assert
             Assert.NotNull(result);
@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
-            var result = await recognizer.RecognizeAsync(turnContext).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext);
 
             // Assert
             Assert.NotNull(result);
@@ -504,7 +504,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 { "test", "testvalue" },
                 { "foo", "foovalue" },
             };
-            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties);
 
             // Assert
             Assert.NotNull(result);
@@ -562,7 +562,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 { "boo", 2.11 },
             };
 
-            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics);
 
             // Assert
             Assert.NotNull(result);
@@ -615,7 +615,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
-            var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None);
 
             // Assert
             Assert.NotNull(result);
@@ -659,7 +659,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 
             // Act
             // Use a class the converts the Recognizer Result..
-            var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None);
 
             // Assert
             Assert.NotNull(result);
@@ -714,7 +714,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 { "luis", 1.0001 },
             };
 
-            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics, CancellationToken.None).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics, CancellationToken.None);
 
             // Assert
             Assert.NotNull(result);

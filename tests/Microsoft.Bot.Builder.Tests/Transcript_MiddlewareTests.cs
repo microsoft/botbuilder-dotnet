@@ -128,10 +128,10 @@ namespace Microsoft.Bot.Builder.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 

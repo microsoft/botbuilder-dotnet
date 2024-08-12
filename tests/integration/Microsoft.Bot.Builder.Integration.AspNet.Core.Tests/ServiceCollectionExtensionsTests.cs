@@ -205,8 +205,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                         string.Empty,
                         activity,
                         (turnContext, ct) => { return Task.CompletedTask; },
-                        default(CancellationToken))
-                        .Result;
+                        default(CancellationToken));
 
                     // Verify the mock middleware was actually invoked (the only indicator we have that it was added).
                     middlewareMock.Verify(
