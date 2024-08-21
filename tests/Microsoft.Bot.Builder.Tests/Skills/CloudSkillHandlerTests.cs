@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         }
 
         [Fact]
-        public async void TestUpdateActivityAsync()
+        public async Task TestUpdateActivityAsync()
         {
             // Arrange
             var mockObjects = new CloudSkillHandlerTestMocks();
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         }
 
         [Fact]
-        public async void TestGetConversationMemberAsync()
+        public async Task TestGetConversationMemberAsync()
         {
             // Arrange
             var mockObjects = new CloudSkillHandlerTestMocks();            

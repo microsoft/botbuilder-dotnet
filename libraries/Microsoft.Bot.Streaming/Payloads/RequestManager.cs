@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Streaming.Payloads
                 return null;
             }
 
-            if (cancellationToken == null)
+            if (cancellationToken == default)
             {
                 cancellationToken = CancellationToken.None;
             }

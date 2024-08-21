@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public async void PayloadAssemblerManager_OnReceiveRequest()
+        public async Task PayloadAssemblerManager_OnReceiveRequest()
         {
             var id = Guid.NewGuid();
             var streamManager = new StreamManager();
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public async void PayloadAssemblerManager_OnReceiveResponse()
+        public async Task PayloadAssemblerManager_OnReceiveResponse()
         {
             var id = Guid.NewGuid();
             var streamManager = new StreamManager();
@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public async void ReceiveRequestAssembler_Close()
+        public async Task ReceiveRequestAssembler_Close()
         {
             var id = Guid.NewGuid();
             var header = new Header { Id = id, End = true };
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public async void ReceiveResponseAssembler_Close()
+        public async Task ReceiveResponseAssembler_Close()
         {
             var id = Guid.NewGuid();
             var header = new Header { Id = id, End = true };

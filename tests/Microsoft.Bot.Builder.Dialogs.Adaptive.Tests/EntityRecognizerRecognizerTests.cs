@@ -51,12 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         });
 
         [Fact]
-        public void TestAge()
+        public async Task TestAgeAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestAge), "This is a test of one, 2, three years old");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestAgeAsync), "This is a test of one, 2, three years old");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -67,12 +67,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestConfirmation()
+        public async Task TestConfirmationAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestConfirmation), "yes, please");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestConfirmationAsync), "yes, please");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -82,12 +82,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestCurrency()
+        public async Task TestCurrencyAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestCurrency), "I would pay four dollars for that.");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestCurrencyAsync), "I would pay four dollars for that.");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -97,12 +97,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestDateTime()
+        public async Task TestDateTimeAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestDateTime), "Next thursday at 4pm.");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestDateTimeAsync), "Next thursday at 4pm.");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -113,12 +113,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestDimension()
+        public async Task TestDimensionAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestDimension), "I think he's 5 foot ten");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestDimensionAsync), "I think he's 5 foot ten");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -128,12 +128,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestEmail()
+        public async Task TestEmailAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestEmail), "my email address is foo@att.uk.co");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestEmailAsync), "my email address is foo@att.uk.co");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -142,13 +142,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestGuid()
+        public async Task TestGuidAsync()
         {
             var guid = Guid.Empty;
-            var dialogContext = GetDialogContext(nameof(TestGuid), $"my account number is {guid}...");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestGuidAsync), $"my account number is {guid}...");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -157,12 +157,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestHashtag()
+        public async Task TestHashtagAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestHashtag), $"I'm so cool #cool #groovy...");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestHashtagAsync), $"I'm so cool #cool #groovy...");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -171,12 +171,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestIp()
+        public async Task TestIpAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestIp), $"My address is 1.2.3.4");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestIpAsync), $"My address is 1.2.3.4");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -186,12 +186,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestMention()
+        public async Task TestMentionAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestMention), $"Tell @joesmith I'm coming...");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestMentionAsync), $"Tell @joesmith I'm coming...");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -206,9 +206,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestChannelMentionEntityRecognizer()
+        public async Task TestChannelMentionEntityRecognizerAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestMention), $"joelee bobsm...");
+            var dialogContext = GetDialogContext(nameof(TestMentionAsync), $"joelee bobsm...");
             dialogContext.Context.Activity.Entities = new List<Entity>();
 
             dynamic mention = new JObject();
@@ -227,9 +227,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             mention.text = "bobsm";
             dialogContext.Context.Activity.Entities.Add(((JObject)mention).ToObject<Entity>());
 
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -273,16 +273,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.NotNull(result);
             Assert.Empty(result.Intents);
             Assert.Empty(result.Entities);
-            Assert.Equal(0, telemetryClient.Invocations.Count);
+            Assert.Empty(telemetryClient.Invocations);
         }
 
         [Fact]
-        public void TestNumber()
+        public async Task TestNumberAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestNumber), "This is a test of one, 2, three");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestNumberAsync), "This is a test of one, 2, three");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -291,12 +291,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestNumberRange()
+        public async Task TestNumberRangeAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestNumberRange), "there are 3 to 5 of them");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestNumberRangeAsync), "there are 3 to 5 of them");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -305,12 +305,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestOrdinal()
+        public async Task TestOrdinalAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestOrdinal), "First, second or third");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestOrdinalAsync), "First, second or third");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -319,12 +319,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestPercentage()
+        public async Task TestPercentageAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestPercentage), "The population hit 33.3%");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestPercentageAsync), "The population hit 33.3%");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -333,12 +333,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestPhoneNumber()
+        public async Task TestPhoneNumberAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestPhoneNumber), "Call 425-882-8080");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestPhoneNumberAsync), "Call 425-882-8080");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -347,12 +347,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestTemperature()
+        public async Task TestTemperatureAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestTemperature), "set the oven to 350 degrees");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestTemperatureAsync), "set the oven to 350 degrees");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -361,12 +361,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestUrl()
+        public async Task TestUrlAsync()
         {
-            var dialogContext = GetDialogContext(nameof(TestUrl), "go to http://about.me for more info");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestUrlAsync), "go to http://about.me for more info");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -375,13 +375,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestRegEx()
+        public async Task TestRegExAsync()
         {
             // I would like {order} 
-            var dialogContext = GetDialogContext(nameof(TestRegEx), "I would like a red or Blue cat");
-            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+            var dialogContext = GetDialogContext(nameof(TestRegExAsync), "I would like a red or Blue cat");
+            var results = await recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity);
 
-            Assert.Equal(1, results.Intents.Count);
+            Assert.Single(results.Intents);
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
@@ -410,7 +410,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.NotNull(result);
             Assert.Empty(result.Intents);
             Assert.Empty(result.Entities);
-            Assert.Equal(0, telemetryClient.Invocations.Count);
+            Assert.Empty(telemetryClient.Invocations);
         }
 
         private DialogContext GetDialogContext(string testName, string text, string locale = "en-us")

@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             var result = await recognizer.RecognizeAsync(dc, activity, default);
-            Assert.Equal(1, result.Intents.Count);
+            Assert.Single(result.Intents);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
         }

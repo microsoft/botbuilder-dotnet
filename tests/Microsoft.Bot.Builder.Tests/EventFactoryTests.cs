@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Null(transcript.Activities[0].Conversation);
 
             var handoffEvent = EventFactory.CreateHandoffInitiation(context, new { Skill = "any" }, transcript);
-            Assert.Equal(handoffEvent.Name, HandoffEventNames.InitiateHandoff);
+            Assert.Equal(HandoffEventNames.InitiateHandoff, handoffEvent.Name);
             var skill = (handoffEvent.Value as JObject)?.Value<string>("Skill");
             Assert.Equal("any", skill);
             Assert.Equal(handoffEvent.From.Id, fromID);
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Tests
             var state = "failed";
             var message = "timed out";
             var handoffEvent = EventFactory.CreateHandoffStatus(new ConversationAccount(), state, message);
-            Assert.Equal(handoffEvent.Name, HandoffEventNames.HandoffStatus);
+            Assert.Equal(HandoffEventNames.HandoffStatus, handoffEvent.Name);
 
             var stateFormEvent = (handoffEvent.Value as JObject)?.Value<string>("state");
             Assert.Equal(stateFormEvent, state);

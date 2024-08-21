@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void WebSocketServer_SendAsync_With_No_Message()
+        public async Task WebSocketServer_SendAsync_With_No_Message()
         {
             var socketMock = new Mock<WebSocket>();
             var requestHandlerMock = new Mock<RequestHandler>();
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void WebSocketServer_SendAsync_With_No_Connected_Client()
+        public async Task WebSocketServer_SendAsync_With_No_Connected_Client()
         {
             var socketMock = new Mock<WebSocket>();
             var requestHandlerMock = new Mock<RequestHandler>();
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void WebSocketClient_SendAsync_With_No_Message()
+        public async Task WebSocketClient_SendAsync_With_No_Message()
         {
             var client = new WebSocketClient("url");
 
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
-        public async void WebSocketClient_SendAsync_With_No_Connected_Client()
+        public async Task WebSocketClient_SendAsync_With_No_Connected_Client()
         {
             var client = new WebSocketClient("url");
             var message = new StreamingRequest();
