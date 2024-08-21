@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Library for connecting bots with Twilio SMS API.</Description>
     <Summary>This library implements C# classes for Twilio adapter.</Summary>
     <PackageTags>msbot-component;msbot-adapter</PackageTags>
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <!-- The Twilio package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY Twilio. -->
     <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
@@ -33,7 +33,7 @@
   </ItemGroup>
     
   <ItemGroup>
-    <PackageReference Include="Twilio" Version="5.37.2" />
+    <PackageReference Include="Twilio" Version="7.2.2" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
