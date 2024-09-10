@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
 
             _jsonSettings = jsonSerializerSettings ?? new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.None,
+                TypeNameHandling = TypeNameHandling.None, // CODEQL [cs/unsafe-type-name-handling] We use None to prevent any type information from being serialized, ensuring that no arbitrary types are deserialized, which mitigates security risks.
                 NullValueHandling = NullValueHandling.Ignore,
                 MaxDepth = null
             };
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             _queueClient = queueClient;
             _jsonSettings = jsonSerializerSettings ?? new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.None,
+                TypeNameHandling = TypeNameHandling.None, // CODEQL [cs/unsafe-type-name-handling] We use None to prevent any type information from being serialized, ensuring that no arbitrary types are deserialized, which mitigates security risks.
                 NullValueHandling = NullValueHandling.Ignore
             };
         }

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
+using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Bot.Builder.Azure.Blobs;
@@ -50,6 +51,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 "containerName",
                 JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));
 
+            var blobServiceUri = new Uri("https://storage.net/");
+
+            var mockCredential = new Mock<TokenCredential>();
+            mockCredential
+                .Setup(c => c.GetTokenAsync(It.IsAny<TokenRequestContext>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AccessToken("fake-token", DateTimeOffset.UtcNow.AddHours(1)));
+
             // No dataConnectionString. Should throw.
             Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(null, "containerName"));
             Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(string.Empty, "containerName"));
@@ -57,6 +65,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // No containerName. Should throw.
             Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(ConnectionString, null));
             Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(ConnectionString, string.Empty));
+
+            // No URI. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(blobServiceUri: null, mockCredential.Object, "containerName"));
+
+            // No tokenCredential. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(blobServiceUri, null, "containerName"));
+            
+            // No containerName. Should throw.
+            Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(blobServiceUri, mockCredential.Object, null));
+            Assert.Throws<ArgumentNullException>(() => new BlobsTranscriptStore(blobServiceUri, mockCredential.Object, string.Empty));
         }
 
         [Fact]

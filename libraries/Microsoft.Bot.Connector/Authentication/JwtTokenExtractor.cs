@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 var keyId = parsedToken.SigningKey.KeyId;
                 var endorsements = await _endorsementsData.GetConfigurationAsync().ConfigureAwait(false);
 
-                // Note: On the Emulator Code Path, the endorsements collection is empty so the validation code
+                // Note: On the Emulator/Skills Code Path, the endorsements collection is empty so the validation code
                 // below won't run. This is normal.
                 if (!string.IsNullOrEmpty(keyId) && endorsements.TryGetValue(keyId, out var endorsementsForKey))
                 {
@@ -287,10 +287,10 @@ namespace Microsoft.Bot.Connector.Authentication
                 }
                 else 
                 {
-                    // If we are to skip endorsement check, we want to double check we are in the emulator by explictly checking the token
+                    // If we are to skip endorsement check, we want to double check we are in the emulator/skill by explicitly checking the token
                     // Instead of assuming that the token is from the emulator based on the empty endorsements collection
-                    var originalAuthHeader = "Bearer " + jwtToken; // We have to add the Bearer scheme back in for the Emulator check
-                    if (!EmulatorValidation.IsTokenFromEmulator(originalAuthHeader)) 
+                    var originalAuthHeader = "Bearer " + jwtToken; // We have to add the Bearer scheme back in for the Emulator/Skill check
+                    if (!EmulatorValidation.IsTokenFromEmulator(originalAuthHeader) && !SkillValidation.IsSkillToken(originalAuthHeader)) 
                     {
                         throw new UnauthorizedAccessException("Could not validate endorsement key.");
                     }
