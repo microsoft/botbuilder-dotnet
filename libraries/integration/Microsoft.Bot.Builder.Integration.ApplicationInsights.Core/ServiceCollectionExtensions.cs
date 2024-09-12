@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             if (appInsightService != null)
             {
                 // Create Application Insights options and disable adaptive sampling
-                var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+                var aiOptions = new ApplicationInsightsServiceOptions
                 {
                     EnableAdaptiveSampling = false,
                     InstrumentationKey = appInsightService.InstrumentationKey
@@ -99,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             if (!string.IsNullOrWhiteSpace(instrumentationKey))
             {
                 // Create Application Insights options and disable adaptive sampling
-                var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+                var aiOptions = new ApplicationInsightsServiceOptions
                 {
                     EnableAdaptiveSampling = false, 
                     InstrumentationKey = instrumentationKey
@@ -140,7 +141,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             if (instrumentationKey != null)
             {
                 // Create Application Insights options and disable adaptive sampling
-                var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+                var aiOptions = new ApplicationInsightsServiceOptions
                 {
                     EnableAdaptiveSampling = false,
                     InstrumentationKey = instrumentationKey
