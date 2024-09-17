@@ -3,6 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
+    using Microsoft.Bot.Schema.Converters;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -53,6 +54,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>The embedded content.</value>
         [JsonProperty(PropertyName = "content")]
+        [JsonConverter(typeof(AttachmentMemoryStreamConverter))]
         public object Content { get; set; }
 
         /// <summary>
