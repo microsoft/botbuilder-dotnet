@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
@@ -57,7 +58,14 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             IBotTelemetryClient telemetryClient = null;
             if (appInsightService != null)
             {
-                services.AddApplicationInsightsTelemetry(appInsightService.InstrumentationKey);
+                // Create Application Insights options and disable adaptive sampling
+                var aiOptions = new ApplicationInsightsServiceOptions
+                {
+                    EnableAdaptiveSampling = false,
+                    InstrumentationKey = appInsightService.InstrumentationKey
+                };
+
+                services.AddApplicationInsightsTelemetry(aiOptions);
                 telemetryClient = new BotTelemetryClient(new TelemetryClient());
             }
             else
@@ -88,9 +96,19 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             CreateBotTelemetry(services);
 
             IBotTelemetryClient telemetryClient = null;
+
             if (!string.IsNullOrWhiteSpace(instrumentationKey))
             {
-                services.AddApplicationInsightsTelemetry(instrumentationKey);
+                // Create Application Insights options and disable adaptive sampling
+                var aiOptions = new ApplicationInsightsServiceOptions
+                {
+                    EnableAdaptiveSampling = false, 
+                    InstrumentationKey = instrumentationKey
+                };
+
+                // Add Application Insights telemetry with custom options
+                services.AddApplicationInsightsTelemetry(aiOptions);
+
                 telemetryClient = new BotTelemetryClient(new TelemetryClient());
             }
             else
@@ -122,7 +140,14 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             // Start Application Insights
             if (instrumentationKey != null)
             {
-                services.AddApplicationInsightsTelemetry(instrumentationKey);
+                // Create Application Insights options and disable adaptive sampling
+                var aiOptions = new ApplicationInsightsServiceOptions
+                {
+                    EnableAdaptiveSampling = false,
+                    InstrumentationKey = instrumentationKey
+                };
+
+                services.AddApplicationInsightsTelemetry(aiOptions);
             }
 
             // Register the BotTelemetryClient

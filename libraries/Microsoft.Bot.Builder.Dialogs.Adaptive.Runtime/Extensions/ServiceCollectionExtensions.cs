@@ -209,6 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             }
             else
             {
+                telemetrySettings.Options.EnableAdaptiveSampling = false;
                 services.AddApplicationInsightsTelemetry(telemetrySettings.Options);
                 services.TryAddSingleton<IBotTelemetryClient, BotTelemetryClient>();
 
