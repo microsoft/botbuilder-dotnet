@@ -86,13 +86,11 @@ namespace Microsoft.Bot.Schema.Converters
                 newReader.Read();
                 string key = null;
                 var dict = new Dictionary<string, object>();
-                while (newReader.TokenType != JsonToken.EndObject)
+                while (newReader.Read())
                 {
-                    newReader.Read();
-
                     if (newReader.TokenType == JsonToken.EndObject)
                     {
-                        break;
+                        continue;
                     }
 
                     if (newReader.TokenType == JsonToken.PropertyName)

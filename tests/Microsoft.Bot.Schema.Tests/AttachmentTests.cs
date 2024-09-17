@@ -113,10 +113,11 @@ namespace Microsoft.Bot.Schema.Tests
                 {
                     new AttachmentDummy { ContentType = "string", Content = text },
                     new AttachmentDummy { ContentType = "string/array", Content = new string[] { text } },
+                    new AttachmentDummy { ContentType = "dict", Content = new Dictionary<string, object> { { "firstname", "John" }, { "attachment1", new AttachmentDummy(content: text) }, { "lastname", "Doe" }, { "attachment2", new AttachmentDummy(content: text) }, { "age", 18 } } },
                     new AttachmentDummy { ContentType = "attachment", Content = new AttachmentDummy(content: text) },
-                    new AttachmentDummy { ContentType = "attachment/dict", Content = new Dictionary<string, AttachmentDummy> { { "attachment", new AttachmentDummy(content: text) } } },
+                    new AttachmentDummy { ContentType = "attachment/dict", Content = new Dictionary<string, AttachmentDummy> { { "attachment", new AttachmentDummy(content: text) }, { "attachment2", new AttachmentDummy(content: text) } } },
                     new AttachmentDummy { ContentType = "attachment/dict/nested", Content = new Dictionary<string, Dictionary<string, AttachmentDummy>> { { "attachment", new Dictionary<string, AttachmentDummy> { { "content", new AttachmentDummy(content: text) } } } } },
-                    new AttachmentDummy { ContentType = "attachment/list", Content = new List<AttachmentDummy> { new AttachmentDummy(content: text) } },
+                    new AttachmentDummy { ContentType = "attachment/list", Content = new List<AttachmentDummy> { new AttachmentDummy(content: text), new AttachmentDummy(content: text) } },
                     new AttachmentDummy { ContentType = "attachment/list/nested", Content = new List<List<AttachmentDummy>> { new List<AttachmentDummy> { new AttachmentDummy(content: text) } } },
                 }
             };
@@ -134,10 +135,11 @@ namespace Microsoft.Bot.Schema.Tests
                 {
                     new Attachment { ContentType = "string", Content = text },
                     new Attachment { ContentType = "string/array", Content = new string[] { text } },
+                    new Attachment { ContentType = "dict", Content = new Dictionary<string, object> { { "firstname", "John" }, { "attachment1", new Attachment(content: text) }, { "lastname", "Doe" }, { "attachment2", new Attachment(content: text) }, { "age", 18 } } },
                     new Attachment { ContentType = "attachment", Content = new Attachment(content: text) },
                     new Attachment { ContentType = "attachment/dict", Content = new Dictionary<string, Attachment> { { "attachment", new Attachment(content: text) } } },
                     new Attachment { ContentType = "attachment/dict/nested", Content = new Dictionary<string, Dictionary<string, Attachment>> { { "attachment", new Dictionary<string, Attachment> { { "content", new Attachment(content: text) } } } } },
-                    new Attachment { ContentType = "attachment/list", Content = new List<Attachment> { new Attachment(content: text) } },
+                    new Attachment { ContentType = "attachment/list", Content = new List<Attachment> { new Attachment(content: text), new Attachment(content: text) } },
                     new Attachment { ContentType = "attachment/list/nested", Content = new List<List<Attachment>> { new List<Attachment> { new Attachment(content: text) } } },
                 }
             };
@@ -158,7 +160,7 @@ namespace Microsoft.Bot.Schema.Tests
                     new Attachment { ContentType = "stream/empty", Content = new MemoryStream() },
                     new Attachment { ContentType = "stream/dict", Content = new Dictionary<string, MemoryStream> { { "stream", new MemoryStream(buffer) } } },
                     new Attachment { ContentType = "stream/dict/nested", Content = new Dictionary<string, Dictionary<string, MemoryStream>> { { "stream", new Dictionary<string, MemoryStream> { { "content", new MemoryStream(buffer) } } } } },
-                    new Attachment { ContentType = "stream/list", Content = new List<MemoryStream> { new MemoryStream(buffer) } },
+                    new Attachment { ContentType = "stream/list", Content = new List<MemoryStream> { new MemoryStream(buffer), new MemoryStream(buffer) } },
                     new Attachment { ContentType = "stream/list/nested", Content = new List<List<MemoryStream>> { new List<MemoryStream> { new MemoryStream(buffer) } } },
                 }
             };
@@ -171,6 +173,7 @@ namespace Microsoft.Bot.Schema.Tests
             var buffer2 = ((GetAttachmentContentByType(deserialized, "stream/dict") as Dictionary<string, object>)["stream"] as MemoryStream).ToArray();
             var buffer3 = (((GetAttachmentContentByType(deserialized, "stream/dict/nested") as Dictionary<string, object>)["stream"] as Dictionary<string, object>)["content"] as MemoryStream).ToArray();
             var buffer4 = ((GetAttachmentContentByType(deserialized, "stream/list") as List<object>)[0] as MemoryStream).ToArray();
+            var buffer4_1 = ((GetAttachmentContentByType(deserialized, "stream/list") as List<object>)[1] as MemoryStream).ToArray();
             var buffer5 = (((GetAttachmentContentByType(deserialized, "stream/list/nested") as List<object>)[0] as List<object>)[0] as MemoryStream).ToArray();
 
             Assert.Equal(text, Encoding.UTF8.GetString(buffer0));
@@ -179,6 +182,7 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal(buffer, buffer2);
             Assert.Equal(buffer, buffer3);
             Assert.Equal(buffer, buffer4);
+            Assert.Equal(buffer, buffer4_1);
             Assert.Equal(buffer, buffer5);
         }
 
@@ -207,20 +211,25 @@ namespace Microsoft.Bot.Schema.Tests
 
             var attachment0 = GetAttachmentContentByType(deserialized, "string") as string;
             var attachment1 = (GetAttachmentContentByType(deserialized, "string/array") as JArray).First.Value<string>();
-            var attachment2 = (GetAttachmentContentByType(deserialized, "attachment") as JObject).Value<string>("content");
-            var attachment3 = (GetAttachmentContentByType(deserialized, "attachment/dict") as JObject).GetValue("attachment").Value<string>("content");
-            var attachment4 = ((GetAttachmentContentByType(deserialized, "attachment/dict/nested") as JObject).GetValue("attachment") as JObject).GetValue("content").Value<string>("content");
-            var attachment5 = (GetAttachmentContentByType(deserialized, "attachment/list") as JArray).First.Value<string>("content");
-            var attachment6 = (GetAttachmentContentByType(deserialized, "attachment/list/nested") as JArray).First.First.Value<string>("content");
+            var attachment2 = GetAttachmentContentByType(deserialized, "dict") as JObject;
+            var attachment3 = (GetAttachmentContentByType(deserialized, "attachment") as JObject).Value<string>("content");
+            var attachment4 = (GetAttachmentContentByType(deserialized, "attachment/dict") as JObject).GetValue("attachment").Value<string>("content");
+            var attachment5 = ((GetAttachmentContentByType(deserialized, "attachment/dict/nested") as JObject).GetValue("attachment") as JObject).GetValue("content").Value<string>("content");
+            var attachment6 = (GetAttachmentContentByType(deserialized, "attachment/list") as JArray)[0].Value<string>("content");
+            var attachment6_1 = (GetAttachmentContentByType(deserialized, "attachment/list") as JArray)[1].Value<string>("content");
+            var attachment7 = (GetAttachmentContentByType(deserialized, "attachment/list/nested") as JArray).First.First.Value<string>("content");
 
             var expectedString = GetAttachmentContentByType(activity, "string") as string;
+            var expectedDict = GetAttachmentContentByType(activity, "dict") as Dictionary<string, object>;
             Assert.Equal(expectedString, attachment0);
             Assert.Equal(expectedString, attachment1);
-            Assert.Equal(expectedString, attachment2);
+            Assert.Equal($"{expectedDict["firstname"]} {expectedDict["lastname"]} {expectedDict["age"]}", $"{attachment2["firstname"]} {attachment2["lastname"]} {attachment2["age"]}");
             Assert.Equal(expectedString, attachment3);
             Assert.Equal(expectedString, attachment4);
             Assert.Equal(expectedString, attachment5);
             Assert.Equal(expectedString, attachment6);
+            Assert.Equal(expectedString, attachment6_1);
+            Assert.Equal(expectedString, attachment7);
         }
 
         private object GetAttachmentContentByType<T>(T activity, string contenttype)
