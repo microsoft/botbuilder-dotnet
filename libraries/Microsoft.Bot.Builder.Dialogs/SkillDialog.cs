@@ -338,6 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
+#pragma warning disable CA1031 // Do not catch general exception types
             try
             {
                 var settings = new OAuthPromptSettings() { ConnectionName = connectionName };
@@ -357,6 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Failures in token exchange are not fatal. They simply mean that the user needs to be shown the OAuth card.
                 return false;
             }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         private async Task<bool> SendTokenExchangeInvokeToSkillAsync(Activity incomingActivity, string id, string connectionName, string token, CancellationToken cancellationToken)
