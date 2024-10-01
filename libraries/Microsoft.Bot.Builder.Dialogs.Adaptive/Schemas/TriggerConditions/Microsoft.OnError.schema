@@ -3,5 +3,16 @@
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On error",
     "description": "Action to perform when an 'Error' dialog event occurs.",
-    "type": "object"
+    "type": "object",
+    "properties": {
+        "executionLimit": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Execution limit",
+            "description": "Number of executions allowed for this trigger. Used to break loops in case of errors inside the trigger.",
+            "examples": [
+                3,
+                "=f(x)"
+            ]
+        }
+    }
 }
