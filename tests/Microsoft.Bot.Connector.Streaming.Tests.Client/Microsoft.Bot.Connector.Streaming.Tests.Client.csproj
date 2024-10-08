@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <!-- Force System.Text.Json to a newer version. Since Microsoft.Extensions.Logging.Console has 8.0.0 version, which causes CVE-2024-30105 security issue. -->
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
   </ItemGroup>
 
