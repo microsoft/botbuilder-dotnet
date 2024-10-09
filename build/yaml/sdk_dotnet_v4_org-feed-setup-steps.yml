@@ -31,3 +31,5 @@ steps:
     New-Item -Path $file -ItemType "file" -Value $content -Force;
     '-------------'; get-content "$file"; '===================';
   displayName: Create nuget.config for SDK_Dotnet_V4_org feed
+
+- task: NuGetAuthenticate@1
