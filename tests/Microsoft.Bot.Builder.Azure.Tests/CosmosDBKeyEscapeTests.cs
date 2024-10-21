@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
@@ -40,7 +41,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.True(sanitizedKey.Length <= CosmosDbKeyEscape.MaxKeyLength, "Key too long");
 
             // The resulting key should be:
-            var hash = tooLongKey.GetHashCode().ToString("x");
+            var getHashMethod = typeof(CosmosDbKeyEscape).GetMethod("GetDeterministicHashCode", BindingFlags.NonPublic | BindingFlags.Static);
+            var hash = ((int)getHashMethod.Invoke(null, new object[] { tooLongKey })).ToString("x");
             var correctKey = sanitizedKey.Substring(0, CosmosDbKeyEscape.MaxKeyLength - hash.Length) + hash;
 
             Assert.Equal(correctKey, sanitizedKey);
