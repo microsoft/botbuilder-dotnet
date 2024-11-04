@@ -405,7 +405,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullHttpRequest()
+        public async Task ProcessAsyncShouldFailWithNullHttpRequest()
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullHttpResponse()
+        public async Task ProcessAsyncShouldFailWithNullHttpResponse()
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldFailWithNullBot()
+        public async Task ProcessAsyncShouldFailWithNullBot()
         {
             var slackApi = new Mock<SlackClientWrapper>(_testOptions);
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
@@ -543,7 +543,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, new Mock<IBot>().Object, default);
 
-            Assert.Equal(httpResponse.Object.StatusCode, (int)HttpStatusCode.OK);
+            Assert.Equal((int)HttpStatusCode.OK, httpResponse.Object.StatusCode);
         }
 
         [Fact]
@@ -559,7 +559,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, new Mock<IBot>().Object, default);
 
-            Assert.Equal(httpResponse.Object.StatusCode, (int)HttpStatusCode.OK);
+            Assert.Equal((int)HttpStatusCode.OK, httpResponse.Object.StatusCode);
         }
 
         [Fact]

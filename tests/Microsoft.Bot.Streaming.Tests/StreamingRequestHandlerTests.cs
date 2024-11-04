@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void RequestHandlerRespondsWith500OnError()
+        public async Task RequestHandlerRespondsWith500OnError()
         {
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void DoesNotThrowExceptionIfReceiveRequestIsNull()
+        public async Task DoesNotThrowExceptionIfReceiveRequestIsNull()
         {
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void DoesNotThrowExceptionIfReceiveRequestHasNoActivity()
+        public async Task DoesNotThrowExceptionIfReceiveRequestHasNoActivity()
         {
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void RequestHandlerRemembersConversations()
+        public async Task RequestHandlerRemembersConversations()
         {
             // Arrange
             var adapter = new BotFrameworkHttpAdapter();
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void RequestHandlerForgetsConversations()
+        public async Task RequestHandlerForgetsConversations()
         {
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void RequestHandlerAssignsAServiceUrl()
+        public async Task RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
@@ -299,7 +299,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async void ItGetsUserAgentInfo()
+        public async Task ItGetsUserAgentInfo()
         {
             // Arrange
             var expectation = new Regex("{\"userAgent\":\"Microsoft-BotFramework\\/[0-9.]+\\s.*BotBuilder\\/[0-9.]+\\s+\\(.*\\)\".*}");
@@ -328,11 +328,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var response = await handler.ProcessRequestAsync(testRequest);
 
             // Assert
-            Assert.Matches(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
+            Assert.Matches(expectation, await response.Streams[0].Content.ReadAsStringAsync());
         }
 
         [Fact]
-        public async void CallStreamingRequestHandlerOverrides()
+        public async Task CallStreamingRequestHandlerOverrides()
         {
             var activity = new Activity()
             {

@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             {
                 transport.AdvanceTo(buffer.Start, buffer.End);
 
-                result = await transport.ReadAsync().ConfigureAwait(false);
+                result = await transport.ReadAsync();
 
                 Assert.False(result.IsCanceled);
 
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             {
                 transport.AdvanceTo(buffer.Start, buffer.End);
 
-                result = await transport.ReadAsync().ConfigureAwait(false);
+                result = await transport.ReadAsync();
 
                 Assert.False(result.IsCanceled);
 
@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             {
                 transport.AdvanceTo(buffer.Start, buffer.End);
 
-                result = await transport.ReadAsync().ConfigureAwait(false);
+                result = await transport.ReadAsync();
 
                 Assert.False(result.IsCanceled);
 
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                 Assert.Equal(entry.Header.PayloadLength, entry.Payload.Length);
 
-                await output.WriteAsync(headerBuffer, CancellationToken.None).ConfigureAwait(false);
+                await output.WriteAsync(headerBuffer, CancellationToken.None);
 
                 if (cancelWithoutPayload)
                 {
@@ -312,7 +312,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                 if (entry.Header.PayloadLength > 0)
                 {
-                    await output.WriteAsync(entry.Payload, CancellationToken.None).ConfigureAwait(false);
+                    await output.WriteAsync(entry.Payload, CancellationToken.None);
                 }
 
                 if (first && cancelAfterFirst)
@@ -325,12 +325,12 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             if (completeWithException)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
-                await output.CompleteAsync(new Exception()).ConfigureAwait(false);
+                await output.CompleteAsync(new Exception());
                 await Assert.ThrowsAsync<Exception>(async () => await transportTask);
             }
             else
             {
-                await output.CompleteAsync().ConfigureAwait(false);
+                await output.CompleteAsync();
                 
                 if (Debugger.IsAttached)
                 {
@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 }
                 else
                 {
-                    var result = await Task.WhenAny(transportTask, Task.Delay(TimeSpan.FromSeconds(5))).ConfigureAwait(false);
+                    var result = await Task.WhenAny(transportTask, Task.Delay(TimeSpan.FromSeconds(5)));
                     Assert.Equal(result, transportTask);
                 }
             }

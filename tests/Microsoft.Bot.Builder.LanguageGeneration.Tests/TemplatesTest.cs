@@ -708,19 +708,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "You have 2 alarms, 7 am of tomorrow and 8 pm of tomorrow"
             };
 
-            Assert.Equal(1, evaled.Count);
+            Assert.Single(evaled);
             Assert.Contains(evaled[0], evalOptions);
 
             evaled = templates.ExpandTemplate("T2");
-            Assert.Equal(1, evaled.Count);
+            Assert.Single(evaled);
             Assert.True(evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
 
             evaled = templates.ExpandTemplate("T3");
-            Assert.Equal(1, evaled.Count);
+            Assert.Single(evaled);
             Assert.True(evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
 
             evaled = templates.ExpandTemplate("T4");
-            Assert.Equal(1, evaled.Count);
+            Assert.Single(evaled);
             Assert.True(evaled[0].ToString() == "ey" || evaled[0].ToString() == "el");
         }
 
@@ -932,8 +932,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("CrudInit.lg"));
 
             Assert.Equal(2, templates.Count);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             Assert.Equal("template1", templates[0].Name);
             Assert.Equal(3, templates[0].SourceRange.Range.Start.Line);
             Assert.Equal(8, templates[0].SourceRange.Range.End.Line);
@@ -944,8 +944,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Add a template
             templates.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi ");
             Assert.Equal(3, templates.Count);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             var newTemplate = templates[2];
             Assert.Equal("newtemplate", newTemplate.Name);
             Assert.Equal(2, newTemplate.Parameters.Count);
@@ -958,7 +958,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // add another template
             templates.AddTemplate("newtemplate2", null, "- hi2 ");
             Assert.Equal(4, templates.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
             newTemplate = templates[3];
             Assert.Equal("newtemplate2", newTemplate.Name);
             Assert.Empty(newTemplate.Parameters);
@@ -969,8 +969,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // update a middle template
             templates.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
             Assert.Equal(4, templates.Count);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             newTemplate = templates[2];
             Assert.Equal("newtemplateName", newTemplate.Name);
             Assert.Equal(2, newTemplate.Parameters.Count);
@@ -985,8 +985,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // update the tailing template
             templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2\r\n");
             Assert.Equal(4, templates.Count);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             newTemplate = templates[3];
             Assert.Equal("newtemplateName2", newTemplate.Name);
             Assert.Equal(2, newTemplate.Parameters.Count);
@@ -997,14 +997,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // delete a middle template
             templates.DeleteTemplate("newtemplateName");
             Assert.Equal(3, templates.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
             Assert.Equal(14, templates[2].SourceRange.Range.Start.Line);
             Assert.Equal(16, templates[2].SourceRange.Range.End.Line);
 
             // delete the tailing template
             templates.DeleteTemplate("newtemplateName2");
             Assert.Equal(2, templates.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
             Assert.Equal(9, templates[1].SourceRange.Range.Start.Line);
             Assert.Equal(12, templates[1].SourceRange.Range.End.Line);
         }
@@ -1017,8 +1017,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Add a template
             templates.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi ");
             Assert.Equal(3, templates.Count);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             var newTemplate = templates[2];
             Assert.Equal("newtemplate", newTemplate.Name);
             Assert.Equal(2, newTemplate.Parameters.Count);
@@ -1031,7 +1031,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // add another template
             templates.AddTemplate("newtemplate2", null, "- hi2 ");
             Assert.Equal(4, templates.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
             newTemplate = templates[3];
             Assert.Equal("newtemplate2", newTemplate.Name);
             Assert.Empty(newTemplate.Parameters);
@@ -1052,8 +1052,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Delete template
             templates.DeleteTemplate("template1");
             Assert.Single(templates);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             Assert.Equal("template2", templates[0].Name);
             Assert.Equal(3, templates[0].SourceRange.Range.Start.Line);
             Assert.Equal(6, templates[0].SourceRange.Range.End.Line);
@@ -1061,8 +1061,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Delete a template that does not exist
             templates.DeleteTemplate("xxx");
             Assert.Single(templates);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Empty(templates.Diagnostics);
             Assert.Equal("template2", templates[0].Name);
             Assert.Equal(3, templates[0].SourceRange.Range.Start.Line);
             Assert.Equal(6, templates[0].SourceRange.Range.End.Line);
@@ -1070,8 +1070,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Delete all template
             templates.DeleteTemplate("template2");
             Assert.Empty(templates);
-            Assert.Equal(0, templates.Imports.Count);
-            Assert.Equal(1, templates.Diagnostics.Count);
+            Assert.Empty(templates.Imports);
+            Assert.Single(templates.Diagnostics);
             Assert.Equal(DiagnosticSeverity.Warning, templates.Diagnostics[0].Severity);
             Assert.Equal(TemplateErrors.NoTemplate, templates.Diagnostics[0].Message);
         }
@@ -1083,7 +1083,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // add error template name (error in template)
             templates.AddTemplate("newtemplate#$%", new List<string> { "age", "name" }, "- hi ");
-            Assert.Equal(1, templates.Diagnostics.Count);
+            Assert.Single(templates.Diagnostics);
             var diagnostic = templates.Diagnostics[0];
             Assert.Equal(TemplateErrors.InvalidTemplateName("newtemplate#$%"), diagnostic.Message);
             Assert.Equal(14, diagnostic.Range.Start.Line);
@@ -1091,15 +1091,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // replace the error template with right template
             templates.UpdateTemplate("newtemplate#$%", "newtemplateName", null, "- new hi");
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
 
             // reference the other exist template
             templates.UpdateTemplate("newtemplateName", "newtemplateName", null, "- ${template1()}");
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
 
             // wrong reference, throw by static checker
             templates.UpdateTemplate("newtemplateName", "newtemplateName", null, "- ${NoTemplate()}");
-            Assert.Equal(1, templates.Diagnostics.Count);
+            Assert.Single(templates.Diagnostics);
             diagnostic = templates.Diagnostics[0];
             Assert.Contains("it's not a built-in function or a custom function", diagnostic.Message);
             Assert.Equal(15, diagnostic.Range.Start.Line);
@@ -1107,7 +1107,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // delete the error template
             templates.DeleteTemplate("newtemplateName");
-            Assert.Equal(0, templates.Diagnostics.Count);
+            Assert.Empty(templates.Diagnostics);
         }
 
         [Fact]

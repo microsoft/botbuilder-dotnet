@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var onBehalfOfList = activity.TeamsGetTeamOnBehalfOf();
 
             // Assert
-            Assert.Equal(1, onBehalfOfList.Count);
+            Assert.Single(onBehalfOfList);
             Assert.Equal("TestOnBehalfOf", onBehalfOfList[0].DisplayName);
         }
     }

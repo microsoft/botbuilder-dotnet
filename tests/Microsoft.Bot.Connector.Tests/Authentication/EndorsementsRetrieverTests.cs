@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public async void NullAddressParameterShouldThrow()
+            public async Task NullAddressParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(null, _mockDocumentRetriever.Object, CancellationToken.None);
 
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public async void NullDocumentRetrieverParameterShouldThrow()
+            public async Task NullDocumentRetrieverParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(FakeDocumentAddress, null, CancellationToken.None);
 
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public async void ThrowsIfDocumentRetrieverThrows()
+            public async Task ThrowsIfDocumentRetrieverThrows()
             {
                 _mockDocumentRetriever.Setup(dr => dr.GetDocumentAsync(FakeDocumentAddress, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new Exception(nameof(ThrowsIfDocumentRetrieverThrows)));
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public async void NullAddressParameterShouldThrow()
+            public async Task NullAddressParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(null, CancellationToken.None);
 
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public async void NonSuccessHttpStatusResponseForEndorsementsDocumentShouldThrow()
+            public async Task NonSuccessHttpStatusResponseForEndorsementsDocumentShouldThrow()
             {
                 _mockHttpMessageHandler.When(FakeDocumentAddress)
                     .Respond(HttpStatusCode.NotFound);
@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             }
 
             [Fact]
-            public async void NonSuccessHttpStatusResponseForWebKeySetDocumentShouldThrow()
+            public async Task NonSuccessHttpStatusResponseForWebKeySetDocumentShouldThrow()
             {
                 _mockHttpMessageHandler.When(FakeDocumentAddress)
                     .Respond(new StringContent($@"{{ ""{EndorsementsRetriever.JsonWebKeySetUri}"": ""{FakeKeysAddressUrl}"" }}"));

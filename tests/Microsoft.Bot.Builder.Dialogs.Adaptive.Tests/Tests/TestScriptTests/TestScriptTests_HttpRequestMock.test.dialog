@@ -17,7 +17,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -28,7 +28,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -39,7 +39,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -50,7 +50,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -61,7 +61,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -72,7 +72,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "POST",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -83,7 +83,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -94,7 +94,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "GET",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -105,7 +105,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "POST",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -116,7 +116,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "POST",
                         "url": "http://127.0.0.1",
                         "resultProperty": "dialog.result"
@@ -127,7 +127,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "POST",
                         "url": "http://127.0.0.2",
                         "resultProperty": "dialog.result"
@@ -138,7 +138,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "PATCH",
                         "url": "http://127.0.0.1",
                         "body": "full body or partial body",
@@ -150,7 +150,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "PATCH",
                         "body": "full body",
                         "url": "http://127.0.0.1",
@@ -162,7 +162,7 @@
                     },
                     {
                         "$kind": "Microsoft.HttpRequest",
-                        "responseType": "Json",
+                        "responseType": "json",
                         "method": "POST",
                         "body": "gzip body",
                         "url": "http://127.0.0.1",

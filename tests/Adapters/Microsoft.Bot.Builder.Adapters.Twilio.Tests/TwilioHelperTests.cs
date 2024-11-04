@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             var activity = TwilioHelper.PayloadToActivity(dictionaryPayload);
 
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             var activity = TwilioHelper.PayloadToActivity(dictionaryPayload);
 
-            Assert.Equal(1, activity.Attachments.Count);
+            Assert.Single(activity.Attachments);
         }
 
         [Fact]

@@ -320,45 +320,45 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         private async Task<bool> InterceptOAuthCardsAsync(ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(connectionName) || !(turnContext.Adapter is IExtendedUserTokenProvider tokenExchangeProvider))
+            if (string.IsNullOrWhiteSpace(connectionName))
             {
                 // The adapter may choose not to support token exchange, in which case we fallback to showing an oauth card to the user.
                 return false;
             }
 
             var oauthCardAttachment = activity.Attachments?.FirstOrDefault(a => a?.ContentType == OAuthCard.ContentType);
-            if (oauthCardAttachment != null)
+            if (oauthCardAttachment == null)
             {
-                var oauthCard = ((JObject)oauthCardAttachment.Content).ToObject<OAuthCard>();
-                if (!string.IsNullOrWhiteSpace(oauthCard?.TokenExchangeResource?.Uri))
-                {
-                    try
-                    {
-                        var result = await tokenExchangeProvider.ExchangeTokenAsync(
-                            turnContext,
-                            connectionName,
-                            turnContext.Activity.From.Id,
-                            new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri),
-                            cancellationToken).ConfigureAwait(false);
-
-                        if (!string.IsNullOrWhiteSpace(result?.Token))
-                        {
-                            // If token above is null, then SSO has failed and hence we return false.
-                            // If not, send an invoke to the skill with the token. 
-                            return await SendTokenExchangeInvokeToSkillAsync(activity, oauthCard.TokenExchangeResource.Id, oauthCard.ConnectionName, result.Token, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-#pragma warning disable CA1031 // Do not catch general exception types (ignoring, see comment below)
-                    catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                    {
-                        // Failures in token exchange are not fatal. They simply mean that the user needs to be shown the OAuth card.
-                        return false;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            var oauthCard = ((JObject)oauthCardAttachment.Content).ToObject<OAuthCard>();
+            if (string.IsNullOrWhiteSpace(oauthCard?.TokenExchangeResource?.Uri))
+            {
+                return false;
+            }
+
+#pragma warning disable CA1031 // Do not catch general exception types
+            try
+            {
+                var settings = new OAuthPromptSettings() { ConnectionName = connectionName };
+                var result = await UserTokenAccess.ExchangeTokenAsync(turnContext, settings, new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri), cancellationToken).ConfigureAwait(false);
+
+                if (string.IsNullOrWhiteSpace(result?.Token))
+                {
+                    // If token above is null, then SSO has failed and hence we return false.
+                    return false;
+                }
+                
+                // If not, send an invoke to the skill with the token. 
+                return await SendTokenExchangeInvokeToSkillAsync(activity, oauthCard.TokenExchangeResource.Id, oauthCard.ConnectionName, result.Token, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Failures in token exchange are not fatal. They simply mean that the user needs to be shown the OAuth card.
+                return false;
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         private async Task<bool> SendTokenExchangeInvokeToSkillAsync(Activity incomingActivity, string id, string connectionName, string token, CancellationToken cancellationToken)
