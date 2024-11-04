@@ -1,0 +1,5 @@
+﻿
+    # getUserName
+    - my name is {username=vishwac}
+
+    > Without an explicit entity definition, 'userName' defaults to 'ml' entity type

@@ -1,0 +1,26 @@
+﻿{
+    "sections": [
+        {
+            "Errors": [],
+            "SectionType": "NewEntitySection",
+            "Id": "newEntitySection_number",
+            "Body": "",
+            "Name": "number",
+            "Range": {
+                "Start": {
+                    "Line": 1,
+                    "Character": 0
+                },
+                "End": {
+                    "Line": 1,
+                    "Character": 34
+                }
+            },
+            "Type": "prebuilt",
+            "ListBody": [],
+            "Roles": "numOfGuests, age"
+        }
+    ],
+    "content": "@ prebuilt number numOfGuests, age",
+    "errors": []
+}

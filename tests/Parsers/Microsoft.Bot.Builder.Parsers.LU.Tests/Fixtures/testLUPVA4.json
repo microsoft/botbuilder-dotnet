@@ -1,0 +1,23 @@
+{
+  "sections": [
+    {
+      "Errors": [],
+      "SectionType": "ModelInfoSection",
+      "Id": "modelInfoSection_> !# @version = 1.0",
+      "Body": "",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 19
+        }
+      },
+      "ModelInfo": "> !# @version = 1.0"
+    }
+  ],
+  "content": "> Parser instruction - this is optional; unless specified, parser will default to the latest version.\n> !# @version = 1.0",
+  "errors": []
+}

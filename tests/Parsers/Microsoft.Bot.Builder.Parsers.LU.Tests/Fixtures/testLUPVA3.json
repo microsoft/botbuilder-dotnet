@@ -1,0 +1,44 @@
+{
+  "sections": [
+    {
+      "Errors": [],
+      "SectionType": "SimpleIntentSection",
+      "Id": "simpleIntentSection_None",
+      "Body": "- [None uttearnces](./all.lu#Help)",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "[None uttearnces](./all.lu#Help)",
+          "entities": [],
+          "errorMsgs": [],
+          "contextText": "- [None uttearnces](./all.lu#Help)",
+          "range": {
+            "Start": {
+              "Line": 2,
+              "Character": 0
+            },
+            "End": {
+              "Line": 2,
+              "Character": 34
+            }
+          },
+          "references": { "source": "./all.lu#Help" }
+        }
+      ],
+      "Entities": [],
+      "Name": "None",
+      "IntentNameLine": "# None",
+      "Range": {
+        "Start": {
+          "Line": 1,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 34
+        }
+      }
+    }
+  ],
+  "content": "# None\n- [None uttearnces](./all.lu#Help)",
+  "errors": []
+}

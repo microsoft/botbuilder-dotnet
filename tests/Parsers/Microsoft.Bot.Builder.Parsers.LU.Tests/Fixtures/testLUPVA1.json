@@ -1,0 +1,51 @@
+{
+  "sections": [
+    {
+      "Errors": [],
+      "SectionType": "SimpleIntentSection",
+      "Id": "simpleIntentSection_getUserName",
+      "Body": "    - my name is {username=vishwac}\r\n\r\n    > Without an explicit entity definition, 'userName' defaults to 'ml' entity type\r\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "my name is vishwac",
+          "entities": [
+            {
+              "type": "Entities",
+              "entity": "username",
+              "role": "",
+              "startPos": 11,
+              "endPos": 17
+            }
+          ],
+          "errorMsgs": [],
+          "contextText": "- my name is {username=vishwac}",
+          "range": {
+            "Start": {
+              "Line": 3,
+              "Character": 4
+            },
+            "End": {
+              "Line": 3,
+              "Character": 35
+            }
+          }
+        }
+      ],
+      "Entities": [],
+      "Name": "getUserName",
+      "IntentNameLine": "# getUserName",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 6,
+          "Character": 0
+        }
+      }
+    }
+  ],
+  "content": "\n    # getUserName\n    - my name is {username=vishwac}\n\n    > Without an explicit entity definition, 'userName' defaults to 'ml' entity type\n",
+  "errors": []
+}
