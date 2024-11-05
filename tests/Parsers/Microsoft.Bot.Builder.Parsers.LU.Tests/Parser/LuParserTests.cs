@@ -11,40 +11,12 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
 {
     public class LuParserTests
     {
-        private const string _validLUContentWithComments = @"
-> this is the first comment outside of any section
-
-#noUtterences
-- 
-
-# cancel
-> this comment is just after the intent
-- cancel
-- please cancel that
-> this comment is in the middle of utterences
-- stop that
-
-> this comment is between sections
-
-# help
-- help
-- I need help
-- please help me
-- can you help
-
-# weather
-- get weather
-- weather
-- how is the weather
-
-> final comment
-";
-
         [Theory]
         [InlineData("LU_Sections")]
         [InlineData("SectionsLU")]
         [InlineData("ImportAllLu")]
         [InlineData("AllComments")]
+        [InlineData("ValidLUContentWithComments")]
         public void ParseLuContent(string fileName)
         {
             // var luContent = "# Help"+ Environment.NewLine + "- help" + Environment.NewLine + "- I need help" + Environment.NewLine + "- please help";
@@ -382,10 +354,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
         [InlineData("testLU308")]
         [InlineData("testLU309")]
         [InlineData("testLU310")]
-        [InlineData("testLUPVA1")]
-        [InlineData("testLUPVA2")]
-        [InlineData("testLUPVA3")]
-        [InlineData("testLUPVA4")]
         public void ParseLuContentAutomated(string fileName)
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".txt");
@@ -405,82 +373,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var serExpected = SanitizeString(serializedExpected);
 
             Assert.Equal(serExpected, serResult);
-        }
-
-        [Fact]
-        public void GetUtterancesPerIntent_SimpleCase()
-        {
-            var result = LuParser.Parse(_validLUContentWithComments);
-
-            Assert.Equal(4, result.Sections.Count);
-
-            Assert.Single(result.Sections[0].UtteranceAndEntitiesMap);
-
-            Assert.Equal(3, result.Sections[1].UtteranceAndEntitiesMap.Count);
-            Assert.Equal("cancel", result.Sections[1].UtteranceAndEntitiesMap[0].Utterance);
-            Assert.Equal("please cancel that", result.Sections[1].UtteranceAndEntitiesMap[1].Utterance);
-            Assert.Equal("stop that", result.Sections[1].UtteranceAndEntitiesMap[2].Utterance);
-
-            Assert.Equal(4, result.Sections[2].UtteranceAndEntitiesMap.Count);
-            Assert.Equal("help", result.Sections[2].UtteranceAndEntitiesMap[0].Utterance);
-            Assert.Equal("I need help", result.Sections[2].UtteranceAndEntitiesMap[1].Utterance);
-            Assert.Equal("please help me", result.Sections[2].UtteranceAndEntitiesMap[2].Utterance);
-            Assert.Equal("can you help", result.Sections[2].UtteranceAndEntitiesMap[3].Utterance);
-
-            Assert.Equal(3, result.Sections[3].UtteranceAndEntitiesMap.Count);
-            Assert.Equal("get weather", result.Sections[3].UtteranceAndEntitiesMap[0].Utterance);
-            Assert.Equal("weather", result.Sections[3].UtteranceAndEntitiesMap[1].Utterance);
-            Assert.Equal("how is the weather", result.Sections[3].UtteranceAndEntitiesMap[2].Utterance);
-        }
-
-        [Fact]
-        public void GetUtterancesPerIntent_OnlyComments()
-        {
-            var result = LuParser.Parse(@"> To learn more about the LU file format, read the documentation at
-> https://aka.ms/lu-file-format");
-
-            Assert.Empty(result.Sections);
-        }
-
-        [Fact]
-        public void SplitContentPerIntent_SimpleCase()
-        {
-            var result = LuParser.Parse(_validLUContentWithComments);
-
-            Assert.Equal(4, result.Sections.Count);
-
-            var expectedValue = @"- 
-";
-
-            Assert.Equal(expectedValue, result.Sections[0].Body);
-
-            expectedValue = @"> this comment is just after the intent
-- cancel
-- please cancel that
-> this comment is in the middle of utterences
-- stop that
-
-> this comment is between sections
-";
-
-            Assert.Equal(expectedValue, result.Sections[1].Body);
-
-            expectedValue = @"- help
-- I need help
-- please help me
-- can you help
-";
-
-            Assert.Equal(expectedValue, result.Sections[2].Body);
-
-            expectedValue = @"- get weather
-- weather
-- how is the weather
-
-> final comment
-";
-
-            Assert.Equal(expectedValue, result.Sections[3].Body);
         }
 
         private string SanitizeString(string s)

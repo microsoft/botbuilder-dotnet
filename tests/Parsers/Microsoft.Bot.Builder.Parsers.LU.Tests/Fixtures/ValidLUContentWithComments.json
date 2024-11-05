@@ -1,0 +1,328 @@
+{
+  "sections": [
+    {
+      "Errors": [
+
+      ],
+      "SectionType": "SimpleIntentSection",
+      "Id": "simpleIntentSection_noUtterences",
+      "Body": "- \n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- ",
+          "range": {
+            "Start": {
+              "Line": 4,
+              "Character": 0
+            },
+            "End": {
+              "Line": 4,
+              "Character": 2
+            }
+          }
+        }
+      ],
+      "Entities": [
+
+      ],
+      "Name": "noUtterences",
+      "IntentNameLine": "#noUtterences",
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 5,
+          "Character": 0
+        }
+      }
+    },
+    {
+      "Errors": [
+
+      ],
+      "SectionType": "SimpleIntentSection",
+      "Id": "simpleIntentSection_cancel",
+      "Body": "> this comment is just after the intent\n- cancel\n- please cancel that\n> this comment is in the middle of utterences\n- stop that\n\n> this comment is between sections\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "cancel",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- cancel",
+          "range": {
+            "Start": {
+              "Line": 8,
+              "Character": 0
+            },
+            "End": {
+              "Line": 8,
+              "Character": 8
+            }
+          }
+        },
+        {
+          "utterance": "please cancel that",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- please cancel that",
+          "range": {
+            "Start": {
+              "Line": 9,
+              "Character": 0
+            },
+            "End": {
+              "Line": 9,
+              "Character": 20
+            }
+          }
+        },
+        {
+          "utterance": "stop that",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- stop that",
+          "range": {
+            "Start": {
+              "Line": 11,
+              "Character": 0
+            },
+            "End": {
+              "Line": 11,
+              "Character": 11
+            }
+          }
+        }
+      ],
+      "Entities": [
+
+      ],
+      "Name": "cancel",
+      "IntentNameLine": "# cancel",
+      "Range": {
+        "Start": {
+          "Line": 6,
+          "Character": 0
+        },
+        "End": {
+          "Line": 14,
+          "Character": 0
+        }
+      }
+    },
+    {
+      "Errors": [
+
+      ],
+      "SectionType": "SimpleIntentSection",
+      "Id": "simpleIntentSection_help",
+      "Body": "- help\n- I need help\n- please help me\n- can you help\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "help",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- help",
+          "range": {
+            "Start": {
+              "Line": 16,
+              "Character": 0
+            },
+            "End": {
+              "Line": 16,
+              "Character": 6
+            }
+          }
+        },
+        {
+          "utterance": "I need help",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- I need help",
+          "range": {
+            "Start": {
+              "Line": 17,
+              "Character": 0
+            },
+            "End": {
+              "Line": 17,
+              "Character": 13
+            }
+          }
+        },
+        {
+          "utterance": "please help me",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- please help me",
+          "range": {
+            "Start": {
+              "Line": 18,
+              "Character": 0
+            },
+            "End": {
+              "Line": 18,
+              "Character": 16
+            }
+          }
+        },
+        {
+          "utterance": "can you help",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- can you help",
+          "range": {
+            "Start": {
+              "Line": 19,
+              "Character": 0
+            },
+            "End": {
+              "Line": 19,
+              "Character": 14
+            }
+          }
+        }
+      ],
+      "Entities": [
+
+      ],
+      "Name": "help",
+      "IntentNameLine": "# help",
+      "Range": {
+        "Start": {
+          "Line": 15,
+          "Character": 0
+        },
+        "End": {
+          "Line": 20,
+          "Character": 0
+        }
+      }
+    },
+    {
+      "Errors": [
+
+      ],
+      "SectionType": "SimpleIntentSection",
+      "Id": "simpleIntentSection_weather",
+      "Body": "- get weather\n- weather\n- how is the weather\n\n> final comment",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "get weather",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- get weather",
+          "range": {
+            "Start": {
+              "Line": 22,
+              "Character": 0
+            },
+            "End": {
+              "Line": 22,
+              "Character": 13
+            }
+          }
+        },
+        {
+          "utterance": "weather",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- weather",
+          "range": {
+            "Start": {
+              "Line": 23,
+              "Character": 0
+            },
+            "End": {
+              "Line": 23,
+              "Character": 9
+            }
+          }
+        },
+        {
+          "utterance": "how is the weather",
+          "entities": [
+
+          ],
+          "errorMsgs": [
+
+          ],
+          "contextText": "- how is the weather",
+          "range": {
+            "Start": {
+              "Line": 24,
+              "Character": 0
+            },
+            "End": {
+              "Line": 24,
+              "Character": 20
+            }
+          }
+        }
+      ],
+      "Entities": [
+
+      ],
+      "Name": "weather",
+      "IntentNameLine": "# weather",
+      "Range": {
+        "Start": {
+          "Line": 21,
+          "Character": 0
+        },
+        "End": {
+          "Line": 26,
+          "Character": 15
+        }
+      }
+    }
+  ],
+  "content": "> this is the first comment outside of any section\n\n#noUtterences\n- \n\n# cancel\n> this comment is just after the intent\n- cancel\n- please cancel that\n> this comment is in the middle of utterences\n- stop that\n\n> this comment is between sections\n\n# help\n- help\n- I need help\n- please help me\n- can you help\n\n# weather\n- get weather\n- weather\n- how is the weather\n\n> final comment",
+  "errors": [
+
+  ]
+}
