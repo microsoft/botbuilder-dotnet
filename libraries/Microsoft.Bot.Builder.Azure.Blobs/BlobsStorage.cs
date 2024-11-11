@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         ex);
                 }
                 catch (RequestFailedException ex)
-                when (ex.Status == 412)
+                when (ex.Status == (int)HttpStatusCode.PreconditionFailed)
                 {
                     throw new InvalidOperationException($"Etag conflict: {ex.Message}");
                 }
