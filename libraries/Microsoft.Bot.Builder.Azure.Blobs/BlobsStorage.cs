@@ -290,6 +290,11 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         $"An error occurred while trying to write an object. The underlying '{BlobErrorCode.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
                         ex);
                 }
+                catch (RequestFailedException ex)
+                when (ex.Status == 412)
+                {
+                    throw new InvalidOperationException($"Etag conflict: {ex.Message}");
+                }
             }
         }
 
