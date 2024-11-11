@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Credential factory that uses MSAL to acquire tokens.
     /// </summary>
+    [Obsolete("Use the ServiceClientCredentialsFactory implementation that corresponds to the authentication type (MSI, Certificate, Federated, etc.).", false)]
     public class MsalServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly IConfidentialClientApplication _clientApplication;
