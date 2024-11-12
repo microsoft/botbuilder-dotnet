@@ -117,11 +117,43 @@ namespace Microsoft.Bot.Builder.Azure
 
             if (key.Length > MaxKeyLength)
             {
-                var hash = key.GetHashCode().ToString("x", CultureInfo.InvariantCulture);
+                var hash = key.GetDeterministicHashCode().ToString("x", CultureInfo.InvariantCulture);
                 key = key.Substring(0, MaxKeyLength - hash.Length) + hash;
             }
 
             return key;
+        }
+
+        /// <summary>
+        /// Creates a deterministic hash code by iterating through the string two characters at a time,
+        /// updating two separate hash values, and then combining them at the end.
+        /// This approach helps in reducing hash collisions and provides a consistent hash code for the same string across
+        /// different runs and environments.
+        /// </summary>
+        /// <param name="str">The string to calculate the hash on.</param>
+        /// <returns>The hash code.</returns>
+        private static int GetDeterministicHashCode(this string str)
+        {
+            unchecked
+            {
+                var hash1 = (5381 << 16) + 5381; //shifts 5381 left by 16 bits and adds 5381 to it
+                var hash2 = hash1;
+                for (var i = 0; i < str.Length; i += 2)
+                {
+                    // ((hash1 << 5) + hash1) is equivalent to hash1 * 33, which is a common multiplier in hash functions.
+                    // The character str[i] is then XORed with this value.
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i]; 
+                    if (i == str.Length - 1)
+                    {
+                        break;
+                    }
+
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                //1566083941 is a large prime number used to mix the two hash values together, ensuring a more uniform distribution of hash codes.
+                return hash1 + (hash2 * 1566083941);
+            }
         }
     }
 }
