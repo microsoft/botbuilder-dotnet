@@ -1913,6 +1913,12 @@
     <None Update="Fixtures\testLU309.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Fixtures\ValidLUContentWithComments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Fixtures\ValidLUContentWithComments.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\Parsers\Microsoft.Bot.Builder.Parsers.LU\Microsoft.Bot.Builder.Parsers.LU.csproj" />
