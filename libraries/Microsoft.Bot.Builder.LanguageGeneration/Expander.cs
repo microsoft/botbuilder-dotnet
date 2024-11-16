@@ -89,12 +89,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templateTarget = new EvaluationTarget(templateName, memory);
 
-            var currentEvaluateId = templateTarget.GetId();
-
-            if (_evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
-            {
-                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
-            }
+            EvaluationTarget.ThrowIfLoopDetected(_evaluationTargetStack, templateTarget.GetId(), templateName);
 
             // Using a stack to track the evaluation trace
             _evaluationTargetStack.Push(templateTarget);

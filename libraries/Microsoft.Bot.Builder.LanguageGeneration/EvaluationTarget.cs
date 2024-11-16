@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -46,14 +48,40 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public IMemory Scope { get; set; }
 
+        /// <summary>Throws an exception if any of the specified targets equals the specified id such that a loop is detected.</summary>
+        /// <param name="targets">The targets to compare.</param>
+        /// <param name="id">The id against which the targets should be compared.</param>
+        /// <param name="templateName">The template name to include in any resulting exception.</param>
+        public static void ThrowIfLoopDetected(
+            Stack<EvaluationTarget> targets,
+            (string TemplateName, string ScopeVersion) id,
+            string templateName)
+        {
+            foreach (var target in targets)
+            {
+                if (target.TemplateName == id.TemplateName && target.Scope?.Version() == id.ScopeVersion)
+                {
+                    throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", targets.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                }
+            }
+        }
+
+        /// <summary>Combines the components of the specified <paramref name="id"/> to create a string key.</summary>
+        /// <param name="id">The id retrieved from <see cref="GetId"/>.</param>
+        /// <returns>The created string key.</returns>
+        public static string CreateKey((string TemplateName, string ScopeVersion) id)
+        {
+            return id.TemplateName + id.ScopeVersion;
+        }
+
         /// <summary>
         /// Get current instance id. If two target has the same Id,
         /// we can say they have the same template evaluation.
         /// </summary>
         /// <returns>Id.</returns>
-        public string GetId()
+        public (string TemplateName, string ScopeVersion) GetId()
         {
-            return TemplateName + Scope?.Version();
+            return (TemplateName, Scope?.Version());
         }
     }
 }
