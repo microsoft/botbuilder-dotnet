@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -1512,6 +1513,108 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("OnMessageDeleteActivityAsync", bot.Record[0]);
         }
 
+        [Fact]
+        public async Task TestMessageSubmitAction()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "message/submitAction",
+                Value = JObject.FromObject(new FeedbackResponse
+                {
+                    ReplyToId = "replyId",
+                    ActionValue = new FeedbackResponseActionValue
+                    {
+                        Reaction = "like",
+                        Feedback = "feedback message"
+                    }
+                }),
+            };
+
+            List<Activity> activitiesToSend = new List<Activity>();
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend.AddRange(arg.ToList());
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessageSubmitActionAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Equal(2, activitiesToSend.Count);
+            Assert.Equal(JsonConvert.SerializeObject(activity.Value), activitiesToSend[0].Text);
+            Assert.IsType<InvokeResponse>(activitiesToSend[1].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[1].Value).Status);
+        }
+
+        [Fact]
+        public async Task TestMessageFetchTaskDefault()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "message/fetchTask"
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnTeamsMessageFetchTaskAsync", bot.Record[0]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [Fact]
+        public async Task TestMessageFetchTaskCustom()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "message/fetchTask"
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -1847,6 +1950,19 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsMessageSoftDeleteAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMessageSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, FeedbackResponse feedback, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return turnContext.SendActivityAsync(JsonConvert.SerializeObject(feedback));
+            }
+
+            protected override Task<TaskModuleContinueResponse> OnTeamsMessageFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            {
+                var task = new TaskModuleContinueResponse();
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(task);
             }
         }
 
