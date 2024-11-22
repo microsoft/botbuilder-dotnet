@@ -1556,38 +1556,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
-        public async Task TestMessageFetchTaskDefault()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "message/fetchTask"
-            };
-
-            Activity[] activitiesToSend = null;
-            void CaptureSend(Activity[] arg)
-            {
-                activitiesToSend = arg;
-            }
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.Single(bot.Record);
-            Assert.Equal("OnTeamsMessageFetchTaskAsync", bot.Record[0]);
-            Assert.NotNull(activitiesToSend);
-            Assert.Single(activitiesToSend);
-            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
-            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
-        }
-
-        [Fact]
-        public async Task TestMessageFetchTaskCustom()
+        public async Task TestMessageFetchTask()
         {
             // Arrange
             var activity = new Activity
@@ -1613,6 +1582,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Single(activitiesToSend);
             Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
             Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal("http://testing", ((TaskModuleContinueResponse)((InvokeResponse)activitiesToSend[0].Value).Body).Value.Url);
         }
 
         private class NotImplementedAdapter : BotAdapter
@@ -1960,7 +1930,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             protected override Task<TaskModuleContinueResponse> OnTeamsMessageFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
             {
-                var task = new TaskModuleContinueResponse();
+                var info = new TaskModuleTaskInfo(url: "http://testing");
+                var task = new TaskModuleContinueResponse(info);
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(task);
             }
