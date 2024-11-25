@@ -108,6 +108,13 @@ namespace Microsoft.Bot.Schema.Teams
         public TeamsChannelDataSettings Settings { get; set; }
 
         /// <summary>
+        /// Gets or sets information about custom feedback buttons.
+        /// </summary>
+        /// <value>The <see cref="FeedbackInfo"/> for this <see cref="TeamsChannelData"/>.</value>
+        [JsonProperty(PropertyName = "feedbackLoop")]
+        public FeedbackInfo FeedbackLoop { get; set; }
+
+        /// <summary>
         /// Gets the OnBehalfOf list for user attribution.
         /// </summary>
         /// <value>The Teams activity OnBehalfOf list.</value>

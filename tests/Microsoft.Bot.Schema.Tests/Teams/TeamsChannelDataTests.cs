@@ -31,10 +31,12 @@ namespace Microsoft.Bot.Schema.Tests.Teams
                     Mri = Guid.NewGuid().ToString()
                 }
             };
+            var feedback = new FeedbackInfo(FeedbackInfoTypes.Default);
             var channelData = new TeamsChannelData(channel, eventType, team, notification, tenant, onBehalfOf)
             {
                 Meeting = meeting,
-                Settings = settings
+                Settings = settings,
+                FeedbackLoop = feedback
             };
 
             Assert.NotNull(channelData);
@@ -47,6 +49,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(settings, channelData.Settings);
             Assert.Equal(channel, channelData.Settings.SelectedChannel);
             Assert.Equal(onBehalfOf, channelData.OnBehalfOf);
+            Assert.Equal(feedback, channelData.FeedbackLoop);
         }
 
         [Fact]
