@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedbackResponse"/> class.
         /// </summary>
-        /// <param name="actionName">Unique identifier representing a team.</param>
-        /// <param name="actionValue">Unique identifier representing a team2.</param>
-        /// <param name="replyToId">Unique identifier representing a team3.</param>
+        /// <param name="actionName">The name of the action.</param>
+        /// <param name="actionValue">The value of the action.</param>
+        /// <param name="replyToId">The ID of the message to which this message is a reply.</param>
         public FeedbackResponse(string actionName = default, FeedbackResponseActionValue actionValue = default, string replyToId = default)
         {
             ActionName = actionName;
