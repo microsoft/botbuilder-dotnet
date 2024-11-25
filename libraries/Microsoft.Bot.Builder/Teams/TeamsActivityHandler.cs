@@ -1015,12 +1015,50 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Invoked when a custom feedback loop activity is received to show either an AdaptiveCard or website.
+        /// Invoked when a custom feedback loop activity is received.
+        /// The returned information is a <see cref="TaskModuleContinueResponse"/> instance,
+        /// that Teams will use to show either an AdaptiveCard or website in the "feedback window form".
+        /// <example>
+        /// <br/><br/>
+        /// <b>Example of a valid Adaptive Card payload:</b>
+        /// <code>
+        /// const taskModuleReturn = {  
+        ///   task: {  
+        ///     type: 'continue',  
+        ///     value: {  
+        ///       card: [Object], // Should contain valid Adaptive Card Payload 
+        ///       height: 200,  
+        ///       width: 400,  
+        ///       title: 'Test Task Module Title with AC'  
+        ///     }  
+        ///   }  
+        /// };
+        /// return {
+        ///   status: 200,
+        ///   body: taskModuleReturn
+        /// };
+        /// </code>
+        /// <b>Example of a valid website payload:</b>
+        /// <code>
+        /// const taskModuleReturn = {  
+        ///   task: {  
+        ///     type: 'continue',  
+        ///     value: {  
+        ///       url: "https://bing.com", // Should contain valid URL with the valid domain listed under App Manifest
+        ///     }  
+        ///   }  
+        /// };
+        /// return {
+        ///   status: 200,
+        ///   body: taskModuleReturn
+        /// };
+        /// </code>
+        /// </example>
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <returns>A task that represents a <see cref="TaskModuleContinueResponse"/> instance, containing the necessary <see cref="TaskModuleTaskInfo"/> metadata with either an AdaptiveCard or a website url information.</returns>
         protected virtual Task<TaskModuleContinueResponse> OnTeamsMessageFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
