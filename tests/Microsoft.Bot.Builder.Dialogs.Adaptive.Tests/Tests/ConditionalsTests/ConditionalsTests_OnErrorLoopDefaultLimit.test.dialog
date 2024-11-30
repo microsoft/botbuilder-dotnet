@@ -1,0 +1,92 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "ErrorLoop",
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Throw Exception in BeginDialog."
+                    },
+                    {
+                        "$kind": "Microsoft.ThrowException",
+                        "errorValue": "Exception in BeginDialog."
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnError",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Throw Exception in OnError."
+                    },
+                    {
+                        "$kind": "Microsoft.ThrowException",
+                        "errorValue": "Exception in OnError."
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in BeginDialog."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Throw Exception in OnError."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Exception in OnError."
+        }
+    ]
+}

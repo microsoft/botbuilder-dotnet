@@ -1166,7 +1166,8 @@
       "label": "Error occurred",
       "order": [
         "condition",
-        "*"
+        "*",
+        "executionLimit"
       ],
       "subtitle": "Error event"
     },
