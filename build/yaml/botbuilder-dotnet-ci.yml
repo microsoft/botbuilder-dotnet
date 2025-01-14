@@ -49,7 +49,6 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
   - job: Debug_Windows_Configuration_8
     variables:
       BuildConfiguration: Debug-Windows
@@ -57,7 +56,6 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_6
     variables:
       BuildConfiguration: Release-Windows
@@ -65,7 +63,6 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_8
     variables:
       BuildConfiguration: Release-Windows
@@ -74,7 +71,6 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
 
 - stage: API_Compatibility_Validation
   dependsOn: Build
