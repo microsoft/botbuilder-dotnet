@@ -1,0 +1,26 @@
+> this is the first comment outside of any section
+
+#noUtterences
+- 
+
+# cancel
+> this comment is just after the intent
+- cancel
+- please cancel that
+> this comment is in the middle of utterences
+- stop that
+
+> this comment is between sections
+
+# help
+- help
+- I need help
+- please help me
+- can you help
+
+# weather
+- get weather
+- weather
+- how is the weather
+
+> final comment

@@ -4,9 +4,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.Bot.Builder.Parsers.LU;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -19,6 +16,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
         [InlineData("SectionsLU")]
         [InlineData("ImportAllLu")]
         [InlineData("AllComments")]
+        [InlineData("ValidLUContentWithComments")]
         public void ParseLuContent(string fileName)
         {
             // var luContent = "# Help"+ Environment.NewLine + "- help" + Environment.NewLine + "- I need help" + Environment.NewLine + "- please help";
