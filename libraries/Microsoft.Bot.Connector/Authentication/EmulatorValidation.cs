@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -77,9 +78,13 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 //If the issuer doesn't exist, this is added using the Emulator token issuer structure.
                 //This allows use of the SingleTenant authentication through Emulator.
-                var newIssuer = AuthenticationConstants.ValidTokenIssuerUrlTemplateV1.Replace("{0}", tenantId);
-                ToBotFromEmulatorTokenValidationParameters.ValidIssuers = 
-                    ToBotFromEmulatorTokenValidationParameters.ValidIssuers.Concat(new string[] { newIssuer });
+                var validTokenIssuers = new List<string>();
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidTokenIssuerUrlTemplateV1, tenantId));
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidTokenIssuerUrlTemplateV2, tenantId));
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidGovernmentTokenIssuerUrlTemplateV1, tenantId));
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidGovernmentTokenIssuerUrlTemplateV2, tenantId));
+
+                ToBotFromEmulatorTokenValidationParameters.ValidIssuers = validTokenIssuers;
             }
 
             // Is the token issues by a source we consider to be the emulator?
