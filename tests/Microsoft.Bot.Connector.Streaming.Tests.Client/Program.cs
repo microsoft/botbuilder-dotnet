@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
             }
             else
             {
-                var url = AskUser("Bot url:");
+                var url = AskUser("Bot url (e.g ws://localhost:3978/api/messages):");
                 var appId = AskUser("Bot app id:");
                 var appPassword = AskUser("Bot app password:");
 
