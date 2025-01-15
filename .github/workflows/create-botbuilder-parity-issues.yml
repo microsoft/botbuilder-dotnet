@@ -55,11 +55,11 @@ jobs:
     steps:
       - run: echo "::notice ::Creating issue for ${{ matrix.repo }}"
         if: |
-          contains(github.event.pull_request.labels.*.name, 'Automation: Parity all') == true || contains(github.event.pull_request.labels.*.name, format('Automation: parity with {0}', matrix.repo)) == true
+          contains(github.event.pull_request.labels.*.name, 'Automation: Parity all') == true || contains(github.event.pull_request.labels.*.name, format('Automation: Parity with {0}', matrix.repo)) == true
 
       - uses: joshgummersall/dispatch-workflow@main
         if: |
-          contains(github.event.pull_request.labels.*.name, 'Automation: Parity all') == true || contains(github.event.pull_request.labels.*.name, format('Automation: parity with {0}', matrix.repo)) == true
+          contains(github.event.pull_request.labels.*.name, 'Automation: Parity all') == true || contains(github.event.pull_request.labels.*.name, format('Automation: Parity with {0}', matrix.repo)) == true
         with:
           encoded: "true"
           inputs: |
