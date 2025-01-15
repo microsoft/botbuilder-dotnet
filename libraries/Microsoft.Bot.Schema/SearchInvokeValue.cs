@@ -51,5 +51,14 @@ namespace Microsoft.Bot.Schema
         /// </value>
         [JsonProperty("context")]
         public object Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets the dataset to be queried to get the choices.
+        /// </summary>
+        /// <value>
+        /// The dataset of this search invoke action value.
+        /// </value>
+        [JsonProperty("dataset")]
+        public string Dataset { get; set; }
     }
 }
