@@ -805,28 +805,34 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Equal(expectedChannelId, actualChannelId);
         }
 
-        [Fact(Skip = "Expired token not working anymore, disabling it until fixed.")]
+        [Fact]
         public async Task ExpiredTokenShouldThrowUnauthorizedAccessException()
         {
             // Arrange
             var headerDictionaryMock = new Mock<IHeaderDictionary>();
 
-            // Expired token with removed AppID
-            // This token will be validated against real endpoint https://login.microsoftonline.com/common/discovery/v2.0/keys
-            // So when the signing key is removed in endpoint, it will not be Expired exception, we need to generate a new token
-            // - create a new app registration: https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/CreateApplicationBlade/quickStartType~/null/isMSAApp~/false
-            // - create an access token via powershell script (need to wait for one day so it is expired)
-            // $Form = @{
-            //     client_id = "YOUR_APP_ID"
-            //     scope = "https://api.botframework.com/.default"
-            //     client_secret = "YOUR_APP_SECRET"
-            //     grant_type = "client_credentials"
-            // }
-            // (Invoke-WebRequest -Uri 'https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token' -Method Post -Form $Form).Content
-            // - delete the app
-            var token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL2FwaS5ib3RmcmFtZXdvcmsuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiLyIsImlhdCI6MTY5Mjg3MDMwMiwibmJmIjoxNjkyODcwMzAyLCJleHAiOjE2OTI5NTcwMDIsImFpbyI6IkUyRmdZUGhhdFZ6czVydGFFYTlWbDN2ZnIyQ2JBZ0E9IiwiYXBwaWQiOiIxNWYwMTZmZS00ODhjLTQwZTktOWNiZS00Yjk0OGY5OGUyMmMiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIvIiwicmgiOiIwLkFXNEFJSlRVMXB2ejkwMmgzTldhazFoeDIwSXpMWTBwejFsSmxYY09EcS05RnJ4dUFBQS4iLCJ0aWQiOiJkNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIiLCJ1dGkiOiJkenVwa1dWd2FVT2x1RldkbnlvLUFBIiwidmVyIjoiMS4wIn0.sbQH997Q2GDKiiYd6l5MIz_XNfXypJd6zLY9xjtvEgXMBB0x0Vu3fv9W0nM57_ZipQiZDTZuSQA5BE30KBBwU-ZVqQ7MgiTkmE9eF6Ngie_5HwSr9xMK3EiDghHiOP9pIj3oEwGOSyjR5L9n-7tLSdUbKVyV14nS8OQtoPd1LZfoZI3e7tVu3vx8Lx3KzudanXX8Vz7RKaYndj3RyRi4wEN5hV9ab40d7fQsUzygFd5n_PXC2rs0OhjZJzjCOTC0VLQEn1KwiTkSH1E-OSzkrMltn1sbhD2tv_H-4rqQd51vAEJ7esC76qQjz_pfDRLs6T2jvJyhd5MZrN_MT0TqlA";
+            // Fake expired token
+            var tid = Guid.NewGuid().ToString();
+            var header = new { alg = "RS256", typ = "JWT", kid = Guid.NewGuid().ToString() };
+            var payload = new
+            {
+                aud = "https://api.botframework.com",
+                iss = $"https://sts.windows.net/{tid}/",
+                iat = DateTimeOffset.UtcNow.AddHours(-2).ToUnixTimeSeconds(),
+                nbf = DateTimeOffset.UtcNow.AddHours(-2).ToUnixTimeSeconds(),
+                exp = DateTimeOffset.UtcNow.AddHours(-1).ToUnixTimeSeconds(),
+                tid,
+                ver = "1.0"
+            };
 
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>((_) => token);
+            var headerBase64 = Base64UrlEncode(JsonConvert.SerializeObject(header));
+            var payloadBase64 = Base64UrlEncode(JsonConvert.SerializeObject(payload));
+            var rawSignature = "dummySignature";
+            var bearerToken = $"Bearer {headerBase64}.{payloadBase64}.{rawSignature}";
+
+            headerDictionaryMock
+                .Setup(h => h[It.Is<string>(v => v == "Authorization")])
+                .Returns<string>((_) => bearerToken);
 
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
@@ -910,6 +916,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             textWriter.Flush();
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
+        }
+
+        // Helper method for Base64Url encoding
+        private string Base64UrlEncode(string input)
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(input);
+            return Convert.ToBase64String(bytes)
+                .TrimEnd('=') // Remove padding
+                .Replace('+', '-') // Replace '+' with '-'
+                .Replace('/', '_'); // Replace '/' with '_'
         }
 
         private class InvokeResponseBot : IBot
