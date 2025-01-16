@@ -811,20 +811,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Arrange
             var headerDictionaryMock = new Mock<IHeaderDictionary>();
 
-            // Expired token with removed AppID
-            // This token will be validated against real endpoint https://login.microsoftonline.com/common/discovery/v2.0/keys
-            // So when the signing key is removed in endpoint, it will not be Expired exception, we need to generate a new token
-            // - create a new app registration: https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/CreateApplicationBlade/quickStartType~/null/isMSAApp~/false
-            // - create an access token via powershell script (need to wait for one day so it is expired)
-            // $Form = @{
-            //     client_id = "YOUR_APP_ID"
-            //     scope = "https://api.botframework.com/.default"
-            //     client_secret = "YOUR_APP_SECRET"
-            //     grant_type = "client_credentials"
-            // }
-            // (Invoke-WebRequest -Uri 'https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token' -Method Post -Form $Form).Content
-            // - delete the app
-
             // Fake expired token
             var tid = Guid.NewGuid().ToString();
             var header = new { alg = "RS256", typ = "JWT", kid = Guid.NewGuid().ToString() };
