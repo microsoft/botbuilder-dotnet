@@ -108,20 +108,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateTarget = new EvaluationTarget(templateName, memory);
             var currentEvaluateId = templateTarget.GetId();
 
-            if (_evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
-            {
-                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
-            }
+            EvaluationTarget.ThrowIfLoopDetected(_evaluationTargetStack, currentEvaluateId, templateName);
 
+            string key = null;
             object result = null;
             var hasResult = false;
             if (!reExecute)
             {
                 if (_lgOptions.CacheScope == LGCacheScope.Global)
                 {
-                    if (_cachedResult.ContainsKey(currentEvaluateId))
+                    key ??= EvaluationTarget.CreateKey(currentEvaluateId);
+                    if (_cachedResult.TryGetValue(key, out result))
                     {
-                        result = _cachedResult[currentEvaluateId];
                         hasResult = true;
                     }
                 }
@@ -132,9 +130,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         previousEvaluateTarget = CurrentTarget();
 
-                        if (previousEvaluateTarget.CachedEvaluatedChildren.ContainsKey(currentEvaluateId))
+                        key ??= EvaluationTarget.CreateKey(currentEvaluateId);
+                        if (previousEvaluateTarget.CachedEvaluatedChildren.TryGetValue(key, out result))
                         {
-                            result = previousEvaluateTarget.CachedEvaluatedChildren[currentEvaluateId];
                             hasResult = true;
                         }
                     }
@@ -162,13 +160,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (_lgOptions.CacheScope == LGCacheScope.Global)
                     {
-                        _cachedResult[currentEvaluateId] = result;
+                        key ??= EvaluationTarget.CreateKey(currentEvaluateId);
+                        _cachedResult[key] = result;
                     }
                     else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Local)
                     {
                         if (_evaluationTargetStack.Count > 0)
                         {
-                            _evaluationTargetStack.Peek().CachedEvaluatedChildren[currentEvaluateId] = result;
+                            key ??= EvaluationTarget.CreateKey(currentEvaluateId);
+                            _evaluationTargetStack.Peek().CachedEvaluatedChildren[key] = result;
                         }
                     }
                 }
@@ -524,13 +524,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (currentTemplate != null)
             {
                 var source = currentTemplate.SourceRange.Source;
-                if (expressionContext != null && _lgOptions.OnEvent != null)
+                if (expressionContext != null && _lgOptions.OnEvent != null && currentTemplate.Expressions.Count != 0)
                 {
                     var lineOffset = currentTemplate.SourceRange.Range.Start.Line;
                     var sourceRange = new SourceRange(expressionContext, source, lineOffset);
                     var expressionRef = new ExpressionRef(exp, sourceRange);
+                    var expressionRefId = expressionRef.GetId();
 
-                    var expression = currentTemplate.Expressions.FirstOrDefault(u => u.GetId() == expressionRef.GetId());
+                    var expression = currentTemplate.Expressions.FirstOrDefault(u => u.Equals(expressionRefId));
                     if (expression != null)
                     {
                         _lgOptions.OnEvent(expression, new BeginExpressionEvaluationArgs { Source = source, Expression = exp });
