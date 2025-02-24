@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,27 +16,28 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Teams
 {
     /// <summary>
-    /// If the activity name is signin/tokenExchange, this middleware will attempt to
-    /// exchange the token, and deduplicate the incoming call, ensuring only one
-    /// exchange request is processed.
+    /// This middleware is designed to intercept incoming 'signin/tokenExchange' activities,
+    /// perform the token exchange operation, and in case of duplicated requests, the bot will only process one of them.
     /// </summary>
     /// <remarks>
-    /// If a user is signed into multiple Teams clients, the Bot could receive a
-    /// "signin/tokenExchange" from each client. Each token exchange request for a
-    /// specific user login will have an identical Activity.Value.Id.
-    /// 
-    /// Only one of these token exchange requests should be processed by the bot.
-    /// The others return <see cref="System.Net.HttpStatusCode.PreconditionFailed"/>.
-    /// For a distributed bot in production, this requires a distributed storage
-    /// ensuring only one token exchange is processed. This middleware supports
-    /// CosmosDb storage found in Microsoft.Bot.Builder.Azure, or MemoryStorage for
-    /// local development. IStorage's ETag implementation for token exchange activity
-    /// deduplication.
+    /// <para>
+    /// <b>Duplicated requests:</b> when a user is signed into multiple MS Teams clients, the Bot will receive a 'signin/tokenExchange' activity from each client,
+    /// causing the next conversation step to be executed more than once.<br/>
+    /// When this behavior happens, the middleware will detect any duplicated request, 
+    /// executing <see cref="NextDelegate"/> inside <see cref="OnTurnAsync"/> method once, to continue the to next middleware.<br/>
+    /// <i>NOTE: when receiving this type of request, the 'signin/tokenExchange' activity will contain the same Value.Id.</i>
+    /// </para>
+    /// <para>
+    /// <b>Token exchange:</b> when a user is signed into multiple MS Teams clients, the token exchange will be done to each client,
+    /// ensuring that if the token could not be exchanged (which could be due to a consent requirement),
+    /// the bot will notify the sender with a <see cref="HttpStatusCode.PreconditionFailed"/> so they can respond accordingly.
+    /// </para>
     /// </remarks>
     public class TeamsSSOTokenExchangeMiddleware : IMiddleware
     {
-        private readonly IStorage _storage;
         private readonly string _oAuthConnectionName;
+
+        private readonly ConcurrentDictionary<string, (string, int)> _users = new ConcurrentDictionary<string, (string, int)>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsSSOTokenExchangeMiddleware"/> class.
@@ -43,90 +46,136 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="connectionName">The connection name to use for the single
         /// sign on token exchange.</param>
         public TeamsSSOTokenExchangeMiddleware(IStorage storage, string connectionName)
+            : this(connectionName)
         {
-            if (storage == null)
-            {
-                throw new ArgumentNullException(nameof(storage));
-            }
+            // We don't mark this as obsolete, in case we may need a storage for something else in the future.
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TeamsSSOTokenExchangeMiddleware"/> class.
+        /// </summary>
+        /// <param name="connectionName">The connection name to use for the single
+        /// sign on token exchange.</param>
+        public TeamsSSOTokenExchangeMiddleware(string connectionName)
+        {
             if (string.IsNullOrEmpty(connectionName))
             {
                 throw new ArgumentNullException(nameof(connectionName));
             }
 
             _oAuthConnectionName = connectionName;
-            _storage = storage;
         }
 
         /// <inheritdoc/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            if (string.Equals(Channels.Msteams, turnContext.Activity.ChannelId, StringComparison.OrdinalIgnoreCase) 
-                && string.Equals(SignInConstants.TokenExchangeOperationName, turnContext.Activity.Name, StringComparison.OrdinalIgnoreCase))
+            if (await ProcessActivityAsync(turnContext, cancellationToken).ConfigureAwait(false))
             {
-                // If the TokenExchange is NOT successful, the response will have already been sent by ExchangedTokenAsync
-                if (!await this.ExchangedTokenAsync(turnContext, cancellationToken).ConfigureAwait(false))
-                {
-                    return;
-                }
-
-                // Only one token exchange should proceed from here. Deduplication is performed second because in the case
-                // of failure due to consent required, every caller needs to receive the 
-                if (!await DeduplicatedTokenExchangeIdAsync(turnContext, cancellationToken).ConfigureAwait(false))
-                {
-                    // If the token is not exchangeable, do not process this activity further.
-                    return;
-                }
+                await next(cancellationToken).ConfigureAwait(false);
             }
-
-            await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<bool> DeduplicatedTokenExchangeIdAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        /// <summary>
+        /// Evaluates if the incoming activity is from MSTeams channel and if it's a 'signin/tokenExchange' activity.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>True if the activity is from MS Teams and it's a token exchange request.</returns>
+        private bool IsTokenExchangeActivity(ITurnContext turnContext)
         {
-            // Create a StoreItem with Etag of the unique 'signin/tokenExchange' request
-            var storeItem = new TokenStoreItem
-            {
-                ETag = (turnContext.Activity.Value as JObject).Value<string>("id")
-            };
+            return string.Equals(Channels.Msteams, turnContext.Activity.ChannelId, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(SignInConstants.TokenExchangeOperationName, turnContext.Activity.Name, StringComparison.OrdinalIgnoreCase);
+        }
 
-            var storeItems = new Dictionary<string, object> { { TokenStoreItem.GetStorageKey(turnContext), storeItem } };
-            try
+        /// <summary>
+        /// Evaluates if the incoming activity is a 'signin/tokenExchange' activity,
+        /// it processes the token exchange operation and in case of duplicated requests,
+        /// it will return true on the first one, whereas the rest will return false and send an invoke response to notify the bot.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>False if the token couldn't be exchanged or if the method received a duplicated 'signin/tokenExchange' activity, otherwise True.</returns>
+        private async Task<bool> ProcessActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (!IsTokenExchangeActivity(turnContext))
             {
-                // Writing the IStoreItem with ETag of unique id will succeed only once
-                await _storage.WriteAsync(storeItems, cancellationToken).ConfigureAwait(false);
+                return true;
             }
-            catch (Exception ex)
 
-                // Memory storage throws a generic exception with a Message of 'Etag conflict. [other error info]'
-                // CosmosDbPartitionedStorage throws: ex.Message.Contains("pre-condition is not met")
-                when (ex.Message.StartsWith("Etag conflict", StringComparison.OrdinalIgnoreCase) || ex.Message.Contains("pre-condition is not met"))
+            // Add the user to a thread-safe collection to avoid duplicated requests of the same user with equal or different MS Teams session id.
+            // The item in the collection will live in the collection for a short period of time, only in the ProcessActivityAsync scope, and then it will be removed.
+            // Additionally, the item in the collection keeps track of the number of requests + the token 'sid (Session ID)' claim.
+            var key = CreateKey(turnContext);
+            var tokenExchangeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>() ?? throw new InvalidOperationException("Invalid 'signin/tokenExchange' operation. Missing TokenExchangeInvokeRequest object in Activity.Value property.");
+            var token = new JwtSecurityToken(tokenExchangeRequest.Token);
+            var sessionId = token.Payload.Claims.FirstOrDefault(claim => claim.Type == "sid")?.Value ?? throw new InvalidOperationException("Invalid 'signin/tokenExchange' operation. Missing 'sid' claim in the Activity.Value.Token property.");
+            var tracker = _users.AddOrUpdate(key, _ => (sessionId, 1), (_, val) => (val.Item1, val.Item2 + 1));
+
+            // Exchange the token.
+            if (!await ExchangeTokenAsync(turnContext, cancellationToken))
             {
-                // Do NOT proceed processing this message, some other thread or machine already has processed it.
-
-                // Send 200 invoke response.
-                await SendInvokeResponseAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return false;
             }
 
-            return true;
+            // Delay processing the user from the collection to capture a burst of incoming duplicated requests over a small period of time. 
+            await Task.Delay(500, cancellationToken).ConfigureAwait(false);
+
+            // Capture the first request that reached this point, and mark it as processed, the rest will be ignored.
+            var processed = false;
+            tracker = _users.AddOrUpdate(key, _ => (string.Empty, 0), (_, val) =>
+            {
+                processed = val.Item1 == sessionId;
+                var id = processed ? $"{val.Item1}/processed" : val.Item1;
+                return (id, val.Item2 - 1);
+            });
+
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                Console.WriteLine($"key={key}, processed={processed}, session:processed={tracker.Item1}, session:incoming={sessionId}, session:count={tracker.Item2}");
+            }
+
+            if (!processed)
+            {
+                // Notify the sender that the request is duplicated. Send 200 invoke response.
+                await SendInvokeResponseAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            // Remove the user from the collection to free up memory.
+            if (tracker.Item2 <= 0)
+            {
+                _users.TryRemove(key, out _);
+            }
+
+            return processed;
         }
 
+        /// <summary>
+        /// Sends an invoke response to the caller.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="body">The body response to send. Defaults to null.</param>
+        /// <param name="httpStatusCode">The HTTP status code to send. Defaults to <see cref="HttpStatusCode.OK"/>.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A void task.</returns>
         private async Task SendInvokeResponseAsync(ITurnContext turnContext, object body = null, HttpStatusCode httpStatusCode = HttpStatusCode.OK, CancellationToken cancellationToken = default)
         {
-            await turnContext.SendActivityAsync(
-                new Activity
-                {
-                    Type = ActivityTypesEx.InvokeResponse,
-                    Value = new InvokeResponse
-                    {
-                        Status = (int)httpStatusCode,
-                        Body = body,
-                    },
-                }, cancellationToken).ConfigureAwait(false);
+            var activity = new Activity
+            {
+                Type = ActivityTypesEx.InvokeResponse,
+                Value = new InvokeResponse { Status = (int)httpStatusCode, Body = body },
+            };
+            await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<bool> ExchangedTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        /// <summary>
+        /// It performs the token exchange operation based on the token exchange request activity for a specific connection.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>False if the token couldn't be exchanged, otherwise True.</returns>
+        private async Task<bool> ExchangeTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             TokenResponse tokenExchangeResponse = null;
             var tokenExchangeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>();
@@ -186,24 +235,18 @@ namespace Microsoft.Bot.Builder.Teams
             return true;
         }
 
-        private class TokenStoreItem : IStoreItem
+        /// <summary>
+        /// Creates a key based on the channel, conversation and user id.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>The generated key for a specific user.</returns>
+        /// <exception cref="InvalidOperationException">If any of the ChannelId, Conversation.Id and From.Id are missing.</exception>
+        private string CreateKey(ITurnContext turnContext)
         {
-            public string ETag { get; set; }
-
-            public static string GetStorageKey(ITurnContext turnContext)
-            {
-                var activity = turnContext.Activity;
-                var channelId = activity.ChannelId ?? throw new InvalidOperationException("invalid activity-missing channelId");
-                var conversationId = activity.Conversation?.Id ?? throw new InvalidOperationException("invalid activity-missing Conversation.Id");
-
-                var value = activity.Value as JObject;
-                if (value == null || !value.ContainsKey("id"))
-                {
-                    throw new InvalidOperationException("Invalid signin/tokenExchange. Missing activity.Value.Id.");
-                }
-
-                return $"{channelId}/{conversationId}/{value.Value<string>("id")}";
-            }
+            var channelId = turnContext.Activity.ChannelId ?? throw new InvalidOperationException("Invalid Activity, missing ChannelId property.");
+            var conversationId = turnContext.Activity.Conversation?.Id ?? throw new InvalidOperationException("Invalid Activity, missing Conversation.Id property.");
+            var userId = turnContext.Activity.From?.Id ?? throw new InvalidOperationException("Invalid Activity, missing From.Id property.");
+            return $"{channelId}/conversations/{conversationId}/users/{userId}";
         }
     }
 }
