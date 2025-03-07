@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -32,12 +32,19 @@ namespace Microsoft.Bot.Builder.Teams
     /// ensuring that if the token could not be exchanged (which could be due to a consent requirement),
     /// the bot will notify the sender with a <see cref="HttpStatusCode.PreconditionFailed"/> so they can respond accordingly.
     /// </para>
+    /// <para>
+    /// For a distributed bot (multiple process instances, machines, cluster, etc.) in production, this requires a distributed storage
+    /// ensuring only one token exchange is processed. This middleware supports
+    /// CosmosDb storage found in Microsoft.Bot.Builder.Azure, or MemoryStorage for
+    /// local development. IStorage's ETag implementation for token exchange activity
+    /// deduplication.
+    /// </para>
     /// </remarks>
     public class TeamsSSOTokenExchangeMiddleware : IMiddleware
     {
         private readonly string _oAuthConnectionName;
 
-        private readonly ConcurrentDictionary<string, (string, int)> _users = new ConcurrentDictionary<string, (string, int)>();
+        private readonly IStorage _storage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsSSOTokenExchangeMiddleware"/> class.
@@ -46,24 +53,19 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="connectionName">The connection name to use for the single
         /// sign on token exchange.</param>
         public TeamsSSOTokenExchangeMiddleware(IStorage storage, string connectionName)
-            : this(connectionName)
-        {
-            // We don't mark this as obsolete, in case we may need a storage for something else in the future.
-        }
+        {            
+            if (storage == null)
+            {
+                throw new ArgumentNullException(nameof(storage));
+            }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TeamsSSOTokenExchangeMiddleware"/> class.
-        /// </summary>
-        /// <param name="connectionName">The connection name to use for the single
-        /// sign on token exchange.</param>
-        public TeamsSSOTokenExchangeMiddleware(string connectionName)
-        {
             if (string.IsNullOrEmpty(connectionName))
             {
                 throw new ArgumentNullException(nameof(connectionName));
             }
 
             _oAuthConnectionName = connectionName;
+            _storage = storage;
         }
 
         /// <inheritdoc/>
@@ -73,17 +75,6 @@ namespace Microsoft.Bot.Builder.Teams
             {
                 await next(cancellationToken).ConfigureAwait(false);
             }
-        }
-
-        /// <summary>
-        /// Evaluates if the incoming activity is from MSTeams channel and if it's a 'signin/tokenExchange' activity.
-        /// </summary>
-        /// <param name="turnContext">The context object for this turn.</param>
-        /// <returns>True if the activity is from MS Teams and it's a token exchange request.</returns>
-        private bool IsTokenExchangeActivity(ITurnContext turnContext)
-        {
-            return string.Equals(Channels.Msteams, turnContext.Activity.ChannelId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(SignInConstants.TokenExchangeOperationName, turnContext.Activity.Name, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -102,14 +93,7 @@ namespace Microsoft.Bot.Builder.Teams
                 return true;
             }
 
-            // Add the user to a thread-safe collection to avoid duplicated requests of the same user with equal or different MS Teams session id.
-            // The item in the collection will live in the collection for a short period of time, only in the ProcessActivityAsync scope, and then it will be removed.
-            // Additionally, the item in the collection keeps track of the number of requests + the token 'sid (Session ID)' claim.
-            var key = CreateKey(turnContext);
-            var tokenExchangeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>() ?? throw new InvalidOperationException("Invalid 'signin/tokenExchange' operation. Missing TokenExchangeInvokeRequest object in Activity.Value property.");
-            var token = new JwtSecurityToken(tokenExchangeRequest.Token);
-            var sessionId = token.Payload.Claims.FirstOrDefault(claim => claim.Type == "sid")?.Value ?? throw new InvalidOperationException("Invalid 'signin/tokenExchange' operation. Missing 'sid' claim in the Activity.Value.Token property.");
-            var tracker = _users.AddOrUpdate(key, _ => (sessionId, 1), (_, val) => (val.Item1, val.Item2 + 1));
+            var isDuplicated = await InitDeduplicateAsync(turnContext, cancellationToken);
 
             // Exchange the token.
             if (!await ExchangeTokenAsync(turnContext, cancellationToken))
@@ -117,36 +101,64 @@ namespace Microsoft.Bot.Builder.Teams
                 return false;
             }
 
-            // Delay processing the user from the collection to capture a burst of incoming duplicated requests over a small period of time. 
-            await Task.Delay(500, cancellationToken).ConfigureAwait(false);
-
-            // Capture the first request that reached this point, and mark it as processed, the rest will be ignored.
-            var processed = false;
-            tracker = _users.AddOrUpdate(key, _ => (string.Empty, 0), (_, val) =>
+            // Deduplicate the request.
+            if (await isDuplicated())
             {
-                processed = val.Item1 == sessionId;
-                var id = processed ? $"{val.Item1}/processed" : val.Item1;
-                return (id, val.Item2 - 1);
-            });
-
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                Console.WriteLine($"key={key}, processed={processed}, session:processed={tracker.Item1}, session:incoming={sessionId}, session:count={tracker.Item2}");
+                return false;
             }
 
-            if (!processed)
+            return true;
+        }
+
+        /// <summary>
+        /// Evaluates if the incoming activity is from MSTeams channel and if it's a 'signin/tokenExchange' activity.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>True if the activity is from MS Teams and it's a token exchange request.</returns>
+        private bool IsTokenExchangeActivity(ITurnContext turnContext)
+        {
+            return string.Equals(Channels.Msteams, turnContext.Activity.ChannelId, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(SignInConstants.TokenExchangeOperationName, turnContext.Activity.Name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task<Func<Task<bool>>> InitDeduplicateAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var key = CreateKey(turnContext);
+            var items = await _storage.ReadAsync<TokenStoreItem>(new string[] { key }, cancellationToken).ConfigureAwait(false);
+            var item = items.FirstOrDefault().Value;
+
+            var changes = new Dictionary<string, object>
             {
-                // Notify the sender that the request is duplicated. Send 200 invoke response.
-                await SendInvokeResponseAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                [key] = new TokenStoreItem { ETag = item?.ETag },
+            };
+
+            if (item == null)
+            {
+                // Create the item in the Storage for the first time to gather the ETag, to then use it later for concurrency control and avoid deduplication.
+                await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
+                items = await _storage.ReadAsync<TokenStoreItem>(new string[] { key }, cancellationToken).ConfigureAwait(false);
+                item = items.FirstOrDefault().Value;
+                (changes[key] as TokenStoreItem).ETag = item?.ETag;
             }
 
-            // Remove the user from the collection to free up memory.
-            if (tracker.Item2 <= 0)
+            return async () =>
             {
-                _users.TryRemove(key, out _);
-            }
+                // Delay processing to capture a burst of incoming duplicated requests from the same user over a small period of time. 
+                await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
 
-            return processed;
+                try
+                {
+                    // Will be processed when there is an ETag assigned.
+                    await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
+                    return false;
+                }
+                catch (ETagException)
+                {
+                    // Notify the sender that the request is duplicated. Send 200 invoke response.
+                    await SendInvokeResponseAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return true;
+                }
+            };
         }
 
         /// <summary>
@@ -246,7 +258,12 @@ namespace Microsoft.Bot.Builder.Teams
             var channelId = turnContext.Activity.ChannelId ?? throw new InvalidOperationException("Invalid Activity, missing ChannelId property.");
             var conversationId = turnContext.Activity.Conversation?.Id ?? throw new InvalidOperationException("Invalid Activity, missing Conversation.Id property.");
             var userId = turnContext.Activity.From?.Id ?? throw new InvalidOperationException("Invalid Activity, missing From.Id property.");
-            return $"{channelId}/conversations/{conversationId}/users/{userId}";
+            return $"{channelId}/conversations/{conversationId}/users/{userId}/tokenExchange";
+        }
+
+        private class TokenStoreItem : IStoreItem
+        {
+            public string ETag { get; set; }
         }
     }
 }

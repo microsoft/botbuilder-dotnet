@@ -270,6 +270,13 @@ namespace Microsoft.Bot.Builder.Azure
                     }
                 }
                 catch (CosmosException ex)
+                when (ex.StatusCode == HttpStatusCode.PreconditionFailed)
+                {
+                    var items = await ReadAsync(new[] { change.Key }, cancellationToken).ConfigureAwait(false);
+                    var item = items.FirstOrDefault().Value as IStoreItem;
+                    throw new ETagException(documentChange.Id, etag, item?.ETag, ex);
+                }
+                catch (CosmosException ex)
                 {
                     // This check could potentially be performed before even attempting to upsert the item
                     // so that a request wouldn't be made to Cosmos if it's expected to fail.
