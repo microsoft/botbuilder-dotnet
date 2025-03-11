@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -53,7 +52,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="connectionName">The connection name to use for the single
         /// sign on token exchange.</param>
         public TeamsSSOTokenExchangeMiddleware(IStorage storage, string connectionName)
-        {            
+        {
             if (storage == null)
             {
                 throw new ArgumentNullException(nameof(storage));
