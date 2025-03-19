@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
     <PackageId>Microsoft.Bot.Streaming</PackageId>
     <Description>Streaming library for the Bot Framework SDK</Description>
     <Summary>Streaming library for the Bot Framework SDK</Summary>
@@ -30,11 +30,7 @@
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.1.0" />
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
 	  <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
