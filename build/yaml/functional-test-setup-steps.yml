@@ -8,7 +8,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '-r linux-x64 --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\PublishedBot --configuration $(TestConfiguration) --framework net8.0'
+    arguments: '-r linux-x64 --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\PublishedBot --configuration $(TestConfiguration) --framework net9.0'
 
 - task: CopyFiles@2
   displayName: 'Copy root Directory.Build.props to staging'
