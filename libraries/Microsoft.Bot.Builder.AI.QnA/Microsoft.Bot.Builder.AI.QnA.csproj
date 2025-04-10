@@ -38,6 +38,8 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
+    <PackageReference Include="Azure.AI.Language.QuestionAnswering" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>

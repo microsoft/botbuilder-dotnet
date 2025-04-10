@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Azure.Core;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
@@ -121,29 +122,25 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0,
             bool useTeamsAdaptiveCard = false)
-            : base(dialogId)
+            : this(
+                dialogId,
+                knowledgeBaseId,
+                hostName,
+                noAnswer,
+                threshold,
+                activeLearningCardTitle,
+                cardNoMatchText,
+                top,
+                cardNoMatchResponse,
+                strictFilters,
+                filters,
+                qnAServiceType,
+                sourceFilePath,
+                sourceLineNumber,
+                useTeamsAdaptiveCard,
+                httpClient)
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-            this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
-            this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
-            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
-            this.Threshold = threshold;
-            this.Top = top;
-            this.ActiveLearningCardTitle = activeLearningCardTitle;
-            this.CardNoMatchText = cardNoMatchText;
-            this.StrictFilters = strictFilters;
-            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
-            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
-            Filters = filters;
-            QnAServiceType = qnAServiceType;
-            this.HttpClient = httpClient;
-            this.UseTeamsAdaptiveCard = useTeamsAdaptiveCard;
-
-            // add waterfall steps
-            this.AddStep(CallGenerateAnswerAsync);
-            this.AddStep(CallTrainAsync);
-            this.AddStep(CheckForMultiTurnPromptAsync);
-            this.AddStep(DisplayQnAResultAsync);
+            EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
         }
 
         /// <summary>
@@ -193,8 +190,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             : this(
                 nameof(QnAMakerDialog),
                 knowledgeBaseId,
-                endpointKey,
                 hostName,
+                endpointKey,
                 noAnswer,
                 threshold,
                 activeLearningCardTitle,
@@ -213,6 +210,73 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
+        /// </summary>
+        /// <param name="dialogId">The ID of the <see cref="Dialog"/>.</param>
+        /// <param name="managedIdentityClientId">The ClientId of the Managed Identity resource.</param>
+        /// <param name="knowledgeBaseId">The ID of the QnA Maker knowledge base to query.</param>
+        /// <param name="hostName">The QnA Maker host URL for the knowledge base, starting with "https://" and
+        /// ending with "/qnamaker".</param>
+        /// <param name="noAnswer">The activity to send the user when QnA Maker does not find an answer.</param>
+        /// <param name="threshold">The threshold for answers returned, based on score.</param>
+        /// <param name="activeLearningCardTitle">The card title to use when showing active learning options
+        /// to the user, if active learning is enabled.</param>
+        /// <param name="cardNoMatchText">The button text to use with active learning options,
+        /// allowing a user to indicate none of the options are applicable.</param>
+        /// <param name="top">The maximum number of answers to return from the knowledge base.</param>
+        /// <param name="cardNoMatchResponse">The activity to send the user if they select the no match option
+        /// on an active learning card.</param>
+        /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
+        /// knowledge base; or null to apply none.</param>
+        /// <param name="filters">Assigns <see cref="Filters"/> to filter QnAs based on given metadata list and knowledge base sources.</param>
+        /// <param name="qnAServiceType">Valid value <see cref="ServiceType.Language"/> for Language Service, <see cref="ServiceType.QnAMaker"/> for QnAMaker.</param>
+        /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
+        /// or `null` to use a default client.</param>
+        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
+        /// of the source file that contains the caller.</param>
+        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
+        /// in the source file at which the method is called.</param>
+        /// <param name="useTeamsAdaptiveCard"> Boolean value to determine whether an Adaptive card formatted for Teams should be used for responses.</param>
+        public QnAMakerDialog(
+            string dialogId,
+            string managedIdentityClientId,
+            string knowledgeBaseId,
+            Uri hostName,
+            Activity noAnswer = null,
+            float threshold = DefaultThreshold,
+            string activeLearningCardTitle = DefaultCardTitle,
+            string cardNoMatchText = DefaultCardNoMatchText,
+            int top = DefaultTopN,
+            Activity cardNoMatchResponse = null,
+            Metadata[] strictFilters = null,
+            Filters filters = null,
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
+            HttpClient httpClient = null,
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0,
+            bool useTeamsAdaptiveCard = false)
+            : this(
+                dialogId,
+                knowledgeBaseId,
+                hostName.ToString(),
+                noAnswer,
+                threshold,
+                activeLearningCardTitle,
+                cardNoMatchText,
+                top,
+                cardNoMatchResponse,
+                strictFilters,
+                filters,
+                qnAServiceType,
+                sourceFilePath,
+                sourceLineNumber,
+                useTeamsAdaptiveCard,
+                httpClient)
+        {
+            ManagedIdentityClientId = managedIdentityClientId ?? throw new ArgumentNullException(nameof(managedIdentityClientId));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
         /// The JSON serializer uses this constructor to deserialize objects of this class.
         /// </summary>
         /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
@@ -223,13 +287,54 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public QnAMakerDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base(nameof(QnAMakerDialog))
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            RegisterSourceLocation(sourceFilePath, sourceLineNumber);
 
             // add waterfall steps
-            this.AddStep(CallGenerateAnswerAsync);
-            this.AddStep(CallTrainAsync);
-            this.AddStep(CheckForMultiTurnPromptAsync);
-            this.AddStep(DisplayQnAResultAsync);
+            AddStep(CallGenerateAnswerAsync);
+            AddStep(CallTrainAsync);
+            AddStep(CheckForMultiTurnPromptAsync);
+            AddStep(DisplayQnAResultAsync);
+        }
+
+        internal QnAMakerDialog(
+            string dialogId,
+            string knowledgeBaseId,
+            string hostName,
+            Activity noAnswer = null,
+            float threshold = DefaultThreshold,
+            string activeLearningCardTitle = DefaultCardTitle,
+            string cardNoMatchText = DefaultCardNoMatchText,
+            int top = DefaultTopN,
+            Activity cardNoMatchResponse = null,
+            Metadata[] strictFilters = null,
+            Filters filters = null,
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0,
+            bool useTeamsAdaptiveCard = false,
+            HttpClient httpClient = null)
+            : base(dialogId)
+        {
+            RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
+            HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
+            Threshold = threshold;
+            Top = top;
+            ActiveLearningCardTitle = activeLearningCardTitle;
+            CardNoMatchText = cardNoMatchText;
+            StrictFilters = strictFilters;
+            NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
+            CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
+            Filters = filters;
+            QnAServiceType = qnAServiceType;
+            HttpClient = httpClient;
+            UseTeamsAdaptiveCard = useTeamsAdaptiveCard;
+
+            // add waterfall steps
+            AddStep(CallGenerateAnswerAsync);
+            AddStep(CallTrainAsync);
+            AddStep(CheckForMultiTurnPromptAsync);
+            AddStep(DisplayQnAResultAsync);
         }
 
         /// <summary>
@@ -265,6 +370,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// </value>
         [JsonProperty("endpointKey")]
         public StringExpression EndpointKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Managed Identity ClientId to use to query the knowledge base.
+        /// </summary>
+        /// <value>
+        /// The Managed Identity ClientId to use or an expression which evaluates to the Managed Identity ClientId.
+        /// </value>
+        [JsonProperty("managedIdentityClientId")]
+        public StringExpression ManagedIdentityClientId { get; set; }
 
         /// <summary>
         /// Gets or sets the threshold for answers returned, based on score.
@@ -534,8 +648,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = this.EndpointKey.GetValue(dc.State),
-                Host = this.HostName.GetValue(dc.State),
+                EndpointKey = EndpointKey?.GetValue(dc.State),
+                Host = HostName.GetValue(dc.State),
                 KnowledgeBaseId = KnowledgeBaseId.GetValue(dc.State),
                 QnAServiceType = QnAServiceType.GetValue(dc.State)
             };
@@ -544,6 +658,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             if (endpoint.QnAServiceType == ServiceType.Language)
             {
+                if (ManagedIdentityClientId != null)
+                {
+                    return new CustomQuestionAnswering(ManagedIdentityClientId.GetValue(dc.State), endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
+                }
+
                 return new CustomQuestionAnswering(endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
             }
 

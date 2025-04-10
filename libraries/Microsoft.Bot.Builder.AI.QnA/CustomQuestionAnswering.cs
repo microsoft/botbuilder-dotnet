@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Newtonsoft.Json;
 
@@ -35,33 +34,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
         public CustomQuestionAnswering(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
+            : this(endpoint, telemetryClient, logPersonalInformation, httpClient)
         {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-
-            if (string.IsNullOrEmpty(endpoint.KnowledgeBaseId))
-            {
-                throw new ArgumentException(nameof(endpoint.KnowledgeBaseId));
-            }
-
-            if (string.IsNullOrEmpty(endpoint.Host))
-            {
-                throw new ArgumentException(nameof(endpoint.Host));
-            }
-
             if (string.IsNullOrEmpty(endpoint.EndpointKey))
             {
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
-
-            if (_endpoint.Host.EndsWith("v2.0", StringComparison.Ordinal) || _endpoint.Host.EndsWith("v3.0", StringComparison.Ordinal))
-            {
-                throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
-            }
-
-            _httpClient = httpClient ?? DefaultHttpClient;
-
-            TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
-            LogPersonalInformation = logPersonalInformation;
 
             _languageServiceHelper = new LanguageServiceUtils(TelemetryClient, _httpClient, endpoint, options);
         }
@@ -76,6 +54,47 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public CustomQuestionAnswering(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
             : this(endpoint, options, httpClient, null)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomQuestionAnswering"/> class.
+        /// </summary>
+        /// <param name="managedIdentityClientId">The ClientId of the Managed Identity resource.</param>
+        /// <param name="endpoint">The <see cref="QnAMakerEndpoint"/> of the knowledge base to query.</param>
+        /// <param name="options">The <see cref="QnAMakerOptions"/> for the Custom Question Answering Knowledge Base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to Language Service.
+        /// If null, a default client is used for this instance.</param>
+        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
+        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
+        public CustomQuestionAnswering(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+            : this(endpoint, telemetryClient, logPersonalInformation, httpClient)
+        {
+            _languageServiceHelper = new LanguageServiceUtils(managedIdentityClientId, endpoint, options, _httpClient, TelemetryClient);
+        }
+
+        internal CustomQuestionAnswering(QnAMakerEndpoint endpoint, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false, HttpClient httpClient = null)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+
+            if (string.IsNullOrEmpty(endpoint.KnowledgeBaseId))
+            {
+                throw new ArgumentException(nameof(endpoint.KnowledgeBaseId));
+            }
+
+            if (string.IsNullOrEmpty(endpoint.Host))
+            {
+                throw new ArgumentException(nameof(endpoint.Host));
+            }
+
+            if (_endpoint.Host.EndsWith("v2.0", StringComparison.Ordinal) || _endpoint.Host.EndsWith("v3.0", StringComparison.Ordinal))
+            {
+                throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
+            }
+
+            _httpClient = httpClient ?? DefaultHttpClient;
+
+            TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
+            LogPersonalInformation = logPersonalInformation;
         }
 
         /// <summary>
