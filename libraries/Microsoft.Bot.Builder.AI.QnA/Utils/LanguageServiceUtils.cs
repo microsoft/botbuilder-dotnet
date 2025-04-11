@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Azure;
 using Azure.AI.Language.QuestionAnswering;
@@ -22,10 +21,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
     /// </summary>
     internal class LanguageServiceUtils
     {
-        private const string ApiVersionQueryParam = "api-version=2021-10-01";
-
-        private readonly IBotTelemetryClient _telemetryClient;
-        private readonly HttpClient _httpClient;
         private readonly QnAMakerOptions _options;
         private readonly QnAMakerEndpoint _endpoint;
         private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
@@ -38,10 +33,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <param name="managedIdentityClientId">The ClientId of the Managed Identity resource.</param>
         /// <param name="endpoint">Language Service endpoint details.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">A client with which to talk to Language Service.</param>
-        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        public LanguageServiceUtils(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient)
-            : this(endpoint, options, httpClient, telemetryClient)
+        public LanguageServiceUtils(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options)
         {
             if (string.IsNullOrEmpty(managedIdentityClientId))
             {
@@ -51,17 +43,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             var credential = new ManagedIdentityCredential(managedIdentityClientId);
             _client = new QuestionAnsweringClient(new Uri(_endpoint.Host), credential);
             _authoringClient = new QuestionAnsweringAuthoringClient(new Uri(_endpoint.Host), credential);
+            
+            _endpoint = endpoint;
+            _options = options ?? new QnAMakerOptions();
+            ValidateOptions(_options);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageServiceUtils"/> class.
         /// </summary>
-        /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="endpoint">Language Service endpoint details.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">A client with which to talk to Language Service.</param>
-        public LanguageServiceUtils(IBotTelemetryClient telemetryClient, HttpClient httpClient, QnAMakerEndpoint endpoint, QnAMakerOptions options)
-            : this(endpoint, options, httpClient, telemetryClient)
+        public LanguageServiceUtils(QnAMakerEndpoint endpoint, QnAMakerOptions options)
         {
             if (string.IsNullOrEmpty(endpoint.EndpointKey))
             {
@@ -71,16 +64,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             var credential = new AzureKeyCredential(endpoint.EndpointKey);
             _client = new QuestionAnsweringClient(new Uri(_endpoint.Host), credential);
             _authoringClient = new QuestionAnsweringAuthoringClient(new Uri(_endpoint.Host), credential);
-        }
-
-        internal LanguageServiceUtils(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient)
-        {
-            _telemetryClient = telemetryClient;
+            
             _endpoint = endpoint;
-            _httpClient = httpClient;
             _options = options ?? new QnAMakerOptions();
             ValidateOptions(_options);
-            _httpClient = httpClient;
         }
 
         /// <summary>

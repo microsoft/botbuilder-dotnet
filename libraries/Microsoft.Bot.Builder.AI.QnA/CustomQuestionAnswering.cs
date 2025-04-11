@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
-            _languageServiceHelper = new LanguageServiceUtils(TelemetryClient, _httpClient, endpoint, options);
+            _languageServiceHelper = new LanguageServiceUtils(endpoint, options);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public CustomQuestionAnswering(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
             : this(endpoint, telemetryClient, logPersonalInformation, httpClient)
         {
-            _languageServiceHelper = new LanguageServiceUtils(managedIdentityClientId, endpoint, options, _httpClient, TelemetryClient);
+            _languageServiceHelper = new LanguageServiceUtils(managedIdentityClientId, endpoint, options);
         }
 
         internal CustomQuestionAnswering(QnAMakerEndpoint endpoint, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false, HttpClient httpClient = null)

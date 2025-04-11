@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Azure.Core;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
@@ -272,7 +271,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 useTeamsAdaptiveCard,
                 httpClient)
         {
-            ManagedIdentityClientId = managedIdentityClientId ?? throw new ArgumentNullException(nameof(managedIdentityClientId));
+            if (string.IsNullOrWhiteSpace(managedIdentityClientId))
+            {
+                throw new ArgumentException("managedIdentityClientId cannot be null, empty, or consist only of whitespace.", nameof(managedIdentityClientId));
+            }
+
+            ManagedIdentityClientId = managedIdentityClientId;
         }
 
         /// <summary>
