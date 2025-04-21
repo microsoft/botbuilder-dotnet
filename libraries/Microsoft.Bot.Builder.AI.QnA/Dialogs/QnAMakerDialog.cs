@@ -31,6 +31,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.QnAMakerDialog";
 
+#pragma warning disable SA1401 // Fields should be private - used for internal testing.
+        internal CustomQuestionAnsweringClient CQAClient;
+#pragma warning restore SA1401 // Fields should be private
+
         /// <summary>
         /// The path for storing and retrieving QnA Maker context data.
         /// </summary>
@@ -662,6 +666,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             if (endpoint.QnAServiceType == ServiceType.Language)
             {
+                if (CQAClient != null)
+                {
+                    return new CustomQuestionAnswering(CQAClient, endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));
+                }
+
                 if (ManagedIdentityClientId != null)
                 {
                     return new CustomQuestionAnswering(ManagedIdentityClientId.GetValue(dc.State), endpoint, options, httpClient, TelemetryClient, LogPersonalInformation.GetValue(dc.State));

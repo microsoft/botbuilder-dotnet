@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
-            _languageServiceHelper = new LanguageServiceUtils(endpoint, options);
+            _languageServiceHelper = new LanguageServiceUtils(endpoint, options, _httpClient);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public CustomQuestionAnswering(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
             : this(endpoint, telemetryClient, logPersonalInformation, httpClient)
         {
-            _languageServiceHelper = new LanguageServiceUtils(managedIdentityClientId, endpoint, options);
+            _languageServiceHelper = new LanguageServiceUtils(managedIdentityClientId, endpoint, options, _httpClient);
         }
 
         internal CustomQuestionAnswering(QnAMakerEndpoint endpoint, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false, HttpClient httpClient = null)
@@ -95,6 +95,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
+        }
+
+        internal CustomQuestionAnswering(CustomQuestionAnsweringClient client, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+        {
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            _httpClient = httpClient ?? DefaultHttpClient;
+            TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
+            LogPersonalInformation = logPersonalInformation;
+            _languageServiceHelper = new LanguageServiceUtils(client, endpoint, options);
         }
 
         /// <summary>

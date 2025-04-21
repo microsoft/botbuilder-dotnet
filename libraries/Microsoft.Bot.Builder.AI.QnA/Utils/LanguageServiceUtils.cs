@@ -4,11 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Azure;
 using Azure.AI.Language.QuestionAnswering;
 using Azure.AI.Language.QuestionAnswering.Authoring;
 using Azure.Core;
+using Azure.Core.Pipeline;
 using Azure.Identity;
 using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Schema;
@@ -24,8 +30,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         private readonly QnAMakerOptions _options;
         private readonly QnAMakerEndpoint _endpoint;
         private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
-        private readonly QuestionAnsweringClient _client;
-        private readonly QuestionAnsweringAuthoringClient _authoringClient;
+        private readonly CustomQuestionAnsweringClient _client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageServiceUtils"/> class.
@@ -33,7 +38,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// <param name="managedIdentityClientId">The ClientId of the Managed Identity resource.</param>
         /// <param name="endpoint">Language Service endpoint details.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        public LanguageServiceUtils(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options)
+        /// <param name="httpClient">A client with which to talk to Language Service.</param>
+        public LanguageServiceUtils(string managedIdentityClientId, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient = null)
         {
             if (string.IsNullOrEmpty(managedIdentityClientId))
             {
@@ -41,9 +47,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             }
 
             var credential = new ManagedIdentityCredential(managedIdentityClientId);
-            _client = new QuestionAnsweringClient(new Uri(_endpoint.Host), credential);
-            _authoringClient = new QuestionAnsweringAuthoringClient(new Uri(_endpoint.Host), credential);
-            
+            AddHeaders(httpClient);
+            var clientOptions = httpClient != null ? new QuestionAnsweringClientOptions { Transport = new HttpClientTransport(httpClient) } : null;
+            _client = new CustomQuestionAnsweringClient(
+                new QuestionAnsweringClient(new Uri(endpoint.Host), credential, clientOptions),
+                new QuestionAnsweringAuthoringClient(new Uri(endpoint.Host), credential, clientOptions));
+
             _endpoint = endpoint;
             _options = options ?? new QnAMakerOptions();
             ValidateOptions(_options);
@@ -54,7 +63,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         /// </summary>
         /// <param name="endpoint">Language Service endpoint details.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        public LanguageServiceUtils(QnAMakerEndpoint endpoint, QnAMakerOptions options)
+        /// <param name="httpClient">A client with which to talk to Language Service.</param>
+        public LanguageServiceUtils(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient = null)
         {
             if (string.IsNullOrEmpty(endpoint.EndpointKey))
             {
@@ -62,9 +72,20 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             }
 
             var credential = new AzureKeyCredential(endpoint.EndpointKey);
-            _client = new QuestionAnsweringClient(new Uri(_endpoint.Host), credential);
-            _authoringClient = new QuestionAnsweringAuthoringClient(new Uri(_endpoint.Host), credential);
-            
+            AddHeaders(httpClient);
+            var clientOptions = httpClient != null ? new QuestionAnsweringClientOptions { Transport = new HttpClientTransport(httpClient) } : null;
+            _client = new CustomQuestionAnsweringClient(
+                new QuestionAnsweringClient(new Uri(endpoint.Host), credential, clientOptions),
+                new QuestionAnsweringAuthoringClient(new Uri(endpoint.Host), credential, clientOptions));
+
+            _endpoint = endpoint;
+            _options = options ?? new QnAMakerOptions();
+            ValidateOptions(_options);
+        }
+
+        internal LanguageServiceUtils(CustomQuestionAnsweringClient client, QnAMakerEndpoint endpoint, QnAMakerOptions options)
+        {
+            _client = client;
             _endpoint = endpoint;
             _options = options ?? new QnAMakerOptions();
             ValidateOptions(_options);
@@ -195,50 +216,40 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             }
         }
 
+        /// <summary>
+        /// Add headers to the incoming HttpClient although there is an issue preventing to do so: https://github.com/Azure/azure-sdk-for-net/issues/4086.
+        /// </summary>
+        /// <param name="httpClient">The httpClient <see cref="HttpClient"/>.</param>
+        private void AddHeaders(HttpClient httpClient)
+        {
+            if (httpClient == null)
+            {
+                return;
+            }
+
+            // Bot Builder Package name and version
+            var assemblyName = GetType().Assembly.GetName();
+            var botBuilderInfo = new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString());
+
+            // Platform information: OS and language runtime
+            var framework = Assembly
+                .GetEntryAssembly()?
+                .GetCustomAttribute<TargetFrameworkAttribute>()?
+                .FrameworkName ?? RuntimeInformation.FrameworkDescription;
+            var comment = $"({Environment.OSVersion.VersionString};{framework})";
+            var platformInfo = new ProductInfoHeaderValue(comment);
+
+            httpClient.DefaultRequestHeaders.UserAgent.Add(botBuilderInfo);
+            httpClient.DefaultRequestHeaders.UserAgent.Add(platformInfo);
+        }
+
         private async Task<QueryResults> QueryKbAsync(Activity messageActivity, QnAMakerOptions options)
         {
-            var deploymentName = options.IsTest ? "test" : "production";
-            var project = new QuestionAnsweringProject(_endpoint.KnowledgeBaseId, deploymentName);
-            var newOptions = new AnswersOptions
-            {
-                AnswerContext = new KnowledgeBaseAnswerContext(options.Context.PreviousQnAId)
-                {
-                    PreviousQuestion = options.Context.PreviousUserQuery,
-                },
-                ConfidenceThreshold = options.ScoreThreshold,
-                IncludeUnstructuredSources = options.IncludeUnstructuredSources.Value,
-                RankerKind = options.RankerType,
-                Size = options.Top,
-                UserId = messageActivity.From?.Id,
-                Filters = new QueryFilters
-                {
-                    MetadataFilter = new Azure.AI.Language.QuestionAnswering.MetadataFilter(),
-                },
-            };
-
-            if (!string.IsNullOrWhiteSpace(options.Filters?.LogicalOperation))
-            {
-                newOptions.Filters.LogicalOperation = options.Filters.LogicalOperation;
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.Filters?.MetadataFilter?.LogicalOperation))
-            {
-                newOptions.Filters.MetadataFilter.LogicalOperation = options.Filters.MetadataFilter.LogicalOperation;
-            }
-
-            if (options.EnablePreciseAnswer.Value)
-            {
-                newOptions.ShortAnswerOptions = new ShortAnswerOptions
-                {
-                    ConfidenceThreshold = 1,
-                };
-            }
-
-            var result = await _client.GetAnswersAsync(messageActivity.Text, project, newOptions).ConfigureAwait(false);
+            var result = await _client.GetAnswersAsync(messageActivity, _endpoint, options).ConfigureAwait(false);
 
             return new QueryResults
             {
-                Answers = result.Value.Answers
+                Answers = result.Answers
                     .Select(answer => GetQueryResultFromKBAnswer(answer))
                     .ToArray(),
                 ActiveLearningEnabled = true
@@ -248,7 +259,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
         private async Task UpdateActiveLearningFeedbackRecordsAsync(FeedbackRecords feedbackRecords)
         {
             var records = RequestContent.Create(feedbackRecords);
-            await _authoringClient.AddFeedbackAsync(_endpoint.KnowledgeBaseId, records).ConfigureAwait(false);
+            await _client.AddFeedbackAsync(_endpoint.KnowledgeBaseId, records).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -294,17 +305,17 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             return hydratedOptions;
         }
 
-        private QueryResult GetQueryResultFromKBAnswer(Azure.AI.Language.QuestionAnswering.KnowledgeBaseAnswer kbAnswer)
+        private QueryResult GetQueryResultFromKBAnswer(Models.KnowledgeBaseAnswer kbAnswer)
         {
             return new QueryResult
             {
                 Answer = kbAnswer.Answer,
-                AnswerSpan = kbAnswer.ShortAnswer != null ? new AnswerSpanResponse
+                AnswerSpan = kbAnswer.AnswerSpan != null ? new AnswerSpanResponse
                 {
-                    Score = (float)kbAnswer.ShortAnswer.Confidence,
-                    Text = kbAnswer.ShortAnswer?.Text,
-                    StartIndex = kbAnswer.ShortAnswer?.Offset ?? 0,
-                    EndIndex = kbAnswer.ShortAnswer?.Length != null ? (kbAnswer.ShortAnswer?.Offset + kbAnswer.ShortAnswer?.Length - 1).Value : 0
+                    Score = (float)kbAnswer.AnswerSpan.ConfidenceScore,
+                    Text = kbAnswer.AnswerSpan?.Text,
+                    StartIndex = kbAnswer.AnswerSpan?.Offset ?? 0,
+                    EndIndex = kbAnswer.AnswerSpan?.Length != null ? (kbAnswer.AnswerSpan?.Offset + kbAnswer.AnswerSpan?.Length - 1).Value : 0
                 }
                 : null,
                 Context = kbAnswer.Dialog != null ? new QnAResponseContext
@@ -313,10 +324,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
                                 new QnaMakerPrompt { DisplayOrder = (int)p.DisplayOrder, DisplayText = p.DisplayText, Qna = null, QnaId = (int)p.QnaId }).ToArray()
                 }
                 : null,
-                Id = (int)kbAnswer.QnaId,
+                Id = (int)kbAnswer.Id,
                 Metadata = kbAnswer.Metadata?.ToList().Select(nv => new Metadata { Name = nv.Key, Value = nv.Value }).ToArray(),
                 Questions = kbAnswer.Questions?.ToArray(),
-                Score = (float)kbAnswer.Confidence,
+                Score = (float)kbAnswer.ConfidenceScore,
                 Source = kbAnswer.Source
             };
         }

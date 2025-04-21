@@ -1986,7 +1986,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             public QnaMakerTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
                 : base(nameof(QnaMakerTestDialog))
             {
-                AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey, hostName, httpClient: httpClient));
+                AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey: endpointKey, hostName, httpClient: httpClient));
             }
 
             /// <summary>
