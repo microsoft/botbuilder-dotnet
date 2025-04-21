@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             : this(
                 dialogId,
                 knowledgeBaseId,
-                hostName.ToString(),
+                hostName?.ToString() ?? throw new ArgumentNullException(nameof(hostName)),
                 noAnswer,
                 threshold,
                 activeLearningCardTitle,

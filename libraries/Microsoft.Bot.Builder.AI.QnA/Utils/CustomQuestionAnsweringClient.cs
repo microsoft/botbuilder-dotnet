@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
                 newOptions.Filters.MetadataFilter.LogicalOperation = options.Filters.MetadataFilter.LogicalOperation;
             }
 
-            if (options.EnablePreciseAnswer.Value)
+            if (options.EnablePreciseAnswer != null && options.EnablePreciseAnswer.Value)
             {
                 newOptions.ShortAnswerOptions = new ShortAnswerOptions
                 {
