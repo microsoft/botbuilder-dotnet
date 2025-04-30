@@ -249,6 +249,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             await DialogOptions.ConversationState.SaveChangesAsync(context, true, cancellationToken).ConfigureAwait(false);
 
             var skillInfo = DialogOptions.Skill;
+
+            DialogOptions.SkillClient.AddDefaultHeaders();
+            
             var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
 
             // Inspect the skill response status

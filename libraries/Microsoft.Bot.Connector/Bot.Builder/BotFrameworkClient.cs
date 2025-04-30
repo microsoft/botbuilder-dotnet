@@ -45,6 +45,13 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>Async task with optional invokeResponse.</returns>
         public abstract Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Allows to add default headers to the HTTP client after the creation of the instance.
+        /// </summary>
+        public virtual void AddDefaultHeaders()
+        {
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {

@@ -41,13 +41,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         public async Task BasicMessageActivity()
         {
             // Arrange
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", StringValues.Empty }
+            });
 
             var httpResponseMock = new Mock<HttpResponse>();
 
@@ -66,13 +66,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         public async Task InvokeActivity()
         {
             // Arrange
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateInvokeActivityStream());
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", StringValues.Empty }
+            });
 
             var response = new MemoryStream();
             var httpResponseMock = new Mock<HttpResponse>();
@@ -389,13 +389,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         public async Task MessageActivityWithHttpClient()
         {
             // Arrange
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", StringValues.Empty }
+            });
 
             var httpResponseMock = new Mock<HttpResponse>();
 
@@ -474,13 +474,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         public async Task InjectCloudEnvironment()
         {
             // Arrange
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", StringValues.Empty }
+            });
 
             var httpResponseMock = new Mock<HttpResponse>();
 
@@ -527,13 +527,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             string relatesToActivityId = "relatesToActivityId";
             string connectionName = "connectionName";
 
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream(userId, channelId, conversationId, recipientId, relatesToActivityId));
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", StringValues.Empty }
+            });
 
             var httpResponseMock = new Mock<HttpResponse>();
 
@@ -609,14 +609,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // this is just a basic test to verify the wire-up of a ConnectorFactory in the CloudAdapter
 
             // Arrange
-
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", StringValues.Empty }
+            });
 
             var httpResponseMock = new Mock<HttpResponse>();
 
@@ -809,7 +808,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         public async Task ExpiredTokenShouldThrowUnauthorizedAccessException()
         {
             // Arrange
-            var headerDictionaryMock = new Mock<IHeaderDictionary>();
 
             // Expired token with removed AppID
             // This token will be validated against real endpoint https://login.microsoftonline.com/common/discovery/v2.0/keys
@@ -826,12 +824,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // - delete the app
             var token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyIsImtpZCI6Ii1LSTNROW5OUjdiUm9meG1lWm9YcWJIWkdldyJ9.eyJhdWQiOiJodHRwczovL2FwaS5ib3RmcmFtZXdvcmsuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiLyIsImlhdCI6MTY5Mjg3MDMwMiwibmJmIjoxNjkyODcwMzAyLCJleHAiOjE2OTI5NTcwMDIsImFpbyI6IkUyRmdZUGhhdFZ6czVydGFFYTlWbDN2ZnIyQ2JBZ0E9IiwiYXBwaWQiOiIxNWYwMTZmZS00ODhjLTQwZTktOWNiZS00Yjk0OGY5OGUyMmMiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIvIiwicmgiOiIwLkFXNEFJSlRVMXB2ejkwMmgzTldhazFoeDIwSXpMWTBwejFsSmxYY09EcS05RnJ4dUFBQS4iLCJ0aWQiOiJkNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIiLCJ1dGkiOiJkenVwa1dWd2FVT2x1RldkbnlvLUFBIiwidmVyIjoiMS4wIn0.sbQH997Q2GDKiiYd6l5MIz_XNfXypJd6zLY9xjtvEgXMBB0x0Vu3fv9W0nM57_ZipQiZDTZuSQA5BE30KBBwU-ZVqQ7MgiTkmE9eF6Ngie_5HwSr9xMK3EiDghHiOP9pIj3oEwGOSyjR5L9n-7tLSdUbKVyV14nS8OQtoPd1LZfoZI3e7tVu3vx8Lx3KzudanXX8Vz7RKaYndj3RyRi4wEN5hV9ab40d7fQsUzygFd5n_PXC2rs0OhjZJzjCOTC0VLQEn1KwiTkSH1E-OSzkrMltn1sbhD2tv_H-4rqQd51vAEJ7esC76qQjz_pfDRLs6T2jvJyhd5MZrN_MT0TqlA";
 
-            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>((_) => token);
-
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateInvokeActivityStream());
-            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", token }
+            });
 
             var response = new MemoryStream();
             var httpResponseMock = new Mock<HttpResponse>().SetupAllProperties();

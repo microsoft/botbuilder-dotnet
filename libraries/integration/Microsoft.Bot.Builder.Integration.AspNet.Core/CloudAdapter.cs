@@ -14,6 +14,7 @@ using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Configuration;
@@ -77,6 +78,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             _ = httpResponse ?? throw new ArgumentNullException(nameof(httpResponse));
             _ = bot ?? throw new ArgumentNullException(nameof(bot));
 
+            FillHeadersDictionary(httpRequest);
+
             try
             {
                 // Only GET requests for web socket connects are allowed
@@ -96,6 +99,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                         Logger.LogWarning("BadRequest: Missing activity or activity type.");
                         return;
+                    }
+
+                    // Check channel to propagate headers.
+                    if (activity.ChannelId == Channels.Msteams)
+                    {
+                        TeamsHeaderPropagation.SetHeaderPropagation();
                     }
 
                     // Grab the auth header from the inbound http request
@@ -204,6 +213,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             return new WebSocketStreamingConnection(socket, logger);
+        }
+
+        private void FillHeadersDictionary(HttpRequest httpRequest)
+        {
+            var headers = HeaderPropagation.Headers;
+
+            foreach (var header in httpRequest.Headers)
+            {
+                headers.Add(header.Key, header.Value);
+            }
+
+            HeaderPropagation.Headers = headers;
         }
 
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
