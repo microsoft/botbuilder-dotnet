@@ -12,9 +12,10 @@ namespace Microsoft.Bot.Connector.Teams
     public static class TeamsHeaderPropagation
     {
         /// <summary>
-        /// Set the headers to propagate from incoming request to outgoing request.
+        /// Returns the headers to propagate from incoming request to outgoing request.
         /// </summary>
-        public static void SetHeaderPropagation()
+        /// <returns>.</returns>
+        public static Dictionary<string, StringValues> GetHeadersToPropagate()
         {
             var headersToPropagate = new Dictionary<string, StringValues>
             {
@@ -22,7 +23,9 @@ namespace Microsoft.Bot.Connector.Teams
                 ["X-Ms-Teams-Custom"] = "Custom-Value"
             };
 
-            HeaderPropagation.HeadersToPropagate = headersToPropagate;
+            return headersToPropagate;
+            
+            // HeaderPropagation.HeadersToPropagate = headersToPropagate;
         }
     }
 }

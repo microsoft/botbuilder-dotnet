@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -19,6 +21,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -28,6 +31,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class CloudAdapter : CloudAdapterBase, IBotFrameworkHttpAdapter
     {
         private readonly ConcurrentDictionary<Guid, StreamingActivityProcessor> _streamingConnections = new ConcurrentDictionary<Guid, StreamingActivityProcessor>();
+        private readonly IStorage _storage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
@@ -42,11 +46,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="botFrameworkAuthentication">The <see cref="BotFrameworkAuthentication"/> this adapter should use.</param>
         /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
+        /// <param name="storage">The <see cref="IStorage"/> implementation this adapter should use for header propagation.</param>
         public CloudAdapter(
             BotFrameworkAuthentication botFrameworkAuthentication,
-            ILogger logger = null)
+            ILogger logger = null,
+            IStorage storage = null)
             : base(botFrameworkAuthentication, logger)
         {
+            _storage = storage ?? new MemoryStorage();
         }
 
         /// <summary>
@@ -55,12 +62,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="configuration">The <see cref="IConfiguration"/> instance.</param>
         /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/> this adapter should use.</param>
         /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
+        /// <param name="storage">The <see cref="IStorage"/> implementation this adapter should use for header propagation.</param>
         public CloudAdapter(
             IConfiguration configuration,
             IHttpClientFactory httpClientFactory = null,
-            ILogger logger = null)
+            ILogger logger = null,
+            IStorage storage = null)
             : this(new ConfigurationBotFrameworkAuthentication(configuration, httpClientFactory: httpClientFactory, logger: logger), logger)
         {
+            _storage = storage ?? new MemoryStorage();
         }
 
         /// <summary>
@@ -77,8 +87,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             _ = httpRequest ?? throw new ArgumentNullException(nameof(httpRequest));
             _ = httpResponse ?? throw new ArgumentNullException(nameof(httpResponse));
             _ = bot ?? throw new ArgumentNullException(nameof(bot));
-
-            FillHeadersDictionary(httpRequest);
 
             try
             {
@@ -101,10 +109,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return;
                     }
 
-                    // Check channel to propagate headers.
-                    if (activity.ChannelId == Channels.Msteams)
+                    var filteredHeaders = GetPropagationHeaders(httpRequest, activity);
+
+                    // Store headers in memory to be retrieved in case of proactive messages.
+                    if (activity.Conversation?.Id != null)
                     {
-                        TeamsHeaderPropagation.SetHeaderPropagation();
+                        var serializedHeaders = filteredHeaders.ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.ToArray());
+
+                        var storageKey = $"headers-{activity.Conversation.Id}";
+                        var storageData = new Dictionary<string, object>
+                        {
+                            { storageKey, serializedHeaders }
+                        };
+
+                        await _storage.WriteAsync(storageData, cancellationToken);
                     }
 
                     // Grab the auth header from the inbound http request
@@ -215,16 +235,59 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             return new WebSocketStreamingConnection(socket, logger);
         }
 
-        private void FillHeadersDictionary(HttpRequest httpRequest)
+        /// <inheritdoc/>
+        protected override async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            var headers = HeaderPropagation.Headers;
+            // Retrieve the headers from IStorage
+            if (continuationActivity.Conversation?.Id != null)
+            {
+                var storageKey = $"headers-{continuationActivity.Conversation.Id}";
+                var storedData = await _storage.ReadAsync([storageKey], cancellationToken);
+
+                if (storedData.TryGetValue(storageKey, out var headersObject) && headersObject is Dictionary<string, string[]> serializedHeaders)
+                {
+                    var headers = serializedHeaders.ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => new StringValues(kvp.Value));
+
+                    HeaderPropagation.HeadersToPropagate = headers;
+                }
+            }
+
+            await base.ProcessProactiveAsync(claimsIdentity, continuationActivity, audience, callback, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get the headers to propagate from the the incoming request. 
+        /// </summary>
+        /// <param name="httpRequest">The incoming request to get the headers from.</param>
+        /// <param name="activity">The activity contained in the request.</param>
+        /// <returns>The headers to be propagated to outgoing requests.</returns>
+        private IDictionary<string, StringValues> GetPropagationHeaders(HttpRequest httpRequest, IActivity activity)
+        {
+            // Read the headers from the request.
+            var headers = new Dictionary<string, StringValues>();
 
             foreach (var header in httpRequest.Headers)
             {
                 headers.Add(header.Key, header.Value);
             }
 
-            HeaderPropagation.Headers = headers;
+            HeaderPropagation.RequestHeaders = headers;
+
+            // Look for the selected filters to propagate.
+            var teamsHeaders = new Dictionary<string, StringValues>();
+
+            if (activity.ChannelId == Channels.Msteams)
+            {
+                teamsHeaders = TeamsHeaderPropagation.GetHeadersToPropagate();
+            }
+
+            var filteredHeaders = HeaderPropagation.FilterHeaders(teamsHeaders);
+
+            HeaderPropagation.HeadersToPropagate = filteredHeaders;
+
+            return filteredHeaders;
         }
 
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)

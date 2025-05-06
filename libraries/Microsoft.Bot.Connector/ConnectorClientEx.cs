@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -9,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Rest;
 using Newtonsoft.Json.Serialization;
 
@@ -250,11 +252,11 @@ namespace Microsoft.Bot.Connector
                     }
                 }
 
-                var filteredHeaders = HeaderPropagation.FilterHeaders();
+                var headersToPropagate = HeaderPropagation.HeadersToPropagate;
 
-                if (filteredHeaders != null && filteredHeaders.Count > 0)
+                if (headersToPropagate != null && headersToPropagate.Count > 0)
                 {
-                    foreach (var header in filteredHeaders)
+                    foreach (var header in headersToPropagate)
                     {
                         if (!httpClient.DefaultRequestHeaders.Contains(header.Key))
                         {

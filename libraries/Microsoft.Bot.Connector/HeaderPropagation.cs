@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Connector
     /// </summary>
     public static class HeaderPropagation
     {
-        private static readonly AsyncLocal<IDictionary<string, StringValues>> _headers = new ();
+        private static readonly AsyncLocal<IDictionary<string, StringValues>> _requestHeaders = new ();
 
         private static readonly AsyncLocal<IDictionary<string, StringValues>> _headersToPropagate = new ();
 
@@ -20,10 +20,10 @@ namespace Microsoft.Bot.Connector
         /// Gets or sets the headers from an incoming request.
         /// </summary>
         /// <value>.</value>
-        public static IDictionary<string, StringValues> Headers
+        public static IDictionary<string, StringValues> RequestHeaders
         {
-            get => _headers.Value ?? new Dictionary<string, StringValues>();
-            set => _headers.Value = value;
+            get => _requestHeaders.Value ?? new Dictionary<string, StringValues>();
+            set => _requestHeaders.Value = value;
         }
 
         /// <summary>
@@ -37,29 +37,30 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// Filters the headers to only include those that are relevant for propagation.
+        /// Filters the request's headers to only include those that are relevant for propagation.
         /// </summary>
+        /// <param name="headerFilter">The headers to filter.</param>
         /// <returns>The filtered headers.</returns>
-        public static IDictionary<string, StringValues> FilterHeaders()
+        public static IDictionary<string, StringValues> FilterHeaders(IDictionary<string, StringValues> headerFilter)
         {
             var filteredHeaders = new Dictionary<string, StringValues>();
 
-            if (Headers.TryGetValue("X-Ms-Correlation-Id", out var value))
+            if (RequestHeaders.TryGetValue("X-Ms-Correlation-Id", out var value))
             {
                 filteredHeaders.Add("X-Ms-Correlation-Id", value);
             }
 
-            foreach (var header in HeadersToPropagate)
+            foreach (var filter in headerFilter)
             {
-                if (!string.IsNullOrEmpty(header.Value))
+                if (!string.IsNullOrEmpty(filter.Value))
                 {
-                    filteredHeaders.Add(header.Key, header.Value);
+                    filteredHeaders.Add(filter.Key, filter.Value);
                 }
                 else
                 {
-                    if (Headers.TryGetValue(header.Key, out var headerValue))
+                    if (RequestHeaders.TryGetValue(filter.Key, out var headerValue))
                     {
-                        filteredHeaders.Add(header.Key, headerValue);
+                        filteredHeaders.Add(filter.Key, headerValue);
                     }
                 }
             }
