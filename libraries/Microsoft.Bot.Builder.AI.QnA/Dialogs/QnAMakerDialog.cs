@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// </summary>
         /// <param name="dialogId">The ID of the <see cref="Dialog"/>.</param>
         /// <param name="knowledgeBaseId">The ID of the QnA Maker knowledge base to query.</param>
-        /// <param name="endpointKey">The QnA Maker endpoint key to use to query the knowledge base.</param>
+        /// <param name="endpointKey">**Deprecated - use WithEndpointKey() instead**.The QnA Maker endpoint key to use to query the knowledge base.</param>
         /// <param name="hostName">The QnA Maker host URL for the knowledge base, starting with "https://" and
         /// ending with "/qnamaker".</param>
         /// <param name="noAnswer">The activity to send the user when QnA Maker does not find an answer.</param>
@@ -121,36 +121,38 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0,
             bool useTeamsAdaptiveCard = false)
-            : base(dialogId)
+            : this(
+                dialogId,
+                knowledgeBaseId,
+                hostName,
+                noAnswer,
+                threshold,
+                activeLearningCardTitle,
+                cardNoMatchText,
+                top,
+                cardNoMatchResponse,
+                strictFilters,
+                filters,
+                qnAServiceType,
+                sourceFilePath,
+                sourceLineNumber,
+                useTeamsAdaptiveCard,
+                httpClient)
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-            this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
-            this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
-            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
-            this.Threshold = threshold;
-            this.Top = top;
-            this.ActiveLearningCardTitle = activeLearningCardTitle;
-            this.CardNoMatchText = cardNoMatchText;
-            this.StrictFilters = strictFilters;
-            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
-            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
-            Filters = filters;
-            QnAServiceType = qnAServiceType;
-            this.HttpClient = httpClient;
-            this.UseTeamsAdaptiveCard = useTeamsAdaptiveCard;
+            if (!string.IsNullOrEmpty(endpointKey))
+            {
+                Console.WriteLine(
+                    "Providing an endpointKey in the QnAMakerDialog constructor is deprecated, use WithEndpointKey() method instead and provide 'null' or 'empty' value in the constructor.");
 
-            // add waterfall steps
-            this.AddStep(CallGenerateAnswerAsync);
-            this.AddStep(CallTrainAsync);
-            this.AddStep(CheckForMultiTurnPromptAsync);
-            this.AddStep(DisplayQnAResultAsync);
+                EndpointKey = endpointKey;
+            }
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
         /// </summary>
         /// <param name="knowledgeBaseId">The ID of the QnA Maker knowledge base to query.</param>
-        /// <param name="endpointKey">The QnA Maker endpoint key to use to query the knowledge base.</param>
+        /// <param name="endpointKey">**Deprecated - use WithEndpointKey() instead**.The QnA Maker endpoint key to use to query the knowledge base.</param>
         /// <param name="hostName">The QnA Maker host URL for the knowledge base, starting with "https://" and
         /// ending with "/qnamaker".</param>
         /// <param name="noAnswer">The activity to send the user when QnA Maker does not find an answer.</param>
@@ -193,8 +195,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             : this(
                 nameof(QnAMakerDialog),
                 knowledgeBaseId,
-                endpointKey,
                 hostName,
+                endpointKey,
                 noAnswer,
                 threshold,
                 activeLearningCardTitle,
@@ -232,6 +234,47 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.AddStep(DisplayQnAResultAsync);
         }
 
+        internal QnAMakerDialog(
+            string dialogId,
+            string knowledgeBaseId,
+            string hostName,
+            Activity noAnswer = null,
+            float threshold = DefaultThreshold,
+            string activeLearningCardTitle = DefaultCardTitle,
+            string cardNoMatchText = DefaultCardNoMatchText,
+            int top = DefaultTopN,
+            Activity cardNoMatchResponse = null,
+            Metadata[] strictFilters = null,
+            Filters filters = null,
+            ServiceType qnAServiceType = ServiceType.QnAMaker,
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0,
+            bool useTeamsAdaptiveCard = false,
+            HttpClient httpClient = null)
+            : base(dialogId)
+        {
+            RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
+            HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
+            Threshold = threshold;
+            Top = top;
+            ActiveLearningCardTitle = activeLearningCardTitle;
+            CardNoMatchText = cardNoMatchText;
+            StrictFilters = strictFilters;
+            NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
+            CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
+            Filters = filters;
+            QnAServiceType = qnAServiceType;
+            HttpClient = httpClient;
+            UseTeamsAdaptiveCard = useTeamsAdaptiveCard;
+
+            // add waterfall steps
+            AddStep(CallGenerateAnswerAsync);
+            AddStep(CallTrainAsync);
+            AddStep(CheckForMultiTurnPromptAsync);
+            AddStep(DisplayQnAResultAsync);
+        }
+
         /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> instance to use for requests to the QnA Maker service.
         /// </summary>
@@ -265,6 +308,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// </value>
         [JsonProperty("endpointKey")]
         public StringExpression EndpointKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ClientId of the Managed Identity resource. Access control (IAM) role `Cognitive Services User` must be assigned in the Language resource to the Managed Identity resource.
+        /// </summary>
+        /// <value>
+        /// The ClientId of the Managed Identity resource.
+        /// </value>
+        [JsonProperty("managedIdentityClientId")]
+        public StringExpression ManagedIdentityClientId { get; set; }
 
         /// <summary>
         /// Gets or sets the threshold for answers returned, based on score.
@@ -418,6 +470,44 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public EnumExpression<ServiceType> QnAServiceType { get; set; } = ServiceType.QnAMaker;
 
         /// <summary>
+        /// Uses the provided QnA Maker EndpointKey to authenticate against the resource to query the knowledge base.
+        /// </summary>
+        /// <param name="endpointKey">The QnA Maker endpoint key to use to query the knowledge base.</param>
+        public void WithEndpointKey(string endpointKey)
+        {
+            if (string.IsNullOrEmpty(endpointKey))
+            {
+                throw new ArgumentNullException(nameof(endpointKey));
+            }
+
+            if (ManagedIdentityClientId != null)
+            {
+                throw new ArgumentException("Cannot set EndpointKey when ManagedIdentityClientId is already set");
+            }
+
+            EndpointKey = endpointKey;
+        }
+
+        /// <summary>
+        /// Uses the provided QnA Maker ManagedIdentityClientId to authenticate against the resource to query the knowledge base.
+        /// </summary>
+        /// <param name="managedIdentityClientId">The QnA Maker managed identity client id to use to query the knowledge base.</param>
+        public void WithManagedIdentityClientId(string managedIdentityClientId)
+        {
+            if (string.IsNullOrEmpty(managedIdentityClientId))
+            {
+                throw new ArgumentNullException(nameof(managedIdentityClientId));
+            }
+
+            if (EndpointKey != null)
+            {
+                throw new ArgumentException("Cannot set ManagedIdentityClientId when EndpointKey is already set");
+            }
+
+            ManagedIdentityClientId = managedIdentityClientId;
+        }
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -532,9 +622,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             var httpClient = dc.Context.TurnState.Get<HttpClient>() ?? HttpClient;
 
+            var endpointKey = EndpointKey?.GetValue(dc.State);
+            var managedIdentityClientId = ManagedIdentityClientId?.GetValue(dc.State);
+
+            if (string.IsNullOrEmpty(endpointKey) && string.IsNullOrEmpty(managedIdentityClientId))
+            {
+                throw new ArgumentException("An authorization method is required. Either EndpointKey or ManagedIdentityClientId must be set");    
+            }
+
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = this.EndpointKey.GetValue(dc.State),
+                EndpointKey = endpointKey,
+                ManagedIdentityClientId = managedIdentityClientId,
                 Host = this.HostName.GetValue(dc.State),
                 KnowledgeBaseId = KnowledgeBaseId.GetValue(dc.State),
                 QnAServiceType = QnAServiceType.GetValue(dc.State)

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Identity;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 request.Content = new StringContent(payloadBody, Encoding.UTF8, "application/json");
 
-                SetHeaders(request, endpoint);
+                await SetHeadersAsync(request, endpoint);
 
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
@@ -69,10 +70,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
         }
 
-        private static void SetHeaders(HttpRequestMessage request, QnAMakerEndpoint endpoint)
+        private static async Task SetHeadersAsync(HttpRequestMessage request, QnAMakerEndpoint endpoint)
         {
-            request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
-            request.Headers.Add("Ocp-Apim-Subscription-Key", endpoint.EndpointKey);
+            if (!string.IsNullOrEmpty(endpoint.EndpointKey))
+            {
+                request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
+                request.Headers.Add("Ocp-Apim-Subscription-Key", endpoint.EndpointKey);
+            }
+            else if (!string.IsNullOrEmpty(endpoint.ManagedIdentityClientId))
+            {
+                var client = new ManagedIdentityCredential(endpoint.ManagedIdentityClientId);
+                var accessToken = await client.GetTokenAsync(new Azure.Core.TokenRequestContext(["https://cognitiveservices.azure.com/.default"]));
+                request.Headers.Add("Authorization", $"Bearer {accessToken.Token}");
+            }
+
             request.Headers.UserAgent.Add(botBuilderInfo);
             request.Headers.UserAgent.Add(platformInfo);
         }
