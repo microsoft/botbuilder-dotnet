@@ -79,9 +79,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
             else if (!string.IsNullOrWhiteSpace(endpoint.ManagedIdentityClientId))
             {
-                var client = new ManagedIdentityCredential(endpoint.ManagedIdentityClientId);
-                var accessToken = await client.GetTokenAsync(new Azure.Core.TokenRequestContext(["https://cognitiveservices.azure.com/.default"]));
-                request.Headers.Add("Authorization", $"Bearer {accessToken.Token}");
+                try
+                {
+                    var client = new ManagedIdentityCredential(endpoint.ManagedIdentityClientId);
+                    var accessToken = await client.GetTokenAsync(new Azure.Core.TokenRequestContext(["https://cognitiveservices.azure.com/.default"]));
+                    request.Headers.Add("Authorization", $"Bearer {accessToken.Token}");
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(
+                        $"Failed to acquire token using Managed Identity Client ID '{endpoint.ManagedIdentityClientId}'. " +
+                        $"Ensure the Managed Identity exists and has the 'Cognitive Services User' role assigned.", ex);
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(endpoint), "Either EndpointKey or ManagedIdentityClientId must be provided.");
             }
 
             request.Headers.UserAgent.Add(botBuilderInfo);
