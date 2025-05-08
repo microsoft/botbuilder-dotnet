@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 useTeamsAdaptiveCard,
                 httpClient)
         {
-            if (!string.IsNullOrEmpty(endpointKey))
+            if (!string.IsNullOrWhiteSpace(endpointKey))
             {
                 Console.WriteLine(
                     "Providing an endpointKey in the QnAMakerDialog constructor is deprecated, use WithEndpointKey() method instead and provide 'null' or 'empty' value in the constructor.");
@@ -195,8 +195,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             : this(
                 nameof(QnAMakerDialog),
                 knowledgeBaseId,
-                hostName,
                 endpointKey,
+                hostName,
                 noAnswer,
                 threshold,
                 activeLearningCardTitle,
@@ -475,7 +475,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="endpointKey">The QnA Maker endpoint key to use to query the knowledge base.</param>
         public void WithEndpointKey(string endpointKey)
         {
-            if (string.IsNullOrEmpty(endpointKey))
+            if (string.IsNullOrWhiteSpace(endpointKey))
             {
                 throw new ArgumentNullException(nameof(endpointKey));
             }
@@ -494,7 +494,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="managedIdentityClientId">The QnA Maker managed identity client id to use to query the knowledge base.</param>
         public void WithManagedIdentityClientId(string managedIdentityClientId)
         {
-            if (string.IsNullOrEmpty(managedIdentityClientId))
+            if (string.IsNullOrWhiteSpace(managedIdentityClientId))
             {
                 throw new ArgumentNullException(nameof(managedIdentityClientId));
             }
@@ -625,7 +625,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var endpointKey = EndpointKey?.GetValue(dc.State);
             var managedIdentityClientId = ManagedIdentityClientId?.GetValue(dc.State);
 
-            if (string.IsNullOrEmpty(endpointKey) && string.IsNullOrEmpty(managedIdentityClientId))
+            if (string.IsNullOrWhiteSpace(endpointKey) && string.IsNullOrWhiteSpace(managedIdentityClientId))
             {
                 throw new ArgumentException("An authorization method is required. Either EndpointKey or ManagedIdentityClientId must be set");    
             }

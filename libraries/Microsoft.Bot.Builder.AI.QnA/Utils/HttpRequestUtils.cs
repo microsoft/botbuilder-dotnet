@@ -72,12 +72,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private static async Task SetHeadersAsync(HttpRequestMessage request, QnAMakerEndpoint endpoint)
         {
-            if (!string.IsNullOrEmpty(endpoint.EndpointKey))
+            if (!string.IsNullOrWhiteSpace(endpoint.EndpointKey))
             {
                 request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", endpoint.EndpointKey);
             }
-            else if (!string.IsNullOrEmpty(endpoint.ManagedIdentityClientId))
+            else if (!string.IsNullOrWhiteSpace(endpoint.ManagedIdentityClientId))
             {
                 var client = new ManagedIdentityCredential(endpoint.ManagedIdentityClientId);
                 var accessToken = await client.GetTokenAsync(new Azure.Core.TokenRequestContext(["https://cognitiveservices.azure.com/.default"]));
