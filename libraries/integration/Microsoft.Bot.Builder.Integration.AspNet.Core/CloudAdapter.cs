@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             HeaderPropagation.RequestHeaders = headers;
 
             // Look for the selected filters to propagate.
-            var teamsHeaders = new Dictionary<string, StringValues>();
+            var teamsHeaders = new HeaderPropagationEntryCollection();
 
             if (activity.ChannelId == Channels.Msteams)
             {

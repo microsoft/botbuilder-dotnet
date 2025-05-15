@@ -41,26 +41,42 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         /// <param name="headerFilter">The headers to filter.</param>
         /// <returns>The filtered headers.</returns>
-        public static IDictionary<string, StringValues> FilterHeaders(IDictionary<string, StringValues> headerFilter)
+        public static IDictionary<string, StringValues> FilterHeaders(HeaderPropagationEntryCollection headerFilter)
         {
+            // We propagate the X-Ms-Correlation-Id header by default.
+            headerFilter.Propagate("X-Ms-Correlation-Id");
+         
             var filteredHeaders = new Dictionary<string, StringValues>();
 
-            if (RequestHeaders.TryGetValue("X-Ms-Correlation-Id", out var value))
+            foreach (var filter in headerFilter.Entries)
             {
-                filteredHeaders.Add("X-Ms-Correlation-Id", value);
-            }
-
-            foreach (var filter in headerFilter)
-            {
-                if (!string.IsNullOrEmpty(filter.Value))
+                if (RequestHeaders.TryGetValue(filter.Key, out var value))
                 {
-                    filteredHeaders.Add(filter.Key, filter.Value);
+                    switch (filter.Action)
+                    {
+                        case HeaderPropagationEntryAction.Add:
+                            break;
+                        case HeaderPropagationEntryAction.Append:
+                            filteredHeaders.Add(filter.Key, string.Concat(value, filter.Value));
+                            break;
+                        case HeaderPropagationEntryAction.Override:
+                            filteredHeaders.Add(filter.Key, filter.Value);
+                            break;
+                        case HeaderPropagationEntryAction.Propagate:
+                            filteredHeaders.Add(filter.Key, value);
+                            break;
+                    }
                 }
                 else
                 {
-                    if (RequestHeaders.TryGetValue(filter.Key, out var headerValue))
+                    switch (filter.Action)
                     {
-                        filteredHeaders.Add(filter.Key, headerValue);
+                        case HeaderPropagationEntryAction.Add:
+                            filteredHeaders.Add(filter.Key, filter.Value);
+                            break;
+                        case HeaderPropagationEntryAction.Override:
+                            filteredHeaders.Add(filter.Key, filter.Value);
+                            break;
                     }
                 }
             }

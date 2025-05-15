@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Connector.Teams
@@ -15,17 +14,17 @@ namespace Microsoft.Bot.Connector.Teams
         /// Returns the headers to propagate from incoming request to outgoing request.
         /// </summary>
         /// <returns>.</returns>
-        public static Dictionary<string, StringValues> GetHeadersToPropagate()
+        public static HeaderPropagationEntryCollection GetHeadersToPropagate()
         {
-            var headersToPropagate = new Dictionary<string, StringValues>
-            {
-                ["X-Ms-Teams-Id"] = string.Empty,
-                ["X-Ms-Teams-Custom"] = "Custom-Value"
-            };
+            // Propagate headers to the outgoing request by adding them to the HeaderPropagationEntryCollection. For example:
+            var headersToPropagate = new HeaderPropagationEntryCollection();
+
+            headersToPropagate.Propagate("X-Ms-Teams-Id");
+            headersToPropagate.Add("X-Ms-Teams-Custom", new StringValues("Custom-Value"));
+            headersToPropagate.Append("X-Ms-Teams-Channel", new StringValues("-SubChannel-Id"));
+            headersToPropagate.Override("X-Ms-Other", new StringValues("new-value"));
 
             return headersToPropagate;
-            
-            // HeaderPropagation.HeadersToPropagate = headersToPropagate;
         }
     }
 }
