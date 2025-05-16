@@ -266,11 +266,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private IDictionary<string, StringValues> GetPropagationHeaders(HttpRequest httpRequest, IActivity activity)
         {
             // Read the headers from the request.
-            var headers = new Dictionary<string, StringValues>();
+            var headers = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var header in httpRequest.Headers)
             {
-                headers.Add(header.Key, header.Value);
+                headers[header.Key] = header.Value;
             }
 
             HeaderPropagation.RequestHeaders = headers;

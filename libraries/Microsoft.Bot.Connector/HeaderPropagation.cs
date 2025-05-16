@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Primitives;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Connector
         /// <value>The headers from an incoming request.</value>
         public static IDictionary<string, StringValues> RequestHeaders
         {
-            get => _requestHeaders.Value ?? new Dictionary<string, StringValues>();
+            get => _requestHeaders.Value ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
             set => _requestHeaders.Value = value;
         }
 
@@ -32,7 +33,7 @@ namespace Microsoft.Bot.Connector
         /// <value>The selected headers for propagation.</value>
         public static IDictionary<string, StringValues> HeadersToPropagate
         {
-            get => _headersToPropagate.Value ?? new Dictionary<string, StringValues>();
+            get => _headersToPropagate.Value ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
             set => _headersToPropagate.Value = value;
         }
 
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Connector
             // We propagate the X-Ms-Correlation-Id header by default.
             headerFilter.Propagate("X-Ms-Correlation-Id");
          
-            var filteredHeaders = new Dictionary<string, StringValues>();
+            var filteredHeaders = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var filter in headerFilter.Entries)
             {
@@ -57,7 +58,7 @@ namespace Microsoft.Bot.Connector
                         case HeaderPropagationEntryAction.Add:
                             break;
                         case HeaderPropagationEntryAction.Append:
-                            filteredHeaders.Add(filter.Key, string.Concat(value, filter.Value));
+                            filteredHeaders[filter.Key] = StringValues.Concat(value, filter.Value);
                             break;
                         case HeaderPropagationEntryAction.Override:
                             filteredHeaders.Add(filter.Key, filter.Value);

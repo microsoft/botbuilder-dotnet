@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Primitives;
-
-#pragma warning disable SA1010 // OpeningSquareBracketsMustBeSpacedCorrectly
 
 namespace Microsoft.Bot.Connector
 {
@@ -14,13 +13,13 @@ namespace Microsoft.Bot.Connector
     /// </summary>
     public class HeaderPropagationEntryCollection
     {
-        private readonly Dictionary<string, HeaderPropagationEntry> _entries = [];
+        private readonly Dictionary<string, HeaderPropagationEntry> _entries = new (StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets the collection of header entries to be propagated to outgoing requests.
         /// </summary>
         /// <value>The collection of header entries.</value>
-        public List<HeaderPropagationEntry> Entries => [.. _entries.Select(x => x.Value)];
+        public List<HeaderPropagationEntry> Entries => _entries.Values.ToList();
 
         /// <summary>
         /// Attempts to add a new header entry to the collection.
@@ -93,5 +92,3 @@ namespace Microsoft.Bot.Connector
         }
     }
 }
- 
-#pragma warning restore SA1010 // OpeningSquareBracketsMustBeSpacedCorrectly
