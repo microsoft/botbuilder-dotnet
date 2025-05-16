@@ -275,15 +275,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             HeaderPropagation.RequestHeaders = headers;
 
-            // Look for the selected filters to propagate.
-            var teamsHeaders = new HeaderPropagationEntryCollection();
+            // Look for the selected headers to propagate.
+            var headersCollection = new HeaderPropagationEntryCollection();
 
-            if (activity.ChannelId == Channels.Msteams)
-            {
-                teamsHeaders = TeamsHeaderPropagation.GetHeadersToPropagate();
-            }
+            // TODO: If a channel implements a static class to configure header propagation, add it to this block.
+            //if (activity.ChannelId == Channels.Msteams)
+            //{
+            //    headersCollection = TeamsHeaderPropagation.GetHeadersToPropagate();
+            //}
 
-            var filteredHeaders = HeaderPropagation.FilterHeaders(teamsHeaders);
+            var filteredHeaders = HeaderPropagation.FilterHeaders(headersCollection);
 
             HeaderPropagation.HeadersToPropagate = filteredHeaders;
 

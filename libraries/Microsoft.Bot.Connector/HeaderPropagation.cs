@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets or sets the headers from an incoming request.
         /// </summary>
-        /// <value>.</value>
+        /// <value>The headers from an incoming request.</value>
         public static IDictionary<string, StringValues> RequestHeaders
         {
             get => _requestHeaders.Value ?? new Dictionary<string, StringValues>();
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets or sets the selected headers for propagation.
         /// </summary>
-        /// <value>.</value>
+        /// <value>The selected headers for propagation.</value>
         public static IDictionary<string, StringValues> HeadersToPropagate
         {
             get => _headersToPropagate.Value ?? new Dictionary<string, StringValues>();
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// Filters the request's headers to only include those that are relevant for propagation.
+        /// Filters the request's headers to include only those relevant for propagation.
         /// </summary>
-        /// <param name="headerFilter">The headers to filter.</param>
+        /// <param name="headerFilter">The chosen headers to propagate.</param>
         /// <returns>The filtered headers.</returns>
         public static IDictionary<string, StringValues> FilterHeaders(HeaderPropagationEntryCollection headerFilter)
         {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Primitives;
 namespace Microsoft.Bot.Connector
 {
     /// <summary>
-    /// Represents a collection of all the header entries configured to be propagated to outgoing requests.
+    /// Represents a collection of the header entries configured to be propagated to outgoing requests.
     /// </summary>
     public class HeaderPropagationEntryCollection
     {

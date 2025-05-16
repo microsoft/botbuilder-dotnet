@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 namespace Microsoft.Bot.Connector
 {
     /// <summary>
-    /// Represents the action of the header entry.
+    /// Represents the action to perform with the header entry.
     /// </summary>
     public enum HeaderPropagationEntryAction
     {

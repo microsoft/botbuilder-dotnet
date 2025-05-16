@@ -13,16 +13,17 @@ namespace Microsoft.Bot.Connector.Teams
         /// <summary>
         /// Returns the headers to propagate from incoming request to outgoing request.
         /// </summary>
-        /// <returns>.</returns>
+        /// <returns>The collection of headers to propagate.</returns>
         public static HeaderPropagationEntryCollection GetHeadersToPropagate()
         {
-            // Propagate headers to the outgoing request by adding them to the HeaderPropagationEntryCollection. For example:
+            // Propagate headers to the outgoing request by adding them to the HeaderPropagationEntryCollection.
+            // For example:
             var headersToPropagate = new HeaderPropagationEntryCollection();
 
-            headersToPropagate.Propagate("X-Ms-Teams-Id");
-            headersToPropagate.Add("X-Ms-Teams-Custom", new StringValues("Custom-Value"));
-            headersToPropagate.Append("X-Ms-Teams-Channel", new StringValues("-SubChannel-Id"));
-            headersToPropagate.Override("X-Ms-Other", new StringValues("new-value"));
+            //headersToPropagate.Propagate("X-Ms-Teams-Id");
+            //headersToPropagate.Add("X-Ms-Teams-Custom", new StringValues("Custom-Value"));
+            //headersToPropagate.Append("X-Ms-Teams-Channel", new StringValues("-SubChannel-Id"));
+            //headersToPropagate.Override("X-Ms-Other", new StringValues("new-value"));
 
             return headersToPropagate;
         }
