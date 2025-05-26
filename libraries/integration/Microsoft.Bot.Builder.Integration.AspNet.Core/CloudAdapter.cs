@@ -111,20 +111,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                     var filteredHeaders = GetPropagationHeaders(httpRequest, activity);
 
-                    // Store headers in memory to be retrieved in case of proactive messages.
                     if (activity.Conversation?.Id != null)
                     {
-                        var serializedHeaders = filteredHeaders.ToDictionary(
-                            kvp => kvp.Key,
-                            kvp => kvp.Value.ToArray());
-
-                        var storageKey = $"headers-{activity.Conversation.Id}";
-                        var storageData = new Dictionary<string, object>
-                        {
-                            { storageKey, serializedHeaders }
-                        };
-
-                        await _storage.WriteAsync(storageData, cancellationToken);
+                        // Store headers to be retrieved in case of proactive messages.
+                        StoreFilteredHeaders(filteredHeaders, activity.Conversation.Id, cancellationToken);
                     }
 
                     // Grab the auth header from the inbound http request
@@ -135,6 +125,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                     // Write the response, potentially serializing the InvokeResponse
                     await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
+
+                    if (activity.Type == ActivityTypes.EndOfConversation && activity.Conversation?.Id != null)
+                    {
+                        // Delete stored headers to avoid memory bloat.
+                        DeleteStoredHeaders(activity.Conversation.Id, cancellationToken);
+                    }
                 }
                 else
                 {
@@ -242,15 +238,36 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             if (continuationActivity.Conversation?.Id != null)
             {
                 var storageKey = $"headers-{continuationActivity.Conversation.Id}";
-                var storedData = await _storage.ReadAsync([storageKey], cancellationToken);
+                var readAttempts = 3;
+                var delay = TimeSpan.FromMilliseconds(100);
 
-                if (storedData.TryGetValue(storageKey, out var headersObject) && headersObject is Dictionary<string, string[]> serializedHeaders)
+                while (readAttempts > 0)
                 {
-                    var headers = serializedHeaders.ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => new StringValues(kvp.Value));
+                    try
+                    {
+                        var storedData = await _storage.ReadAsync([storageKey], cancellationToken).ConfigureAwait(false);
+                        
+                        if (storedData.TryGetValue(storageKey, out var headersObject) && headersObject is Dictionary<string, string[]> serializedHeaders)
+                        {
+                            var headers = serializedHeaders.ToDictionary(
+                                kvp => kvp.Key,
+                                kvp => new StringValues(kvp.Value));
 
-                    HeaderPropagation.HeadersToPropagate = headers;
+                            HeaderPropagation.HeadersToPropagate = headers;
+                            break;
+                        }
+                        else
+                        {
+                            // No headers found, retry.
+                            await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                            readAttempts--;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Failed to read headers from storage.");
+                        readAttempts--;
+                    }
                 }
             }
 
@@ -319,6 +336,51 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     Log.WebSocketConnectionCompleted(Logger);
                 }
             }
+        }
+
+        private void StoreFilteredHeaders(IDictionary<string, StringValues> filteredHeaders, string conversationId, CancellationToken cancellationToken)
+        {
+            var serializedHeaders = filteredHeaders.ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.ToArray());
+
+            var storageKey = $"headers-{conversationId}";
+            var storageData = new Dictionary<string, object>
+                        {
+                            { storageKey, serializedHeaders }
+                        };
+
+            // fire and forget the write operation to avoid blocking the request.
+            _ = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        await _storage.WriteAsync(storageData, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Failed to write headers to storage.");
+                    }
+                }, cancellationToken);
+        }
+
+        private void DeleteStoredHeaders(string conversationId, CancellationToken cancellationToken)
+        {
+            // fire and forget the delete operation to avoid blocking the request.
+            _ = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        var storageKey = $"headers-{conversationId}";
+                        await _storage.DeleteAsync([storageKey], cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Failed to delete headers after EndOfConversation");
+                    }
+                }, cancellationToken);
         }
 
         private class StreamingActivityProcessor : IStreamingActivityProcessor, IDisposable
