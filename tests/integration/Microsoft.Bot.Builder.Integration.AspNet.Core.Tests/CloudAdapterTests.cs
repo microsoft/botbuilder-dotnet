@@ -353,7 +353,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var nullUrlProcessRequest = adapter.ProcessAsync(nullUrlHttpRequest.Object, nullUrlHttpResponse.Object, bot.Object, CancellationToken.None);
             var processRequest = adapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, CancellationToken.None);
 
-            var validContinuation = adapter.ContinueConversationAsync(
+            await adapter.ContinueConversationAsync(
                 authResult.ClaimsIdentity,
                 validActivity,
                 (turn, cancellationToken) =>
@@ -368,8 +368,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 },
                 CancellationToken.None);
 
-            var invalidContinuation = adapter.ContinueConversationAsync(
-                authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None);
+            await Assert.ThrowsAsync<ApplicationException>(() => adapter.ContinueConversationAsync(
+                authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None));
 
             continueConversationWaiter.Set();
             await nullUrlProcessRequest;
@@ -378,11 +378,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Assert
             Assert.True(processRequest.IsCompletedSuccessfully);
             Assert.True(verifiedValidContinuation);
-            Assert.True(validContinuation.IsCompletedSuccessfully);
-            Assert.Null(validContinuation.Exception);
-            Assert.True(invalidContinuation.IsFaulted);
-            Assert.NotEmpty(invalidContinuation.Exception.InnerExceptions);
-            Assert.True(invalidContinuation.Exception.InnerExceptions[0] is ApplicationException);
         }
 
         [Fact]
