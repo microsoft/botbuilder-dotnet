@@ -67,5 +67,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("host")]
         public string Host { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ClientId of the Managed Identity resource. Access control (IAM) role `Cognitive Services User` must be assigned in the Language resource to the Managed Identity resource.
+        /// </summary>
+        /// <value>
+        /// The ClientId of the Managed Identity resource.
+        /// </value>
+        [JsonProperty("managedIdentityClientId")]
+        public string ManagedIdentityClientId { get; set; }
     }
 }
