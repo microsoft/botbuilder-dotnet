@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Schema.Converters
                     reader.Read();
                 }
 
-                if (HaveStreams(list))
+                if (HasMemoryStream(list))
                 {
                     return list;
                 }
@@ -103,8 +103,7 @@ namespace Microsoft.Bot.Schema.Converters
                     dict.Add(key, item);
                 }
 
-                var list = dict.Values.ToList();
-                if (HaveStreams(list))
+                if (HasMemoryStream(dict))
                 {
                     return dict;
                 }
@@ -119,68 +118,139 @@ namespace Microsoft.Bot.Schema.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (!typeof(MemoryStream).IsAssignableFrom(value.GetType()))
+            if (HasMemoryStream(value))
             {
-                if (value.GetType().GetInterface(nameof(IEnumerable)) != null)
-                {
-                    // This makes the WriteJson loops over nested values to replace all instances of MemoryStream.
-                    serializer.Converters.Add(this);
-                }
-
-                JToken.FromObject(value, serializer).WriteTo(writer);
-                serializer.Converters.Remove(this);
+                InternalWriteJson(writer, value, serializer);
                 return;
             }
 
-            var buffer = (value as MemoryStream).ToArray();
-            var result = new SerializedMemoryStream
-            {
-                Type = nameof(MemoryStream),
-                Buffer = buffer.ToList()
-            };
+            JToken.FromObject(value, serializer).WriteTo(writer);
+        }
 
-            JToken.FromObject(result).WriteTo(writer);
+        private static void InternalWriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            if (value == null || value is string)
+            {
+                // Avoid processing strings, since they implement IEnumerable.
+                JToken.FromObject(value, serializer).WriteTo(writer);
+                return;
+            }
+
+            if (value is MemoryStream)
+            {
+                var buffer = (value as MemoryStream).ToArray();
+                var result = new SerializedMemoryStream
+                {
+                    Type = nameof(MemoryStream),
+                    Buffer = buffer.ToList()
+                };
+
+                JToken.FromObject(result, serializer).WriteTo(writer);
+                return;
+            }
+
+            if (value is IDictionary dictionary)
+            {
+                writer.WriteStartObject();
+                foreach (DictionaryEntry entry in dictionary)
+                {
+                    writer.WritePropertyName(entry.Key.ToString());
+                    InternalWriteJson(writer, entry.Value, serializer);
+                }
+
+                writer.WriteEndObject();
+                return;
+            }
+
+            if (value is IEnumerable collection)
+            {
+                writer.WriteStartArray();
+                foreach (var item in collection)
+                {
+                    InternalWriteJson(writer, item, serializer);
+                }
+
+                writer.WriteEndArray();
+                return;
+            }
+
+            var type = value.GetType();
+            if (type.IsClass)
+            {
+                writer.WriteStartObject();
+                foreach (var prop in type.GetProperties())
+                {
+                    writer.WritePropertyName(prop.Name);
+                    InternalWriteJson(writer, prop.GetValue(value), serializer);
+                }
+
+                writer.WriteEndObject();
+                return;
+            }
+
+            JToken.FromObject(value, serializer).WriteTo(writer);
         }
 
         /// <summary>
-        /// Check if a List contains at least one MemoryStream.
+        /// Check if an object contains at least one MemoryStream.
         /// </summary>
-        /// <param name="list">List of values that might have a MemoryStream instance.</param>
+        /// <param name="value">Object contaning values that might have a MemoryStream instance.</param>
         /// <returns>True if there is at least one MemoryStream in the list, otherwise false.</returns>
-        private static bool HaveStreams(List<object> list)
+        private static bool HasMemoryStream(object value)
         {
-            var result = false;
-            foreach (var nextLevel in list)
+            if (value == null || value is string)
             {
-                if (nextLevel == null)
-                {
-                    continue;
-                }
-
-                if (nextLevel.GetType() == typeof(MemoryStream))
-                {
-                    result = true;
-                }
-
-                // Type generated from the ReadJson => JsonToken.StartObject.
-                if (nextLevel.GetType() == typeof(Dictionary<string, object>))
-                {
-                    result = HaveStreams((nextLevel as Dictionary<string, object>).Values.ToList());
-                }
-
-                // Type generated from the ReadJson => JsonToken.StartArray.
-                if (nextLevel.GetType() == typeof(List<object>))
-                {
-                    result = HaveStreams(nextLevel as List<object>);
-                }
-
-                if (result)
-                {
-                    break;
-                }
+                // Avoid processing strings, since they implement IEnumerable.
+                return false;
             }
 
-            return result;
+            if (value is MemoryStream)
+            {
+                return true;
+            }
+
+            if (value is IDictionary dictionary)
+            {
+                foreach (DictionaryEntry entry in dictionary)
+                {
+                    if (HasMemoryStream(entry.Value))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            if (value is IEnumerable collection)
+            {
+                foreach (var item in collection)
+                {
+                    if (HasMemoryStream(item))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            var type = value.GetType();
+            if (type.IsClass)
+            {
+                foreach (var prop in type.GetProperties())
+                {
+                    var propValue = prop.GetValue(value);
+                    if (HasMemoryStream(propValue))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return false;
         }
 
         internal class SerializedMemoryStream
