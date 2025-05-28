@@ -42,14 +42,6 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: Debug_Windows_Configuration_6
-    variables:
-      BuildConfiguration: Debug-Windows
-      BuildTarget: 'net6' # set the TargetFramework property for tests to use net6.0
-    steps:
-    - template: ci-build-steps.yml
-    - template: ci-test-steps.yml
-    - template: ci-component-detection-steps.yml
   - job: Debug_Windows_Configuration_8
     variables:
       BuildConfiguration: Debug-Windows
@@ -58,10 +50,10 @@ stages:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
     - template: ci-component-detection-steps.yml
-  - job: Release_Windows_Configuration_6
+  - job: Debug_Windows_Configuration_9
     variables:
-      BuildConfiguration: Release-Windows
-      BuildTarget: 'net6' # set the TargetFramework property for tests to use net6.0
+      BuildConfiguration: Debug-Windows
+      BuildTarget: 'net9' # set the TargetFramework property for tests to use net9.0
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
@@ -70,6 +62,14 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
       BuildTarget: 'net8' # set the TargetFramework property for tests to use net8.0
+    steps:
+    - template: ci-build-steps.yml
+    - template: ci-test-steps.yml
+    - template: ci-component-detection-steps.yml
+  - job: Release_Windows_Configuration_9
+    variables:
+      BuildConfiguration: Release-Windows
+      BuildTarget: 'net9' # set the TargetFramework property for tests to use net9.0
       PublishCoverage: true
     steps:
     - template: ci-build-steps.yml

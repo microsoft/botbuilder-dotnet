@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework Condition="'$(BuildTarget)' == 'net6'">net6.0</TargetFramework>
     <TargetFramework Condition="'$(BuildTarget)' == 'net8'">net8.0</TargetFramework>
-    <TargetFrameworks Condition="'$(BuildTarget)' == ''">net6.0;net8.0</TargetFrameworks>
+    <TargetFramework Condition="'$(BuildTarget)' == 'net9'">net9.0</TargetFramework>
+    <TargetFrameworks Condition="'$(BuildTarget)' == ''">net8.0;net9.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
@@ -17,6 +17,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="9.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
@@ -24,4 +28,5 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
+
 </Project>
