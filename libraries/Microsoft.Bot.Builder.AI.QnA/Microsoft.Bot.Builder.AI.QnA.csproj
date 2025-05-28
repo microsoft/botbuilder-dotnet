@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <!-- Force System.Text.Json to a safe version. -->
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />

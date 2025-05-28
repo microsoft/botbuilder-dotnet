@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.AI.QnA.Models;
 using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Newtonsoft.Json;
 
@@ -48,9 +47,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.Host));
             }
 
-            if (string.IsNullOrEmpty(endpoint.EndpointKey))
+            if (string.IsNullOrEmpty(endpoint.EndpointKey) && string.IsNullOrEmpty(endpoint.ManagedIdentityClientId))
             {
-                throw new ArgumentException(nameof(endpoint.EndpointKey));
+                throw new ArgumentException("Either the EndpointKey or the ManagedIdentityCliendId must be provided");
             }
 
             if (_endpoint.Host.EndsWith("v2.0", StringComparison.Ordinal) || _endpoint.Host.EndsWith("v3.0", StringComparison.Ordinal))

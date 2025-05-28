@@ -2220,7 +2220,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             public LanguageServiceTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
                 : base(nameof(LanguageServiceTestDialog))
             {
-                AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey, hostName, httpClient: httpClient));
+                AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey: endpointKey, hostName, httpClient: httpClient));
             }
 
             /// <summary>
