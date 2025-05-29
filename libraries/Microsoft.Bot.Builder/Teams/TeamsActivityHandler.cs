@@ -85,10 +85,10 @@ namespace Microsoft.Bot.Builder.Teams
 
                         case "task/submit":
                             return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-                        
+
                         case "tab/fetch":
                             return CreateInvokeResponse(await OnTeamsTabFetchAsync(turnContext, SafeCast<TabRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-                        
+
                         case "tab/submit":
                             return CreateInvokeResponse(await OnTeamsTabSubmitAsync(turnContext, SafeCast<TabSubmit>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
@@ -97,6 +97,13 @@ namespace Microsoft.Bot.Builder.Teams
 
                         case "config/submit":
                             return CreateInvokeResponse(await OnTeamsConfigSubmitAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
+
+                        case "message/submitAction":
+                            await OnTeamsMessageSubmitActionAsync(turnContext, SafeCast<FeedbackResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse();
+
+                        case "message/fetchTask":
+                            return CreateInvokeResponse(await OnTeamsMessageFetchTaskAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                         default:
                             return await base.OnInvokeActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
@@ -686,7 +693,7 @@ namespace Microsoft.Bot.Builder.Teams
         {
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Invoked when a Channel Restored event activity is received from the connector.
         /// Channel Restored correspond to the user restoring a previously deleted channel.
@@ -992,6 +999,69 @@ namespace Microsoft.Bot.Builder.Teams
         protected virtual Task OnTeamsMessageSoftDeleteAsync(ITurnContext<IMessageDeleteActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a feedback loop activity is received.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="feedback">A strongly-typed feedback loop object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMessageSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, FeedbackResponse feedback, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Invoked when a custom feedback loop activity is received.
+        /// The returned information is a <see cref="TaskModuleContinueResponse"/> instance,
+        /// that Teams will use to show either an AdaptiveCard or website in the "feedback window form".
+        /// <example>
+        /// <br/><br/>
+        /// <b>Example of a valid Adaptive Card payload:</b>
+        /// <code>
+        /// const taskModuleReturn = {  
+        ///   task: {  
+        ///     type: 'continue',  
+        ///     value: {  
+        ///       card: [Object], // Should contain valid Adaptive Card Payload 
+        ///       height: 200,  
+        ///       width: 400,  
+        ///       title: 'Test Task Module Title with AC'  
+        ///     }  
+        ///   }  
+        /// };
+        /// return {
+        ///   status: 200,
+        ///   body: taskModuleReturn
+        /// };
+        /// </code>
+        /// <b>Example of a valid website payload:</b>
+        /// <code>
+        /// const taskModuleReturn = {  
+        ///   task: {  
+        ///     type: 'continue',  
+        ///     value: {  
+        ///       url: "https://bing.com", // Should contain valid URL with the valid domain listed under App Manifest
+        ///     }  
+        ///   }  
+        /// };
+        /// return {
+        ///   status: 200,
+        ///   body: taskModuleReturn
+        /// };
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents a <see cref="TaskModuleContinueResponse"/> instance, containing the necessary <see cref="TaskModuleTaskInfo"/> metadata with either an AdaptiveCard or a website url information.</returns>
+        protected virtual Task<TaskModuleContinueResponse> OnTeamsMessageFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         /// <summary>
