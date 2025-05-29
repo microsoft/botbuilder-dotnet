@@ -19,14 +19,14 @@ variables:
 steps:
 # Note: Template ci-build-steps.yml is not supported in macOS because it calls VSBuild@1 in order to build the Windows-only ASP.NET Desktop assemblies.
 - task: UseDotNet@2
-  displayName: 'Use .Net sdk 6.0'
-  inputs:
-    version: 6.0.x
-
-- task: UseDotNet@2
   displayName: 'Use .Net sdk 8.0'
   inputs:
     version: 8.0.x
+
+- task: UseDotNet@2
+  displayName: 'Use .Net sdk 9.0'
+  inputs:
+    version: 9.0.x
 
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'

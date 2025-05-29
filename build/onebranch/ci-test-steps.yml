@@ -20,22 +20,12 @@ steps:
     customCommand: 'install -g @microsoft/botframework-cli@next'
 
 - task: UseDotNet@2
-  displayName: "Install .NET Core 6.0"
+  displayName: "Install .NET Core 8.0"
   continueOnError: true
   inputs:
     packageType: "sdk"
-    version: 6.x
-  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net6'))
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test (release) 6.0'
-  inputs:
-    command: test
-    projects: |
-     Tests/**/*Tests.csproj
-
-    arguments: '-v n  -f net6.0 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net6'))
+    version: 8.x
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net8'))
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 8.0'
@@ -46,6 +36,16 @@ steps:
 
     arguments: '-v n  -f net8.0 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net8'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 9.0'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+
+    arguments: '-v n  -f net9.0 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(succeeded(), eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'net9'))
 
 - powershell: |
    # This task copies the code coverage file created by dotnet test into a well known location. In all
