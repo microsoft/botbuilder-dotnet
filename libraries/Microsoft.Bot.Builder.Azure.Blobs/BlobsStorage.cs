@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -293,7 +294,9 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 catch (RequestFailedException ex)
                 when (ex.Status == (int)HttpStatusCode.PreconditionFailed)
                 {
-                    throw new InvalidOperationException($"Etag conflict: {ex.Message}");
+                    var items = await ReadAsync(new[] { keyValuePair.Key }, cancellationToken).ConfigureAwait(false);
+                    var item = items.FirstOrDefault().Value as IStoreItem;
+                    throw new ETagException(blobName, storeItem?.ETag, item?.ETag, ex);
                 }
             }
         }

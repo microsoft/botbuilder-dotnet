@@ -2,12 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -36,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
             bool wasCalled = false;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
                .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
-            
+
             adapter.AddExchangeableToken(ConnectionName, Channels.Msteams, TeamsUserId, FakeExchangeableItem, Token);
 
             // Act
@@ -59,39 +62,37 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task TokenExchanged_SecondSendsInvokeResponse()
         {
-            // Arrange
-            int calledCount = 0;
-            var adapter = new TeamsSSOAdapter(CreateConversationReference())
-               .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
-
-            adapter.AddExchangeableToken(ConnectionName, Channels.Msteams, TeamsUserId, FakeExchangeableItem, Token);
-
-            // Act
-            await new TestFlow(adapter, async (context, cancellationToken) =>
+            var exchangeTokenCount = 3;
+            var middleware = new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName);
+            var adapter = new TeamsSSOAdapter(CreateConversationReference());
+            var nextMock = new Mock<NextDelegate>();
+            var userTokenClient = new Mock<UserTokenClient>();
+            var activity = new Activity
             {
-                // note the Middleware should not cause the Responded flag to be set
-                Assert.False(context.Responded);
-                calledCount++;
-                await context.SendActivityAsync("processed", cancellationToken: cancellationToken);
-                await Task.CompletedTask;
-            })
-                .Send("test")
-                .AssertReply("processed")
-                .Send("test")
-                .AssertReply((activity) =>
-                {
-                    // When the 2nd message goes through, it is not processed due to deduplication
-                    // but an invokeResponse of 200 status with empty body is sent back
-                    Assert.Equal(ActivityTypesEx.InvokeResponse, activity.Type);
-                    var invokeResponse = (activity as Activity).Value as InvokeResponse;
-                    Assert.Null(invokeResponse.Body);
-                    Assert.Equal(200, invokeResponse.Status);
-                })
-                .StartTestAsync();
+                Name = SignInConstants.TokenExchangeOperationName,
+                ChannelId = Channels.Msteams,
+                Conversation = new ConversationAccount { Id = "testing-conversation" },
+                From = new ChannelAccount { Id = "testing-user" },
+                Value = JObject.FromObject(new TokenExchangeInvokeRequest { Id = ExchangeId, ConnectionName = ConnectionName, Token = FakeExchangeableItem }),
+            };
+            var turnContext = new TurnContext(adapter, activity);
+            turnContext.TurnState.Set(userTokenClient.Object);
 
-            // Assert
-            Assert.False(calledCount == 0, "Delegate was not called");
-            Assert.True(calledCount == 1, "OnTurn delegate called more than once");
+            userTokenClient.Setup((e) => e.ExchangeTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TokenExchangeRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new TokenResponse { Token = Token })
+                .Verifiable(Times.Exactly(exchangeTokenCount));
+            nextMock.Setup((e) => e(It.IsAny<CancellationToken>()))
+                .Verifiable(Times.Once);
+
+            var tasks = new List<Task>();
+            for (var i = 0; i < exchangeTokenCount; i++)
+            {
+                tasks.Add(middleware.OnTurnAsync(turnContext, nextMock.Object, CancellationToken.None));
+            }
+
+            await Task.WhenAll(tasks);
+
+            Mock.Verify(userTokenClient, nextMock);
         }
 
         [Fact]
@@ -186,10 +187,10 @@ namespace Microsoft.Bot.Builder.Tests
                     ServiceUrl = Conversation.ServiceUrl,
                     Id = Guid.NewGuid().ToString(),
                     Name = SignInConstants.TokenExchangeOperationName,
-                    Value = JObject.FromObject(new TokenExchangeInvokeRequest() 
-                    { 
-                        Token = FakeExchangeableItem, 
-                        Id = ExchangeId, 
+                    Value = JObject.FromObject(new TokenExchangeInvokeRequest()
+                    {
+                        Token = FakeExchangeableItem,
+                        Id = ExchangeId,
                         ConnectionName = ConnectionName
                     })
                 };
