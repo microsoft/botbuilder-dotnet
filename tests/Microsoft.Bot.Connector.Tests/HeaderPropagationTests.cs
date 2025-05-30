@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public void HeaderPropagationContext_ShouldFilterHeaders()
+        public void HeaderPropagation_ShouldFilterHeaders()
         {
             // Arrange
             HeaderPropagation.RequestHeaders = new Dictionary<string, StringValues>
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public void HeaderPropagationContext_ShouldAppendMultipleValues()
+        public void HeaderPropagation_ShouldAppendMultipleValues()
         {
             // Arrange
             HeaderPropagation.RequestHeaders = new Dictionary<string, StringValues>
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public void HeaderPropagationContext_MultipleAdd_ShouldKeepLastValue()
+        public void HeaderPropagation_MultipleAdd_ShouldKeepLastValue()
         {
             // Arrange
             HeaderPropagation.RequestHeaders = new Dictionary<string, StringValues>();
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public void HeaderPropagationContext_MultipleOverride_ShouldKeepLastValue()
+        public void HeaderPropagation_MultipleOverride_ShouldKeepLastValue()
         {
             // Arrange
             HeaderPropagation.RequestHeaders = new Dictionary<string, StringValues>
