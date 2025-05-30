@@ -49,10 +49,18 @@ namespace Microsoft.Bot.Connector
         /// <param name="value">The value to append for the specified key.</param>
         public void Append(string key, StringValues value)
         {
+            StringValues newValue;
+
+            if (_entries.TryGetValue(key, out var entry))
+            {
+                // If the key already exists, append the new value to the existing one.
+                newValue = StringValues.Concat(entry.Value, value);
+            }
+
             _entries[key] = new HeaderPropagationEntry
             {
                 Key = key,
-                Value = value,
+                Value = !StringValues.IsNullOrEmpty(newValue) ? newValue : value,
                 Action = HeaderPropagationEntryAction.Append
             };
         }
