@@ -121,6 +121,11 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
+        public override void AddDefaultHeaders()
+        {
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (_disposed)

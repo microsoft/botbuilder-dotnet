@@ -1,0 +1,88 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using Microsoft.Extensions.Primitives;
+
+namespace Microsoft.Bot.Connector
+{
+    /// <summary>
+    /// Class to handle header propagation from incoming request to outgoing request.
+    /// </summary>
+    public static class HeaderPropagation
+    {
+        private static readonly AsyncLocal<IDictionary<string, StringValues>> _requestHeaders = new ();
+
+        private static readonly AsyncLocal<IDictionary<string, StringValues>> _headersToPropagate = new ();
+
+        /// <summary>
+        /// Gets or sets the headers from an incoming request.
+        /// </summary>
+        /// <value>The headers from an incoming request.</value>
+        public static IDictionary<string, StringValues> RequestHeaders
+        {
+            get => _requestHeaders.Value ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+            set => _requestHeaders.Value = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the selected headers for propagation.
+        /// </summary>
+        /// <value>The selected headers for propagation.</value>
+        public static IDictionary<string, StringValues> HeadersToPropagate
+        {
+            get => _headersToPropagate.Value ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+            set => _headersToPropagate.Value = value;
+        }
+
+        /// <summary>
+        /// Filters the request's headers to include only those relevant for propagation.
+        /// </summary>
+        /// <param name="headerFilter">The chosen headers to propagate.</param>
+        /// <returns>The filtered headers.</returns>
+        public static IDictionary<string, StringValues> FilterHeaders(HeaderPropagationEntryCollection headerFilter)
+        {
+            // We propagate the X-Ms-Correlation-Id header by default.
+            headerFilter.Propagate("X-Ms-Correlation-Id");
+         
+            var filteredHeaders = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var filter in headerFilter.Entries)
+            {
+                if (RequestHeaders.TryGetValue(filter.Key, out var value))
+                {
+                    switch (filter.Action)
+                    {
+                        case HeaderPropagationEntryAction.Add:
+                            break;
+                        case HeaderPropagationEntryAction.Append:
+                            filteredHeaders[filter.Key] = StringValues.Concat(value, filter.Value);
+                            break;
+                        case HeaderPropagationEntryAction.Override:
+                            filteredHeaders.Add(filter.Key, filter.Value);
+                            break;
+                        case HeaderPropagationEntryAction.Propagate:
+                            filteredHeaders.Add(filter.Key, value);
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (filter.Action)
+                    {
+                        case HeaderPropagationEntryAction.Add:
+                            filteredHeaders.Add(filter.Key, filter.Value);
+                            break;
+                        case HeaderPropagationEntryAction.Override:
+                            filteredHeaders.Add(filter.Key, filter.Value);
+                            break;
+                    }
+                }
+            }
+
+            return filteredHeaders;
+        }
+    }
+}
