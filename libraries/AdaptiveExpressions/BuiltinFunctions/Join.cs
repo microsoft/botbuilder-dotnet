@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Linq;
 using AdaptiveExpressions.Memory;
+using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -34,7 +35,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (args.Count == 2)
                     {
-                        result = string.Join(args[1].ToString(), list.OfType<object>().Select(x => x.ToString()));
+                        result = string.Join(
+                            args[1].ToString(),
+                            list.OfType<object>()
+                                .SelectMany(x => x is IEnumerable arr && x is not string && x is not JToken ? arr.Cast<object>() : new[] { x })
+                                .Select(x => x?.ToString() ?? string.Empty));
                     }
                     else
                     {
