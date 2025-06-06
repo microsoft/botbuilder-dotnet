@@ -996,6 +996,7 @@ namespace AdaptiveExpressions.Tests
             Test("join(createArray('a', 'b', 'c'), ',', ' and ')", "a,b and c"),
             Test("join(createArray('a', 'b'), ',', ' and ')", "a and b"),
             Test("join(createArray(\r\n'a',\r\n 'b'), ','\r\n,\r\n ' and ')", "a and b"),
+            Test("join(createArray(['a'], ['b'], ['c']), ',')", "a,b,c"),
             Test("join(foreach(dialog, item, item.key), ',')", "x,instance,options,title,subTitle"),
             Test("join(foreach(dialog, item => item.key), ',')", "x,instance,options,title,subTitle"),
             Test("foreach(dialog, item, item.value)[1].xxx", "instance"),
