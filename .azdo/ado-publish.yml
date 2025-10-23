@@ -5,13 +5,6 @@ pr: none
 pool:
   vmImage: 'ubuntu-22.04'
 
-resources:
-  repositories:
-    - repository: botbuilder-dotnet-fork
-      type: github
-      name: rido-min/botbuilder-dotnet   # GitHub org/repo
-      endpoint: github_connection       
-
 variables:
   buildConfiguration: 'Release'
   folderPath: '$(Build.SourcesDirectory)'
@@ -23,10 +16,10 @@ stages:
     displayName: 'Build, Test, and Pack'
     steps:
       - script: |
-          git config --global --add url."git@github.com:".insteadOf "https://github.com/"
-        displayName: 'Configure Git URL Rewriting'
-
-      - checkout: botbuilder-dotnet-fork
+          git clone https://github.com/rido-min/botbuilder-dotnet.git
+          cd botbuilder-dotnet
+          git status
+        displayName: 'Clone public GitHub repo anonymously'
 
       - task: UseDotNet@2
         displayName: 'Use .NET 9'
