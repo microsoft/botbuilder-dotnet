@@ -7,7 +7,6 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  folderPath: '$(Build.SourcesDirectory)'
   workingDirectory: 'botbuilder-dotnet'
 
 stages:
@@ -45,13 +44,12 @@ stages:
         displayName: 'Pack NuGet Packages'
         inputs:
           command: pack
-          packagesToPack: '$(folderPath)/libraries/**/*.csproj'
+          packagesToPack: '$(workingDirectory)/libraries/**/*.csproj'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           includeSymbols: false
           nobuild: true
           configuration: '$(buildConfiguration)'
           arguments: '/p:SymbolPackageFormat=snupkg /p:PackageVersion=$(Version)'
-        workingDirectory: '$(workingDirectory)'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish NuGet Artifacts'
