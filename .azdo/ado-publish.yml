@@ -49,7 +49,7 @@ stages:
           includeSymbols: false
           nobuild: true
           configuration: '$(buildConfiguration)'
-          arguments: '/p:SymbolPackageFormat=snupkg /p:PackageVersion=$(Version)'
+          arguments: '-p:SymbolPackageFormat=snupkg -p:PackageVersion=$(Version)'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish NuGet Artifacts'

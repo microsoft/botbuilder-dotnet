@@ -3,7 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
+
 
   <ItemGroup>
     <!-- Force System.Text.Json to a newer version. Since Microsoft.Extensions.Logging.Console has 8.0.0 version, which causes CVE-2024-30105 security issue. -->
