@@ -17,6 +17,10 @@ stages:
     steps:
       - checkout: self
 
+      - script: |
+          git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+        displayName: 'Configure Git URL Rewriting'
+
       - task: UseDotNet@2
         displayName: 'Use .NET 9'
         inputs:
@@ -41,7 +45,7 @@ stages:
           includeSymbols: false
           nobuild: true
           configuration: '$(buildConfiguration)'
-          arguments: '/p:SymbolPackageFormat=snupkg'
+          arguments: '/p:SymbolPackageFormat=snupkg /p:PackageVersion=$(Version)'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish NuGet Artifacts'

@@ -2,7 +2,6 @@
   
   <PropertyGroup>
     <LocalPackageVersion>0.0.0.0</LocalPackageVersion>
-    <PackageVersion>4.200.0-alpha.1</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -68,7 +67,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/microsoft/botframework-sdk/master/icon.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>bot_icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <RepositoryType />
@@ -83,8 +82,8 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(GeneratePackageOnBuild)' == 'True'">
-    <None Include="icon.png" Pack="true" PackagePath="\" />
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\bot_icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <PropertyGroup>
