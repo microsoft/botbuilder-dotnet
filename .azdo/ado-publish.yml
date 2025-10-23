@@ -27,7 +27,6 @@ stages:
         displayName: 'Configure Git URL Rewriting'
 
       - checkout: botbuilder-dotnet-fork
-        persistCredentials: true
 
       - task: UseDotNet@2
         displayName: 'Use .NET 9'
