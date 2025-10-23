@@ -30,11 +30,13 @@ stages:
           packageType: 'sdk'
           version: '9.0.x'
 
-      - script: dotnet restore
+      - script: dotnet restore Microsoft.Bot.Builder.sln
         displayName: 'Restore'
+        workingDirectory: 'botbuilder-dotnet'
 
-      - script: dotnet build --no-restore --configuration $(buildConfiguration)
+      - script: dotnet build Microsoft.Bot.Builder.sln --no-restore --configuration $(buildConfiguration)
         displayName: 'Build'
+        workingDirectory: 'botbuilder-dotnet'
 
       # - script: dotnet test --no-restore --verbosity normal --logger trx --configuration $(buildConfiguration)
       #   displayName: 'Test'
