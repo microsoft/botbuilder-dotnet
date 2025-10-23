@@ -16,6 +16,7 @@ stages:
     displayName: 'Build, Test, and Pack'
     steps:
       - script: |
+          git config --global --unset-all http.https://github.com/.extraheader || true
           git clone https://github.com/rido-min/botbuilder-dotnet.git
           cd botbuilder-dotnet
           git status
