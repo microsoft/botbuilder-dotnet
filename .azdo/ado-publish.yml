@@ -44,7 +44,7 @@ stages:
         displayName: 'Pack NuGet Packages'
         inputs:
           command: pack
-          packagesToPack: '$(workingDirectory)/libraries/**/*.csproj'
+          packagesToPack: '$(workingDirectory)/Microsoft.Bot.Builder.sln'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           includeSymbols: false
           nobuild: true
