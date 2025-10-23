@@ -16,10 +16,7 @@ stages:
     displayName: 'Build, Test, and Pack'
     steps:
       - checkout: self
-
-      - script: |
-          git config --global --add url."git@github.com:".insteadOf "https://github.com/"
-        displayName: 'Configure Git URL Rewriting'
+        persistCredentials: true
 
       - task: UseDotNet@2
         displayName: 'Use .NET 9'
