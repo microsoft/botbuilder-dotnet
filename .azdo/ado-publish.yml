@@ -5,6 +5,13 @@ pr: none
 pool:
   vmImage: 'ubuntu-22.04'
 
+resources:
+  repositories:
+    - repository: botbuilder-dotnet-fork
+      type: github
+      name: rido-min/botbuilder-dotnet   # GitHub org/repo
+      endpoint: github_connection       
+
 variables:
   buildConfiguration: 'Release'
   folderPath: '$(Build.SourcesDirectory)'
@@ -19,7 +26,7 @@ stages:
           git config --global --add url."git@github.com:".insteadOf "https://github.com/"
         displayName: 'Configure Git URL Rewriting'
 
-      - checkout: self
+      - checkout: botbuilder-dotnet-fork
         persistCredentials: true
 
       - task: UseDotNet@2
