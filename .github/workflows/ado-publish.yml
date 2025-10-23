@@ -1,0 +1,74 @@
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-22.04'
+
+variables:
+  buildConfiguration: 'Release'
+  folderPath: '$(Build.SourcesDirectory)'
+
+stages:
+- stage: Build_Test_Pack
+  jobs:
+  - job: BuildTestPack
+    displayName: 'Build, Test, and Pack'
+    steps:
+      - checkout: self
+
+      - task: UseDotNet@2
+        displayName: 'Use .NET 9'
+        inputs:
+          packageType: 'sdk'
+          version: '9.0.x'
+
+      - script: dotnet restore
+        displayName: 'Restore'
+
+      - script: dotnet build --no-restore --configuration $(buildConfiguration)
+        displayName: 'Build'
+
+      # - script: dotnet test --no-restore --verbosity normal --logger trx --configuration $(buildConfiguration)
+      #   displayName: 'Test'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Pack NuGet Packages'
+        inputs:
+          command: pack
+          packagesToPack: '$(folderPath)/libraries/**/*.csproj'
+          packDestination: '$(Build.ArtifactStagingDirectory)'
+          includeSymbols: false
+          nobuild: true
+          configuration: '$(buildConfiguration)'
+          arguments: '/p:SymbolPackageFormat=snupkg'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish NuGet Artifacts'
+        inputs:
+          PathToPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'Packages'
+
+- stage: PushToNuGet
+  displayName: 'Push NuGet Packages to internal feed'
+  dependsOn: Build_Test_Sign_Pack
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - deployment: PushPackages
+    displayName: 'Manual Approval Required to Push Packages'
+    environment:
+      name: 'teams-net-publish'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: Packages
+
+          - task: NuGetCommand@2
+            displayName: 'Push NuGet Packages'
+            inputs:
+              command: push
+              packagesToPush: '$(Pipeline.Workspace)/Packages/*.nupkg'
+              nuGetFeedType: external
+              publishFeedCredentials: 'Teams-Graph-Feed'
