@@ -8,6 +8,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   folderPath: '$(Build.SourcesDirectory)'
+  workingDirectory: 'botbuilder-dotnet'
 
 stages:
 - stage: Build_Test_Pack
@@ -32,12 +33,11 @@ stages:
 
       - script: dotnet restore Microsoft.Bot.Builder.sln
         displayName: 'Restore'
-        workingDirectory: 'botbuilder-dotnet'
+        workingDirectory: '$(workingDirectory)'
 
       - script: dotnet build Microsoft.Bot.Builder.sln --no-restore --configuration $(buildConfiguration)
         displayName: 'Build'
-        workingDirectory: 'botbuilder-dotnet'
-
+        workingDirectory: '$(workingDirectory)'
       # - script: dotnet test --no-restore --verbosity normal --logger trx --configuration $(buildConfiguration)
       #   displayName: 'Test'
 
@@ -51,6 +51,7 @@ stages:
           nobuild: true
           configuration: '$(buildConfiguration)'
           arguments: '/p:SymbolPackageFormat=snupkg /p:PackageVersion=$(Version)'
+        workingDirectory: '$(workingDirectory)'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish NuGet Artifacts'
