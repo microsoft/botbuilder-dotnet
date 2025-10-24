@@ -45,11 +45,13 @@ stages:
         inputs:
           command: pack
           packagesToPack: '$(workingDirectory)/Microsoft.Bot.Builder.sln'
-          packDestination: '$(Build.ArtifactStagingDirectory)'
-          includeSymbols: false
+          packDirectory: '$(Build.ArtifactStagingDirectory)'
+          includesymbols: false
           nobuild: true
           configuration: '$(buildConfiguration)'
-          arguments: '-p:SymbolPackageFormat=snupkg -p:PackageVersion=$(Version)'
+          versioningScheme: 'byEnvVar'
+          versionEnvVar: 'Version'
+          buildProperties: 'SymbolPackageFormat=snupkg'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish NuGet Artifacts'
