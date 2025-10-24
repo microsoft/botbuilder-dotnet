@@ -67,7 +67,7 @@ stages:
   - deployment: PushPackages
     displayName: 'Manual Approval Required to Push Packages'
     environment:
-      name: 'teams-net-publish'
+      name: 'botbuilder-fork-publish'
     strategy:
       runOnce:
         deploy:
