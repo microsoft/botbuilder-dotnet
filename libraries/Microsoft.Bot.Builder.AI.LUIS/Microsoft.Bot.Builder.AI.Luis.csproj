@@ -32,11 +32,11 @@
 
   <ItemGroup>
     <!-- Force System.Text.Json to a safe version. -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="2.1.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />

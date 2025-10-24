@@ -29,14 +29,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <!-- Force Microsoft.AspNetCore.Http to a safe version. -->
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Force System.Text.Json to a safe version. -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.10" />
     <PackageReference Include="Microsoft.Bot.Connector.Streaming" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Connector.Streaming" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Streaming" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
@@ -45,7 +45,7 @@
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -37,9 +37,9 @@
 
   <ItemGroup>
     <!-- Force  System.Formats.Asn1 to a safe version. -->
-    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Formats.Asn1" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NuGet.Packaging" Version="6.10.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />

@@ -27,13 +27,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.1.2" />
-    <PackageReference Include="Microsoft.Identity.Web.Certificateless" Version="3.3.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.66.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.14.0" />
+    <PackageReference Include="Microsoft.Identity.Web.Certificateless" Version="4.0.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.78.0" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.24" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
