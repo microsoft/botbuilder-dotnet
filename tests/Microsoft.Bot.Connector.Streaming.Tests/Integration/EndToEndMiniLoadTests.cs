@@ -24,6 +24,7 @@ using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Identity.Abstractions;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -431,7 +432,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            var server = new CloudAdapter(null, new StreamingTestBotFrameworkAuthentication(null), logger);
             var serverRunning = server.ConnectNamedPipeAsync(pipeName, bot, "testAppId", "testAudience", "testCallerId");
             var client = new NamedPipeClient(pipeName, ".", clientRequestHandler.Object, logger: logger);
             var clientRunning = client.ConnectAsync();
@@ -445,11 +446,11 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         {
             if (useLegacyServer)
             {
-                return new BotFrameworkHttpAdapter();
+                return new BotFrameworkHttpAdapter(null);
             }
             else
             {
-                return new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+                return new CloudAdapter(null, new StreamingTestBotFrameworkAuthentication(null), logger);
             }
         }
 
@@ -552,7 +553,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 
                 var bot = new StreamingTestBot((turnContext, cancellationToken) => Task.CompletedTask);
 
-                var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+                var server = new CloudAdapter(null, new StreamingTestBotFrameworkAuthentication(null), logger);
                 var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, serverCts.Token);
 
                 var clientRequestHandler = new Mock<RequestHandler>();
@@ -605,7 +606,8 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             }
         }
 
-        private class StreamingTestBotFrameworkAuthentication : BotFrameworkAuthentication
+        private class StreamingTestBotFrameworkAuthentication(IAuthorizationHeaderProvider tokenProvider)
+            : BotFrameworkAuthentication(tokenProvider)
         {
             public override Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
             {

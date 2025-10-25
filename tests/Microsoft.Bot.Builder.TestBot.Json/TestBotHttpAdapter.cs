@@ -6,12 +6,14 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBotHttpAdapter : BotFrameworkHttpAdapter
     {
         public TestBotHttpAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             ICredentialProvider credentialProvider,
             IConfiguration configuration,
             ILogger<BotFrameworkHttpAdapter> logger,
@@ -19,7 +21,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             UserState userState,
             ConversationState conversationState,
             ResourceExplorer resourceExplorer)
-            : base(configuration, credentialProvider)
+            : base(tokenProvider, configuration, credentialProvider)
         {
             this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
             this.UseStorage(storage);

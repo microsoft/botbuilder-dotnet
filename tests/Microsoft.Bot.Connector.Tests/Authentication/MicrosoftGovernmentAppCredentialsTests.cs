@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void MicrosoftGovernmentAppCredentials_Has_Gov_Endpoint()
         {
-            var cred = new MicrosoftGovernmentAppCredentials(string.Empty, string.Empty);
+            var cred = new MicrosoftGovernmentAppCredentials(null, string.Empty, string.Empty);
 
             Assert.Contains("login.microsoftonline.us", cred.OAuthEndpoint);
         }
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void MicrosoftGovernmentAppCredentials_Uses_Gov_Scope()
         {
-            var cred = new MicrosoftGovernmentAppCredentials(string.Empty, string.Empty);
+            var cred = new MicrosoftGovernmentAppCredentials(null, string.Empty, string.Empty);
 
             Assert.Contains("api.botframework.us", cred.OAuthScope);
         }
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void MicrosoftGovernmentAppCredentials_Uses_Custom_Scope()
         {
-            var cred = new MicrosoftGovernmentAppCredentials(string.Empty, string.Empty, null, null, "my Custom oAuthScope");
+            var cred = new MicrosoftGovernmentAppCredentials(null, string.Empty, string.Empty, null, null, null, "my Custom oAuthScope");
 
             Assert.Equal("my Custom oAuthScope", cred.OAuthScope);
         }
@@ -71,16 +71,16 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void ConstructorTests()
         {
-            var defaultScopeCase1 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword");
+            var defaultScopeCase1 = new MicrosoftGovernmentAppCredentials(null, "someApp", "somePassword");
             AssertEqual(defaultScopeCase1, null, null);
 
-            var defaultScopeCase2 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword", oAuthScope: "customScope");
+            var defaultScopeCase2 = new MicrosoftGovernmentAppCredentials(null, "someApp", "somePassword", oAuthScope: "customScope");
             AssertEqual(defaultScopeCase2, null, "customScope");
 
-            var defaultScopeCase3 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword", "someTenant");
+            var defaultScopeCase3 = new MicrosoftGovernmentAppCredentials(null, "someApp", "somePassword", "someTenant");
             AssertEqual(defaultScopeCase3, "someTenant", null);
 
-            var defaultScopeCase4 = new MicrosoftGovernmentAppCredentials("someApp", "somePassword", "someTenant", oAuthScope: "customScope");
+            var defaultScopeCase4 = new MicrosoftGovernmentAppCredentials(null, "someApp", "somePassword", "someTenant", oAuthScope: "customScope");
             AssertEqual(defaultScopeCase4, "someTenant", "customScope");           
         }
 

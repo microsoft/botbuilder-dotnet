@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class TestCloudAdapter : CloudAdapterBase
     {
         public TestCloudAdapter(BotFrameworkAuthentication botFrameworkAuthentication)
-            : base(botFrameworkAuthentication)
+            : base(null, botFrameworkAuthentication)
         {
         }
 

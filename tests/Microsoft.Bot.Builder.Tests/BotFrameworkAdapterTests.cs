@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Identity.Abstractions;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
@@ -81,13 +82,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => CreateResponseMessage());
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, customHttpClient: httpClient);
 
             var activity = new Activity("test")
             {
@@ -110,7 +112,7 @@ namespace Microsoft.Bot.Builder.Tests
                 },
             };
             var reference = activity.GetConversationReference();
-            var credentials = new MicrosoftAppCredentials(string.Empty, string.Empty, httpClient);
+            var credentials = new MicrosoftAppCredentials(mockTokenProvider.Object, string.Empty, string.Empty, httpClient);
 
             Activity newActivity = null;
 
@@ -135,11 +137,12 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task OutgoingActivityIdsAreNotSent()
         {
             // Arrange
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockConnector = new MemoryConnectorClient();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, customHttpClient: httpClient);
 
             var incomingActivity = new Activity("test")
             {
@@ -202,7 +205,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.CompletedTask;
             });
 
-            var sut = new BotFrameworkAdapter(credentialProvider, new SimpleChannelProvider(channelService));
+            var sut = new BotFrameworkAdapter(null, credentialProvider, new SimpleChannelProvider(channelService));
             await sut.ProcessActivityAsync(
                 identity,
                 new Activity("test")
@@ -245,7 +248,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.CompletedTask;
             });
 
-            var sut = new BotFrameworkAdapter(credentialProvider);
+            var sut = new BotFrameworkAdapter(null, credentialProvider);
             await sut.ProcessActivityAsync(
                 identity,
                 new Activity("From root-bot")
@@ -263,8 +266,9 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, customHttpClient: httpClient);
 
             // Create ClaimsIdentity that represents Skill2-to-Skill1 communication
             var skill2AppId = "00000000-0000-0000-0000-000000skill2";
@@ -320,8 +324,9 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, customHttpClient: httpClient);
 
             // Create ClaimsIdentity that represents Skill2-to-Skill1 communication
             var skill2AppId = "00000000-0000-0000-0000-000000skill2";
@@ -375,9 +380,10 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ProcessContinueConversationEvent()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, customHttpClient: httpClient);
 
             var cr = new ConversationReference
             {
@@ -439,12 +445,12 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, customHttpClient: httpClient);
 
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
@@ -477,13 +483,13 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task DeliveryModeNormal()
         {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(CreateInternalHttpResponse()));
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
-            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: httpClient);
+            var adapter = new BotFrameworkAdapter(mockTokenProvider.Object, new SimpleCredentialProvider(), customHttpClient: httpClient);
 
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
@@ -522,8 +528,8 @@ namespace Microsoft.Bot.Builder.Tests
             IActivity activity = null;
             var mockClaims = new Mock<ClaimsIdentity>();
             var mockCredentialProvider = new Mock<ICredentialProvider>();
-
-            var sut = new BotFrameworkAdapter(mockCredentialProvider.Object);
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+            var sut = new BotFrameworkAdapter(mockTokenProvider.Object, mockCredentialProvider.Object);
             await sut.ProcessActivityAsync(
                 mockClaims.Object,
                 new Activity("test")

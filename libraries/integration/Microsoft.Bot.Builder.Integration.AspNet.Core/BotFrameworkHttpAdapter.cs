@@ -95,6 +95,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class.
         /// </summary>
+        public BotFrameworkHttpAdapter()
+         : this(null, null, null, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class.
+        /// </summary>
         /// <param name="tokenProvider">The authorization header provider.</param>
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <param name="credentialProvider">The credential provider.</param>

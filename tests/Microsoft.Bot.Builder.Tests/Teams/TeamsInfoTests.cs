@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
 
-            var connectorClient = new ConnectorClient(new Uri("https://test.coffee"), MicrosoftAppCredentials.Empty, customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("https://test.coffee"), MicrosoftAppCredentials.Empty, customHttpClient);
 
             var activity = new Activity
             {
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
             };
 
-            var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: customHttpClient), activity);
+            var turnContext = new TurnContext(new BotFrameworkAdapter(null, new SimpleCredentialProvider(), customHttpClient: customHttpClient), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
             turnContext.Activity.ServiceUrl = "https://test.coffee";
             var handler = new TestTeamsActivityHandler();
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -464,7 +464,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -507,7 +507,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -530,7 +530,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }
-
+        
         [Theory]
         [InlineData("201")]
         [InlineData("400")]
@@ -548,7 +548,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -587,7 +587,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -626,7 +626,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -665,7 +665,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -755,7 +755,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 var message = MessageFactory.Text("hi");
                 var channelId = "channelId123";
-                var creds = new MicrosoftAppCredentials(string.Empty, string.Empty);
+                var creds = new MicrosoftAppCredentials(null, string.Empty, string.Empty);
                 var cancelToken = new CancellationToken();
                 var reference = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContext, message, channelId, creds, cancelToken);
 
@@ -1707,6 +1707,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             private string _conversationId;
 
             public TestCreateConversationAdapter(string activityId, string conversationId)
+                : base(null)
             {
                 _activityId = activityId;
                 _conversationId = conversationId;

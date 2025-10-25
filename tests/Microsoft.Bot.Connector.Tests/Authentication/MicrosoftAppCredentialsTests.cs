@@ -12,16 +12,16 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void ConstructorTests()
         {
-            var defaultScopeCase1 = new MicrosoftAppCredentials("someApp", "somePassword");
+            var defaultScopeCase1 = new MicrosoftAppCredentials(null, "someApp", "somePassword");
             AssertEqual(defaultScopeCase1, null, null);
 
-            var defaultScopeCase2 = new MicrosoftAppCredentials("someApp", "somePassword", oAuthScope: "customScope");
+            var defaultScopeCase2 = new MicrosoftAppCredentials(null, "someApp", "somePassword", oAuthScope: "customScope");
             AssertEqual(defaultScopeCase2, null, "customScope");
 
-            var defaultScopeCase3 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant");
+            var defaultScopeCase3 = new MicrosoftAppCredentials(null, "someApp", "somePassword", "someTenant");
             AssertEqual(defaultScopeCase3, "someTenant", null);
 
-            var defaultScopeCase4 = new MicrosoftAppCredentials("someApp", "somePassword", "someTenant", oAuthScope: "customScope");
+            var defaultScopeCase4 = new MicrosoftAppCredentials(null, "someApp", "somePassword", "someTenant", oAuthScope: "customScope");
             AssertEqual(defaultScopeCase4, "someTenant", "customScope");
         }
 

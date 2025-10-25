@@ -62,6 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="adapterOptions">Options for the <see cref="TwilioAdapter"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public TwilioAdapter(TwilioClientWrapper twilioClient, TwilioAdapterOptions adapterOptions, ILogger logger = null)
+            : base(null)
         {
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
             _logger = logger ?? NullLogger.Instance;

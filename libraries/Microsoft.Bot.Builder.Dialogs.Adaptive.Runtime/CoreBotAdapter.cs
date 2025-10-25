@@ -5,16 +5,18 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
 {
     internal class CoreBotAdapter : CloudAdapter
     {
         public CoreBotAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             BotFrameworkAuthentication botFrameworkAuthentication,
             IEnumerable<IMiddleware> middlewares,
             ILogger<CoreBotAdapter> logger = null)
-            : base(botFrameworkAuthentication, logger)
+            : base(tokenProvider, botFrameworkAuthentication, logger)
         {
             // Pick up feature based middlewares such as telemetry or transcripts
             foreach (IMiddleware middleware in middlewares)
