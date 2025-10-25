@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -39,23 +40,26 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : this(channelAuthTenant, customHttpClient, logger, null)
+        public AppCredentials(IAuthorizationHeaderProvider tokenProvider, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+            : this(tokenProvider, channelAuthTenant, customHttpClient, logger, null)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         /// <param name="oAuthScope">The scope for the token.</param>
-        public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
+        public AppCredentials(IAuthorizationHeaderProvider tokenProvider, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
         {
+            TokenProvider = tokenProvider;
             _oAuthScope = oAuthScope;
             ChannelAuthTenant = channelAuthTenant;
             CustomHttpClient = customHttpClient;
@@ -122,6 +126,14 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope) 
             ? ToChannelFromBotOAuthScope
             : _oAuthScope;
+
+        /// <summary>
+        /// Gets or Sets TokenProvider abstraction used to get authorization headers.
+        /// </summary>
+        /// <value>
+        /// Or Sets TokenProvider abstraction used to get authorization headers.
+        /// </value>
+        protected IAuthorizationHeaderProvider TokenProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the channel auth token tenant for this credential.

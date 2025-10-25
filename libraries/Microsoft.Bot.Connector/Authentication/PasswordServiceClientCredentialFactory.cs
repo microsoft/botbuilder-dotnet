@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -17,6 +18,7 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PasswordServiceClientCredentialFactory"/> class.
@@ -30,13 +32,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Initializes a new instance of the <see cref="PasswordServiceClientCredentialFactory"/> class.
         /// with the provided credentials.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="appId">The app ID.</param>
         /// <param name="password">The app password.</param>
         /// <param name="tenantId">Tenant ID of the Azure AD tenant where the bot is created.</param>
         /// <param name="httpClient">A custom httpClient to use.</param>
         /// <param name="logger">A logger instance to use.</param>
-        public PasswordServiceClientCredentialFactory(string appId, string password, string tenantId, HttpClient httpClient, ILogger logger)
+        public PasswordServiceClientCredentialFactory(IAuthorizationHeaderProvider tokenProvider, string appId, string password, string tenantId, HttpClient httpClient, ILogger logger)
         {
+            _tokenProvider = tokenProvider;
             AppId = appId;
             Password = password;
             TenantId = tenantId;
@@ -96,17 +100,17 @@ namespace Microsoft.Bot.Connector.Authentication
             if (loginEndpoint.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftAppCredentials(
-                    appId, Password, TenantId, _httpClient, _logger, oauthScope));
+                    _tokenProvider, appId, Password, TenantId, _httpClient, _logger, oauthScope));
             }
             else if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftGovernmentAppCredentials(
-                    appId, Password, TenantId, _httpClient, _logger, oauthScope));
+                    _tokenProvider, appId, Password, TenantId, _httpClient, _logger, oauthScope));
             }
             else
             {
                 return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
-                    AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
+                   _tokenProvider, AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
             }
         }
 
@@ -115,13 +119,13 @@ namespace Microsoft.Bot.Connector.Authentication
             private readonly string _oauthEndpoint;
             private readonly bool _validateAuthority;
 
-            public PrivateCloudAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope, string oauthEndpoint, bool validateAuthority)
-                : this(appId, password, tenantId: string.Empty, customHttpClient, logger, oAuthScope, oauthEndpoint, validateAuthority)
+            public PrivateCloudAppCredentials(IAuthorizationHeaderProvider tokenProvider, string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope, string oauthEndpoint, bool validateAuthority)
+                : this(tokenProvider, appId, password, tenantId: string.Empty, customHttpClient, logger, oAuthScope, oauthEndpoint, validateAuthority)
             {
             }
 
-            public PrivateCloudAppCredentials(string appId, string password, string tenantId, HttpClient customHttpClient, ILogger logger, string oAuthScope, string oauthEndpoint, bool validateAuthority)
-                : base(appId, password, tenantId, customHttpClient, logger, oAuthScope)
+            public PrivateCloudAppCredentials(IAuthorizationHeaderProvider tokenProvider, string appId, string password, string tenantId, HttpClient customHttpClient, ILogger logger, string oAuthScope, string oauthEndpoint, bool validateAuthority)
+                : base(tokenProvider, appId, password, tenantId, customHttpClient, logger, oAuthScope)
             {
                 _oauthEndpoint = oauthEndpoint;
                 _validateAuthority = validateAuthority;

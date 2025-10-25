@@ -10,6 +10,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -23,12 +24,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationBotFrameworkAuthentication"/> class.
         /// </summary>
+        /// <param name="tokenProvider">An <see cref="IAuthorizationHeaderProvider"/> instance.</param>
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <param name="credentialsFactory">An <see cref="ServiceClientCredentialsFactory"/> instance.</param>
         /// <param name="authConfiguration">An <see cref="AuthenticationConfiguration"/> instance.</param>
         /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/> to use.</param>
         /// <param name="logger">The ILogger instance to use.</param>
-        public ConfigurationBotFrameworkAuthentication(IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, IHttpClientFactory httpClientFactory = null, ILogger logger = null)
+        public ConfigurationBotFrameworkAuthentication(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, IHttpClientFactory httpClientFactory = null, ILogger logger = null)
+                : base(tokenProvider)
         {
             AseChannelValidation.Init(configuration);
 
@@ -43,6 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var callerId = configuration.GetSection("CallerId")?.Value;
 
             _inner = BotFrameworkAuthenticationFactory.Create(
+                tokenProvider,
                 channelService,
                 bool.Parse(validateAuthority ?? "true"),
                 toChannelFromBotLoginUrl,
@@ -52,7 +56,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 toBotFromChannelOpenIdMetadataUrl,
                 toBotFromEmulatorOpenIdMetadataUrl,
                 callerId,
-                credentialsFactory ?? new ConfigurationServiceClientCredentialFactory(configuration),
+                credentialsFactory ?? new ConfigurationServiceClientCredentialFactory(tokenProvider, configuration),
                 authConfiguration ?? new AuthenticationConfiguration(),
                 httpClientFactory,
                 logger);

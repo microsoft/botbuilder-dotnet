@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Identity.Client;
 using Microsoft.Rest;
 
@@ -23,15 +24,18 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private readonly IConfidentialClientApplication _clientApplication;
         private readonly ILogger _logger;
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalServiceClientCredentialsFactory"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="configuration"><see cref="IConfiguration"/> where to get the AppId from.</param>
         /// <param name="clientApplication"><see cref="IConfidentialClientApplication"/> used to acquire tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> for credential acquisition telemetry.</param>
-        public MsalServiceClientCredentialsFactory(IConfiguration configuration, IConfidentialClientApplication clientApplication, ILogger logger = null)
+        public MsalServiceClientCredentialsFactory(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration, IConfidentialClientApplication clientApplication, ILogger logger = null)
         {
+            _tokenProvider = tokenProvider;
             AppId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             TenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
             _clientApplication = clientApplication;
@@ -76,6 +80,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
+                        _tokenProvider,
                         _clientApplication, 
                         appId, 
                         authority: authority,
@@ -92,6 +97,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 return Task.FromResult<ServiceClientCredentials>(
                     new MsalAppCredentials(
+                        _tokenProvider,
                         _clientApplication, 
                         appId, 
                         authority: authority, 
@@ -102,7 +108,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Private cloud: use the passed in authority and scope since they were parametrized in a higher layer.
             return Task.FromResult<ServiceClientCredentials>(
-                new MsalAppCredentials(_clientApplication, appId, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
+                new MsalAppCredentials(_tokenProvider, _clientApplication, appId, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
         }
 
         /// <inheritdoc/>

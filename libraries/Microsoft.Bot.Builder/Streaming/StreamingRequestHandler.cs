@@ -487,7 +487,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <returns>A string containing versioning information.</returns>
         private static string GetUserAgent()
         {
-            using (var connectorClient = new ConnectorClient(new Uri("http://localhost")))
+            using (var connectorClient = new ConnectorClient(null, new Uri("http://localhost")))
             {
                 return string.Format(
                     CultureInfo.InvariantCulture,

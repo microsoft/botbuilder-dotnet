@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -34,6 +35,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ILogger _logger;
 
         public ParameterizedBotFrameworkAuthentication(
+            IAuthorizationHeaderProvider tokenProvider,
             bool validateAuthority,
             string toChannelFromBotLoginUrl,
             string toChannelFromBotOAuthScope,
@@ -45,7 +47,8 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentialsFactory credentialsFactory,
             AuthenticationConfiguration authConfiguration,
             IHttpClientFactory httpClientFactory,
-            ILogger logger)
+            ILogger logger) 
+                : base(tokenProvider)
         {
             _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
@@ -79,7 +82,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
-            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
+            var connectorFactory = new ConnectorFactoryImpl(TokenProvider, BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
@@ -102,7 +105,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
+            return new ConnectorFactoryImpl(TokenProvider, BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
         }
 
         public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)

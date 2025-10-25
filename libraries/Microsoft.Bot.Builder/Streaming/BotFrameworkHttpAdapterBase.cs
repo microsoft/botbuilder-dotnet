@@ -16,6 +16,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Streaming
@@ -33,6 +34,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The authorization header provider.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -41,6 +43,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapterBase(
+            IAuthorizationHeaderProvider tokenProvider,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -48,30 +51,32 @@ namespace Microsoft.Bot.Builder.Streaming
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
             ILogger logger = null)
-            : base(credentialProvider, authConfig, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
+            : base(tokenProvider, credentialProvider, authConfig, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The authorization header provider.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
-            : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
+        public BotFrameworkHttpAdapterBase(IAuthorizationHeaderProvider tokenProvider, ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
+            : this(tokenProvider, credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The authorization header provider.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapterBase> logger)
-            : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, httpClient, null, logger)
+        public BotFrameworkHttpAdapterBase(IAuthorizationHeaderProvider tokenProvider, ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapterBase> logger)
+            : this(tokenProvider, credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, httpClient, null, logger)
         {
         }
 
@@ -359,7 +364,7 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning disable CA2000 // Dispose objects before losing scope (We need to make ConnectorClient disposable to fix this, ignoring it for now)
             var streamingClient = new StreamingHttpClient(requestHandler, Logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient, disposeHttpClient: false);
+            var connectorClient = new ConnectorClient(TokenProvider, new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient, disposeHttpClient: false);
             return connectorClient;
         }
 

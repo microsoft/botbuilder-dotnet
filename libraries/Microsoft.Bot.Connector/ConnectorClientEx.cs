@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 using Newtonsoft.Json.Serialization;
 
@@ -22,6 +23,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="baseUri">Base URI for the Bot Connector service.</param>
         /// <param name="microsoftAppId">Optional, the Microsoft app ID for the bot resource.
         /// If null, this setting is read from the `MicrosoftAppId` setting for the bot's application resource.</param>
@@ -29,8 +31,8 @@ namespace Microsoft.Bot.Connector
         /// If null, this setting is read from the `MicrosoftAppPassword` setting for the bot's application resource.</param>
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
-        public ConnectorClient(Uri baseUri, string microsoftAppId = null, string microsoftAppPassword = null, params DelegatingHandler[] handlers)
-            : this(baseUri, new MicrosoftAppCredentials(microsoftAppId, microsoftAppPassword), handlers: handlers)
+        public ConnectorClient(IAuthorizationHeaderProvider tokenProvider, Uri baseUri, string microsoftAppId = null, string microsoftAppPassword = null, params DelegatingHandler[] handlers)
+            : this(tokenProvider, baseUri, new MicrosoftAppCredentials(tokenProvider, microsoftAppId, microsoftAppPassword), handlers: handlers)
         {
             AddDefaultRequestHeaders(HttpClient);
         }
@@ -38,13 +40,14 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="baseUri">Base URI for the Bot Connector service.</param>
         /// <param name="credentials">Credentials for the Bot Connector service.</param>
         /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
-        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
-            : this(baseUri, credentials, null, addJwtTokenRefresher, handlers)
+        public ConnectorClient(IAuthorizationHeaderProvider tokenProvider, Uri baseUri, MicrosoftAppCredentials credentials, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(tokenProvider, baseUri, credentials, null, addJwtTokenRefresher, handlers)
         {
             AddDefaultRequestHeaders(HttpClient);
         }
@@ -52,20 +55,22 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="baseUri">Base URI for the Bot Connector service.</param>
         /// <param name="credentials">Credentials for the Bot Connector service.</param>
         /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
         /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
-        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
-            : this(baseUri, credentials as ServiceClientCredentials, customHttpClient, addJwtTokenRefresher, handlers)
+        public ConnectorClient(IAuthorizationHeaderProvider tokenProvider, Uri baseUri, MicrosoftAppCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(tokenProvider, baseUri, credentials as ServiceClientCredentials, customHttpClient, addJwtTokenRefresher, handlers)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="baseUri">Base URI for the Bot Connector service.</param>
         /// <param name="credentials">Credentials for the Bot Connector service.</param>
         /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
@@ -75,7 +80,7 @@ namespace Microsoft.Bot.Connector
         /// All other overloads of <see cref="ConnectorClient"/> will not control this parameter and it will default to true, resulting on disposal of the provided <see cref="HttpClient"/> when the <see cref="ConnectorClient"/> is disposed.
         /// When reusing <see cref="HttpClient"/> instances across connectors, pass 'false' for <paramref name="disposeHttpClient"/> to avoid <see cref="ObjectDisposedException"/>.</remarks>
 #pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool disposeHttpClient)
+        public ConnectorClient(IAuthorizationHeaderProvider tokenProvider, Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool disposeHttpClient)
 #pragma warning restore CA1801 // Review unused parameters
             : base(customHttpClient, disposeHttpClient)
         {
@@ -94,6 +99,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="baseUri">Base URI for the Bot Connector service.</param>
         /// <param name="credentials">Credentials for the Bot Connector service.</param>
         /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
@@ -101,9 +107,10 @@ namespace Microsoft.Bot.Connector
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
 #pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
-        public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+        public ConnectorClient(IAuthorizationHeaderProvider tokenProvider, Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
 #pragma warning restore CA1801 // Review unused parameters
-            : this(baseUri, handlers)
+
+            // : this(tokenProvider: tokenProvider, baseUri: baseUri, credentials:null, addJwtTokenRefresher: false, handlers)
         {
             this.Credentials = credentials;
             if (customHttpClient != null)
@@ -119,6 +126,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="baseUri">Base URI for the Bot Connector service.</param>
         /// <param name="credentials">Credentials for the Bot Connector service.</param>
         /// <param name="httpClientHandler">The HTTP client message handler to use for this connector client.</param>
@@ -127,7 +135,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
 #pragma warning disable CA1801 // Review unused parameters (we can't remove the addJwtTokenRefresher parameter without breaking binary compat)
-        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClientHandler httpClientHandler, bool addJwtTokenRefresher = true, HttpClient customHttpClient = null, params DelegatingHandler[] handlers)
+        public ConnectorClient(IAuthorizationHeaderProvider tokenProvider, Uri baseUri, MicrosoftAppCredentials credentials, HttpClientHandler httpClientHandler, bool addJwtTokenRefresher = true, HttpClient customHttpClient = null, params DelegatingHandler[] handlers)
 #pragma warning restore CA1801 // Review unused parameters
             : this(baseUri, httpClientHandler, handlers)
         {

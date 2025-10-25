@@ -21,6 +21,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -72,6 +73,7 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
         /// using a credential provider.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
@@ -85,13 +87,14 @@ namespace Microsoft.Bot.Builder
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             RetryPolicy connectorClientRetryPolicy = null,
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
             ILogger logger = null)
-            : this(credentialProvider, new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
+            : this(tokenProvider, credentialProvider, new AuthenticationConfiguration(), channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
         {
         }
 
@@ -99,6 +102,7 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
         /// using a credential provider.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -113,6 +117,7 @@ namespace Microsoft.Bot.Builder
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -120,6 +125,7 @@ namespace Microsoft.Bot.Builder
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
             ILogger logger = null)
+                : base(tokenProvider)
         {
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
@@ -146,6 +152,7 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
         /// using a credential provider.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="credentials">The credentials to be used for token acquisition.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <param name="channelProvider">The channel provider.</param>
@@ -159,6 +166,7 @@ namespace Microsoft.Bot.Builder
         /// add additional middleware to the adapter after construction.
         /// </remarks>
         public BotFrameworkAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             AppCredentials credentials,
             AuthenticationConfiguration authConfig,
             IChannelProvider channelProvider = null,
@@ -166,6 +174,7 @@ namespace Microsoft.Bot.Builder
             HttpClient customHttpClient = null,
             IMiddleware middleware = null,
             ILogger logger = null)
+            : base(tokenProvider)
         {
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
@@ -1487,7 +1496,8 @@ namespace Microsoft.Bot.Builder
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
 
             // Construct an AppCredentials using the app + password combination. If government, we create a government specific credential.
-            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(TokenProvider, appId, appPassword, HttpClient, Logger, oAuthScope) 
+                : new MicrosoftAppCredentials(TokenProvider, appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
         /// <summary>
@@ -1609,14 +1619,14 @@ namespace Microsoft.Bot.Builder
                 ConnectorClient connectorClient;
                 if (appCredentials != null)
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
+                    connectorClient = new ConnectorClient(TokenProvider, new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
                 }
                 else
                 {
                     var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
+                    connectorClient = new ConnectorClient(TokenProvider, new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
                 }
 
                 if (_connectorClientRetryPolicy != null)

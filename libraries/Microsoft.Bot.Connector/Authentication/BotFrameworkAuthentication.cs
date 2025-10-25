@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -15,6 +16,22 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public abstract class BotFrameworkAuthentication
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkAuthentication"/> class with the specified token
+        /// provider.
+        /// </summary>
+        /// <param name="tokenProvider">The provider used to retrieve and validate authorization headers for bot authentication.</param>
+        protected BotFrameworkAuthentication(IAuthorizationHeaderProvider tokenProvider)
+        {
+            TokenProvider = tokenProvider;
+        }
+
+        /// <summary>
+        /// Gets or sets the token provider used to retrieve and validate authorization headers for bot authentication.
+        /// </summary>
+        /// <value>The token provider.</value>
+        protected IAuthorizationHeaderProvider TokenProvider { get; set; }
+
         /// <summary>
         /// Validate Bot Framework Protocol requests.
         /// </summary>

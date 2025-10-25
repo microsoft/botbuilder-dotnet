@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -18,9 +19,11 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ServiceClientCredentialsFactory _credentialFactory;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
-        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger)
+        public ConnectorFactoryImpl(IAuthorizationHeaderProvider tokenProvider, string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger)
         {
+            _tokenProvider = tokenProvider;
             _appId = appId;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
@@ -39,7 +42,7 @@ namespace Microsoft.Bot.Connector.Authentication
 #pragma warning disable CA2000 // Dispose objects before losing scope
             var httpClient = _httpClientFactory?.CreateClient() ?? new HttpClient();
             ConnectorClient.AddDefaultRequestHeaders(httpClient);
-            return new ConnectorClient(new Uri(serviceUrl), credentials, httpClient, true);
+            return new ConnectorClient(_tokenProvider, new Uri(serviceUrl), credentials, httpClient, true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
         }
     }

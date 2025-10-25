@@ -14,6 +14,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
@@ -31,20 +32,24 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class BotFrameworkHttpClient : BotFrameworkClient
     {
         private readonly JsonSerializerSettings _settings = new JsonSerializerSettings { MaxDepth = null };
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">An instance of <see cref="IAuthorizationHeaderProvider"/>.</param>
         /// <param name="httpClient">A <see cref="HttpClient"/>.</param>
         /// <param name="credentialProvider">An instance of <see cref="ICredentialProvider"/>.</param>
         /// <param name="channelProvider">An instance of <see cref="IChannelProvider"/>.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
         public BotFrameworkHttpClient(
+            IAuthorizationHeaderProvider tokenProvider,
             HttpClient httpClient,
             ICredentialProvider credentialProvider,
             IChannelProvider channelProvider = null,
             ILogger logger = null)
         {
+            _tokenProvider = tokenProvider;
             HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
@@ -210,7 +215,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
         {
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(_tokenProvider, appId, appPassword, HttpClient, Logger, oAuthScope) 
+                : new MicrosoftAppCredentials(_tokenProvider, appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
         private static T GetBodyContent<T>(string content)

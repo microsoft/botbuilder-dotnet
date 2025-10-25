@@ -4,13 +4,15 @@
 using System.Net.Http;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
     internal class GovernmentCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger = null)
+        public GovernmentCloudBotFrameworkAuthentication(IAuthorizationHeaderProvider tokenProvider, ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger = null)
             : base(
+                  tokenProvider,
                   GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
                   GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate,
                   CallerIdConstants.USGovChannel,
