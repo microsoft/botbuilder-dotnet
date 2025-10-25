@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.Orchestrator\Microsoft.Bot.Builder.AI.Orchestrator.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />

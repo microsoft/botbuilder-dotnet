@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
-    <ProjectReference Include="..\..\tests\Microsoft.Bot.Builder.AI.LUIS.Tests\Microsoft.Bot.Builder.AI.Luis.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
