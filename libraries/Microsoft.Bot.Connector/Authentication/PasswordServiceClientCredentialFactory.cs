@@ -97,12 +97,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException($"Invalid appId {appId} does not match expected {AppId}");
             }
 
-            if (loginEndpoint.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+            if (loginEndpoint?.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase) == true)
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftAppCredentials(
                     _tokenProvider, appId, Password, TenantId, _httpClient, _logger, oauthScope));
             }
-            else if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+            else if (loginEndpoint?.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase) == true)
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftGovernmentAppCredentials(
                     _tokenProvider, appId, Password, TenantId, _httpClient, _logger, oauthScope));

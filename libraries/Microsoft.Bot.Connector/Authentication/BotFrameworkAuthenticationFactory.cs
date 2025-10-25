@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     toBotFromChannelTokenIssuer,
                     oAuthUrl,
                     toBotFromChannelOpenIdMetadataUrl,
-                    toBotFromEmulatorOpenIdMetadataUrl,
+                    toBotFromChannelOpenIdMetadataUrl,
                     callerId,
                     credentialFactory,
                     authConfiguration,

@@ -169,10 +169,11 @@ namespace Microsoft.Bot.Connector.Authentication
                 var claimsList = claims as IList<Claim> ?? claims.ToList();
                 await _authConfiguration.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
             }
-            else if (SkillValidation.IsSkillClaim(claims))
-            {
-                throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
-            }
+
+            //else if (SkillValidation.IsSkillClaim(claims))
+            //{
+            //    throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
+            //}
         }
 
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, string channelId, string serviceUrl, CancellationToken cancellationToken)
@@ -182,15 +183,15 @@ namespace Microsoft.Bot.Connector.Authentication
                 return await AseChannelValidation.AuthenticateAseTokenAsync(authHeader).ConfigureAwait(false);
             }
 
-            if (SkillValidation.IsSkillToken(authHeader))
-            {
-                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
-            }
+            //if (SkillValidation.IsSkillToken(authHeader))
+            //{
+            //    return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+            //}
 
-            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
-            {
-                return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
-            }
+            //if (EmulatorValidation.IsTokenFromEmulator(authHeader))
+            //{
+            //    return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+            //}
 
             return await GovernmentChannelValidation_AuthenticateChannelTokenAsync(authHeader, serviceUrl, channelId, cancellationToken).ConfigureAwait(false);
         }
@@ -467,21 +468,22 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
             }
 
-            if (serviceUrl != null)
-            {
-                var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
-                if (string.IsNullOrWhiteSpace(serviceUrlClaim))
-                {
-                    // Claim must be present. Not Authorized.
-                    throw new UnauthorizedAccessException("Missing serviceurl claim");
-                }
+            //if (serviceUrl != null)
+            //{
+            //    var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
 
-                if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Claim must match. Not Authorized.
-                    throw new UnauthorizedAccessException("serviceurl claim mismatch");
-                }
-            }
+            //    if (string.IsNullOrWhiteSpace(serviceUrlClaim))
+            //    {
+            //        // Claim must be present. Not Authorized.
+            //        throw new UnauthorizedAccessException("Missing serviceurl claim");
+            //    }
+
+            //    if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        // Claim must match. Not Authorized.
+            //        throw new UnauthorizedAccessException("serviceurl claim mismatch");
+            //    }
+            //}
         }
     }
 }

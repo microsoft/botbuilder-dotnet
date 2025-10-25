@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     // This means we acquired a valid token successfully. We can make our retry policy null.
                     return new AuthenticatorResult()
                     {
-                        AccessToken = token,
+                        AccessToken = token.Substring("Bearer ".Length),
                         ExpiresOn = DateTime.Now.AddMinutes(30)
                     };
                 }

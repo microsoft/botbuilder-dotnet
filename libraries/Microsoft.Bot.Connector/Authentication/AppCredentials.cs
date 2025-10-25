@@ -4,14 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -225,7 +228,12 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (ShouldSetToken())
             {
-                var token = await GetTokenAsync().ConfigureAwait(false);
+                string activityJson = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                Activity activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
+                string agenticIdentity = activity.From.Properties["agenticAppId"]?.ToString();
+                string agenticUserId = activity.From.Properties["agenticUserId"]?.ToString();
+
+                var token = await GetTokenAsync(true, agenticIdentity, agenticUserId).ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
@@ -237,12 +245,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="forceRefresh">True to force a refresh of the token; or false to get
         /// a cached token if it exists.</param>
+        /// <param name="agentIdentity">The agentic identity appId on whose behalf the token is requested.</param>
+        /// <param name="agentUser">The agentic userId on whose behalf the token is requested.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result contains the access token string.</remarks>
-        public async Task<string> GetTokenAsync(bool forceRefresh = false)
+        public async Task<string> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "")
         {
             _authenticator ??= BuildIAuthenticator();
-            var token = await _authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+            var token = await _authenticator.Value.GetTokenAsync(forceRefresh, agentIdentity, agentUser).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(token.AccessToken))
             {
                 Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");
