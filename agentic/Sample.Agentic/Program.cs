@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
@@ -20,18 +19,31 @@ builder.Services.AddInMemoryTokenCaches();
 
 builder.Services.AddHttpClient();
 
-//builder.Services.AddSingleton<ServiceClientCredentialsFactory>(provider =>
-//    new FederatedServiceClientCredentialsFactory(
-//        provider.GetRequiredService<IAuthorizationHeaderProvider>(),
-//        builder.Configuration["MicrosoftAppId"],
-//        builder.Configuration["MicrosoftAppClientId"],
-//        builder.Configuration["MicrosoftAppTenantId"]));
+CredentialDescription credSecret;
 
-var credSecret = new CredentialDescription()
+if (!string.IsNullOrEmpty(builder.Configuration["MicrosoftAppClientId"]))
 {
-    SourceType = CredentialSource.ClientSecret,
-    ClientSecret = builder.Configuration["MicrosoftAppPassword"]
-};
+    builder.Services.AddSingleton<ServiceClientCredentialsFactory>(provider =>
+        new FederatedServiceClientCredentialsFactory(
+            provider.GetRequiredService<IAuthorizationHeaderProvider>(),
+            builder.Configuration["MicrosoftAppId"],
+            builder.Configuration["MicrosoftAppClientId"],
+            builder.Configuration["MicrosoftAppTenantId"]));
+
+    credSecret = new CredentialDescription()
+    {
+        SourceType = CredentialSource.SignedAssertionFromManagedIdentity,
+        ManagedIdentityClientId = builder.Configuration["MicrosoftAppClientId"]
+    };
+}
+else
+{
+    credSecret = new CredentialDescription()
+    {
+        SourceType = CredentialSource.ClientSecret,
+        ClientSecret = builder.Configuration["MicrosoftAppPassword"]
+    };
+}
 
 builder.Services.Configure<MicrosoftIdentityApplicationOptions>(ops =>
 {

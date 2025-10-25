@@ -1,0 +1,35 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ridobotlocal": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:3978",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MicrosoftAppType": "SingleTenant",
+        "MicrosoftAppTenantId": "",
+        "MicrosoftAppId": "",
+        "MicrosoftAppPassword": ""
+      }
+    },
+    "RicardoAgent": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:3978",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MicrosoftAppType": "SingleTenant",
+        "MicrosoftAppTenantId": "",
+        "MicrosoftAppId": "",
+        "MicrosoftAppPassword": "",
+        "ToChannelFromBotOAuthScope": "0d94caae-b412-4943-8a68-83135ad6d35f/.default",
+        "OAuthUrl": "https://login.microsoftonline.com/<tenantId>/oauth2/v2.0/token",
+        "ToBotFromChannelOpenIdMetadataUrl": "https://login.microsoftonline.com/<tenantId>/v2.0/.well-known/openid-configuration",
+        "ToBotFromChannelTokenIssuer": "https://login.microsoftonline.com/<tenantId>/v2.0"
+      }
+    }
+  }
+}
