@@ -24,11 +24,9 @@ stages:
 
       - script: dotnet restore Microsoft.Bot.Builder.sln
         displayName: 'Restore'
-        workingDirectory: '$(workingDirectory)'
 
       - script: dotnet build Microsoft.Bot.Builder.sln --no-restore --configuration $(buildConfiguration)
         displayName: 'Build'
-        workingDirectory: '$(workingDirectory)'
       # - script: dotnet test --no-restore --verbosity normal --logger trx --configuration $(buildConfiguration)
       #   displayName: 'Test'
 
@@ -36,7 +34,7 @@ stages:
         displayName: 'Pack NuGet Packages'
         inputs:
           command: pack
-          packagesToPack: '$(workingDirectory)/Microsoft.Bot.Builder.sln'
+          packagesToPack: 'Microsoft.Bot.Builder.sln'
           packDirectory: '$(Build.ArtifactStagingDirectory)'
           includesymbols: false
           nobuild: true
