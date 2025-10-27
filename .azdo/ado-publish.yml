@@ -62,7 +62,7 @@ stages:
 - stage: PushToNuGet
   displayName: 'Push NuGet Packages to internal feed'
   dependsOn: Build_Test_Pack
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: succeeded()
   jobs:
   - deployment: PushPackages
     displayName: 'Manual Approval Required to Push Packages'
