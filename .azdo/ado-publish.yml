@@ -53,31 +53,12 @@ stages:
           versionEnvVar: 'Version'
           buildProperties: 'SymbolPackageFormat=snupkg'
 
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish NuGet Artifacts'
+      - task: NuGetCommand@2
+        displayName: 'Push NuGet Packages'
         inputs:
-          PathToPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'Packages'
+          command: push
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+          nuGetFeedType: external
+          publishFeedCredentials: 'Teams-Graph-Feed'
 
-- stage: PushToNuGet
-  displayName: 'Push NuGet Packages to internal feed'
-  dependsOn: Build_Test_Pack
-  jobs:
-  - deployment: PushPackages
-    displayName: 'Manual Approval Required to Push Packages'
-    environment:
-      name: 'botbuilder-fork-publish'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: Packages
-
-          - task: NuGetCommand@2
-            displayName: 'Push NuGet Packages'
-            inputs:
-              command: push
-              packagesToPush: '$(Pipeline.Workspace)/Packages/*.nupkg'
-              nuGetFeedType: external
-              publishFeedCredentials: 'Teams-Graph-Feed'
+      
