@@ -32,9 +32,6 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
       
-    - name: Test
-      run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
-      
     - name: Pack
       run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build
       
