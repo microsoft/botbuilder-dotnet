@@ -1,0 +1,47 @@
+name: CI - Build and Pack
+
+on:
+  push:
+    
+  pull_request:
+
+  workflow_dispatch:
+    
+env:
+  SOLUTION_FILE: 'Microsoft.Bot.Builder.sln'
+
+jobs:
+  build-and-pack:
+    name: Build and Pack
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.x
+        
+    - name: Restore
+      run: dotnet restore ${{ env.SOLUTION_FILE }}
+      
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+      
+    - name: Test
+      run: dotnet test ${{ env.SOLUTION_FILE }} --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+      
+    - name: Pack
+      run: dotnet pack ${{ env.SOLUTION_FILE }} --configuration Release --no-build
+      
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: nuget-packages-${{ github.run_number }}
+        path: outputpackages/
+        retention-days: 7
