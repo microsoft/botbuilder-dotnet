@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
@@ -13,6 +14,11 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
     /// </summary>
     public class NullAdapter : BotAdapter
     {
+        public NullAdapter(IAuthorizationHeaderProvider tokenProvider) 
+            : base(tokenProvider)
+        {
+        }
+
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken) => throw new NotImplementedException();
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken) => Task.FromResult(new[] { new ResourceResponse() });

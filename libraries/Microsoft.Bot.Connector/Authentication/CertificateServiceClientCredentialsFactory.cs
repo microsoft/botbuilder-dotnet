@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -24,10 +25,12 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, CertificateAppCredentials> _certificateAppCredentialsByAudience = new ();
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateServiceClientCredentialsFactory"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="certificate">The certificate to use for authentication.</param>
         /// <param name="appId">Microsoft application Id related to the certificate.</param>
         /// <param name="tenantId">The oauth token tenant.</param>
@@ -37,6 +40,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// It enables authentication with AAD using certificate subject name (not CNAME) and issuer instead of a thumbprint.
         /// </param>
         public CertificateServiceClientCredentialsFactory(
+            IAuthorizationHeaderProvider tokenProvider,
             X509Certificate2 certificate,
             string appId,
             string tenantId = null,
@@ -50,6 +54,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(appId));
             }
 
+            _tokenProvider = tokenProvider;
             _certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
             _appId = appId;
             _tenantId = tenantId;
@@ -85,6 +90,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
                 {
                     return new CertificateAppCredentials(
+                        _tokenProvider,
                         _certificate,
                         _appId,
                         _tenantId,
@@ -99,6 +105,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
                 {
                     return new CertificateGovernmentAppCredentials(
+                        _tokenProvider,
                         _certificate,
                         _appId,
                         _tenantId,
@@ -113,6 +120,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return Task.FromResult<ServiceClientCredentials>(_certificateAppCredentialsByAudience.GetOrAdd(audience, (audience) =>
                 {
                     return new CertificatePrivateCloudAppCredentials(
+                        _tokenProvider,
                         _certificate,
                         _appId,
                         _tenantId,
@@ -131,23 +139,23 @@ namespace Microsoft.Bot.Connector.Authentication
             private readonly string _oAuthEndpoint;
             private readonly bool _validateAuthority;
 
-            public CertificatePrivateCloudAppCredentials(CertificateAppCredentialsOptions options)
-                : base(options)
+            public CertificatePrivateCloudAppCredentials(IAuthorizationHeaderProvider tokenProvider, CertificateAppCredentialsOptions options)
+                : base(tokenProvider, options)
             {
             }
 
-            public CertificatePrivateCloudAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-                : base(clientCertificate, appId, channelAuthTenant, customHttpClient, logger)
+            public CertificatePrivateCloudAppCredentials(IAuthorizationHeaderProvider tokenProvider, X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+                : base(tokenProvider, clientCertificate, appId, channelAuthTenant, customHttpClient, logger)
             {
             }
 
-            public CertificatePrivateCloudAppCredentials(X509Certificate2 clientCertificate, bool sendX5c, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-                : base(clientCertificate, sendX5c, appId, channelAuthTenant, customHttpClient, logger)
+            public CertificatePrivateCloudAppCredentials(IAuthorizationHeaderProvider tokenProvider, X509Certificate2 clientCertificate, bool sendX5c, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+                : base(tokenProvider, clientCertificate, sendX5c, appId, channelAuthTenant, customHttpClient, logger)
             {
             }
 
-            public CertificatePrivateCloudAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant, string oAuthScope, bool sendX5c, string oAuthEndpoint, bool validateAuthority, HttpClient customHttpClient = null, ILogger logger = null)
-                : base(clientCertificate, appId, channelAuthTenant, oAuthScope, sendX5c, customHttpClient, logger)
+            public CertificatePrivateCloudAppCredentials(IAuthorizationHeaderProvider tokenProvider, X509Certificate2 clientCertificate, string appId, string channelAuthTenant, string oAuthScope, bool sendX5c, string oAuthEndpoint, bool validateAuthority, HttpClient customHttpClient = null, ILogger logger = null)
+                : base(tokenProvider, clientCertificate, appId, channelAuthTenant, oAuthScope, sendX5c, customHttpClient, logger)
             {
                 _oAuthEndpoint = oAuthEndpoint;
                 _validateAuthority = validateAuthority;

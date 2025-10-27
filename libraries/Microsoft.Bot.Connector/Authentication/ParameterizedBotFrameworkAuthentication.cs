@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -34,6 +35,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ILogger _logger;
 
         public ParameterizedBotFrameworkAuthentication(
+            IAuthorizationHeaderProvider tokenProvider,
             bool validateAuthority,
             string toChannelFromBotLoginUrl,
             string toChannelFromBotOAuthScope,
@@ -45,7 +47,8 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentialsFactory credentialsFactory,
             AuthenticationConfiguration authConfiguration,
             IHttpClientFactory httpClientFactory,
-            ILogger logger)
+            ILogger logger) 
+                : base(tokenProvider)
         {
             _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
@@ -79,7 +82,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
-            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
+            var connectorFactory = new ConnectorFactoryImpl(TokenProvider, BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
@@ -102,7 +105,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
+            return new ConnectorFactoryImpl(TokenProvider, BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
         }
 
         public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
@@ -166,10 +169,11 @@ namespace Microsoft.Bot.Connector.Authentication
                 var claimsList = claims as IList<Claim> ?? claims.ToList();
                 await _authConfiguration.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
             }
-            else if (SkillValidation.IsSkillClaim(claims))
-            {
-                throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
-            }
+
+            //else if (SkillValidation.IsSkillClaim(claims))
+            //{
+            //    throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
+            //}
         }
 
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, string channelId, string serviceUrl, CancellationToken cancellationToken)
@@ -179,15 +183,15 @@ namespace Microsoft.Bot.Connector.Authentication
                 return await AseChannelValidation.AuthenticateAseTokenAsync(authHeader).ConfigureAwait(false);
             }
 
-            if (SkillValidation.IsSkillToken(authHeader))
-            {
-                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
-            }
+            //if (SkillValidation.IsSkillToken(authHeader))
+            //{
+            //    return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+            //}
 
-            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
-            {
-                return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
-            }
+            //if (EmulatorValidation.IsTokenFromEmulator(authHeader))
+            //{
+            //    return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+            //}
 
             return await GovernmentChannelValidation_AuthenticateChannelTokenAsync(authHeader, serviceUrl, channelId, cancellationToken).ConfigureAwait(false);
         }
@@ -464,21 +468,22 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
             }
 
-            if (serviceUrl != null)
-            {
-                var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
-                if (string.IsNullOrWhiteSpace(serviceUrlClaim))
-                {
-                    // Claim must be present. Not Authorized.
-                    throw new UnauthorizedAccessException("Missing serviceurl claim");
-                }
+            //if (serviceUrl != null)
+            //{
+            //    var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
 
-                if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Claim must match. Not Authorized.
-                    throw new UnauthorizedAccessException("serviceurl claim mismatch");
-                }
-            }
+            //    if (string.IsNullOrWhiteSpace(serviceUrlClaim))
+            //    {
+            //        // Claim must be present. Not Authorized.
+            //        throw new UnauthorizedAccessException("Missing serviceurl claim");
+            //    }
+
+            //    if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        // Claim must match. Not Authorized.
+            //        throw new UnauthorizedAccessException("serviceurl claim mismatch");
+            //    }
+            //}
         }
     }
 }

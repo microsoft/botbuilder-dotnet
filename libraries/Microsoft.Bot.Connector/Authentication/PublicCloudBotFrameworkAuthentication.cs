@@ -4,13 +4,15 @@
 using System.Net.Http;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
     internal class PublicCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public PublicCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger)
+        public PublicCloudBotFrameworkAuthentication(IAuthorizationHeaderProvider tokenProvider, ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger)
             : base(
+                  tokenProvider,
                   AuthenticationConstants.ToChannelFromBotOAuthScope,
                   AuthenticationConstants.ToChannelFromBotLoginUrlTemplate,
                   CallerIdConstants.PublicAzureChannel,

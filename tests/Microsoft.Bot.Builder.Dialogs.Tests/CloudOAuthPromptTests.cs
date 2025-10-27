@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
 
@@ -365,7 +365,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(
@@ -456,7 +456,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
 
@@ -555,7 +555,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(
@@ -649,7 +649,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(
@@ -755,7 +755,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var mockConnectorFactory = new Mock<ConnectorFactory>();
             mockConnectorFactory.Setup(
                 x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+                .ReturnsAsync(new ConnectorClient(null, new Uri("http://tempuri/")));
 
             var mockUserTokenClient = new Mock<UserTokenClient>();
             mockUserTokenClient.Setup(

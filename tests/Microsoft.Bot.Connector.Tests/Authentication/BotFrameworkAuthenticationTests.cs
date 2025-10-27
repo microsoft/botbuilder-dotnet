@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             httpClientFactoryMock.Setup(hcf => hcf.CreateClient(It.IsAny<string>())).Returns(client);
 
             var bfa = BotFrameworkAuthenticationFactory.Create(
+                tokenProvider: null,
                 channelService: null,
                 validateAuthority: true,
                 toChannelFromBotLoginUrl: null,
@@ -57,10 +58,10 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 toBotFromChannelOpenIdMetadataUrl: null,
                 toBotFromEmulatorOpenIdMetadataUrl: null,
                 callerId: null,
-                credentialFactoryMock.Object,
-                new AuthenticationConfiguration(),
-                httpClientFactoryMock.Object,
-                NullLogger.Instance);
+                credentialFactory: credentialFactoryMock.Object,
+                authConfiguration: new AuthenticationConfiguration(),
+                httpClientFactory: httpClientFactoryMock.Object,
+                logger: NullLogger.Instance);
 
             Uri serviceUrl = new Uri("http://root-bot/service-url");
             string conversationId = "conversation-id";

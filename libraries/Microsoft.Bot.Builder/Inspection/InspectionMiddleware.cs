@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder
 
             if (openSessions.AttachedSessions.TryGetValue(GetAttachId(turnContext.Activity), out var conversationReference))
             {
-                return new InspectionSession(conversationReference, _credentials, GetHttpClient(), Logger);
+                return new InspectionSession(null, conversationReference, _credentials, GetHttpClient(), Logger);
             }
 
             return null;

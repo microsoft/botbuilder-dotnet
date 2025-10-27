@@ -7,7 +7,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Web;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -19,7 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// An empty set of credentials.
         /// </summary>
-        public static readonly MsalAppCredentials Empty = new MsalAppCredentials(clientApplication: null, appId: null);
+        public static readonly MsalAppCredentials Empty = new MsalAppCredentials(tokenProvider: null, clientApplication: null, appId: null);
 
         // Semaphore to control concurrency while refreshing tokens from MSAL.
         // Whenever a token expires, we want only one request to retrieve a token.
@@ -39,14 +41,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalAppCredentials"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="clientApplication">The client application to use to acquire tokens.</param>
         /// <param name="appId">The Microsoft application Id.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         /// <param name="authority">Optional authority.</param>
         /// <param name="validateAuthority">Whether to validate the authority.</param>
         /// <param name="scope">Optional custom scope.</param>
-        public MsalAppCredentials(IConfidentialClientApplication clientApplication, string appId, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
-            : base(null, null, logger, scope)
+        public MsalAppCredentials(IAuthorizationHeaderProvider tokenProvider, IConfidentialClientApplication clientApplication, string appId, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+            : base(tokenProvider, null, null, logger, scope)
         {
             MicrosoftAppId = appId;
             _clientApplication = clientApplication;
@@ -63,6 +66,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalAppCredentials"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="appPassword">The Microsoft application password.</param>
         /// <param name="authority">Optional authority.</param>
@@ -70,8 +74,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, string appPassword, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(IAuthorizationHeaderProvider tokenProvider, string appId, string appPassword, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
+                  tokenProvider: tokenProvider,
                   clientApplication: null,
                   appId: appId,
                   authority: authority,
@@ -88,6 +93,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalAppCredentials"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="certificate">The certificate to use for authentication.</param>
         /// <param name="validateAuthority">Optional switch for whether to validate the authority.</param>
@@ -95,8 +101,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, X509Certificate2 certificate, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(IAuthorizationHeaderProvider tokenProvider, string appId, X509Certificate2 certificate, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
+                  tokenProvider: tokenProvider,
                   clientApplication: null,
                   appId: appId,
                   authority: authority,
@@ -113,6 +120,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalAppCredentials"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="appId">The Microsoft application id.</param>
         /// <param name="certificate">The certificate to use for authentication.</param>
         /// <param name="sendX5c">If true will send the public certificate to Azure AD along with the token request, so that
@@ -122,8 +130,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="scope">Optional custom scope.</param>
         /// <param name="logger">Optional <see cref="ILogger"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2234:Pass system uri objects instead of strings", Justification = "Using string overload for legacy compatibility.")]
-        public MsalAppCredentials(string appId, X509Certificate2 certificate, bool sendX5c, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
+        public MsalAppCredentials(IAuthorizationHeaderProvider tokenProvider, string appId, X509Certificate2 certificate, bool sendX5c, string authority = null, string scope = null, bool validateAuthority = true, ILogger logger = null)
             : this(
+                  tokenProvider: tokenProvider,
                   clientApplication: null,
                   appId: appId,
                   authority: authority,
@@ -137,12 +146,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 .Build();
         }
 
-        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
+        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh, string agentIdentity, string agentUser)
         {
             var watch = Stopwatch.StartNew();
 
             var result = await Retry.Run(
-                task: () => AcquireTokenAsync(forceRefresh),
+                task: () => AcquireTokenAsync(forceRefresh, agentIdentity, agentUser),
                 retryExceptionHandler: (ex, ct) => HandleMsalException(ex, ct)).ConfigureAwait(false);
 
             watch.Stop();
@@ -157,7 +166,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return new Lazy<IAuthenticator>(() => this, LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh = false)
+        private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "")
         {
             if (_clientApplication == null)
             {
@@ -190,19 +199,38 @@ namespace Microsoft.Bot.Connector.Authentication
                         scope = $"{scope}{scopePostFix}";
                     }
 
-                    // Acquire token async using MSAL.NET
-                    // This will use the cache from the application cache of the MSAL library, no external caching is needed.
-                    var msalResult = await _clientApplication
-                        .AcquireTokenForClient(new[] { scope })
-                        .WithAuthority(_authority ?? OAuthEndpoint, _validateAuthority)
-                        .WithForceRefresh(forceRefresh)
-                        .ExecuteAsync().ConfigureAwait(false);
+                    if (!scope.Equals("https://api.botframework.com/.default", StringComparison.OrdinalIgnoreCase)
+                            && string.IsNullOrEmpty(agentIdentity)
+                            && string.IsNullOrEmpty(agentUser))
+                    {
+                        throw new InvalidOperationException("AcquireTokenAsync requires agentIdentity and agentUser to be set when using custom scopes.");
+                    }
+
+                    string token = string.Empty;
+                    if (string.IsNullOrEmpty(agentIdentity) && string.IsNullOrEmpty(agentUser))
+                    {
+                        // Acquire token async using MSAL.NET
+                        // This will use the cache from the application cache of the MSAL library, no external caching is needed.
+                        //msalResult = await _clientApplication
+                        //    .AcquireTokenForClient(new[] { scope })
+                        //    .WithAuthority(_authority ?? OAuthEndpoint, _validateAuthority)
+                        //    .WithForceRefresh(forceRefresh)
+                        //    .ExecuteAsync().ConfigureAwait(false);
+                        token = await TokenProvider.CreateAuthorizationHeaderForAppAsync(scope);                    
+                    }
+                    else
+                    {
+                        token = await TokenProvider.CreateAuthorizationHeaderAsync(
+                            [scope], 
+                            new AuthorizationHeaderProviderOptions()
+                                .WithAgentUserIdentity(agentIdentity, Guid.Parse(agentUser)));
+                    }
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
                     return new AuthenticatorResult()
                     {
-                        AccessToken = msalResult.AccessToken,
-                        ExpiresOn = msalResult.ExpiresOn
+                        AccessToken = token.Substring("Bearer ".Length),
+                        ExpiresOn = DateTime.Now.AddMinutes(30)
                     };
                 }
                 else

@@ -9,6 +9,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
@@ -21,11 +22,11 @@ namespace Microsoft.Bot.Builder
         // To detect redundant calls to Dispose()
         private bool _disposed = false;
 
-        public InspectionSession(ConversationReference conversationReference, MicrosoftAppCredentials credentials, HttpClient httpClient, ILogger logger)
+        public InspectionSession(IAuthorizationHeaderProvider tokenProvider, ConversationReference conversationReference, MicrosoftAppCredentials credentials, HttpClient httpClient, ILogger logger)
         {
             _conversationReference = conversationReference;
             _logger = logger;
-            _connectorClient = new ConnectorClient(new Uri(_conversationReference.ServiceUrl), credentials, httpClient, disposeHttpClient: httpClient == null);
+            _connectorClient = new ConnectorClient(tokenProvider, new Uri(_conversationReference.ServiceUrl), credentials, httpClient, disposeHttpClient: httpClient == null);
         }
 
         public async Task<bool> SendAsync(Activity activity, CancellationToken cancellationToken)

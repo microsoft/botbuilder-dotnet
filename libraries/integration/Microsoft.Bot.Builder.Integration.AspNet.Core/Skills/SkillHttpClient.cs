@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
@@ -23,13 +24,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillHttpClient"/> class.
         /// </summary>
+        /// <param name="tokenProvider">An instance of <see cref="IAuthorizationHeaderProvider"/>.</param>
         /// <param name="httpClient">A HttpClient.</param>
         /// <param name="credentialProvider">An instance of <see cref="ICredentialProvider"/>.</param>
         /// <param name="conversationIdFactory">An instance of a class derived from <see cref="SkillConversationIdFactoryBase"/>.</param>
         /// <param name="channelProvider">An instance of <see cref="IChannelProvider"/>.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
-        public SkillHttpClient(HttpClient httpClient, ICredentialProvider credentialProvider, SkillConversationIdFactoryBase conversationIdFactory, IChannelProvider channelProvider = null, ILogger logger = null)
-            : base(httpClient, credentialProvider, channelProvider, logger)
+        public SkillHttpClient(IAuthorizationHeaderProvider tokenProvider, HttpClient httpClient, ICredentialProvider credentialProvider, SkillConversationIdFactoryBase conversationIdFactory, IChannelProvider channelProvider = null, ILogger logger = null)
+            : base(tokenProvider, httpClient, credentialProvider, channelProvider, logger)
         {
             _conversationIdFactory = conversationIdFactory;
         }

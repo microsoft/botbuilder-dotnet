@@ -43,7 +43,7 @@ namespace Microsoft.BotBuilderSamples
             services.AddHttpClient();
 
             // Create the debug middleware
-            services.AddSingleton(sp => new MicrosoftAppCredentials(sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
+            services.AddSingleton(sp => new MicrosoftAppCredentials(null, sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
             services.AddSingleton<InspectionMiddleware>();
 
             // Create the Bot Framework Adapter with error handling enabled.

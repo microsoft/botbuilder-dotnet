@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void ShouldReturnChannelIdFromContextActivity()
         {
             var testActivity = new Schema.Activity() { ChannelId = Channels.Facebook };
-            var testContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider()), testActivity);
+            var testContext = new TurnContext(new BotFrameworkAdapter(null, new SimpleCredentialProvider()), testActivity);
             var channelId = Channel.GetChannelId(testContext);
             Assert.Equal(Channels.Facebook, channelId);
         }
@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void ShouldReturnEmptyFromContextActivityMissingChannel()
         {
             var testActivity = new Schema.Activity() { ChannelId = null };
-            var testContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider()), testActivity);
+            var testContext = new TurnContext(new BotFrameworkAdapter(null, new SimpleCredentialProvider()), testActivity);
             var channelId = Channel.GetChannelId(testContext);
             Assert.Equal(channelId, string.Empty);
         }

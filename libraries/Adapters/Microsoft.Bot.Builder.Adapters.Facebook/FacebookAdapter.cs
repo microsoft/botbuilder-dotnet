@@ -68,6 +68,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="logger">The logger this adapter should use.</param>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
         public FacebookAdapter(FacebookClientWrapper facebookClient, FacebookAdapterOptions options, ILogger logger = null)
+            : base(null)
         {
             _options = options ?? new FacebookAdapterOptions();
             _facebookClient = facebookClient ?? throw new ArgumentNullException(nameof(facebookClient));

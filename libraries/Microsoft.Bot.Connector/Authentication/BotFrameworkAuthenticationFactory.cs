@@ -4,6 +4,7 @@
 using System;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -19,6 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public static BotFrameworkAuthentication Create()
         {
             return Create(
+                tokenProvider: null,
                 channelService: null,
                 validateAuthority: false,
                 toChannelFromBotLoginUrl: null,
@@ -37,6 +39,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Creates the appropriate <see cref="BotFrameworkAuthentication" /> instance.
         /// </summary>
+        /// <param name="tokenProvider">The Authorization Header Provider.</param>
         /// <param name="channelService">The Channel Service.</param>
         /// <param name="validateAuthority">The validate authority value to use.</param>
         /// <param name="toChannelFromBotLoginUrl">The to Channel from bot login url.</param>
@@ -52,6 +55,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="logger">The <see cref="ILogger" /> to use.</param>
         /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
         public static BotFrameworkAuthentication Create(
+            IAuthorizationHeaderProvider tokenProvider,
             string channelService,
             bool validateAuthority,
             string toChannelFromBotLoginUrl,
@@ -78,13 +82,14 @@ namespace Microsoft.Bot.Connector.Authentication
                 // if we have any of the 'parameterized' properties defined we'll assume this is the parameterized code
 
                 return new ParameterizedBotFrameworkAuthentication(
+                    tokenProvider,
                     validateAuthority,
                     toChannelFromBotLoginUrl,
                     toChannelFromBotOAuthScope,
                     toBotFromChannelTokenIssuer,
                     oAuthUrl,
                     toBotFromChannelOpenIdMetadataUrl,
-                    toBotFromEmulatorOpenIdMetadataUrl,
+                    toBotFromChannelOpenIdMetadataUrl,
                     callerId,
                     credentialFactory,
                     authConfiguration,
@@ -97,11 +102,11 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 if (string.IsNullOrEmpty(channelService))
                 {
-                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
+                    return new PublicCloudBotFrameworkAuthentication(tokenProvider, credentialFactory, authConfiguration, httpClientFactory, logger);
                 }
                 else if (channelService == GovernmentAuthenticationConstants.ChannelService)
                 {
-                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
+                    return new GovernmentCloudBotFrameworkAuthentication(tokenProvider, credentialFactory, authConfiguration, httpClientFactory, logger);
                 }
                 else
                 {

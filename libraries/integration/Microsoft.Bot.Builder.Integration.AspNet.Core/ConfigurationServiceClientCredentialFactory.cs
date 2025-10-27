@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
@@ -36,15 +37,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class ConfigurationServiceClientCredentialFactory : ServiceClientCredentialsFactory
     {
         private readonly ServiceClientCredentialsFactory _inner;
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationServiceClientCredentialFactory"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="configuration">An instance of <see cref="IConfiguration"/>.</param>
         /// <param name="httpClient">A httpClient to use.</param>
         /// <param name="logger">A logger to use.</param>
-        public ConfigurationServiceClientCredentialFactory(IConfiguration configuration, HttpClient httpClient = null, ILogger logger = null)
+        public ConfigurationServiceClientCredentialFactory(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration, HttpClient httpClient = null, ILogger logger = null)
         {
+            _tokenProvider = tokenProvider;
             var appType = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTypeKey)?.Value;
             var appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             var password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
@@ -72,7 +76,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} must not be set for MSI in configuration.");
                     }
 
-                    _inner = new ManagedIdentityServiceClientCredentialsFactory(appId, httpClient, logger);
+                    _inner = new ManagedIdentityServiceClientCredentialsFactory(_tokenProvider, appId, httpClient, logger);
                     break;
 
                 case MicrosoftAppType.SingleTenant:
@@ -91,11 +95,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} is required for SingleTenant in configuration.");
                     }
 
-                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger);
+                    _inner = new PasswordServiceClientCredentialFactory(_tokenProvider, appId, password, tenantId, httpClient, logger);
                     break;
 
                 default: // MultiTenant
-                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId: string.Empty,  httpClient, logger);
+                    _inner = new PasswordServiceClientCredentialFactory(_tokenProvider, appId, password, tenantId: string.Empty, httpClient, logger);
                     break;
             }
         }

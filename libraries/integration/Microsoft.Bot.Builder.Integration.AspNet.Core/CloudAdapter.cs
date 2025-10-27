@@ -18,6 +18,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -31,34 +32,39 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
         /// </summary>
-        public CloudAdapter()
-            : this(BotFrameworkAuthenticationFactory.Create())
+        /// <param name="tokenProvider">The <see cref="IAuthorizationHeaderProvider"/> to use for token management.</param>
+        public CloudAdapter(IAuthorizationHeaderProvider tokenProvider)
+            : this(tokenProvider, BotFrameworkAuthenticationFactory.Create())
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The <see cref="IAuthorizationHeaderProvider"/> to use for token management.</param>
         /// <param name="botFrameworkAuthentication">The <see cref="BotFrameworkAuthentication"/> this adapter should use.</param>
         /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
         public CloudAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             BotFrameworkAuthentication botFrameworkAuthentication,
             ILogger logger = null)
-            : base(botFrameworkAuthentication, logger)
+            : base(tokenProvider, botFrameworkAuthentication, logger)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The <see cref="IAuthorizationHeaderProvider"/> to use for token management.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/> instance.</param>
         /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/> this adapter should use.</param>
         /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
         public CloudAdapter(
+            IAuthorizationHeaderProvider tokenProvider,
             IConfiguration configuration,
             IHttpClientFactory httpClientFactory = null,
             ILogger logger = null)
-            : this(new ConfigurationBotFrameworkAuthentication(configuration, httpClientFactory: httpClientFactory, logger: logger), logger)
+            : this(tokenProvider, new ConfigurationBotFrameworkAuthentication(tokenProvider, configuration, httpClientFactory: httpClientFactory, logger: logger), logger)
         {
         }
 

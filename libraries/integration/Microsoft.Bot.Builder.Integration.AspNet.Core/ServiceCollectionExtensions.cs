@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -168,6 +169,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             if (options.AppCredentials != null)
             {
                 botFrameworkAdapter = new BotFrameworkAdapter(
+                   serviceProvider.GetRequiredService<IAuthorizationHeaderProvider>(),
                    options.AppCredentials,
                    options.AuthenticationConfiguration,
                    options.ChannelProvider,
@@ -182,6 +184,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             else
             {
                 botFrameworkAdapter = new BotFrameworkAdapter(
+                serviceProvider.GetRequiredService<IAuthorizationHeaderProvider>(),
                 options.CredentialProvider,
                 options.AuthenticationConfiguration,
                 options.ChannelProvider,

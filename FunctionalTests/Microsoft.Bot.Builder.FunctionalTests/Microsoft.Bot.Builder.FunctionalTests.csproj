@@ -23,16 +23,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj" />
-    <ProjectReference Include="..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Slack\Microsoft.Bot.Builder.Adapters.Slack.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
-    <ProjectReference Include="..\..\tests\Microsoft.Bot.Builder.AI.LUIS.Tests\Microsoft.Bot.Builder.AI.Luis.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Assets\TellMeAJoke.wav">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Payloads\" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest.Serialization;
 using Moq;
 using Moq.Protected;
@@ -38,8 +39,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+
             // Act
-            var adapter = new BotFrameworkHttpAdapter();
+            var adapter = new BotFrameworkHttpAdapter(mockTokenProvider.Object);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
 
             // Assert
@@ -61,10 +64,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var httpResponseMock = new Mock<HttpResponse>();
             httpResponseMock.Setup(r => r.Body).Returns(response);
 
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+
             var bot = new InvokeResponseBot();
 
             // Act
-            var adapter = new BotFrameworkHttpAdapter();
+            var adapter = new BotFrameworkHttpAdapter(mockTokenProvider.Object);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
@@ -94,11 +99,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             httpRequestMock.Setup(r => r.HttpContext.WebSockets.AcceptWebSocketAsync()).Returns(async () => await Task.FromResult(new FauxSock()));
             var httpResponseMock = new Mock<HttpResponse>();
 
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             // Act
-            var adapter = new BotFrameworkHttpAdapter();
+            var adapter = new BotFrameworkHttpAdapter(mockTokenProvider.Object);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
 
             // Assert, we should have made the call to accept the web socket
@@ -116,6 +123,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+
             var httpResponseMock = new Mock<HttpResponse>();
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
@@ -128,7 +137,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var bot = new MessageBot();
 
             // Act
-            var adapter = new BotFrameworkHttpAdapter(null, null, httpClient, null);
+            var adapter = new BotFrameworkHttpAdapter(mockTokenProvider.Object, null, null, httpClient, null);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
@@ -151,8 +160,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 .AddInMemoryCollection(appSettings)
                 .Build();
 
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+
             // Act
-            var adapter = new MyAdapter(configuration);
+            var adapter = new MyAdapter(mockTokenProvider.Object, configuration);
 
             // Assert
 
@@ -187,8 +198,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+
             // Act
-            var adapter = new BotFrameworkHttpAdapter();
+            var adapter = new BotFrameworkHttpAdapter(mockTokenProvider.Object);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
 
             // Assert
@@ -199,7 +212,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         [Fact]
         public async Task Delay()
         {
-            await DelayHelper.Test(new BotFrameworkHttpAdapter());
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
+            await DelayHelper.Test(new BotFrameworkHttpAdapter(mockTokenProvider.Object));
         }
 
         private static Stream CreateMessageActivityStream()
@@ -249,8 +263,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         private class MyAdapter : BotFrameworkHttpAdapter
         {
-            public MyAdapter(IConfiguration configuration)
-                : base(configuration)
+            public MyAdapter(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration)
+                : base(tokenProvider, configuration)
             {
             }
         }

@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components.TestComponents
     public class AdventureWorksAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         public AdventureWorksAdapter(AdventureWorksAdapterOptions options)
+            : base(null)
         {
             Options = options;
         }

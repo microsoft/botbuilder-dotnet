@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -20,10 +21,12 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _tenantId;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FederatedServiceClientCredentialsFactory"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="appId">Microsoft application Id.</param>
         /// <param name="clientId">Managed Identity Client Id.</param>
         /// <param name="tenantId">The app tenant.</param>
@@ -31,6 +34,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="logger">A logger instance to use.</param>
         /// This enables authentication App Registration + Federated Credentials.
         public FederatedServiceClientCredentialsFactory(
+            IAuthorizationHeaderProvider tokenProvider,
             string appId,
             string clientId,
             string tenantId = null,
@@ -48,6 +52,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(clientId));
             }
 
+            _tokenProvider = tokenProvider;
             _appId = appId;
             _clientId = clientId;
             _tenantId = tenantId;
@@ -78,6 +83,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return Task.FromResult<ServiceClientCredentials>(new FederatedAppCredentials(
+                _tokenProvider,
                 _appId,
                 _clientId,
                 channelAuthTenant: _tenantId,

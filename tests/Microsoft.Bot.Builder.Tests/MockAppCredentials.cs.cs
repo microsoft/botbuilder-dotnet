@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class MockAppCredentials : AppCredentials
     {
         public MockAppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-            : base(channelAuthTenant, customHttpClient, logger)
+            : base(null, channelAuthTenant, customHttpClient, logger)
         {
         }
 

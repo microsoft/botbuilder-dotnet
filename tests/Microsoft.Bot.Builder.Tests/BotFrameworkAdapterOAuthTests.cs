@@ -374,7 +374,7 @@ namespace Microsoft.Bot.Builder.Tests
             private Func<TokenResponse> _getUserTokenAction;
 
             public MockAdapter(ICredentialProvider credentialProvider, Func<TokenResponse> getUserTokenAction, MockLogger logger = null)
-                : base(credentialProvider, null, logger)
+                : base(null, credentialProvider, null, logger)
             {
                 _getUserTokenAction = getUserTokenAction;
                 Logger = logger;

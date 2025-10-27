@@ -62,6 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="options">An instance of <see cref="WebexAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public WebexAdapter(WebexClientWrapper webexClient, WebexAdapterOptions options, ILogger logger = null)
+            : base(null)
         {
             _webexClient = webexClient ?? throw new ArgumentNullException(nameof(webexClient));
             _options = options ?? new WebexAdapterOptions();

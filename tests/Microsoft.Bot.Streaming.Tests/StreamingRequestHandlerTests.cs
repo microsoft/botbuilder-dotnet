@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), namedPipe, audience);
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), namedPipe, audience);
 
             // Assert
             Assert.NotNull(handler);
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new BotFrameworkHttpAdapter(), socket: null);
+                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new BotFrameworkHttpAdapter(null), socket: null);
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), string.Empty);
+                var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), string.Empty);
             }
             catch (Exception ex)
             {
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange 
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), socket, audience);
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), socket, audience);
 
             // Assert
             Assert.NotNull(handler);
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task DoesNotThrowExceptionIfReceiveRequestIsNull()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), Guid.NewGuid().ToString());
             ReceiveRequest testRequest = null;
 
             // Act
@@ -165,8 +165,8 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task DoesNotThrowExceptionIfReceiveRequestHasNoActivity()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
-            
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), Guid.NewGuid().ToString());
+
             var payload = new MemoryStream();
             var fakeContentStreamId = Guid.NewGuid();
             var fakeContentStream = new FakeContentStream(fakeContentStreamId, "application/json", payload);
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task RequestHandlerRemembersConversations()
         {
             // Arrange
-            var adapter = new BotFrameworkHttpAdapter();
+            var adapter = new BotFrameworkHttpAdapter(null);
             var handler = new StreamingRequestHandler(new MockBot(), adapter, Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();

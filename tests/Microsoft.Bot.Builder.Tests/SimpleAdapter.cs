@@ -18,20 +18,24 @@ namespace Microsoft.Bot.Builder.Tests
         private readonly Action<ConversationReference> _callOnDelete = null;
 
         public SimpleAdapter()
+            : base(null)
         {
         }
 
         public SimpleAdapter(Action<Activity[]> callOnSend)
+            : base(null)
         {
             _callOnSend = callOnSend;
         }
 
         public SimpleAdapter(Action<Activity> callOnUpdate)
+            : base(null)
         {
             _callOnUpdate = callOnUpdate;
         }
 
         public SimpleAdapter(Action<ConversationReference> callOnDelete)
+            : base(null)
         {
             _callOnDelete = callOnDelete;
         }

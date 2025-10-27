@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
@@ -49,10 +50,18 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="BotAdapter"/> class.
         /// </summary>
-        public BotAdapter()
+        /// <param name="tokenProvider">The token provider for this adapter.</param>
+        public BotAdapter(IAuthorizationHeaderProvider tokenProvider)
             : base()
         {
+            TokenProvider = tokenProvider;
         }
+
+        /// <summary>
+        /// Gets or sets the token provider for this adapter.
+        /// </summary>
+        /// <value>The token provider for this adapter.</value>
+        public IAuthorizationHeaderProvider TokenProvider { get; set; }
 
         /// <summary>
         /// Gets or sets an error handler that can catch exceptions in the middleware or application.

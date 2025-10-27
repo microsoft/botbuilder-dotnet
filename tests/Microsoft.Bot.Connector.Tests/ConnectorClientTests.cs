@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var baseUri = new Uri("https://test.coffee");
             var customHttpClient = new HttpClient();
-
+    
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connector = new ConnectorClient(null, baseUri, new MicrosoftAppCredentials(null, string.Empty, string.Empty, string.Empty), customHttpClient, false);
 
             Assert.Equal(connector.HttpClient.BaseAddress, baseUri);
         }
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Tests
             var baseUri = new Uri("https://test.coffee");
             var customHttpClient = new HttpClient();
 
-            using (var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient))
+            using (var connector = new ConnectorClient(new MicrosoftAppCredentials(null, string.Empty, string.Empty, string.Empty), customHttpClient, true))
             { 
                 // Use the connector
             }
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Connector.Tests
             var baseUri = new Uri("https://test.coffee");
             var customHttpClient = new HttpClient();
 
-            using (var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient, disposeHttpClient: customHttpClient == null))
+            using (var connector = new ConnectorClient(null, baseUri, new MicrosoftAppCredentials(null, string.Empty, string.Empty, string.Empty), customHttpClient, false))
             {
                 // Use the connector
             }
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var baseUri = new Uri("https://test.coffee");
 
-            using (var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), null, disposeHttpClient: true))
+            using (var connector = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty, string.Empty)))
             {
                 // Use the connector
             }

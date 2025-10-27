@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -18,20 +19,23 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _appId;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
+        private readonly IAuthorizationHeaderProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityServiceClientCredentialsFactory"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
         /// <param name="httpClient">A custom httpClient to use.</param>
         /// <param name="logger">A logger instance to use.</param>
-        public ManagedIdentityServiceClientCredentialsFactory(string appId, HttpClient httpClient = null, ILogger logger = null)
+        public ManagedIdentityServiceClientCredentialsFactory(IAuthorizationHeaderProvider tokenProvider, string appId, HttpClient httpClient = null, ILogger logger = null)
         {
             if (string.IsNullOrWhiteSpace(appId))
             {
                 throw new ArgumentNullException(nameof(appId));
             }
 
+            _tokenProvider = tokenProvider;
             _appId = appId;
             _httpClient = httpClient;
             _logger = logger;
@@ -60,7 +64,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return Task.FromResult<ServiceClientCredentials>(
-                new ManagedIdentityAppCredentials(_appId, audience, _httpClient, _logger));
+                new ManagedIdentityAppCredentials(_tokenProvider, _appId, audience, _httpClient, _logger));
         }
     }
 }

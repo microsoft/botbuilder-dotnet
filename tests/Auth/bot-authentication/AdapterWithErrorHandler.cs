@@ -24,7 +24,7 @@ namespace Microsoft.BotBuilderSamples
         }
 
         public AdapterWithErrorHandler(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<CloudAdapter> logger, ConversationState conversationState = null)
-            : base(configuration, httpClientFactory: httpClientFactory, logger: logger)
+            : base(null, configuration, httpClientFactory, logger)
         {
             OnTurnError = async (turnContext, exception) =>
             {

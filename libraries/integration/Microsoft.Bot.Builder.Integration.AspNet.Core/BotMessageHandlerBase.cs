@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
         /// <summary>
         /// A <see cref="JsonSerializer"/> for use when serializing bot messages.
         /// </summary>
-        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(MessageSerializerSettings.Create());
+        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(/* MessageSerializerSettings.Create() */);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotMessageHandlerBase"/> class.

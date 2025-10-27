@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 using Moq;
 using Xunit;
 
@@ -22,9 +23,10 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task NoCallerIdShouldSetNullOAuthScope()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             var mockSocket = new Mock<WebSocket>();
             var bot = new TestBot(null);
-            var adapter = new MockAdapter(mockCredentialProvider.Object, bot);
+            var adapter = new MockAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, bot);
 
             var originalActivity = CreateBasicActivity(); // Has no callerId, therefore OAuthScope in TurnState should be null.
             adapter.CreateStreamingRequestHandler(mockSocket.Object, originalActivity);
@@ -36,10 +38,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task PublicCloudCallerIdShouldSetCorrectOAuthScope()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockTokenProvider = new Mock<IAuthorizationHeaderProvider>();
             var mockSocket = new Mock<WebSocket>();
             var oAuthScope = AuthenticationConstants.ToBotFromChannelTokenIssuer;
             var bot = new TestBot(oAuthScope);
-            var adapter = new MockAdapter(mockCredentialProvider.Object, bot);
+            var adapter = new MockAdapter(mockTokenProvider.Object, mockCredentialProvider.Object, bot);
 
             var originalActivity = CreateBasicActivity();
             originalActivity.CallerId = CallerIdConstants.PublicAzureChannel;
@@ -73,8 +76,8 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
         private class MockAdapter : BotFrameworkHttpAdapterBase
         {
-            public MockAdapter(ICredentialProvider credentialProvider, IBot bot, MockLogger logger = null)
-                : base(credentialProvider, null, logger)
+            public MockAdapter(IAuthorizationHeaderProvider tokenProvider, ICredentialProvider credentialProvider, IBot bot, MockLogger logger = null)
+                : base(tokenProvider, credentialProvider, null, logger)
             {
                 Logger = logger;
                 ConnectedBot = bot;

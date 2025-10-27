@@ -61,6 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <param name="slackClient">The SlackClientWrapper used to connect to the Slack API.</param>
         public SlackAdapter(SlackClientWrapper slackClient, SlackAdapterOptions adapterOptions, ILogger logger = null)
+            : base(null)
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(adapterOptions));
             _logger = logger ?? NullLogger.Instance;

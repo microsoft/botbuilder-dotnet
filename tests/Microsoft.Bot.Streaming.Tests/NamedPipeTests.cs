@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var writeStream = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
-            new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), pipeName);
             var reader = new NamedPipeClient(pipeName);
-            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName));
+            var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), pipeName));
 
             try
             {
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public void NamedPipeServer_IsConnected()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), pipeName);
             var pipe = new NamedPipeServer(pipeName, requestHandler);
 
             Assert.False(pipe.IsConnected);
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public void NamedPipeServer_ctor_With_Empty_BaseName()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), pipeName);
             Assert.Throws<ArgumentNullException>(() => new NamedPipeServer(string.Empty, requestHandler));
         }
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async Task NamedPipeServer_SendAsync_With_No_Message()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), pipeName);
             var pipe = new NamedPipeServer(pipeName, requestHandler);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => pipe.SendAsync(null));
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async Task NamedPipeServer_SendAsync_With_No_Connected_Client()
         {
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
-            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(null), pipeName);
             var pipe = new NamedPipeServer(pipeName, requestHandler);
             var message = new StreamingRequest();
 

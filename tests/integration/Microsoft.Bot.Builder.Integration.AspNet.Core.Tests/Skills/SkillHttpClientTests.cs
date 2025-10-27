@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Skills
                 return Task.FromResult(response);
             });
 
-            var sut = new SkillHttpClient(httpClient, new Mock<ICredentialProvider>().Object, conversationIdFactory);
+            var sut = new SkillHttpClient(null, httpClient, new Mock<ICredentialProvider>().Object, conversationIdFactory);
             var result = await sut.PostActivityAsync<object>("someOriginatingAudience", string.Empty, skill, new Uri("https://parentbot.com/api/messages"), testActivity, CancellationToken.None);
 
             // Assert factory options
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Skills
                 return Task.FromResult(response);
             });
 
-            var sut = new SkillHttpClient(httpClient, new Mock<ICredentialProvider>().Object, conversationIdFactory, mockChannelProvider.Object);
+            var sut = new SkillHttpClient(null, httpClient, new Mock<ICredentialProvider>().Object, conversationIdFactory, mockChannelProvider.Object);
             var result = await sut.PostActivityAsync(string.Empty, skill, new Uri("https://parentbot.com/api/messages"), testActivity, CancellationToken.None);
 
             // Assert factory options

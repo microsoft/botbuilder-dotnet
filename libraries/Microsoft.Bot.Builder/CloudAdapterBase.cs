@@ -14,6 +14,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
@@ -25,11 +26,14 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapterBase"/> class.
         /// </summary>
+        /// <param name="tokenProvider">The token provider.</param>
         /// <param name="botFrameworkAuthentication">The cloud environment used for validating and creating tokens.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected CloudAdapterBase(
+            IAuthorizationHeaderProvider tokenProvider,
             BotFrameworkAuthentication botFrameworkAuthentication,
             ILogger logger = null)
+                : base(tokenProvider)
         {
             BotFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             Logger = logger ?? NullLogger.Instance;

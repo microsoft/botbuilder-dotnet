@@ -571,7 +571,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)
         {
-            string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
+            string header = $"Bearer {await new MicrosoftAppCredentials(null, appId, pwd).GetTokenAsync()}";
             await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(header, appId, pwd, channelService);
         }
 

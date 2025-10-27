@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 AuthenticationConstants.AllowedSigningAlgorithms,
                 new ConfigurationManager<IDictionary<string, HashSet<string>>>("http://test", configRetriever));
 
-            string header = $"Bearer {await new MicrosoftAppCredentials(EnvironmentConfig.TestAppId(), EnvironmentConfig.TestAppPassword()).GetTokenAsync()}";
+            string header = $"Bearer {await new MicrosoftAppCredentials(null, EnvironmentConfig.TestAppId(), EnvironmentConfig.TestAppPassword()).GetTokenAsync()}";
 
             return await tokenExtractor.GetIdentityAsync(header, "testChannel", requiredEndorsements);
         }
