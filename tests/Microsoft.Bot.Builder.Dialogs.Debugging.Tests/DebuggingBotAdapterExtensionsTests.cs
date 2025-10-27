@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             var codeModel = new CodeModel();
             ISourceMap sourceMap = new DebuggerSourceMap(codeModel);
 
-            var adapter = new BotFrameworkAdapter(new SimpleCredentialProvider());
+            var adapter = new BotFrameworkAdapter(null, new SimpleCredentialProvider());
 
             Assert.Single(adapter.MiddlewareSet);
             

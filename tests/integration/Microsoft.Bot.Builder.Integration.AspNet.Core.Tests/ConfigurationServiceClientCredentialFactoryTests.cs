@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 new MemoryConfigurationProvider(new MemoryConfigurationSource())
             });
 
-            _ = new ConfigurationServiceClientCredentialFactory(config);
+            _ = new ConfigurationServiceClientCredentialFactory(null, config);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 })
             });
 
-            _ = new ConfigurationServiceClientCredentialFactory(config);
+            _ = new ConfigurationServiceClientCredentialFactory(null, config);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 })
             });
 
-            _ = new ConfigurationServiceClientCredentialFactory(config);
+            _ = new ConfigurationServiceClientCredentialFactory(null, config);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 })
             });
 
-            _ = new ConfigurationServiceClientCredentialFactory(config);
+            _ = new ConfigurationServiceClientCredentialFactory(null, config);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 })
             });
 
-            _ = new ConfigurationServiceClientCredentialFactory(config);
+            _ = new ConfigurationServiceClientCredentialFactory(null, config);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _ = new ConfigurationServiceClientCredentialFactory(config);
+                _ = new ConfigurationServiceClientCredentialFactory(null, config);
             });
         }
 
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _ = new ConfigurationServiceClientCredentialFactory(config);
+                _ = new ConfigurationServiceClientCredentialFactory(null, config);
             });
         }
 
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _ = new ConfigurationServiceClientCredentialFactory(config);
+                _ = new ConfigurationServiceClientCredentialFactory(null, config);
             });
         }
 
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 })
             });
 
-            _ = new ConfigurationServiceClientCredentialFactory(config);
+            _ = new ConfigurationServiceClientCredentialFactory(null, config);
         }
 
         [Fact]
@@ -207,7 +207,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _ = new ConfigurationServiceClientCredentialFactory(config);
+                _ = new ConfigurationServiceClientCredentialFactory(null, config);
             });
         }
 
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _ = new ConfigurationServiceClientCredentialFactory(config);
+                _ = new ConfigurationServiceClientCredentialFactory(null, config);
             });
         }
 
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                _ = new ConfigurationServiceClientCredentialFactory(config);
+                _ = new ConfigurationServiceClientCredentialFactory(null, config);
             });
         }
     }

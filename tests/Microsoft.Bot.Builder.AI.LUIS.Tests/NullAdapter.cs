@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
     /// </summary>
     public class NullAdapter : BotAdapter
     {
+        public NullAdapter() 
+            : base(null)
+        {
+        }
+
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken) => throw new NotImplementedException();
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken) => Task.FromResult(new[] { new ResourceResponse() });

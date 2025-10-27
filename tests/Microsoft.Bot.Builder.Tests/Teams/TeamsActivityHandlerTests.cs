@@ -14,6 +14,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,8 +28,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [Fact]
         public async Task TestConversationUpdateBotTeamsMemberAdded()
         {
-            // Arrange
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty));
+            // Arrangess
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty));
 
             var activity = new Activity
             {
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -114,7 +115,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -150,7 +151,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+            var connectorClient = new ConnectorClient(null, new Uri("http://localhost/"), new MicrosoftAppCredentials(null, string.Empty, string.Empty), customHttpClient);
 
             var activity = new Activity
             {
@@ -230,7 +231,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamMemberRemoved" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -252,7 +253,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "channelCreated" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -274,7 +275,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "channelDeleted" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -296,7 +297,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "channelRenamed" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -318,7 +319,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "channelRestored" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -340,7 +341,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamArchived" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -362,7 +363,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamDeleted" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -384,7 +385,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamHardDeleted" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -406,7 +407,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamRenamed" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -428,7 +429,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamRestored" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -450,7 +451,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "teamUnarchived" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1376,7 +1377,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "editMessage" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1398,7 +1399,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "undeleteMessage" },
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1419,7 +1420,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.MessageUpdate,
                 ChannelData = new TeamsChannelData { EventType = "undeleteMessage" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1439,7 +1440,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.MessageUpdate,
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1460,7 +1461,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { EventType = "softDeleteMessage" },
                 ChannelId = Channels.Msteams
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1481,7 +1482,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.MessageDelete,
                 ChannelData = new TeamsChannelData { EventType = "softMessage" }
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1501,7 +1502,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.MessageDelete,
                 ChannelId = Channels.Msteams,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -1511,8 +1512,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Single(bot.Record);
             Assert.Equal("OnMessageDeleteActivityAsync", bot.Record[0]);
         }
-
-        private class NotImplementedAdapter : BotAdapter
+        
+        private class NotImplementedAdapter(IAuthorizationHeaderProvider tokenProvider)
+            : BotAdapter(tokenProvider)
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
             {

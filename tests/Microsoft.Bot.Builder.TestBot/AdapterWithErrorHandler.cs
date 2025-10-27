@@ -2,18 +2,20 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.BotBuilderSamples
 {
     //public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     public class AdapterWithErrorHandler : CloudAdapter
     {
-        public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger, InspectionMiddleware inspectionMiddleware, ConversationState conversationState)
-            : base(configuration, null, logger)
+        public AdapterWithErrorHandler(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger, InspectionMiddleware inspectionMiddleware, ConversationState conversationState)
+            : base(tokenProvider, null, logger)
         {
             OnTurnError = async (turnContext, exception) =>
             {

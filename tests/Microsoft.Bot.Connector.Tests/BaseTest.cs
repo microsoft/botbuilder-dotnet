@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             if (mode == HttpRecorderMode.Record || mode == HttpRecorderMode.None)
             {
-                var credentials = new MicrosoftAppCredentials(ClientId, ClientSecret);
+                var credentials = new MicrosoftAppCredentials(null, ClientId, ClientSecret);
                 var task = credentials.GetTokenAsync();
                 task.Wait();
                 this.token = task.Result;

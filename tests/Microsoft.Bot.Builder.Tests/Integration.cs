@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Tests
             var settings = MessageSerializerSettings.Create();
 
             // connector exposes the serializer settings it uses
-            var connector = new ConnectorClient(new Uri("http://localhost/"));
+            var connector = new ConnectorClient(null, new Uri("http://localhost/"));
 
             Assert.IsType<DefaultContractResolver>(settings.ContractResolver);
             Assert.IsType<DefaultContractResolver>(connector.DeserializationSettings.ContractResolver);

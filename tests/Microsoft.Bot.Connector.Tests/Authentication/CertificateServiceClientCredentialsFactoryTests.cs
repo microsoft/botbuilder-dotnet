@@ -27,17 +27,17 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void ConstructorTests()
         {
-            _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
-            _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, tenantId: TestTenantId);
-            _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, logger: logger.Object);
-            _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, httpClient: new HttpClient());
-            _ = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId, httpClient: new HttpClient(), sendX5c: true);
+            _ = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
+            _ = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId, tenantId: TestTenantId);
+            _ = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId, logger: logger.Object);
+            _ = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId, httpClient: new HttpClient());
+            _ = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId, httpClient: new HttpClient(), sendX5c: true);
         }
 
         [Fact]
         public void CannotCreateCredentialsFactoryWithoutCertificate()
         {
-            Assert.Throws<ArgumentNullException>(() => new CertificateServiceClientCredentialsFactory(null, TestAppId));
+            Assert.Throws<ArgumentNullException>(() => new CertificateServiceClientCredentialsFactory(null, null, TestAppId));
         }
 
         [Theory]
@@ -46,13 +46,13 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [InlineData(" ")]
         public void CannotCreateCredentialsFactoryWithoutAppId(string appId)
         {
-            Assert.Throws<ArgumentNullException>(() => new CertificateServiceClientCredentialsFactory(certificate.Object, appId));
+            Assert.Throws<ArgumentNullException>(() => new CertificateServiceClientCredentialsFactory(null, certificate.Object, appId));
         }
 
         [Fact]
         public async Task IsValidAppIdTest()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             Assert.True(await factory.IsValidAppIdAsync(TestAppId, CancellationToken.None));
             Assert.False(await factory.IsValidAppIdAsync("InvalidAppId", CancellationToken.None));
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async Task IsAuthenticationDisabledTest()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             Assert.False(await factory.IsAuthenticationDisabledAsync(CancellationToken.None));
         }
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async Task CanCreatePublicCredentials()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             var credentials = await factory.CreateCredentialsAsync(
                 TestAppId, TestAudience, LoginEndpoint, true, CancellationToken.None);
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async Task CanCreateGovCredentials()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             var credentials = await factory.CreateCredentialsAsync(
                 TestAppId, TestAudience, GovLoginEndpoint, true, CancellationToken.None);
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async Task CanCreatePrivateCredentials()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             var credentials = await factory.CreateCredentialsAsync(
                 TestAppId, TestAudience, PrivateLoginEndpoint, true, CancellationToken.None);
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async Task ShouldCreateUniqueCredentialsByAudience()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             var credentials1 = await factory.CreateCredentialsAsync(
                 TestAppId, string.Empty, LoginEndpoint, true, CancellationToken.None);
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public async Task CannotCreateCredentialsWithInvalidAppId()
         {
-            var factory = new CertificateServiceClientCredentialsFactory(certificate.Object, TestAppId);
+            var factory = new CertificateServiceClientCredentialsFactory(null, certificate.Object, TestAppId);
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => factory.CreateCredentialsAsync(
                     "InvalidAppId", TestAudience, LoginEndpoint, true, CancellationToken.None));

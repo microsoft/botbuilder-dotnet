@@ -4,5 +4,9 @@ namespace Microsoft.Bot.Builder.TestBot.Shared.Debugging
 {
     public class DebugAdapter : BotFrameworkHttpAdapter
     {
+        public DebugAdapter() 
+            : base(tokenProvider: null)
+        {
+        }
     }
 }

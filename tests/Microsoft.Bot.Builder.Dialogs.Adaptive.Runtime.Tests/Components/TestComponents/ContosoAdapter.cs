@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components.TestComponents
     public class ContosoAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         public ContosoAdapter(IConfiguration config)
+            : base(null)
         {
             ContosoSecret = config.GetValue<string>($"{this.GetType().FullName}:contosoSecret");
         }

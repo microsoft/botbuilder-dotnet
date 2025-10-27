@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Identity.Abstractions;
 using Moq;
 using Xunit;
 
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         {
             // Arrange
             var activity = MessageFactory.Text("hello");
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         {
             // Arrange
             var activity = new Activity { Type = ActivityTypes.EndOfConversation, Value = "some value" };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -57,7 +58,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         {
             // Arrange
             var activity = new Activity { Type = ActivityTypes.Typing };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "b" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -106,7 +107,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "b" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -133,7 +134,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "b" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -158,7 +159,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "c" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -183,7 +184,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "c" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -210,7 +211,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "c" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -235,7 +236,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "b" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -259,7 +260,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 },
                 Recipient = new ChannelAccount { Id = "c" },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -290,7 +291,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     new MessageReaction("angry"),
                 },
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -312,7 +313,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.Event,
                 Name = SignInConstants.TokenResponseEventName,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -333,7 +334,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.Event,
                 Name = "some.random.event",
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -353,7 +354,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Event,
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -374,7 +375,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.InstallationUpdate,
                 Action = "add"
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -395,7 +396,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.InstallationUpdate,
                 Action = "remove"
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -415,7 +416,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = "shall.not.pass",
             };
-            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+            var turnContext = new TurnContext(new NotImplementedAdapter(null), activity);
 
             // Act
             var bot = new TestActivityHandler();
@@ -432,7 +433,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Arrange
             var turnContextMock = new Mock<ITurnContext>();
             turnContextMock.Setup(tc => tc.Activity).Returns(new Activity { Type = ActivityTypes.Message });
-            turnContextMock.Setup(tc => tc.Adapter).Returns(new BotFrameworkAdapter(new SimpleCredentialProvider()));
+            turnContextMock.Setup(tc => tc.Adapter).Returns(new BotFrameworkAdapter(null, new SimpleCredentialProvider()));
             turnContextMock.Setup(tc => tc.TurnState).Returns(new TurnContextStateCollection());
             turnContextMock.Setup(tc => tc.Responded).Returns(false);
             turnContextMock.Setup(tc => tc.OnDeleteActivity(It.IsAny<DeleteActivityHandler>()));
@@ -463,6 +464,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
         private class NotImplementedAdapter : BotAdapter
         {
+            public NotImplementedAdapter(IAuthorizationHeaderProvider tokenProvider) 
+                : base(null)
+            {
+            }
+
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
@@ -481,6 +487,11 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
         private class TestInvokeAdapter : NotImplementedAdapter
         {
+            public TestInvokeAdapter(IAuthorizationHeaderProvider tokenProvider) 
+                : base(null)
+            {
+            }
+
             public IActivity Activity { get; private set; }
 
             public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)

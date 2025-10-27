@@ -27,11 +27,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             Assert.Throws<ArgumentNullException>(() =>
             {
-                _ = new BotFrameworkHttpClient(null, mockCredentialProvider.Object);
+                _ = new BotFrameworkHttpClient(null, mockHttpClient.Object, mockCredentialProvider.Object);
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                _ = new BotFrameworkHttpClient(mockHttpClient.Object, null);
+                _ = new BotFrameworkHttpClient(null, mockHttpClient.Object, null);
             });
         }
 
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var mockCredentialProvider = new Mock<ICredentialProvider>();
 
             Assert.False(httpClient.DefaultRequestHeaders.Any());
-            _ = new BotFrameworkHttpClient(httpClient, mockCredentialProvider.Object);
+            _ = new BotFrameworkHttpClient(null, httpClient, mockCredentialProvider.Object);
             Assert.True(httpClient.DefaultRequestHeaders.Any());
         }
 
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 return Task.FromResult(response);
             });
 
-            var sut = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
+            var sut = new BotFrameworkHttpClient(null, httpClient, new Mock<ICredentialProvider>().Object);
             var activity = new Activity { Conversation = new ConversationAccount() };
             var result = await sut.PostActivityAsync(string.Empty, string.Empty, new Uri("https://skillbot.com/api/messages"), new Uri("https://parentbot.com/api/messages"), "NewConversationId", activity);
 
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 return Task.FromResult(response);
             });
 
-            var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
+            var client = new BotFrameworkHttpClient(null, httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync<TestContentBody>(string.Empty, string.Empty, new Uri("https://skillbot.com/api/messages"), new Uri("https://parentbot.com/api/messages"), "NewConversationId", testActivity);
 
             // Assert
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 return Task.FromResult(response);
             });
             
-            var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
+            var client = new BotFrameworkHttpClient(null, httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync(string.Empty, new Uri("https://skillbot.com/api/messages"), activity);
 
             Assert.IsType<InvokeResponse<object>>(result);
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 return Task.FromResult(response);
             });
             
-            var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
+            var client = new BotFrameworkHttpClient(null, httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync<TestContentBody>(string.Empty, new Uri("https://skillbot.com/api/messages"), activity);
 
             Assert.IsType<InvokeResponse<TestContentBody>>(result);

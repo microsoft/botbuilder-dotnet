@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Abstractions;
 
 namespace Microsoft.BotBuilderSamples
 {
     public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
-        public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
-            : base(configuration, logger)
+        public AdapterWithErrorHandler(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
+            : base(tokenProvider, configuration, logger)
         {
             OnTurnError = (turnContext, exception) =>
             {
