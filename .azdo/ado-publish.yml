@@ -21,7 +21,7 @@ stages:
           packageType: 'sdk'
           version: '9.0.x'
 
-      - script: dotnet restore agentic\agentic.sln
+      - script: dotnet restore agentic/agentic.sln
         displayName: 'Restore'
 
       - script: dotnet build agentic\agentic.sln --no-restore --configuration $(buildConfiguration)
