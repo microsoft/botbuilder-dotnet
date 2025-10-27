@@ -15,15 +15,6 @@ stages:
   - job: BuildTestPack
     displayName: 'Build, Test, and Pack'
     steps:
-      - checkout: none
-      
-      - script: |
-          git config --global --unset-all http.https://github.com/.extraheader || true
-          git clone https://github.com/rido-min/botbuilder-dotnet.git
-          cd botbuilder-dotnet
-          git status
-        displayName: 'Clone public GitHub repo anonymously'
-
       - task: UseDotNet@2
         displayName: 'Use .NET 9'
         inputs:
