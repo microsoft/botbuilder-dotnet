@@ -24,7 +24,7 @@ stages:
       - script: dotnet restore agentic/agentic.sln
         displayName: 'Restore'
 
-      - script: dotnet build agentic\agentic.sln --no-restore --configuration $(buildConfiguration)
+      - script: dotnet build agentic/agentic.sln --no-restore --configuration $(buildConfiguration)
         displayName: 'Build'
       # - script: dotnet test --no-restore --verbosity normal --logger trx --configuration $(buildConfiguration)
       #   displayName: 'Test'
@@ -33,7 +33,7 @@ stages:
         displayName: 'Pack NuGet Packages'
         inputs:
           command: pack
-          packagesToPack: 'agentic\agentic.sln'
+          packagesToPack: 'agentic/agentic.sln'
           packDirectory: '$(Build.ArtifactStagingDirectory)'
           includesymbols: false
           nobuild: true
