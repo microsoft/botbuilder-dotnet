@@ -48,7 +48,7 @@ stages:
         displayName: 'Push NuGet Packages'
         inputs:
           command: push
-          packagesToPush: '$(Pipeline.Workspace)/Packages/*.nupkg'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
           nuGetFeedType: internal
           publishVstsFeed: '$(System.TeamProject)/BotFxSDK-Patch'
 
