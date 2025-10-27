@@ -53,17 +53,11 @@ stages:
           versionEnvVar: 'Version'
           buildProperties: 'SymbolPackageFormat=snupkg'
 
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish NuGet Artifacts'
-        inputs:
-          PathToPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'Packages'
-
       - task: NuGetCommand@2
         displayName: 'Push NuGet Packages'
         inputs:
           command: push
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/Packages/*.nupkg'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
           nuGetFeedType: external
           publishFeedCredentials: 'Teams-Graph-Feed'
       
