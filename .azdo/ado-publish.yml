@@ -63,7 +63,7 @@ stages:
         displayName: 'Push NuGet Packages'
         inputs:
           command: push
-          packagesToPush: '$(Pipeline.Workspace)/Packages/*.nupkg'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/Packages/*.nupkg'
           nuGetFeedType: external
           publishFeedCredentials: 'Teams-Graph-Feed'
       
