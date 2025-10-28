@@ -16,7 +16,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="forceRefresh">Tells the method to acquire a new token regardless of expiration.</param>
         /// <param name="agentIdentity">The identity of the agent on whose behalf the token is requested.</param>
         /// <param name="agentUser">The user on whose behalf the token is requested.</param>
+        /// <param name="tenantId">The tenant ID for which the token is requested.</param>
         /// <returns>A <see cref="Task{AuthenticationResult}"/> object.</returns>
-        public Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "");
+        public Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "", string tenantId = "");
     }
 }

@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
-        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "")
+        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "", string tenantId = "")
         {
             var watch = Stopwatch.StartNew();
 
@@ -60,6 +60,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return result;
         }
 
+        // TODO: Update to use tokenProvider
         private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh)
         {
             var authResult = await _clientApplication

@@ -232,8 +232,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 Activity activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
                 string agenticIdentity = activity.From.Properties["agenticAppId"]?.ToString();
                 string agenticUserId = activity.From.Properties["agenticUserId"]?.ToString();
-
-                var token = await GetTokenAsync(true, agenticIdentity, agenticUserId).ConfigureAwait(false);
+                string tenantId = activity.From.Properties["tenantId"]?.ToString();
+                var token = await GetTokenAsync(true, agenticIdentity, agenticUserId, tenantId).ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
@@ -247,12 +247,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// a cached token if it exists.</param>
         /// <param name="agentIdentity">The agentic identity appId on whose behalf the token is requested.</param>
         /// <param name="agentUser">The agentic userId on whose behalf the token is requested.</param>
+        /// <param name="tenantId">The tenant ID to use when acquiring the token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result contains the access token string.</remarks>
-        public async Task<string> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "")
+        public async Task<string> GetTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "", string tenantId = "")
         {
             _authenticator ??= BuildIAuthenticator();
-            var token = await _authenticator.Value.GetTokenAsync(forceRefresh, agentIdentity, agentUser).ConfigureAwait(false);
+            var token = await _authenticator.Value.GetTokenAsync(forceRefresh, agentIdentity, agentUser, tenantId).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(token.AccessToken))
             {
                 Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Authentication
         protected override Lazy<IAuthenticator> BuildIAuthenticator()
         {
             return new Lazy<IAuthenticator>(
-                () => new FederatedAuthenticator(MicrosoftAppId, _clientId, OAuthEndpoint, OAuthScope, CustomHttpClient, Logger),
+                () => new FederatedAuthenticator(TokenProvider, MicrosoftAppId, _clientId, OAuthEndpoint, OAuthScope, CustomHttpClient, Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
     }

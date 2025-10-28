@@ -146,12 +146,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 .Build();
         }
 
-        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh, string agentIdentity, string agentUser)
+        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh, string agentIdentity, string agentUser, string tenantId)
         {
             var watch = Stopwatch.StartNew();
 
             var result = await Retry.Run(
-                task: () => AcquireTokenAsync(forceRefresh, agentIdentity, agentUser),
+                task: () => AcquireTokenAsync(forceRefresh, agentIdentity, agentUser, tenantId),
                 retryExceptionHandler: (ex, ct) => HandleMsalException(ex, ct)).ConfigureAwait(false);
 
             watch.Stop();
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return new Lazy<IAuthenticator>(() => this, LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "")
+        private async Task<AuthenticatorResult> AcquireTokenAsync(bool forceRefresh = false, string agentIdentity = "", string agentUser = "", string tenantId = "")
         {
             if (_clientApplication == null)
             {
@@ -223,7 +223,12 @@ namespace Microsoft.Bot.Connector.Authentication
                         token = await TokenProvider.CreateAuthorizationHeaderAsync(
                             [scope], 
                             new AuthorizationHeaderProviderOptions()
-                                .WithAgentUserIdentity(agentIdentity, Guid.Parse(agentUser)));
+                            { 
+                                AcquireTokenOptions = new AcquireTokenOptions()
+                                {
+                                    Tenant = tenantId
+                                }
+                            }.WithAgentUserIdentity(agentIdentity, Guid.Parse(agentUser)));
                     }
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
