@@ -481,13 +481,14 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activities">The activities to send.</param>
+        /// <param name="isTargeted">Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -568,12 +569,12 @@ namespace Microsoft.Bot.Builder
                         if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                         {
                             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                            response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                            response = await connectorClient.Conversations.ReplyToActivityAsync(activity, isTargeted, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
                             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                            response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                            response = await connectorClient.Conversations.SendToConversationAsync(activity, isTargeted, cancellationToken).ConfigureAwait(false);
                         }
                     }
                 }
@@ -603,6 +604,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activity">New replacement activity.</param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
@@ -611,10 +615,10 @@ namespace Microsoft.Bot.Builder
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            return await connectorClient.Conversations.UpdateActivityAsync(activity, isTargeted, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -622,15 +626,16 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name='isTargeted'> Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
+        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, isTargeted, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

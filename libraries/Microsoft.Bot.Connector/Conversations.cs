@@ -3,6 +3,7 @@
 
 namespace Microsoft.Bot.Connector
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
@@ -476,6 +477,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -494,7 +498,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (conversationId == null)
             {
@@ -504,6 +508,11 @@ namespace Microsoft.Bot.Connector
             if (activity == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activity");
+            }
+
+            if (isTargeted && activity.Recipient == null)
+            {
+                throw new ArgumentException("activity.Recipient is required for targeted messages", nameof(activity));
             }
 
             // Tracing
@@ -523,6 +532,10 @@ namespace Microsoft.Bot.Connector
             var baseUrl = Client.BaseUri.AbsoluteUri;
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            if (isTargeted)
+            {
+                url += "?isTargetedActivity=true";
+            }
 
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
@@ -933,6 +946,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -951,7 +967,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (conversationId == null)
             {
@@ -966,6 +982,11 @@ namespace Microsoft.Bot.Connector
             if (activity == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activity");
+            }
+
+            if (isTargeted && activity.Recipient == null)
+            {
+                throw new ArgumentException("activity.Recipient is required for targeted messages", nameof(activity));
             }
 
             // Tracing
@@ -987,6 +1008,10 @@ namespace Microsoft.Bot.Connector
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            if (isTargeted)
+            {
+                url += "?isTargetedActivity=true";
+            }
 
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
@@ -1176,6 +1201,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -1194,7 +1222,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (conversationId == null)
             {
@@ -1209,6 +1237,11 @@ namespace Microsoft.Bot.Connector
             if (activity == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activity");
+            }
+
+            if (isTargeted && activity.Recipient == null)
+            {
+                throw new ArgumentException("activity.Recipient is required for targeted messages", nameof(activity));
             }
 
             // Tracing
@@ -1230,6 +1263,10 @@ namespace Microsoft.Bot.Connector
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            if (isTargeted)
+            {
+                url += "?isTargetedActivity=true";
+            }
 
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
@@ -1409,6 +1446,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -1424,7 +1464,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (conversationId == null)
             {
@@ -1454,6 +1494,10 @@ namespace Microsoft.Bot.Connector
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            if (isTargeted)
+            {
+                url += "?isTargetedActivity=true";
+            }
 
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();

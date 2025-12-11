@@ -140,6 +140,9 @@ namespace Microsoft.Bot.Builder
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// <see cref="InputHints"/> defines the possible values.
         /// Default is <see cref="InputHints.AcceptingInput"/>.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -157,12 +160,15 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
         /// <seealso cref="UpdateActivityAsync(IActivity, CancellationToken)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
-        Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends an activity to the sender of the incoming activity.
         /// </summary>
         /// <param name="activity">The activity to send.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -174,12 +180,15 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
         /// <seealso cref="UpdateActivityAsync(IActivity, CancellationToken)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
-        Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceResponse> SendActivityAsync(IActivity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends a set of activities to the sender of the incoming activity.
         /// </summary>
         /// <param name="activities">The activities to send.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -191,12 +200,15 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivityAsync(IActivity, CancellationToken)"/>
         /// <seealso cref="UpdateActivityAsync(IActivity, CancellationToken)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
-        Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Replaces an existing activity.
         /// </summary>
         /// <param name="activity">New replacement activity.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -209,26 +221,32 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
-        Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceResponse> UpdateActivityAsync(IActivity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes an existing activity.
         /// </summary>
         /// <param name="activityId">The ID of the activity to delete.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <para>Not all channels support this operation. For channels that don\'t, this call may throw an exception.</para>
+        /// <para>Not all channels support this operation. For channels that don't, this call may throw an exception.</para>
         /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
         /// <seealso cref="UpdateActivityAsync(IActivity, CancellationToken)"/>
-        Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteActivityAsync(string activityId, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes an existing activity.
         /// </summary>
         /// <param name="conversationReference">The conversation containing the activity to delete.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -239,7 +257,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="DeleteActivityAsync(string, CancellationToken)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
         /// <seealso cref="UpdateActivityAsync(IActivity, CancellationToken)"/>
-        Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteActivityAsync(ConversationReference conversationReference, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Adds a response handler for send activity operations.

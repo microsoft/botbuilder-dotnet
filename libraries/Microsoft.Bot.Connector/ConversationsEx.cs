@@ -93,13 +93,16 @@ namespace Microsoft.Bot.Connector
         /// <param name='activity'>
         /// Activity to send.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static Task<ResourceResponse> SendToConversationAsync(this IConversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<ResourceResponse> SendToConversationAsync(this IConversations operations, Activity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return operations.SendToConversationAsync(activity.Conversation.Id, activity, cancellationToken);
+            return operations.SendToConversationAsync(activity.Conversation.Id, activity, isTargeted, cancellationToken);
         }
 
         /// <summary>
@@ -126,18 +129,21 @@ namespace Microsoft.Bot.Connector
         /// <param name='activity'>
         /// Activity to send.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static Task<ResourceResponse> ReplyToActivityAsync(this IConversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<ResourceResponse> ReplyToActivityAsync(this IConversations operations, Activity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activity.ReplyToId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "ReplyToId");
             }
 
-            return operations.ReplyToActivityAsync(activity.Conversation.Id, activity.ReplyToId, activity, cancellationToken);
+            return operations.ReplyToActivityAsync(activity.Conversation.Id, activity.ReplyToId, activity, isTargeted, cancellationToken);
         }
 
         /// <summary>
@@ -164,13 +170,16 @@ namespace Microsoft.Bot.Connector
         /// <param name='activity'>
         /// Activity to update.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static Task<ResourceResponse> UpdateActivityAsync(this IConversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<ResourceResponse> UpdateActivityAsync(this IConversations operations, Activity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return operations.UpdateActivityAsync(activity.Conversation.Id, activity.Id, activity, cancellationToken);
+            return operations.UpdateActivityAsync(activity.Conversation.Id, activity.Id, activity, isTargeted, cancellationToken);
         }
 
         private static ConversationParameters GetDirectParameters(string botId, string userId, Activity activity)

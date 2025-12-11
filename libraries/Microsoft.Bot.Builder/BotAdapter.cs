@@ -85,6 +85,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activities">The activities to send.</param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activities should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -92,7 +95,7 @@ namespace Microsoft.Bot.Builder
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public abstract Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken);
+        public abstract Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// When overridden in a derived class, replaces an existing activity in the
@@ -100,6 +103,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activity">New replacement activity.</param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activities should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -109,7 +115,7 @@ namespace Microsoft.Bot.Builder
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public abstract Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken);
+        public abstract Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// When overridden in a derived class, deletes an existing activity in the
@@ -117,13 +123,16 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activities should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public abstract Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken);
+        public abstract Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends a proactive message to a conversation.
