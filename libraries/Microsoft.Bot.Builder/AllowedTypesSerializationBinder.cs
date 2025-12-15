@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="assemblyName">Specifies the System.Reflection.Assembly name of the serialized object.</param>
         /// <param name="typeName">Specifies the System.Type name of the serialized object.</param>
         /// <returns>The resulted <see cref="Type"/> from the provided <paramref name="assemblyName"/> and <paramref name="typeName"/> parameters.</returns>
-        public override Type BindToType(string assemblyName, string typeName)
+        public override Type BindToType(string assemblyName, string typeName) // CodeQL [SM05220] This behavior cannot be changed without breaking all type binding. Entire project due to be archived in Dec 31, 2025 in part due to this design. Newer SDK avoids this. 
         {
             var resolvedTypeName = string.Format(CultureInfo.InvariantCulture, "{0}, {1}", typeName, assemblyName);
             var type = Type.GetType(resolvedTypeName);

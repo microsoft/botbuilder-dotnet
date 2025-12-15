@@ -1492,7 +1492,7 @@ namespace Microsoft.Bot.Connector
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false); // CodeQL [SM03781] Core behavior to this generation of Agents. Newer libraries take a different approach. Slated for Archiving on Dec 31, 2025. 
             if (shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);

@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Schema.Tests
 
             Assert.Equal(text, Encoding.UTF8.GetString(buffer0));
             Assert.Equal(buffer, buffer0);
-            Assert.Equal([], buffer1);
+            Assert.Equal((byte[])[], buffer1);
             Assert.Equal(buffer, buffer2);
             Assert.Equal(buffer, buffer3);
             Assert.Equal(buffer, buffer4);

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         {
             // Disable TokenLifetime validation
             EmulatorValidation.ToBotFromEmulatorTokenValidationParameters.ValidateLifetime = false;
-            ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
+            ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false; // CodeQL [SM03926] Test Code for depricated classes. Entire package set for Dec 31, 2025 Archiving. 
             client = new HttpClient
             {
                 BaseAddress = new Uri("https://webchat.botframework.com/"),

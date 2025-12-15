@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 mockTokenCredential.Object,
                 storageTransferOptions,
                 new BlobClientOptions(),
-                JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));
+                JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All })); // CodeQL [SM02211] required by underlying libary. Entire SDK slated for archiving Dec 31, 2025. 
 
             // No blobContainerUri. Should throw.
             Assert.Throws<ArgumentNullException>(() => new BlobsStorage(null, mockTokenCredential.Object, storageTransferOptions));

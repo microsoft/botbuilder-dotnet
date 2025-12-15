@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 Top = 1,
             };
 
-            var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+            var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }; // CodeQL [SM02211] Test Code not used in production system. Package Archiving planned for Dec 31, 2025.
             var serialized = JsonConvert.SerializeObject(qnaMakerTraceInfo, serializerSettings);
             var deserialized = JsonConvert.DeserializeObject<QnAMakerTraceInfo>(serialized, serializerSettings);
 
