@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 }
             }
 
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_twilioAuthToken));
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_twilioAuthToken)); // CodeQL [SM02200] Algorithm signature defined by Twilio. This is also test code, planned for archiving on Dec 31, 2025.
             var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(toEncode.ToString()));
             
             return Convert.ToBase64String(hash);

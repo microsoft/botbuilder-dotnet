@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _ = new BlobsTranscriptStore(
                 ConnectionString,
                 "containerName",
-                JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));
+                JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));  // CodeQL [SM02211] Test code with behavior defined by an external package. Entire package slated for Archiving in Dec 31, 2025.
 
             var blobServiceUri = new Uri("https://storage.net/");
 

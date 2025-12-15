@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Transport
                     }
 
                     var json = new string(buffer);
-                    var token = JToken.Parse(json);
+                    var token = JToken.Parse(json); // CodeQL [SM04507] This is a debug transport, not used for production code. Library Archiving planned for Dec 31, 2025. 
                     _logger.LogTrace($"READ: {token.ToString(Formatting.None)}");
                     return token;
                 }
