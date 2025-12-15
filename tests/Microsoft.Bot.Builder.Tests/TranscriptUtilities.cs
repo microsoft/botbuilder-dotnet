@@ -13,7 +13,8 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Tests
 {
     /// <summary>
-    /// Helpers to get activities from trancript files    ///. </summary>
+    /// Helpers to get activities from trancript files.
+    /// </summary>
     public static class TranscriptUtilities
     {
         private const string BotBuilderTranscriptsLocationKey = "BOTBUILDER_TRANSCRIPTS_LOCATION";
@@ -164,11 +165,11 @@ namespace Microsoft.Bot.Builder.Tests
                     if (string.IsNullOrEmpty(entry.Name))
                     {
                         // No Name, it is a folder
-                        CreateDirectoryIfNotExists(Path.Combine(path, entryName));
+                        CreateDirectoryIfNotExists(Path.Combine(path, entryName)); // CodeQL [SM02729] Test code, run locally. Not user input. Entier framework targeting archiving on Dec 31, 2025
                     }
                     else
                     {
-                        entry.ExtractToFile(Path.Combine(path, entryName), overwrite: true);
+                        entry.ExtractToFile(Path.Combine(path, entryName), overwrite: true); // CodeQL [SM02729] Test code, run locally. Not user input. Entier framework targeting archiving on Dec 31, 2025
                     }
                 }
             }
