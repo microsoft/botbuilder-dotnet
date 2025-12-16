@@ -161,14 +161,22 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     var entryName = entry.FullName.Remove(0, zipFolderEntry.FullName.Length);
 
+                    // Compute the full extraction path and resolve to prevent Zip Slip
+                    var destinationPath = Path.GetFullPath(Path.Combine(path, entryName));
+                    var fullExtractionRoot = Path.GetFullPath(path + Path.DirectorySeparatorChar);
+                    if (!destinationPath.StartsWith(fullExtractionRoot, StringComparison.Ordinal))
+                    {
+                        throw new InvalidOperationException($"Entry is outside the target dir: {destinationPath}");
+                    }
+
                     if (string.IsNullOrEmpty(entry.Name))
                     {
                         // No Name, it is a folder
-                        CreateDirectoryIfNotExists(Path.Combine(path, entryName));
+                        CreateDirectoryIfNotExists(destinationPath);
                     }
                     else
                     {
-                        entry.ExtractToFile(Path.Combine(path, entryName), overwrite: true);
+                        entry.ExtractToFile(destinationPath, overwrite: true);
                     }
                 }
             }
