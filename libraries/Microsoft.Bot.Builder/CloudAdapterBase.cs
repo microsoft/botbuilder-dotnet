@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder
         protected ILogger Logger { get; private set; }
 
         /// <inheritdoc/>
-        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             _ = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             _ = activities ?? throw new ArgumentNullException(nameof(activities));
@@ -93,12 +93,12 @@ namespace Microsoft.Bot.Builder
                     if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                     {
                         var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                        response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        response = await connectorClient.Conversations.ReplyToActivityAsync(activity, isTargeted, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
                         var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                        response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                        response = await connectorClient.Conversations.SendToConversationAsync(activity, isTargeted, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <inheritdoc/>
-        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             _ = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             _ = activity ?? throw new ArgumentNullException(nameof(activity));
@@ -122,11 +122,11 @@ namespace Microsoft.Bot.Builder
             Logger.LogInformation($"UpdateActivityAsync ActivityId: {activity.Id}");
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            return await connectorClient.Conversations.UpdateActivityAsync(activity, isTargeted, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
+        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             _ = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             _ = reference ?? throw new ArgumentNullException(nameof(reference));
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder
             Logger.LogInformation($"DeleteActivityAsync Conversation Id: {reference.Conversation.Id}, ActivityId: {reference.ActivityId}");
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, isTargeted, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

@@ -131,6 +131,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -144,7 +147,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when a required parameter is null.
         /// </exception>
         /// <returns>A task that represents the <see cref="HttpOperationResponse"/>.</returns>
-        Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// SendConversationHistory.
@@ -206,6 +209,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -219,7 +225,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when a required parameter is null.
         /// </exception>
         /// <returns>A task that represents the <see cref="HttpOperationResponse"/>.</returns>
-        Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// ReplyToActivity.
@@ -253,6 +259,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -266,7 +275,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when a required parameter is null.
         /// </exception>
         /// <returns>A task that represents the <see cref="HttpOperationResponse"/>.</returns>
-        Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// DeleteActivity.
@@ -286,6 +295,9 @@ namespace Microsoft.Bot.Connector
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
+        /// <param name='isTargeted'>
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
@@ -296,7 +308,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when a required parameter is null.
         /// </exception>
         /// <returns>A task that represents the <see cref="HttpOperationResponse"/>.</returns>
-        Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// GetConversationMembers.

@@ -239,6 +239,9 @@ namespace Microsoft.Bot.Builder
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
         /// Default is null.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="textReplyToSend"/> is <c>null</c> or whitespace.</exception>
@@ -251,7 +254,7 @@ namespace Microsoft.Bot.Builder
         /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
-        public async Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = null, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_disposed)
             {
@@ -275,7 +278,7 @@ namespace Microsoft.Bot.Builder
                 activityToSend.InputHint = inputHint;
             }
 
-            return await SendActivityAsync(activityToSend, cancellationToken).ConfigureAwait(false);
+            return await SendActivityAsync(activityToSend, isTargeted, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -283,12 +286,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity">The activity to send.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="activity"/> is <c>null</c>.</exception>
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
         /// channel assigned to the activity.</remarks>
-        public async Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ResourceResponse> SendActivityAsync(IActivity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_disposed)
             {
@@ -297,7 +303,7 @@ namespace Microsoft.Bot.Builder
 
             BotAssert.ActivityNotNull(activity);
 
-            ResourceResponse[] responses = await SendActivitiesAsync(new[] { activity }, cancellationToken).ConfigureAwait(false);
+            ResourceResponse[] responses = await SendActivitiesAsync(new[] { activity }, isTargeted, cancellationToken).ConfigureAwait(false);
             if (responses == null || responses.Length == 0)
             {
                 // It's possible an interceptor prevented the activity from having been sent.
@@ -315,11 +321,14 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activities">The activities to send.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activities should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
-        public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_disposed)
             {
@@ -404,7 +413,7 @@ namespace Microsoft.Bot.Builder
                     // Send from the list which may have been manipulated via the event handlers.
                     // Note that 'responses' was captured from the root of the call, and will be
                     // returned to the original caller.
-                    var responses = await Adapter.SendActivitiesAsync(this, bufferedActivities.ToArray(), cancellationToken).ConfigureAwait(false);
+                    var responses = await Adapter.SendActivitiesAsync(this, bufferedActivities.ToArray(), cancellationToken, isTargeted).ConfigureAwait(false);
                     var sentNonTraceActivity = false;
 
                     for (var index = 0; index < responses.Length; index++)
@@ -431,6 +440,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
@@ -441,7 +453,7 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
-        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default)
+        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_disposed)
             {
@@ -455,7 +467,7 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse> ActuallyUpdateStuffAsync()
             {
-                return await Adapter.UpdateActivityAsync(this, a, cancellationToken).ConfigureAwait(false);
+                return await Adapter.UpdateActivityAsync(this, a, isTargeted, cancellationToken).ConfigureAwait(false);
             }
 
             return await UpdateActivityInternalAsync(a, _onUpdateActivity, ActuallyUpdateStuffAsync, cancellationToken).ConfigureAwait(false);
@@ -466,10 +478,13 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activityId">The ID of the activity to delete.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
-        public async Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task DeleteActivityAsync(string activityId, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_disposed)
             {
@@ -486,7 +501,7 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuffAsync()
             {
-                await Adapter.DeleteActivityAsync(this, cr, cancellationToken).ConfigureAwait(false);
+                await Adapter.DeleteActivityAsync(this, cr, isTargeted, cancellationToken).ConfigureAwait(false);
             }
 
             await DeleteActivityInternalAsync(cr, _onDeleteActivity, ActuallyDeleteStuffAsync, cancellationToken).ConfigureAwait(false);
@@ -497,12 +512,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="conversationReference">The conversation containing the activity to delete.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="isTargeted">
+        /// Flag to indicate if the activity should be delivered privately to a specific recipient within a conversation.
+        /// </param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
         /// <remarks>The conversation reference's <see cref="ConversationReference.ActivityId"/>
         /// indicates the activity in the conversation to delete.</remarks>
-        public async Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task DeleteActivityAsync(ConversationReference conversationReference, bool isTargeted = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_disposed)
             {
@@ -516,7 +534,7 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuffAsync()
             {
-                await Adapter.DeleteActivityAsync(this, conversationReference, cancellationToken).ConfigureAwait(false);
+                await Adapter.DeleteActivityAsync(this, conversationReference, isTargeted, cancellationToken).ConfigureAwait(false);
             }
 
             await DeleteActivityInternalAsync(conversationReference, _onDeleteActivity, ActuallyDeleteStuffAsync, cancellationToken).ConfigureAwait(false);

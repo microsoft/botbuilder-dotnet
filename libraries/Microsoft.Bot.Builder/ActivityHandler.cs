@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder
                     // If OnInvokeActivityAsync has already sent an InvokeResponse, do not send another one.
                     if (invokeResponse != null && turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey) == null)
                     {
-                        await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
+                        await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, false, cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
