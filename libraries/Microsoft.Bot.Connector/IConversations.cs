@@ -330,6 +330,39 @@ namespace Microsoft.Bot.Connector
         Task<HttpOperationResponse<IList<ChannelAccount>>> GetConversationMembersWithHttpMessagesAsync(string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// GetConversationMember.
+        /// </summary>
+        /// <remarks>
+        /// Retrieves a single member of a conversation by ID.
+        ///
+        /// This REST API takes a ConversationId and a UserId and returns a ChannelAccount
+        /// object for the members of the conversation.
+        /// </remarks>
+        /// <param name='userId'>
+        /// User ID.
+        /// </param>
+        /// <param name='conversationId'>
+        /// Conversation ID.
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="ErrorResponseException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response.
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.ValidationException">
+        /// Thrown when a required parameter is null.
+        /// </exception>
+        /// <returns>A task that represents the <see cref="HttpOperationResponse"/>.</returns>
+        Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// GetConversationPagedMembers.
         /// </summary>
         /// <remarks>

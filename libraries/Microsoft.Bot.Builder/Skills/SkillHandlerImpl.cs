@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Skills
             {
                 var client = turnContext.TurnState.Get<IConnectorClient>();
                 var conversationId = turnContext.Activity.Conversation.Id;
-                member = await ((Conversations)client.Conversations).GetConversationMemberAsync(userId, conversationId, cancellationToken).ConfigureAwait(false);
+                member = await client.Conversations.GetConversationMemberAsync(userId, conversationId, cancellationToken).ConfigureAwait(false);
             });
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);

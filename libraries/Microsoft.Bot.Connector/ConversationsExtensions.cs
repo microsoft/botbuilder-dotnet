@@ -440,10 +440,40 @@ namespace Microsoft.Bot.Connector
         /// GetConversationMember.
         /// </summary>
         /// <remarks>
-        /// Enumerate the members of a conversation.
+        /// Retrieves a single member of a conversation by ID.
         ///
         /// This REST API takes a ConversationId and a UserId and returns a ChannelAccount
-        /// object for the members of the conversation.
+        /// object for the member of the conversation.
+        /// </remarks>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='userId'>
+        /// User ID.
+        /// </param>
+        /// <param name='conversationId'>
+        /// Conversation ID.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The conversation member.</returns>
+        public static async Task<ChannelAccount> GetConversationMemberAsync(this IConversations operations, string userId, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            using (var result = await operations.GetConversationMemberWithHttpMessagesAsync(userId, conversationId, null, cancellationToken).ConfigureAwait(false))
+            {
+                return result.Body;
+            }
+        }
+
+        /// <summary>
+        /// GetConversationMember.
+        /// </summary>
+        /// <remarks>
+        /// Retrieves a single member of a conversation by ID.
+        ///
+        /// This REST API takes a ConversationId and a UserId and returns a ChannelAccount
+        /// object for the member of the conversation.
         /// </remarks>
         /// <param name='operations'>
         /// The operations group for this extension method.
